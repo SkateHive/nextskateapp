@@ -36,8 +36,16 @@ export default function Post({ post }: PostProprieties): ReactElement {
   const postMetadata = post ? JSON.parse(post.json_metadata) : {}
 
   return (
-    <Card size="sm" boxShadow="none">
-      <CardHeader mt={2} pb={2}>
+    <Card
+      size="sm"
+      boxShadow="none"
+      borderRadius="lg"
+      _hover={{
+        outline: "1px solid",
+        outlineColor: "gray.100",
+      }}
+    >
+      <CardHeader mt={2}>
         <Flex gap="4">
           <Flex flex="1" gap="2" alignItems="center" flexWrap="wrap">
             <SkeletonCircle height="32px" width="32px" isLoaded={!isLoading}>
@@ -65,7 +73,7 @@ export default function Post({ post }: PostProprieties): ReactElement {
             <Tooltip label="Open post">
               <IconButton
                 as={Link}
-                href={"post/" + post?.url}
+                href={"post" + post?.url}
                 aria-label="Return"
                 icon={<ExternalLink size={16} color="darkgray" />}
                 variant="ghost"
@@ -75,23 +83,22 @@ export default function Post({ post }: PostProprieties): ReactElement {
           )}
         </Flex>
       </CardHeader>
-      <Box px={3}>
-        {isLoading ? (
+      {isLoading ? (
+        <Box p={3}>
           <Skeleton aspectRatio={16 / 9} borderRadius="md" />
-        ) : (
+        </Box>
+      ) : (
+        <Box p={3} as={Link} href={"post" + post?.url} cursor="pointer">
           <Image
             objectFit="cover"
             aspectRatio={16 / 9}
-            src={
-              (postMetadata?.image && postMetadata.image[0]) ||
-              "https://ipfs.skatehive.app/ipfs/QmZEBLwMxMewYumj6k1hXqcC1STUka79kVPVR6ZHTFWATA?pinataGatewayToken=nxHSFa1jQsiF7IHeXWH-gXCY3LDLlZ7Run3aZXZc8DRCfQz4J4a94z9DmVftXyFE"
-            }
+            src={(postMetadata?.image && postMetadata.image[0]) || ""}
             alt={post?.title}
             borderRadius="md"
             loading="lazy"
           />
-        )}
-      </Box>
+        </Box>
+      )}
     </Card>
   )
 }

@@ -17,7 +17,6 @@ const SKATEHIVE_TAG = "hive-173115"
 const SKATEHIVE_QUERY = "created"
 
 export default function Home() {
-  // let posts: Discussion[] = []
   const [posts, setPosts] = useState<Discussion[]>([])
 
   const hiveClient = HiveClient()
@@ -39,7 +38,7 @@ export default function Home() {
 
   return (
     <main>
-      <Container p={0}>
+      <Container p={0} overflow="visible">
         <Heading m={3} size="2xl">
           Feed
         </Heading>

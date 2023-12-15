@@ -47,7 +47,7 @@ export default function Posts({
         </Flex>
       }
     >
-      <VStack align="stretch" spacing={4}>
+      <VStack align="stretch" spacing={4} p={2}>
         {posts && posts.length ? (
           posts.map((post, i) => <Post key={i} post={post} />)
         ) : (
