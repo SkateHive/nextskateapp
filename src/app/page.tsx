@@ -39,7 +39,7 @@ export default function Home() {
   return (
     <main>
       <Container p={0} overflow="visible">
-        <Heading m={3} size="2xl">
+        <Heading m={3} ml={6} size="2xl">
           Feed
         </Heading>
         <Divider mb={3} color="darkgray" />

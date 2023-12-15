@@ -1,20 +1,18 @@
 "use client"
-import post from "@/components/post"
 import HiveClient from "@/lib/hiveclient"
 import {
-  Box,
   Container,
   Divider,
   Flex,
   Heading,
   IconButton,
-  Image,
   Link,
   Text,
   Tooltip,
+  VStack,
 } from "@chakra-ui/react"
 import { Discussion } from "@hiveio/dhive"
-import { CornerDownLeft, MoreHorizontal } from "lucide-react"
+import { CornerDownLeft } from "lucide-react"
 import { useCallback, useEffect, useState } from "react"
 
 import { remark } from "remark"
@@ -24,7 +22,6 @@ import matter from "gray-matter"
 export default function Page({ params }: { params: { slug: string } }) {
   const [post, setPost] = useState<Discussion>()
   const [markdownPost, setMarkdownPost] = useState<string>("")
-  const postMetadata = post ? JSON.parse(post.json_metadata) : {}
 
   const formatMarkdown = useCallback(async (markdown: string) => {
     try {
@@ -65,15 +62,14 @@ export default function Page({ params }: { params: { slug: string } }) {
         const formattedMarkdown = await formatMarkdown(post.body)
         setMarkdownPost(formattedMarkdown)
       }
-
       formatAndSetMarkdown()
     }
   }, [post, formatMarkdown])
 
   return (
     <Container p={0}>
-      <Flex align="center" justify="space-between">
-        <Heading m={3} size="2xl">
+      <Flex m={3} align="center" justify="space-between">
+        <Heading ml={3} size="2xl">
           Post
         </Heading>
         <Tooltip label="Return Home">
@@ -88,22 +84,25 @@ export default function Page({ params }: { params: { slug: string } }) {
         </Tooltip>
       </Flex>
       <Divider mb={3} color="darkgray" />
-      {/* <Image
-        m={3}
-        objectFit="cover"
-        aspectRatio={16 / 9}
-        src={
-          (postMetadata?.image && postMetadata.image[0]) ||
-          "https://ipfs.skatehive.app/ipfs/QmZEBLwMxMewYumj6k1hXqcC1STUka79kVPVR6ZHTFWATA?pinataGatewayToken=nxHSFa1jQsiF7IHeXWH-gXCY3LDLlZ7Run3aZXZc8DRCfQz4J4a94z9DmVftXyFE"
-        }
-        alt={post?.title}
-        borderRadius="md"
-        loading="lazy"
-      /> */}
-      <Heading m={1} mb={6} size="xl" textAlign="center">
+      <Heading m={6} size="md">
         {post?.title}
       </Heading>
-      <Text dangerouslySetInnerHTML={{ __html: markdownPost }} />
+      <Text
+        m={6}
+        as={Flex}
+        flexDir="column"
+        gap={4}
+        dangerouslySetInnerHTML={{ __html: markdownPost }}
+        sx={{
+          ul: {
+            marginLeft: "20px",
+            listStyleType: "disc",
+          },
+          li: {
+            marginBottom: "4px",
+          },
+        }}
+      />
     </Container>
   )
 }
