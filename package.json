@@ -15,9 +15,11 @@
     "@emotion/styled": "^11.11.0",
     "@hiveio/dhive": "^1.2.8",
     "framer-motion": "^10.16.16",
+    "lucide-react": "^0.295.0",
     "next": "14.0.4",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "react-infinite-scroll-component": "^6.1.0"
   },
   "devDependencies": {
     "@types/node": "^20",
