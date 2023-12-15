@@ -11,6 +11,7 @@ import {
   SkeletonCircle,
   Link,
   Tooltip,
+  VStack,
 } from "@chakra-ui/react"
 import { Discussion } from "@hiveio/dhive"
 import { ReactElement } from "react"
@@ -35,26 +36,32 @@ export default function Post({ post }: PostProprieties): ReactElement {
         outlineColor: "gray.100",
       }}
     >
-      <CardHeader mt={2}>
+      <CardHeader mt={2} pb={0}>
         <Flex gap="4">
-          <Flex flex="1" gap="2" alignItems="center" flexWrap="wrap">
-            <SkeletonCircle height="32px" width="32px" isLoaded={!isLoading}>
+          <Flex flex="1" gap="2" alignItems="center">
+            <SkeletonCircle height="40px" width="40px" isLoaded={!isLoading}>
               <Avatar
                 name={post?.author}
                 src={`https://images.ecency.com/webp/u/${post?.author}/avatar/small`}
-                size="sm"
+                height="40px"
+                width="40px"
               />
             </SkeletonCircle>
             <Skeleton isLoaded={!isLoading} minW="128px">
-              <Flex gap={1} alignItems="center">
-                <Text fontSize="14px" as="b">
-                  {post?.author}
-                </Text>
-                <Text fontSize="14px" color="darkgray">
-                  ·
-                </Text>
-                <Text fontSize="14px" color="darkgray" fontWeight="300">
-                  {post && formatTimeSince(post?.created)}
+              <Flex flexDir="column" gap={0}>
+                <Flex gap={1} alignItems="center">
+                  <Text fontSize="14px" as="b">
+                    {post?.author}
+                  </Text>
+                  <Text fontSize="14px" color="darkgray">
+                    ·
+                  </Text>
+                  <Text fontSize="12px" color="darkgray" fontWeight="300">
+                    {post && formatTimeSince(post?.created)}
+                  </Text>
+                </Flex>
+                <Text fontSize="14px" noOfLines={1}>
+                  {post?.title}
                 </Text>
               </Flex>
             </Skeleton>

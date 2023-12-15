@@ -2,18 +2,7 @@
 
 import { Discussion } from "@hiveio/dhive"
 import React, { ReactElement } from "react"
-import {
-  Box,
-  Button,
-  Container,
-  Divider,
-  Flex,
-  Heading,
-  Highlight,
-  Skeleton,
-  StackDivider,
-  VStack,
-} from "@chakra-ui/react"
+import { Flex, Highlight, VStack } from "@chakra-ui/react"
 import Post from "./post"
 import InfiniteScroll from "react-infinite-scroll-component"
 
