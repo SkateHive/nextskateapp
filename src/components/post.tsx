@@ -30,7 +30,7 @@ export default function Post({ post }: PostProprieties): ReactElement {
 
   return (
     <Card size="sm" boxShadow="none">
-      <CardHeader mt={2}>
+      <CardHeader mt={2} pb={2}>
         <Flex gap="4">
           <Flex flex="1" gap="2" alignItems="center" flexWrap="wrap">
             <SkeletonCircle height="32px" width="32px" isLoaded={!isLoading}>
@@ -41,7 +41,7 @@ export default function Post({ post }: PostProprieties): ReactElement {
               />
             </SkeletonCircle>
             <Skeleton isLoaded={!isLoading} minW="128px">
-              <Flex gap={2} alignItems="center">
+              <Flex gap={1} alignItems="center">
                 <Text as="b">{post?.author}</Text>
                 <Text color="darkgray" fontSize="sm">
                   · {post && formatTimeSince(post?.created)}
@@ -57,31 +57,23 @@ export default function Post({ post }: PostProprieties): ReactElement {
           />
         </Flex>
       </CardHeader>
-      <Image
-        as={isLoading ? Skeleton : Image}
-        objectFit="cover"
-        aspectRatio={16 / 9}
-        src={
-          (postMetadata?.image && postMetadata.image[0]) ||
-          "https://ipfs.skatehive.app/ipfs/QmZEBLwMxMewYumj6k1hXqcC1STUka79kVPVR6ZHTFWATA?pinataGatewayToken=nxHSFa1jQsiF7IHeXWH-gXCY3LDLlZ7Run3aZXZc8DRCfQz4J4a94z9DmVftXyFE"
-        }
-        alt={post?.title}
-        borderRadius="md"
-        m={3}
-        loading="lazy"
-      />
-
-      <CardFooter justify="space-between" flexWrap="wrap">
-        <Button flex="1" variant="ghost">
-          Like
-        </Button>
-        <Button flex="1" variant="ghost">
-          Comment
-        </Button>
-        <Button flex="1" variant="ghost">
-          Share
-        </Button>
-      </CardFooter>
+      <Box px={3}>
+        {isLoading ? (
+          <Skeleton aspectRatio={16 / 9} borderRadius="md" />
+        ) : (
+          <Image
+            objectFit="cover"
+            aspectRatio={16 / 9}
+            src={
+              (postMetadata?.image && postMetadata.image[0]) ||
+              "https://ipfs.skatehive.app/ipfs/QmZEBLwMxMewYumj6k1hXqcC1STUka79kVPVR6ZHTFWATA?pinataGatewayToken=nxHSFa1jQsiF7IHeXWH-gXCY3LDLlZ7Run3aZXZc8DRCfQz4J4a94z9DmVftXyFE"
+            }
+            alt={post?.title}
+            borderRadius="md"
+            loading="lazy"
+          />
+        )}
+      </Box>
     </Card>
   )
 }

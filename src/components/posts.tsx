@@ -26,29 +26,28 @@ export default function Posts({
   posts,
   getPosts,
 }: PostsProperties): ReactElement {
-  const isLoading = Boolean(posts && posts.length)
   return (
-    <VStack spacing={2} align="stretch" divider={<StackDivider />}>
-      <InfiniteScroll
-        dataLength={posts.length}
-        next={getPosts}
-        hasMore={posts.length !== 100}
-        loader={
-          <Flex w="100%" justify={"center"}>
-            Buscando...
-          </Flex>
-        }
-        endMessage={
-          <Flex w="100%" justify={"center"}>
-            <Highlight
-              query=""
-              styles={{ px: "2", py: "1", rounded: "full", bg: "red.100" }}
-            >
-              Limite de 100 posts.
-            </Highlight>
-          </Flex>
-        }
-      >
+    <InfiniteScroll
+      dataLength={posts.length}
+      next={getPosts}
+      hasMore={posts.length !== 100}
+      loader={
+        <Flex w="100%" justify={"center"}>
+          Buscando...
+        </Flex>
+      }
+      endMessage={
+        <Flex w="100%" justify={"center"}>
+          <Highlight
+            query=""
+            styles={{ px: "2", py: "1", rounded: "full", bg: "red.100" }}
+          >
+            Limite de 100 posts.
+          </Highlight>
+        </Flex>
+      }
+    >
+      <VStack align="stretch" spacing={4}>
         {posts && posts.length ? (
           posts.map((post, i) => <Post key={i} post={post} />)
         ) : (
@@ -58,7 +57,7 @@ export default function Posts({
             <Post />
           </>
         )}
-      </InfiniteScroll>
-    </VStack>
+      </VStack>
+    </InfiniteScroll>
   )
 }
