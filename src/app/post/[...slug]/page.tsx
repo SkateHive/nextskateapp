@@ -101,6 +101,9 @@ export default function Page({ params }: { params: { slug: string } }) {
           li: {
             marginBottom: "4px",
           },
+          a: {
+            textDecor: "underline",
+          },
         }}
       />
     </Container>

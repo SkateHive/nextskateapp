@@ -5,27 +5,17 @@ import {
   CardHeader,
   Flex,
   Avatar,
-  Box,
   IconButton,
   Text,
-  Image,
   Skeleton,
   SkeletonCircle,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Menu,
   Link,
   Tooltip,
 } from "@chakra-ui/react"
 import { Discussion } from "@hiveio/dhive"
 import { ReactElement } from "react"
-import {
-  ExternalLink,
-  LinkIcon,
-  MoreHorizontal,
-  RepeatIcon,
-} from "lucide-react"
+import { ExternalLink } from "lucide-react"
+import ImageWithPlaceholder from "./ImagemWithPlaceholder"
 
 interface PostProprieties {
   post?: Discussion
@@ -83,22 +73,11 @@ export default function Post({ post }: PostProprieties): ReactElement {
           )}
         </Flex>
       </CardHeader>
-      {isLoading ? (
-        <Box p={3}>
-          <Skeleton aspectRatio={16 / 9} borderRadius="md" />
-        </Box>
-      ) : (
-        <Box p={3} as={Link} href={"post" + post?.url} cursor="pointer">
-          <Image
-            objectFit="cover"
-            aspectRatio={16 / 9}
-            src={(postMetadata?.image && postMetadata.image[0]) || ""}
-            alt={post?.title}
-            borderRadius="md"
-            loading="lazy"
-          />
-        </Box>
-      )}
+      <ImageWithPlaceholder
+        src={(postMetadata?.image && postMetadata.image[0]) || ""}
+        alt={post?.title || ""}
+        linkUrl={post ? "post" + post.url : "#"}
+      />
     </Card>
   )
 }
@@ -108,7 +87,6 @@ function formatTimeSince(dateString: string): string {
   const now = new Date()
   const diffMs = now.getTime() - postDate.getTime()
 
-  // Convertendo milissegundos para minutos, horas e dias
   const minutes = Math.floor(diffMs / 60000)
   const hours = Math.floor(minutes / 60)
   const days = Math.floor(hours / 24)
@@ -118,7 +96,6 @@ function formatTimeSince(dateString: string): string {
   } else if (hours < 24) {
     return `${hours}h`
   } else {
-    // Formatando a data para o formato "dia mês"
     const day = postDate.getDate()
     const monthNames: string[] = [
       "Jan",
