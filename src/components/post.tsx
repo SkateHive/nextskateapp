@@ -42,9 +42,14 @@ export default function Post({ post }: PostProprieties): ReactElement {
             </SkeletonCircle>
             <Skeleton isLoaded={!isLoading} minW="128px">
               <Flex gap={1} alignItems="center">
-                <Text as="b">{post?.author}</Text>
-                <Text color="darkgray" fontSize="sm">
-                  · {post && formatTimeSince(post?.created)}
+                <Text fontSize="14px" as="b">
+                  {post?.author}
+                </Text>
+                <Text fontSize="14px" color="darkgray">
+                  ·
+                </Text>
+                <Text fontSize="14px" color="darkgray" fontWeight="300">
+                  {post && formatTimeSince(post?.created)}
                 </Text>
               </Flex>
             </Skeleton>
