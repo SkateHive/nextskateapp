@@ -6,19 +6,26 @@ import {
   Flex,
   Avatar,
   Box,
-  Heading,
   IconButton,
-  CardBody,
-  CardFooter,
-  Button,
   Text,
   Image,
   Skeleton,
   SkeletonCircle,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Menu,
+  Link,
+  Tooltip,
 } from "@chakra-ui/react"
 import { Discussion } from "@hiveio/dhive"
 import { ReactElement } from "react"
-import { MoreHorizontal } from "lucide-react"
+import {
+  ExternalLink,
+  LinkIcon,
+  MoreHorizontal,
+  RepeatIcon,
+} from "lucide-react"
 
 interface PostProprieties {
   post?: Discussion
@@ -54,12 +61,18 @@ export default function Post({ post }: PostProprieties): ReactElement {
               </Flex>
             </Skeleton>
           </Flex>
-          <IconButton
-            variant="ghost"
-            colorScheme="gray"
-            aria-label="See menu"
-            icon={<MoreHorizontal color="darkgray" />}
-          />
+          {!isLoading && (
+            <Tooltip label="Open post">
+              <IconButton
+                as={Link}
+                href={"post/" + post?.url}
+                aria-label="Return"
+                icon={<ExternalLink size={16} color="darkgray" />}
+                variant="ghost"
+                size="sm"
+              />
+            </Tooltip>
+          )}
         </Flex>
       </CardHeader>
       <Box px={3}>
