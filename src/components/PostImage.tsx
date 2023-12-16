@@ -31,7 +31,7 @@ export default function PostImage({
         {...props}
         alt={alt}
         loading="lazy"
-        priority
+        priority="true"
       />
     </Box>
   )
