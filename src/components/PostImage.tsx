@@ -24,6 +24,7 @@ export default function PostImage({
           borderRadius="md"
           {...props}
           alt={alt}
+          loading="lazy"
         />
       </Box>
     </Link>

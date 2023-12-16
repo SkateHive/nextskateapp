@@ -1,59 +1,45 @@
-"use client"
 import HiveClient from "@/lib/hiveclient"
 import { Container, Flex, Heading, Text } from "@chakra-ui/react"
-import { Discussion } from "@hiveio/dhive"
-import { useCallback, useEffect, useState } from "react"
 
 import matter from "gray-matter"
 import { remark } from "remark"
 import html from "remark-html"
 
-export default function Page({ params }: { params: { slug: string } }) {
-  const [post, setPost] = useState<Discussion>()
-  const [markdownPost, setMarkdownPost] = useState<string>("")
+const hiveClient = HiveClient()
 
-  const formatMarkdown = useCallback(async (markdown: string) => {
-    try {
-      const matterResult = matter(markdown)
-      const processedContent = await remark()
-        .use(html)
-        .process(matterResult.content)
-      const contentHtml = processedContent.toString()
-      return contentHtml
-    } catch (error) {
-      console.error("Error formatting markdown:", error)
-      return ""
-    }
-  }, [])
+async function getData(user: string, postId: string) {
+  const postContent = await hiveClient.database.call("get_content", [
+    user.substring(3),
+    postId,
+  ])
 
-  useEffect(() => {
-    const getPost = async () => {
-      try {
-        const hiveClient = HiveClient()
-        const queryResult = await hiveClient.database.call("get_content", [
-          user.substring(3),
-          postId,
-        ])
-        setPost(queryResult)
-      } catch (error) {
-        console.error("Error fetching post:", error)
-      }
-    }
+  if (!postContent) throw new Error("Failed to fetch post content")
 
-    if (!Array.isArray(params.slug)) return
-    let [tag, user, postId] = params.slug
-    getPost()
-  }, [params.slug])
+  return postContent
+}
 
-  useEffect(() => {
-    if (post?.body) {
-      const formatAndSetMarkdown = async () => {
-        const formattedMarkdown = await formatMarkdown(post.body)
-        setMarkdownPost(formattedMarkdown)
-      }
-      formatAndSetMarkdown()
-    }
-  }, [post, formatMarkdown])
+async function formatMarkdownNew(markdown: string) {
+  try {
+    const matterResult = matter(markdown)
+    const processedContent = await remark()
+      .use(html)
+      .process(matterResult.content)
+    const contentHtml = processedContent.toString()
+    return contentHtml
+  } catch (error) {
+    console.error("Error formatting markdown:", error)
+    return ""
+  }
+}
+
+export default async function Page({ params }: { params: { slug: string } }) {
+  if (!Array.isArray(params.slug)) return
+  let [tag, user, postId] = params.slug
+
+  const post = await getData(user, postId)
+  if (!post) return <Text>404 - Post not found</Text>
+
+  const markdownPost = await formatMarkdownNew(post.body)
 
   return (
     <Container p={0}>
