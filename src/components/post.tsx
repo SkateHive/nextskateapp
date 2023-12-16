@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react"
 import { Discussion } from "@hiveio/dhive"
 import { ExternalLink } from "lucide-react"
-import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { ReactElement } from "react"
 import PostAvatar from "./PostAvatar"
 import PostImage from "./PostImage"
@@ -22,6 +22,7 @@ interface PostProprieties {
 export default function Post({ post }: PostProprieties): ReactElement {
   const postMetadata = post ? JSON.parse(post.json_metadata) : {}
   const postAuthor = post?.author || ""
+  const router = useRouter()
 
   return (
     <Card
@@ -58,14 +59,13 @@ export default function Post({ post }: PostProprieties): ReactElement {
             </Flex>
           </Flex>
           <Tooltip label="Open post">
-            <Link href={"post" + post?.url}>
-              <IconButton
-                aria-label="Return"
-                icon={<ExternalLink size={16} color="darkgray" />}
-                variant="ghost"
-                size="sm"
-              />
-            </Link>
+            <IconButton
+              onClick={() => router.push("post" + post?.url)}
+              aria-label="Return"
+              icon={<ExternalLink size={16} color="darkgray" />}
+              variant="ghost"
+              size="sm"
+            />
           </Tooltip>
         </Flex>
       </CardHeader>

@@ -9,12 +9,12 @@ import {
   Tooltip,
 } from "@chakra-ui/react"
 import { CornerDownLeft } from "lucide-react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 
 export default function Navbar() {
   const pathname = usePathname()
   const isHome = pathname === "/"
+  const router = useRouter()
 
   return (
     <nav>
@@ -24,14 +24,13 @@ export default function Navbar() {
         </Heading>
         <Box display={isHome ? "none" : "block"}>
           <Tooltip label="Return Home">
-            <Link href={"/"} passHref>
-              <IconButton
-                aria-label="Return"
-                icon={<CornerDownLeft />}
-                variant="ghost"
-                size="lg"
-              />
-            </Link>
+            <IconButton
+              aria-label="Return"
+              icon={<CornerDownLeft />}
+              variant="ghost"
+              size="lg"
+              onClick={() => router.push("/")}
+            />
           </Tooltip>
         </Box>
       </Flex>
