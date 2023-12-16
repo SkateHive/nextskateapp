@@ -1,6 +1,6 @@
 import HiveClient from "@/lib/hiveclient"
 import { VStack } from "@chakra-ui/react"
-import Post from "./post"
+import Post from "./Post"
 const SKATEHIVE_TAG = "hive-173115"
 
 const hiveClient = HiveClient()
