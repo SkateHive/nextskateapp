@@ -5,7 +5,30 @@ import matter from "gray-matter"
 import { remark } from "remark"
 import html from "remark-html"
 
+import type { Metadata } from "next"
+
 const hiveClient = HiveClient()
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: [tag: string, user: string, postId: string] }
+}): Promise<Metadata> {
+  console.log(params)
+  let [tag, user, postId] = params.slug
+  const post = await getData(user, postId)
+  const banner = JSON.parse(post.json_metadata).image
+
+  return {
+    title: post.title,
+    description: `${String(post.body).slice(0, 128)}...`,
+    authors: post.author,
+    applicationName: "UnderHive",
+    openGraph: {
+      images: [banner],
+    },
+  }
+}
 
 async function getData(user: string, postId: string) {
   const postContent = await hiveClient.database.call("get_content", [
