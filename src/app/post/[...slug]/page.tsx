@@ -25,7 +25,7 @@ export async function generateMetadata({
     authors: post.author,
     applicationName: "UnderHive",
     openGraph: {
-      images: [banner],
+      images: banner,
     },
   }
 }
