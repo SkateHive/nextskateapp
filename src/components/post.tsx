@@ -1,29 +1,27 @@
 "use client"
 
 import {
-  Avatar,
   Card,
   CardHeader,
   Flex,
   IconButton,
-  Skeleton,
-  SkeletonCircle,
   Text,
   Tooltip,
 } from "@chakra-ui/react"
 import { Discussion } from "@hiveio/dhive"
 import { ExternalLink } from "lucide-react"
-import NextLink from "next/link"
+import Link from "next/link"
 import { ReactElement } from "react"
-import ImageWithPlaceholder from "./ImagemWithPlaceholder"
+import PostAvatar from "./PostAvatar"
+import PostImage from "./PostImage"
 
 interface PostProprieties {
   post?: Discussion
 }
 
 export default function Post({ post }: PostProprieties): ReactElement {
-  const isLoading = !post
   const postMetadata = post ? JSON.parse(post.json_metadata) : {}
+  const postAuthor = post?.author || ""
 
   return (
     <Card
@@ -38,48 +36,40 @@ export default function Post({ post }: PostProprieties): ReactElement {
       <CardHeader mt={2} pb={0}>
         <Flex gap="4">
           <Flex flex="1" gap="2" alignItems="center">
-            <SkeletonCircle height="40px" width="40px" isLoaded={!isLoading}>
-              <Avatar
-                name={post?.author}
-                src={`https://images.ecency.com/webp/u/${post?.author}/avatar/small`}
-                height="40px"
-                width="40px"
-              />
-            </SkeletonCircle>
-            <Skeleton isLoaded={!isLoading} minW="128px">
-              <Flex flexDir="column" gap={0}>
-                <Flex gap={1} alignItems="center">
-                  <Text fontSize="14px" as="b">
-                    {post?.author}
-                  </Text>
-                  <Text fontSize="14px" color="darkgray">
-                    ·
-                  </Text>
-                  <Text fontSize="12px" color="darkgray" fontWeight="300">
-                    {post && formatTimeSince(post?.created)}
-                  </Text>
-                </Flex>
-                <Text fontSize="14px" noOfLines={1}>
-                  {post?.title}
+            <PostAvatar
+              name={postAuthor}
+              src={`https://images.ecency.com/webp/u/${postAuthor}/avatar/small`}
+            />
+            <Flex flexDir="column" gap={0}>
+              <Flex gap={1} alignItems="center">
+                <Text fontSize="14px" as="b">
+                  {post?.author}
+                </Text>
+                <Text fontSize="14px" color="darkgray">
+                  ·
+                </Text>
+                <Text fontSize="12px" color="darkgray" fontWeight="300">
+                  {post && formatTimeSince(post?.created)}
                 </Text>
               </Flex>
-            </Skeleton>
+              <Text fontSize="14px" noOfLines={1}>
+                {post?.title}
+              </Text>
+            </Flex>
           </Flex>
-          {!isLoading && (
-            <Tooltip label="Open post">
+          <Tooltip label="Open post">
+            <Link href={"post" + post?.url}>
               <IconButton
-                as={NextLink}
-                href={"post" + post?.url}
                 aria-label="Return"
                 icon={<ExternalLink size={16} color="darkgray" />}
                 variant="ghost"
                 size="sm"
               />
-            </Tooltip>
-          )}
+            </Link>
+          </Tooltip>
         </Flex>
       </CardHeader>
-      <ImageWithPlaceholder
+      <PostImage
         src={(postMetadata?.image && postMetadata.image[0]) || ""}
         alt={post?.title || ""}
         linkUrl={post ? "post" + post.url : "#"}

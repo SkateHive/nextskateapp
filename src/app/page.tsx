@@ -1,32 +1,5 @@
-"use client"
-import Posts from "@/components/posts"
-import HiveClient from "@/lib/hiveclient"
-
-import { Discussion } from "@hiveio/dhive"
-import { useEffect, useState } from "react"
-
-const SKATEHIVE_TAG = "hive-173115"
-const SKATEHIVE_QUERY = "created"
+import FeedPage from "@/components/FeedPage"
 
 export default function Home() {
-  const [posts, setPosts] = useState<Discussion[]>([])
-
-  const hiveClient = HiveClient()
-  const getPosts = async () => {
-    const queryResult = await hiveClient.database.getDiscussions(
-      SKATEHIVE_QUERY,
-      {
-        tag: SKATEHIVE_TAG,
-        limit: posts.length + 10,
-      }
-    )
-    if (queryResult?.length) setPosts(queryResult)
-    console.log(queryResult)
-  }
-
-  useEffect(() => {
-    getPosts()
-  }, [])
-
-  return <Posts posts={posts} getPosts={getPosts} />
+  return <FeedPage />
 }

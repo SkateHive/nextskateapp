@@ -1,4 +1,5 @@
 "use client"
+
 import {
   Box,
   Divider,
@@ -8,12 +9,13 @@ import {
   Tooltip,
 } from "@chakra-ui/react"
 import { CornerDownLeft } from "lucide-react"
-import NextLink from "next/link"
+import Link from "next/link"
 import { usePathname } from "next/navigation"
 
 export default function Navbar() {
   const pathname = usePathname()
   const isHome = pathname === "/"
+
   return (
     <nav>
       <Flex m={3} align="center" justify="space-between">
@@ -22,14 +24,14 @@ export default function Navbar() {
         </Heading>
         <Box display={isHome ? "none" : "block"}>
           <Tooltip label="Return Home">
-            <IconButton
-              as={NextLink}
-              href="/"
-              aria-label="Return"
-              icon={<CornerDownLeft />}
-              variant="ghost"
-              size="lg"
-            />
+            <Link href={"/"} passHref>
+              <IconButton
+                aria-label="Return"
+                icon={<CornerDownLeft />}
+                variant="ghost"
+                size="lg"
+              />
+            </Link>
           </Tooltip>
         </Box>
       </Flex>
