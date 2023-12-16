@@ -1,13 +1,15 @@
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import type { Metadata } from "next"
+import { Inter } from "next/font/google"
 
-import { Providers } from './providers'
+import { Providers } from "./providers"
+import { Container } from "@chakra-ui/react"
+import Navbar from "@/components/navbar"
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: 'Skate Next App',
-  description: 'Skate next app',
+  title: "UnderHive",
+  description: "A Underground space for bees",
 }
 
 export default function RootLayout({
@@ -18,7 +20,12 @@ export default function RootLayout({
   return (
     <html lang="pt-br">
       <body className={inter.className}>
-        <Providers>{children}</Providers>
+        <Providers>
+          <Container p={0} overflow="visible">
+            <Navbar />
+            {children}
+          </Container>
+        </Providers>
       </body>
     </html>
   )

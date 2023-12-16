@@ -1,7 +1,7 @@
 "use client"
-import React, { useState, FC, useEffect } from "react"
-import { Image, Box, Skeleton, ImageProps, Link } from "@chakra-ui/react"
-import post from "./post"
+import { Box, Image, ImageProps, Skeleton } from "@chakra-ui/react"
+import NextLink from "next/link"
+import { useState } from "react"
 
 interface ImageWithPlaceholderProps extends ImageProps {
   src: string
@@ -9,7 +9,7 @@ interface ImageWithPlaceholderProps extends ImageProps {
   linkUrl: string
 }
 
-const ImageWithPlaceholder: FC<ImageWithPlaceholderProps> = ({
+const ImageWithPlaceholder: React.FC<ImageWithPlaceholderProps> = ({
   src,
   alt,
   linkUrl,
@@ -28,7 +28,7 @@ const ImageWithPlaceholder: FC<ImageWithPlaceholderProps> = ({
           <Skeleton aspectRatio={16 / 9} borderRadius="md" />
         </Box>
       )}
-      <Box p={3} as={Link} href={linkUrl} cursor="pointer">
+      <Box p={3} as={NextLink} href={linkUrl} cursor="pointer">
         <Image
           w="100%"
           src={src}

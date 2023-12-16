@@ -1,21 +1,20 @@
 "use client"
 
 import {
+  Avatar,
   Card,
   CardHeader,
   Flex,
-  Avatar,
   IconButton,
-  Text,
   Skeleton,
   SkeletonCircle,
-  Link,
+  Text,
   Tooltip,
-  VStack,
 } from "@chakra-ui/react"
 import { Discussion } from "@hiveio/dhive"
-import { ReactElement } from "react"
 import { ExternalLink } from "lucide-react"
+import NextLink from "next/link"
+import { ReactElement } from "react"
 import ImageWithPlaceholder from "./ImagemWithPlaceholder"
 
 interface PostProprieties {
@@ -69,7 +68,7 @@ export default function Post({ post }: PostProprieties): ReactElement {
           {!isLoading && (
             <Tooltip label="Open post">
               <IconButton
-                as={Link}
+                as={NextLink}
                 href={"post" + post?.url}
                 aria-label="Return"
                 icon={<ExternalLink size={16} color="darkgray" />}

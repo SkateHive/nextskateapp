@@ -1,23 +1,12 @@
 "use client"
 import HiveClient from "@/lib/hiveclient"
-import {
-  Container,
-  Divider,
-  Flex,
-  Heading,
-  IconButton,
-  Link,
-  Text,
-  Tooltip,
-  VStack,
-} from "@chakra-ui/react"
+import { Container, Flex, Heading, Text } from "@chakra-ui/react"
 import { Discussion } from "@hiveio/dhive"
-import { CornerDownLeft } from "lucide-react"
 import { useCallback, useEffect, useState } from "react"
 
+import matter from "gray-matter"
 import { remark } from "remark"
 import html from "remark-html"
-import matter from "gray-matter"
 
 export default function Page({ params }: { params: { slug: string } }) {
   const [post, setPost] = useState<Discussion>()
@@ -68,22 +57,6 @@ export default function Page({ params }: { params: { slug: string } }) {
 
   return (
     <Container p={0}>
-      <Flex m={3} align="center" justify="space-between">
-        <Heading ml={3} size="2xl">
-          Post
-        </Heading>
-        <Tooltip label="Return Home">
-          <IconButton
-            as={Link}
-            href="/"
-            aria-label="Return"
-            icon={<CornerDownLeft />}
-            variant="ghost"
-            size="lg"
-          />
-        </Tooltip>
-      </Flex>
-      <Divider mb={3} color="darkgray" />
       <Heading m={6} size="md">
         {post?.title}
       </Heading>

@@ -1,14 +1,6 @@
 "use client"
 import Posts from "@/components/posts"
 import HiveClient from "@/lib/hiveclient"
-import {
-  Button,
-  Container,
-  Divider,
-  Heading,
-  Skeleton,
-  Stack,
-} from "@chakra-ui/react"
 
 import { Discussion } from "@hiveio/dhive"
 import { useEffect, useState } from "react"
@@ -36,15 +28,5 @@ export default function Home() {
     getPosts()
   }, [])
 
-  return (
-    <main>
-      <Container p={0} overflow="visible">
-        <Heading m={3} ml={6} size="2xl">
-          Feed
-        </Heading>
-        <Divider mb={3} color="darkgray" />
-        <Posts posts={posts} getPosts={getPosts} />
-      </Container>
-    </main>
-  )
+  return <Posts posts={posts} getPosts={getPosts} />
 }
