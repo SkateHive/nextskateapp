@@ -8,9 +8,10 @@ import {
   Stack,
   Text,
   Tooltip,
+  useClipboard,
 } from "@chakra-ui/react"
 import { Discussion } from "@hiveio/dhive"
-import { Heart, MessageCircle, PiggyBank, Send } from "lucide-react"
+import { Check, Heart, MessageCircle, PiggyBank, Send } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { ReactElement } from "react"
 import PostAvatar from "./PostAvatar"
@@ -24,8 +25,10 @@ export default function Post({ post }: PostProprieties): ReactElement {
   const postMetadata = post ? JSON.parse(post.json_metadata) : {}
   const postAuthor = post?.author || ""
   const router = useRouter()
+  const votes = post?.active_votes.sort((a, b) => b.reputation - a.reputation)
 
-  console.log(post)
+  const fullPostUrl = post ? `${document.location.origin}/post${post.url}` : "#"
+  const { onCopy, value, setValue, hasCopied } = useClipboard(fullPostUrl)
 
   return (
     <Card
@@ -76,9 +79,23 @@ export default function Post({ post }: PostProprieties): ReactElement {
         alt={post?.title || ""}
         linkUrl={post ? "post" + post.url : "#"}
       />
-      <CardFooter pt={0}>
+      <CardFooter pt={0} flexDirection={"column"} gap={2}>
         <Flex w={"100%"} justify={"space-between"}>
+          {post && getVoters(post)}
           <Stack direction={"row"}>
+            <Tooltip label={hasCopied ? "Copied!" : "Share"}>
+              {hasCopied ? (
+                <Check strokeWidth={"1.5"} color="darkgray" size={"20px"} />
+              ) : (
+                <Send
+                  onClick={onCopy}
+                  cursor={"pointer"}
+                  strokeWidth={"1.5"}
+                  color="darkgray"
+                  size={"20px"}
+                />
+              )}
+            </Tooltip>
             <Tooltip label="Comments">
               <MessageCircle
                 cursor={"pointer"}
@@ -96,14 +113,6 @@ export default function Post({ post }: PostProprieties): ReactElement {
               />
             </Tooltip>
           </Stack>
-          <Tooltip label="Share">
-            <Send
-              cursor={"pointer"}
-              strokeWidth={"1.5"}
-              color="darkgray"
-              size={"20px"}
-            />
-          </Tooltip>
         </Flex>
       </CardFooter>
     </Card>
@@ -156,4 +165,27 @@ function getEarnings(post: Discussion): number {
   )
   const totalEarnings = totalPayout + curatorPayout + pendingPayout
   return totalEarnings
+}
+
+function getVoters(post: Discussion) {
+  if (!post.active_votes || !post.active_votes.length)
+    return <Text fontSize={"sm"}>No votes</Text>
+
+  const votes = post.active_votes.sort((a, b) => b.reputation - a.reputation)
+  const bestReputationVoter: string = votes[0].voter
+  const qtdVotes = votes.length - 1
+
+  if (qtdVotes > 1)
+    return (
+      <Text fontSize={"sm"}>
+        Voted by <b>{bestReputationVoter}</b> and <b>{qtdVotes}</b> other
+        {qtdVotes > 1 && "s"}
+      </Text>
+    )
+
+  return (
+    <Text fontSize={"sm"}>
+      Voted by <Text as="b">{bestReputationVoter}</Text>
+    </Text>
+  )
 }

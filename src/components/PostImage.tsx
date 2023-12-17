@@ -23,6 +23,8 @@ export default function PostImage({
       }}
     >
       <Image
+        border={"1px"}
+        borderColor={"gray.50"}
         w="100%"
         src={src}
         aspectRatio={16 / 9}
