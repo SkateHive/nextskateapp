@@ -1,5 +1,6 @@
 "use client"
 
+import { getWebsiteURL } from "@/lib/utils"
 import {
   Card,
   CardFooter,
@@ -27,7 +28,7 @@ export default function Post({ post }: PostProprieties): ReactElement {
   const router = useRouter()
   const votes = post?.active_votes.sort((a, b) => b.reputation - a.reputation)
 
-  const fullPostUrl = post ? `${document.location.origin}/post${post.url}` : "#"
+  const fullPostUrl = post ? `${getWebsiteURL()}/post${post.url}` : "#"
   const { onCopy, value, setValue, hasCopied } = useClipboard(fullPostUrl)
 
   return (
