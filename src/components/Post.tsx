@@ -2,14 +2,15 @@
 
 import {
   Card,
+  CardFooter,
   CardHeader,
   Flex,
-  IconButton,
+  Stack,
   Text,
   Tooltip,
 } from "@chakra-ui/react"
 import { Discussion } from "@hiveio/dhive"
-import { ExternalLink } from "lucide-react"
+import { Heart, MessageCircle, PiggyBank, Send } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { ReactElement } from "react"
 import PostAvatar from "./PostAvatar"
@@ -24,6 +25,8 @@ export default function Post({ post }: PostProprieties): ReactElement {
   const postAuthor = post?.author || ""
   const router = useRouter()
 
+  console.log(post)
+
   return (
     <Card
       size="sm"
@@ -35,7 +38,7 @@ export default function Post({ post }: PostProprieties): ReactElement {
       }}
     >
       <CardHeader mt={2} pb={0}>
-        <Flex gap="4">
+        <Flex gap="4" align={"end"}>
           <Flex flex="1" gap="2" alignItems="center">
             <PostAvatar
               name={postAuthor}
@@ -58,14 +61,13 @@ export default function Post({ post }: PostProprieties): ReactElement {
               </Text>
             </Flex>
           </Flex>
-          <Tooltip label="Open post">
-            <IconButton
-              onClick={() => router.push("post" + post?.url)}
-              aria-label="Return"
-              icon={<ExternalLink size={16} color="darkgray" />}
-              variant="ghost"
-              size="sm"
-            />
+          <Tooltip label="Earnings">
+            <Flex gap={1} align={"center"}>
+              <PiggyBank strokeWidth={"1.5"} color="darkgray" size={"20px"} />
+              <Text color={"darkgray"} fontSize={"13px"} fontWeight={"400"}>
+                ${post && getEarnings(post).toFixed(2)}
+              </Text>
+            </Flex>
           </Tooltip>
         </Flex>
       </CardHeader>
@@ -74,6 +76,36 @@ export default function Post({ post }: PostProprieties): ReactElement {
         alt={post?.title || ""}
         linkUrl={post ? "post" + post.url : "#"}
       />
+      <CardFooter pt={0}>
+        <Flex w={"100%"} justify={"space-between"}>
+          <Stack direction={"row"}>
+            <Tooltip label="Comments">
+              <MessageCircle
+                cursor={"pointer"}
+                strokeWidth={"1.5"}
+                color="darkgray"
+                size={"20px"}
+              />
+            </Tooltip>
+            <Tooltip label="Upvote">
+              <Heart
+                cursor={"pointer"}
+                strokeWidth={"1.5"}
+                color="darkgray"
+                size={"20px"}
+              />
+            </Tooltip>
+          </Stack>
+          <Tooltip label="Share">
+            <Send
+              cursor={"pointer"}
+              strokeWidth={"1.5"}
+              color="darkgray"
+              size={"20px"}
+            />
+          </Tooltip>
+        </Flex>
+      </CardFooter>
     </Card>
   )
 }
@@ -110,4 +142,18 @@ function formatTimeSince(dateString: string): string {
     const month = monthNames[postDate.getMonth()]
     return `${day} ${month}`
   }
+}
+
+function getEarnings(post: Discussion): number {
+  const totalPayout = parseFloat(
+    post.total_payout_value.toString().split(" ")[0]
+  )
+  const curatorPayout = parseFloat(
+    post.curator_payout_value.toString().split(" ")[0]
+  )
+  const pendingPayout = parseFloat(
+    post.pending_payout_value.toString().split(" ")[0]
+  )
+  const totalEarnings = totalPayout + curatorPayout + pendingPayout
+  return totalEarnings
 }
