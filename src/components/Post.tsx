@@ -6,6 +6,7 @@ import {
   CardFooter,
   CardHeader,
   Flex,
+  Icon,
   Stack,
   Text,
   Tooltip,
@@ -81,37 +82,28 @@ export default function Post({ post }: PostProprieties): ReactElement {
         linkUrl={post ? "post" + post.url : "#"}
       />
       <CardFooter pt={0} flexDirection={"column"} gap={2}>
-        <Flex w={"100%"} justify={"space-between"}>
+        <Flex w={"100%"} justify={"space-between"} align={"center"}>
           {post && getVoters(post)}
           <Stack direction={"row"}>
             <Tooltip label={hasCopied ? "Copied!" : "Share"}>
-              {hasCopied ? (
-                <Check strokeWidth={"1.5"} color="darkgray" size={"20px"} />
-              ) : (
-                <Send
-                  onClick={onCopy}
-                  cursor={"pointer"}
-                  strokeWidth={"1.5"}
-                  color="darkgray"
-                  size={"20px"}
-                />
-              )}
+              <Icon
+                as={hasCopied ? Check : Send}
+                boxSize={6}
+                onClick={onCopy}
+                cursor={"pointer"}
+                strokeWidth={"1.5"}
+                color="darkgray"
+              />
             </Tooltip>
             <Tooltip label="Comments">
               <MessageCircle
                 cursor={"pointer"}
                 strokeWidth={"1.5"}
                 color="darkgray"
-                size={"20px"}
               />
             </Tooltip>
             <Tooltip label="Upvote">
-              <Heart
-                cursor={"pointer"}
-                strokeWidth={"1.5"}
-                color="darkgray"
-                size={"20px"}
-              />
+              <Heart cursor={"pointer"} strokeWidth={"1.5"} color="darkgray" />
             </Tooltip>
           </Stack>
         </Flex>
