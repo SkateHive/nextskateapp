@@ -24,7 +24,8 @@ import {
   Tooltip,
   useDisclosure,
 } from "@chakra-ui/react"
-import { AtSign, LogIn, LogOut } from "lucide-react"
+import { AtSign, Bell, LogIn, LogOut } from "lucide-react"
+import Link from "next/link"
 import { useState } from "react"
 
 export default function AvatarLogin() {
@@ -60,11 +61,18 @@ export default function AvatarLogin() {
             name={hiveUser.name}
             src={hiveUser.metadata?.profile.profile_image}
             borderRadius={"100%"}
-            size="sm"
+            size="md"
           />
         </Tooltip>
       </MenuButton>
       <MenuList>
+        <MenuItem
+          icon={<Bell size={"16px"} />}
+          as={Link}
+          href={"/notifications"}
+        >
+          Notifications
+        </MenuItem>
         <MenuItem icon={<LogOut size={"16px"} />} onClick={handleLogout}>
           Logout
         </MenuItem>
