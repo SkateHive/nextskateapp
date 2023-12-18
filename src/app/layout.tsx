@@ -1,3 +1,4 @@
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 
@@ -24,6 +25,7 @@ export default function RootLayout({
           <Container p={0} overflow="visible">
             <Navbar />
             {children}
+            <SpeedInsights />
           </Container>
         </Providers>
       </body>
