@@ -1,7 +1,5 @@
-"use client"
-
 import { HiveAccount } from "@/lib/useHiveAuth"
-import { createContext, useContext, useEffect, useMemo, useState } from "react"
+import { createContext, useContext, useEffect, useState } from "react"
 
 interface HiveUserContextProps {
   hiveUser: HiveAccount | null
@@ -17,18 +15,13 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<HiveAccount | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  const getUserData = useMemo(() => {
-    const userData = localStorage.getItem("hiveuser")
-    return userData
-  }, [])
-
   useEffect(() => {
-    const userData = getUserData
+    const userData = localStorage.getItem("hiveuser")
     if (userData) {
       setUser(JSON.parse(userData))
       setIsLoading(false)
     }
-  }, [getUserData])
+  }, [])
 
   return (
     <HiveUserContext.Provider

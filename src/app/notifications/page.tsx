@@ -58,6 +58,7 @@ export default function NotificationsPage() {
     if (!hiveUser) throw new Error("No user was found")
 
     const data = await getData(hiveUser.name, notifications.length)
+    console.log(data)
     if (!data.result) return
 
     setNotifications(data.result)
