@@ -20,7 +20,6 @@ import { ExternalLink } from "lucide-react"
 import { useCallback, useEffect, useState } from "react"
 
 async function getData(username: string, threshold: number) {
-  username = "skatehive"
   const requestBody = {
     jsonrpc: "2.0",
     method: "bridge.account_notifications",
