@@ -45,6 +45,7 @@ export default function AvatarLogin() {
     } catch (error) {
       console.error(error)
       setErrorMessage(error ? error.toString() : "Unknow error")
+      setIsLogginIn(false)
     }
   }
 
