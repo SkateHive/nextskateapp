@@ -8,7 +8,7 @@ const hiveClient = HiveClient()
 async function getData(threshold: number = 0) {
   const discussions = await hiveClient.database.getDiscussions("created", {
     tag: SKATEHIVE_TAG,
-    limit: threshold + 10,
+    limit: threshold + 20,
   })
 
   if (discussions.length === 0) {
