@@ -5,6 +5,7 @@ import { calculateTimeAgo, getCommunityTag } from "@/lib/utils"
 import {
   Avatar,
   Badge,
+  Button,
   Flex,
   HStack,
   IconButton,
@@ -18,13 +19,14 @@ import { ExternalLink } from "lucide-react"
 
 import { useCallback, useEffect, useState } from "react"
 
-async function getData(username: string) {
+async function getData(username: string, threshold: number) {
+  username = "skatehive"
   const requestBody = {
     jsonrpc: "2.0",
     method: "bridge.account_notifications",
     params: {
       account: username,
-      limit: 15,
+      limit: threshold + 10,
     },
     id: new Date().getTime(),
   }
@@ -49,21 +51,24 @@ function getTypeColor(type: string) {
 
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState([])
-  const { hiveUser } = useHiveUser()
+  const { hiveUser, isLoading } = useHiveUser()
 
   const getNotifications = useCallback(async () => {
+    if (isLoading) return
     if (!hiveUser) throw new Error("No user was found")
 
-    const data = await getData(hiveUser.name)
+    const data = await getData(hiveUser.name, notifications.length)
     if (!data.result) return
 
-    console.log(data)
     setNotifications(data.result)
-  }, [hiveUser])
+  }, [isLoading, hiveUser, notifications.length])
 
   useEffect(() => {
     getNotifications()
-  }, [getNotifications])
+  }, [isLoading])
+
+  const show_load_button =
+    notifications.length > 1 && notifications.length < 100
 
   return (
     <Stack gap={0} divider={<StackDivider style={{ margin: 0 }} />}>
@@ -84,8 +89,8 @@ export default function NotificationsPage() {
           return (
             <Flex
               align={"center"}
-              as={Link}
-              href={post_url}
+              // as={NextLink}
+              // href={post_url}
               key={i}
               px={2}
               py={4}
@@ -107,7 +112,7 @@ export default function NotificationsPage() {
                     colorScheme={getTypeColor(notification.type)}
                     fontSize="0.8em"
                   >
-                    {notification.type}
+                    {notification.type.replace("_", " ")}
                   </Badge>
                   <Text fontSize="14px" color="darkgray">
                     ·
@@ -128,6 +133,11 @@ export default function NotificationsPage() {
             </Flex>
           )
         }
+      )}
+      {show_load_button && (
+        <Button my={4} onClick={getNotifications}>
+          Load more
+        </Button>
       )}
     </Stack>
   )
