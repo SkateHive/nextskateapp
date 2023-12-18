@@ -16,6 +16,7 @@
     "@hiveio/dhive": "^1.2.8",
     "framer-motion": "^10.16.16",
     "gray-matter": "^4.0.3",
+    "keychain-sdk": "^0.6.1",
     "lucide-react": "^0.295.0",
     "next": "14.0.4",
     "react": "^18",

@@ -10,6 +10,7 @@ import {
 } from "@chakra-ui/react"
 import { CornerDownLeft } from "lucide-react"
 import { usePathname, useRouter } from "next/navigation"
+import AvatarLogin from "./AvatarLogin"
 
 export default function Navbar() {
   const pathname = usePathname()
@@ -22,16 +23,20 @@ export default function Navbar() {
         <Heading ml={3} size="2xl">
           {isHome ? "Feed" : "Post"}
         </Heading>
-        <Box display={isHome ? "none" : "block"}>
-          <Tooltip label="Return Home">
-            <IconButton
-              aria-label="Return"
-              icon={<CornerDownLeft />}
-              variant="ghost"
-              size="lg"
-              onClick={() => router.push("/")}
-            />
-          </Tooltip>
+        <Box mr={3}>
+          {isHome ? (
+            <AvatarLogin />
+          ) : (
+            <Tooltip label="Return Home">
+              <IconButton
+                aria-label="Return"
+                icon={<CornerDownLeft />}
+                variant="ghost"
+                size="lg"
+                onClick={() => router.push("/")}
+              />
+            </Tooltip>
+          )}
         </Box>
       </Flex>
       <Divider mb={3} color="darkgray" />
