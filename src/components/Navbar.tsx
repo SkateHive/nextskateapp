@@ -41,7 +41,7 @@ export default function Navbar() {
         </Heading>
         <Box mr={3}>
           {pathname === "/" ? (
-            isHiveKeychainInstalled && <AvatarLogin />
+            <AvatarLogin />
           ) : (
             <Tooltip label="Return Home">
               <IconButton
