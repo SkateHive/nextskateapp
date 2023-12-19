@@ -7,10 +7,10 @@ import {
   Heading,
   IconButton,
   Tooltip,
-  useMediaQuery,
 } from "@chakra-ui/react"
 import { Home } from "lucide-react"
 import { usePathname, useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
 import AvatarLogin from "./AvatarLogin"
 
 function getPageName(pathname: string) {
@@ -24,7 +24,14 @@ export default function Navbar() {
   const pageName = getPageName(pathname)
   const router = useRouter()
 
-  const [isDesktop] = useMediaQuery("(min-width: 640px)")
+  const [isHiveKeychainInstalled, setIsHiveKeychainInstalled] = useState(true)
+
+  useEffect(() => {
+    // Check if Hive Keychain extension is available
+    if (typeof window !== "undefined") {
+      setIsHiveKeychainInstalled(!!window.hive_keychain)
+    }
+  }, [])
 
   return (
     <nav>
@@ -34,7 +41,7 @@ export default function Navbar() {
         </Heading>
         <Box mr={3}>
           {pathname === "/" ? (
-            isDesktop && <AvatarLogin />
+            isHiveKeychainInstalled && <AvatarLogin />
           ) : (
             <Tooltip label="Return Home">
               <IconButton

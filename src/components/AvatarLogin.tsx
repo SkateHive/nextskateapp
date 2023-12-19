@@ -101,7 +101,7 @@ export default function AvatarLogin() {
       )}
       <Modal isOpen={isOpen} isCentered onClose={onClose}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent mx={4}>
           <ModalHeader>Log In</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
