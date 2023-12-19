@@ -2,6 +2,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 
+import Favicon from "@/components/FaviconLinks"
 import Navbar from "@/components/Navbar"
 import { Container } from "@chakra-ui/react"
 import { Providers } from "./providers"
@@ -20,6 +21,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-br">
+      <head>
+        <Favicon />
+      </head>
       <body className={inter.className}>
         <Providers>
           <Container p={0} overflow="visible">
