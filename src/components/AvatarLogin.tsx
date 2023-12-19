@@ -112,7 +112,9 @@ export default function AvatarLogin() {
                 </InputLeftElement>
                 <Input
                   placeholder="Hive Username"
-                  onChange={(event) => setUsername(event.target.value)}
+                  onChange={(event) =>
+                    setUsername(event.target.value.toLowerCase())
+                  }
                 />
               </InputGroup>
               {Boolean(errorMessage) && (
