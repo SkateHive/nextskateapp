@@ -7,6 +7,7 @@ import {
   Heading,
   IconButton,
   Tooltip,
+  useMediaQuery,
 } from "@chakra-ui/react"
 import { Home } from "lucide-react"
 import { usePathname, useRouter } from "next/navigation"
@@ -23,6 +24,8 @@ export default function Navbar() {
   const pageName = getPageName(pathname)
   const router = useRouter()
 
+  const [isDesktop] = useMediaQuery("(min-width: 640px)")
+
   return (
     <nav>
       <Flex m={3} align="center" justify="space-between">
@@ -31,7 +34,7 @@ export default function Navbar() {
         </Heading>
         <Box mr={3}>
           {pathname === "/" ? (
-            <AvatarLogin />
+            isDesktop && <AvatarLogin />
           ) : (
             <Tooltip label="Return Home">
               <IconButton
