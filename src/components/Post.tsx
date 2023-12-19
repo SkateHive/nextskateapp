@@ -85,7 +85,7 @@ export default function Post({ post }: PostProprieties): ReactElement {
         <Flex w={"100%"} justify={"space-between"} align={"center"}>
           {post && getVoters(post)}
           <Stack direction={"row"}>
-            <Tooltip label={hasCopied ? "Copied!" : "Share"}>
+            <Tooltip label={hasCopied ? "Copied!" : "Copy link"}>
               <Icon
                 as={hasCopied ? Check : Send}
                 boxSize={6}
