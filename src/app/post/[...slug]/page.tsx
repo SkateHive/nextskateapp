@@ -1,11 +1,12 @@
 import HiveClient from "@/lib/hiveclient"
 import { Container, Flex, Heading, Text } from "@chakra-ui/react"
 
-import matter from "gray-matter"
-import { remark } from "remark"
-import html from "remark-html"
+import { Remarkable } from "remarkable"
 
 import type { Metadata } from "next"
+
+// Revalidate requests in 10 minutes
+export const revalidate = 600
 
 const hiveClient = HiveClient()
 
@@ -43,12 +44,9 @@ async function getData(user: string, postId: string) {
 
 async function formatMarkdownNew(markdown: string) {
   try {
-    const matterResult = matter(markdown)
-    const processedContent = await remark()
-      .use(html)
-      .process(matterResult.content)
-    const contentHtml = processedContent.toString()
-    return contentHtml
+    const md = new Remarkable({ html: true, linkify: true })
+    const body = md.render(markdown)
+    return body
   } catch (error) {
     console.error("Error formatting markdown:", error)
     return ""
