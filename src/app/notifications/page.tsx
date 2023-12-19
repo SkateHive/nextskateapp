@@ -128,6 +128,8 @@ export default function NotificationsPage() {
                   aria-label="Notification post url"
                   icon={<ExternalLink color={"gray"} />}
                   variant={"ghost"}
+                  as={Link}
+                  href={post_url}
                 />
               </Tooltip>
             </Flex>
