@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react"
 interface HiveUserContextProps {
   hiveUser: HiveAccount | null
   setHiveUser: (user: HiveAccount | null) => void
-  isLoading: boolean
+  isLoading: boolean | undefined
 }
 
 const HiveUserContext = createContext<HiveUserContextProps | undefined>(
@@ -13,7 +13,7 @@ const HiveUserContext = createContext<HiveUserContextProps | undefined>(
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<HiveAccount | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState<boolean>()
 
   useEffect(() => {
     const userData = localStorage.getItem("hiveuser")
