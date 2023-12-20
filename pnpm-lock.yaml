@@ -3035,8 +3035,8 @@ packages:
     dependencies:
       function-bind: 1.1.2
 
-  /hive-keychain-commons@1.2.4:
-    resolution: {integrity: sha512-bLvWb0fSqIw6RttSUV0qwKyND72/t3l6luZYRg2kCplruOODMsjHNNJ4fl8hdBhlrJHPxfZFWoyUJwN9DvvIKQ==}
+  /hive-keychain-commons@1.2.5:
+    resolution: {integrity: sha512-JLwXjSMUzK/BEAxuVbaphRU/8ptY6qJwjq+g0tTf+dniJwFzgOqKdM4D8kVe8ZF/KC/fxp55K7FiROTRDXgnDA==}
     dependencies:
       '@hiveio/dhive': 1.2.8
       moment: 2.29.4
@@ -3342,7 +3342,7 @@ packages:
     dependencies:
       '@types/node': 18.19.3
       axios: 1.6.2
-      hive-keychain-commons: 1.2.4
+      hive-keychain-commons: 1.2.5
       uuid: 9.0.1
     transitivePeerDependencies:
       - debug
