@@ -2,7 +2,7 @@
 
 import { useHiveUser } from "@/contexts/UserContext"
 import { getCommunityTag } from "@/lib/utils"
-import { Button, Stack, StackDivider } from "@chakra-ui/react"
+import { Button, Flex, Spinner, Stack, StackDivider } from "@chakra-ui/react"
 
 import { useCallback, useEffect, useState } from "react"
 
@@ -39,6 +39,11 @@ export default function NotificationsPage() {
 
   return (
     <Stack gap={0} divider={<StackDivider style={{ margin: 0 }} />}>
+      {notifications.length === 0 && (
+        <Flex w={"100%"} justify={"center"} pt={4}>
+          <Spinner size={"lg"} />
+        </Flex>
+      )}
       {notifications.map((notification: Notification, i: number) => {
         const [user, ...contentChunk] = notification.msg.split(" ")
 
