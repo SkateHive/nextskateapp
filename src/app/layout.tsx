@@ -12,6 +12,9 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "UnderHive",
   description: "A Underground space for bees",
+  openGraph: {
+    images: "/default_banner.png",
+  },
 }
 
 export default function RootLayout({
