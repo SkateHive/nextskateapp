@@ -4,6 +4,7 @@ import { Inter } from "next/font/google"
 
 import Favicon from "@/components/FaviconLinks"
 import Navbar from "@/components/Navbar"
+import { getWebsiteURL } from "@/lib/utils"
 import { Container } from "@chakra-ui/react"
 import { Providers } from "./providers"
 
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
   title: "UnderHive",
   description: "A Underground space for bees",
   openGraph: {
-    images: "/default_banner.png",
+    images: `${getWebsiteURL()}/default_banner.png`,
   },
 }
 
