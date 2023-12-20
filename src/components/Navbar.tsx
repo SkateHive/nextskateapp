@@ -17,6 +17,7 @@ function getPageName(pathname: string) {
   if (pathname === "/") return "Feed"
   if (pathname === "/notifications") return "Notifications"
   if (pathname.startsWith("/post")) return "Post"
+  if (pathname.startsWith("/profile")) return "Profile"
 }
 
 export default function Navbar() {

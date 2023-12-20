@@ -24,7 +24,7 @@ import {
   Tooltip,
   useDisclosure,
 } from "@chakra-ui/react"
-import { AtSign, Bell, LogIn, LogOut } from "lucide-react"
+import { AtSign, Bell, LogIn, LogOut, User } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 
@@ -73,6 +73,9 @@ export default function AvatarLogin() {
           href={"/notifications"}
         >
           Notifications
+        </MenuItem>
+        <MenuItem icon={<User size={"16px"} />} as={Link} href={"/profile"}>
+          Profile
         </MenuItem>
         <MenuItem icon={<LogOut size={"16px"} />} onClick={handleLogout}>
           Logout
