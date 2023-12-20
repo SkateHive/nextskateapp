@@ -12,7 +12,7 @@ const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "UnderHive",
-  description: "A Underground space for bees",
+  description: "Digital hive for underground bees",
   openGraph: {
     images: `${getWebsiteURL()}/default_banner.png`,
   },
