@@ -34,3 +34,9 @@ export function calculateTimeAgo(date: string): string {
   }
   return Math.floor(seconds) + "s"
 }
+
+export function extractFirstLink(markdownText: string): string | null {
+  const regex = /!\[.*?\]\((.*?)\)/
+  const match = markdownText.match(regex)
+  return match ? match[1] : null
+}

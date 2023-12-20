@@ -1,6 +1,6 @@
 "use client"
 
-import { getWebsiteURL } from "@/lib/utils"
+import { extractFirstLink, getWebsiteURL } from "@/lib/utils"
 import {
   Card,
   CardFooter,
@@ -31,6 +31,11 @@ export default function Post({ post }: PostProprieties): ReactElement {
 
   const fullPostUrl = post ? `${getWebsiteURL()}/post${post.url}` : "#"
   const { onCopy, value, setValue, hasCopied } = useClipboard(fullPostUrl)
+
+  const postBanner =
+    (postMetadata?.image && postMetadata.image[0]) ||
+    (post?.body && extractFirstLink(post?.body)) ||
+    ""
 
   return (
     <Card
@@ -77,7 +82,7 @@ export default function Post({ post }: PostProprieties): ReactElement {
         </Flex>
       </CardHeader>
       <PostImage
-        src={(postMetadata?.image && postMetadata.image[0]) || ""}
+        src={postBanner}
         alt={post?.title || ""}
         linkUrl={post ? "post" + post.url : "#"}
       />
