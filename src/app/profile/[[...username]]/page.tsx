@@ -9,10 +9,12 @@ import {
   Container,
   HStack,
   Image,
+  Spinner,
   Text,
   VStack,
 } from "@chakra-ui/react"
 import { Discussion } from "@hiveio/dhive"
+import { redirect } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 
 const hiveClient = HiveClient()
@@ -55,6 +57,7 @@ export default function ProfilePage({
   const [profile, setProfile] = useState<HiveAccount | null>()
   const [posts, setPosts] = useState<Discussion[]>()
   const { hiveUser, isLoading } = useHiveUser()
+  const [isLoadingProfile, setIsLoadingProfile] = useState<boolean>(true)
 
   const getProfile = useCallback(async () => {
     let userData: HiveAccount = {} as HiveAccount
@@ -63,13 +66,25 @@ export default function ProfilePage({
     } else if (!isLoading && hiveUser) {
       userData = hiveUser
     }
+
+    if (Object.keys(userData).length === 0) return
+
     userData.metadata = JSON.parse(userData.posting_json_metadata)
     setProfile(userData)
   }, [hiveUser, isLoading, params.username])
 
   useEffect(() => {
+    if (
+      !params.username ||
+      !Array.isArray(params.username) ||
+      params.username.length == 0
+    ) {
+      redirect("/")
+    }
+    let username: string = decodeURIComponent(params.username[0])
+    if (username.startsWith("@")) redirect("/profile/" + username.substring(1))
     getProfile()
-  }, [getProfile])
+  }, [getProfile, params.username])
 
   useEffect(() => {
     async function getPosts(profile: HiveAccount) {
@@ -77,9 +92,23 @@ export default function ProfilePage({
       setPosts(posts)
     }
     profile && getPosts(profile)
+    setIsLoadingProfile(false)
   }, [profile])
 
-  if (!profile) return <Text>No Profile</Text>
+  if (isLoadingProfile)
+    return (
+      <VStack w={"100%"} justifyContent={"center"}>
+        <Spinner size={"xl"} />
+      </VStack>
+    )
+
+  if (!profile) {
+    return (
+      <Text align={"center"} w={"100%"}>
+        No profile was found
+      </Text>
+    )
+  }
 
   return (
     <VStack align={"start"}>
@@ -106,7 +135,7 @@ export default function ProfilePage({
               @{profile.name}
             </Text>
             <Text fontSize={"xs"} w={"100%"} noOfLines={3}>
-              {/* {profile?.metadata?.profile.about} */}
+              {profile?.metadata?.profile.about}
             </Text>
           </VStack>
         </HStack>

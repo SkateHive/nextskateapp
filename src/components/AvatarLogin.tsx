@@ -74,7 +74,11 @@ export default function AvatarLogin() {
         >
           Notifications
         </MenuItem>
-        <MenuItem icon={<User size={"16px"} />} as={Link} href={"/profile"}>
+        <MenuItem
+          icon={<User size={"16px"} />}
+          as={Link}
+          href={`/profile/${hiveUser.name}`}
+        >
           Profile
         </MenuItem>
         <MenuItem icon={<LogOut size={"16px"} />} onClick={handleLogout}>
