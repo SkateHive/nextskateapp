@@ -11,6 +11,7 @@ import { Providers } from "./providers"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(getWebsiteURL()),
   title: "UnderHive",
   description: "Digital hive for underground bees",
   openGraph: {

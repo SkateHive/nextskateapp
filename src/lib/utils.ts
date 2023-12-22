@@ -1,5 +1,5 @@
 export function getWebsiteURL() {
-  return process.env.NEXT_PUBLIC_WEBSITE_URL
+  return process.env.NEXT_PUBLIC_WEBSITE_URL || ""
 }
 
 export function getCommunityTag() {
