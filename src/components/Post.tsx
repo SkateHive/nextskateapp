@@ -23,7 +23,11 @@ interface PostProprieties {
 }
 
 export default function Post({ post }: PostProprieties): ReactElement {
-  const postMetadata = post ? JSON.parse(post.json_metadata) : {}
+  const postMetadata = post
+    ? typeof post.json_metadata === "object"
+      ? post.json_metadata
+      : JSON.parse(post.json_metadata)
+    : {}
   const postAuthor = post?.author || ""
 
   const fullPostUrl = post ? `${getWebsiteURL()}/post${post.url}` : "#"
@@ -149,7 +153,9 @@ function formatTimeSince(dateString: string): string {
   }
 }
 
-function getEarnings(post: Discussion): number {
+function getEarnings(post: Discussion | any): number {
+  if (post.hasOwnProperty("payout")) return post.payout
+
   const totalPayout = parseFloat(
     post.total_payout_value.toString().split(" ")[0]
   )

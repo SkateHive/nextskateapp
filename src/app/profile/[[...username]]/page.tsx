@@ -21,11 +21,12 @@ const hiveClient = HiveClient()
 
 async function getPostsData(author: string, threshold: number = 0) {
   try {
-    const discussions = await hiveClient.database.getDiscussions("blog", {
-      tag: author,
+    let discussions = (await hiveClient.call("bridge", "get_account_posts", {
+      sort: "posts",
+      account: author,
       limit: threshold + 20,
-    })
-
+    })) as Discussion[]
+    console.log(discussions)
     if (discussions.length === 0) {
       throw new Error("Failed to fetch discussions")
     }
