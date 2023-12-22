@@ -32,7 +32,7 @@ export default function RootLayout({
         <Providers>
           <Container p={0} overflow="visible">
             <Navbar />
-            {children}
+            <Container overflow="visible">{children}</Container>
             <SpeedInsights />
           </Container>
         </Providers>
