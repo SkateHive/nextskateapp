@@ -14,7 +14,6 @@ import {
 } from "@chakra-ui/react"
 import { Discussion } from "@hiveio/dhive"
 import { Check, Heart, MessageCircle, PiggyBank, Send } from "lucide-react"
-import { useRouter } from "next/navigation"
 import { ReactElement } from "react"
 import PostAvatar from "./PostAvatar"
 import PostImage from "./PostImage"
@@ -26,11 +25,9 @@ interface PostProprieties {
 export default function Post({ post }: PostProprieties): ReactElement {
   const postMetadata = post ? JSON.parse(post.json_metadata) : {}
   const postAuthor = post?.author || ""
-  const router = useRouter()
-  const votes = post?.active_votes.sort((a, b) => b.reputation - a.reputation)
 
   const fullPostUrl = post ? `${getWebsiteURL()}/post${post.url}` : "#"
-  const { onCopy, value, setValue, hasCopied } = useClipboard(fullPostUrl)
+  const { onCopy, hasCopied } = useClipboard(fullPostUrl)
 
   const postBanner =
     (postMetadata?.image && postMetadata.image[0]) ||
@@ -46,8 +43,9 @@ export default function Post({ post }: PostProprieties): ReactElement {
         outline: "1px solid",
         outlineColor: "gray.100",
       }}
+      mt={2}
     >
-      <CardHeader mt={2} pb={0}>
+      <CardHeader pb={0}>
         <Flex gap="4" align={"end"}>
           <Flex flex="1" gap="2" alignItems="center">
             <PostAvatar

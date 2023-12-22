@@ -1,5 +1,6 @@
 "use client"
 
+import Post from "@/components/Post"
 import { useHiveUser } from "@/contexts/UserContext"
 import HiveClient from "@/lib/hiveclient"
 import { HiveAccount } from "@/lib/useHiveAuth"
@@ -11,11 +12,37 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react"
+import { Discussion } from "@hiveio/dhive"
 import { useCallback, useEffect, useState } from "react"
 
+const hiveClient = HiveClient()
+
+async function getPostsData(author: string, threshold: number = 0) {
+  try {
+    const discussions = await hiveClient.database.getDiscussions("blog", {
+      tag: author,
+      limit: threshold + 20,
+    })
+
+    if (discussions.length === 0) {
+      throw new Error("Failed to fetch discussions")
+    }
+
+    return discussions
+  } catch (ex: any) {
+    console.error(
+      ex?.jse_info
+        ? Object.keys(ex.jse_info)
+            .sort((a, b) => parseInt(a) - parseInt(b))
+            .map((key) => ex.jse_info[key])
+            .join("")
+        : ex.message
+    )
+  }
+}
+
 async function getUserData(username: string) {
-  const client = HiveClient()
-  const userData = await client.database.getAccounts([username])
+  const userData = await hiveClient.database.getAccounts([username])
   if (Array.isArray(userData) && userData.length > 0) return userData[0]
   return {} as HiveAccount
 }
@@ -26,6 +53,7 @@ export default function ProfilePage({
   params: { username: string }
 }) {
   const [profile, setProfile] = useState<HiveAccount | null>()
+  const [posts, setPosts] = useState<Discussion[]>()
   const { hiveUser, isLoading } = useHiveUser()
 
   const getProfile = useCallback(async () => {
@@ -36,13 +64,20 @@ export default function ProfilePage({
       userData = hiveUser
     }
     userData.metadata = JSON.parse(userData.posting_json_metadata)
-    console.log(userData.metadata?.profile)
     setProfile(userData)
   }, [hiveUser, isLoading, params.username])
 
   useEffect(() => {
     getProfile()
   }, [getProfile])
+
+  useEffect(() => {
+    async function getPosts(profile: HiveAccount) {
+      const posts = await getPostsData(profile.name)
+      setPosts(posts)
+    }
+    profile && getPosts(profile)
+  }, [profile])
 
   if (!profile) return <Text>No Profile</Text>
 
@@ -71,10 +106,13 @@ export default function ProfilePage({
               @{profile.name}
             </Text>
             <Text fontSize={"xs"} w={"100%"} noOfLines={3}>
-              {profile?.metadata?.profile.about}
+              {/* {profile?.metadata?.profile.about} */}
             </Text>
           </VStack>
         </HStack>
+        <VStack align="stretch" spacing={4} p={2}>
+          {posts && posts.map((post, i) => <Post key={i} post={post} />)}
+        </VStack>
       </Container>
     </VStack>
   )
