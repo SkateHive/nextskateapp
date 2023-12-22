@@ -4,15 +4,7 @@ import Post from "@/components/Post"
 import { useHiveUser } from "@/contexts/UserContext"
 import HiveClient from "@/lib/hiveclient"
 import { HiveAccount } from "@/lib/useHiveAuth"
-import {
-  Avatar,
-  Container,
-  HStack,
-  Image,
-  Spinner,
-  Text,
-  VStack,
-} from "@chakra-ui/react"
+import { Avatar, HStack, Image, Spinner, Text, VStack } from "@chakra-ui/react"
 import { Discussion } from "@hiveio/dhive"
 import { redirect } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
@@ -122,17 +114,17 @@ export default function ProfilePage({
         alt={"Profile thumbnail"}
         loading="lazy"
       />
-      <Container>
-        <HStack align={"start"}>
+      <VStack>
+        <HStack ml={2} align={"start"}>
           <Avatar
             mt={-12}
             name={profile.name}
             src={profile.metadata?.profile.profile_image}
-            size="2xl"
+            size={{ base: "xl", lg: "2xl" }}
             showBorder={true}
           />
           <VStack align={"flex-start"} gap={0}>
-            <Text fontSize={"xl"} fontWeight={"bold"}>
+            <Text fontSize={{ base: "md", lg: "xl" }} fontWeight={"bold"}>
               @{profile.name}
             </Text>
             <Text fontSize={"xs"} w={"100%"} noOfLines={3}>
@@ -143,7 +135,7 @@ export default function ProfilePage({
         <VStack align="stretch" spacing={4} p={2}>
           {posts && posts.map((post, i) => <Post key={i} post={post} />)}
         </VStack>
-      </Container>
+      </VStack>
     </VStack>
   )
 }
