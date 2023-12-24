@@ -18,6 +18,7 @@ import {
 import { Check, Heart, MessageCircle, PiggyBank, Send } from "lucide-react"
 import { ReactElement } from "react"
 import PostAvatar from "./PostAvatar"
+import PostIcon from "./PostIcon"
 import PostImage from "./PostImage"
 
 export interface PostComponentProps {
@@ -33,8 +34,9 @@ export default function Post({
   const user = new UserModel(userData)
 
   const { hiveUser, isLoading } = useHiveUser()
-  const isVotedByLoggedUser =
+  const isVotedByLoggedUser = Boolean(
     !isLoading && hiveUser?.name && post.userHasVoted(hiveUser?.name)
+  )
 
   const { onCopy, hasCopied } = useClipboard(post.getFullUrl())
   return (
@@ -95,7 +97,7 @@ export default function Post({
       <CardFooter pt={0} flexDirection={"column"} gap={2}>
         <Flex w={"100%"} justify={"space-between"} align={"center"}>
           {getVoters(post)}
-          <Stack direction={"row"}>
+          <Stack direction={"row"} gap={1}>
             <Tooltip label={hasCopied ? "Copied!" : "Copy link"}>
               <Icon
                 as={hasCopied ? Check : Send}
@@ -106,21 +108,15 @@ export default function Post({
                 color="darkgray"
               />
             </Tooltip>
-            <Tooltip label="Comments">
-              <MessageCircle
-                cursor={"pointer"}
-                strokeWidth={"1.5"}
-                color="darkgray"
-              />
-            </Tooltip>
-            <Tooltip label="Upvote">
-              <Heart
-                cursor={"pointer"}
-                strokeWidth={"1.5"}
-                color={isVotedByLoggedUser ? "#ff4655" : "darkgrey"}
-                {...(isVotedByLoggedUser && { fill: "#ff4655" })}
-              />
-            </Tooltip>
+            <PostIcon icon={MessageCircle} label="Comments" size={6} />
+            <PostIcon
+              active={isVotedByLoggedUser}
+              colorAccent="#ff4655"
+              fill={true}
+              icon={Heart}
+              label="Upvote"
+              size={6}
+            />
           </Stack>
         </Flex>
       </CardFooter>
