@@ -34,7 +34,8 @@ export default function Post({
 
   const { onCopy, hasCopied } = useClipboard(post.getFullUrl())
 
-  const loggedUserData = localStorage.getItem("hiveuser")
+  const loggedUserData =
+    typeof window !== "undefined" ? localStorage.getItem("hiveuser") : null
   const loggedUser = loggedUserData ? JSON.parse(loggedUserData) : null
 
   const [isVoted, setIsVoted] = useState(
