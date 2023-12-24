@@ -1,5 +1,6 @@
 "use client"
 
+import { useHiveUser } from "@/contexts/UserContext"
 import PostModel, { PostProps } from "@/lib/models/post"
 import UserModel, { UserProps } from "@/lib/models/user"
 import {
@@ -30,6 +31,10 @@ export default function Post({
 }: PostComponentProps): ReactElement {
   const post = new PostModel(postData)
   const user = new UserModel(userData)
+
+  const { hiveUser, isLoading } = useHiveUser()
+  const isVotedByLoggedUser =
+    !isLoading && hiveUser?.name && post.userHasVoted(hiveUser?.name)
 
   const { onCopy, hasCopied } = useClipboard(post.getFullUrl())
   return (
@@ -109,7 +114,12 @@ export default function Post({
               />
             </Tooltip>
             <Tooltip label="Upvote">
-              <Heart cursor={"pointer"} strokeWidth={"1.5"} color="darkgray" />
+              <Heart
+                cursor={"pointer"}
+                strokeWidth={"1.5"}
+                color={isVotedByLoggedUser ? "#ff4655" : "darkgrey"}
+                {...(isVotedByLoggedUser && { fill: "#ff4655" })}
+              />
             </Tooltip>
           </Stack>
         </Flex>

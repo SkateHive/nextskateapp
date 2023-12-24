@@ -15,7 +15,7 @@ export interface PostProps {
   total_payout_value: Asset | string
   curator_payout_value: Asset | string
   pending_payout_value: Asset | string
-  active_votes: any[]
+  active_votes: PostActiveVotes[]
 }
 
 export default class PostModel {
@@ -116,6 +116,10 @@ export default class PostModel {
       post_id: (post as any).post_id,
     })
   }
+
+  public userHasVoted(username: string) {
+    return this.active_votes.some((vote) => vote.voter === username)
+  }
 }
 
 export interface PostMetadata {
@@ -126,4 +130,11 @@ export interface PostMetadata {
   users: string[]
   links: string[]
   image: string[]
+}
+
+interface PostActiveVotes {
+  percent: string
+  reputation: number
+  rshares: number
+  voter: string
 }
