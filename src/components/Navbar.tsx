@@ -46,7 +46,7 @@ export default function Navbar() {
           )}
         </Box>
       </Flex>
-      <Divider mb={3} color="darkgray" />
+      <Divider mb={[0, 3]} color="darkgray" />
     </nav>
   )
 }

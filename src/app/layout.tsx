@@ -33,7 +33,9 @@ export default function RootLayout({
         <Providers>
           <Container p={0} overflow="visible">
             <Navbar />
-            <Container overflow="visible">{children}</Container>
+            <Container px={[1, 3]} pt={0} overflow="visible">
+              {children}
+            </Container>
             <SpeedInsights />
           </Container>
         </Providers>

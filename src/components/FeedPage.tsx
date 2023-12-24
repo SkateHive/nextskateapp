@@ -25,7 +25,7 @@ async function getData(threshold: number = 0): Promise<PostComponentProps[]> {
 export default async function FeedPage() {
   const data = await getData()
   return (
-    <VStack align="stretch" spacing={4} p={2}>
+    <VStack align="stretch" spacing={[2, 4]} p={2}>
       {data &&
         data.map(({ postData, userData }, i) => (
           <Post key={i} postData={postData} userData={userData} />
