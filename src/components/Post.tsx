@@ -1,43 +1,37 @@
 "use client"
 
-import { extractFirstLink, getWebsiteURL } from "@/lib/utils"
+import PostModel, { PostProps } from "@/lib/models/post"
+import UserModel, { UserProps } from "@/lib/models/user"
 import {
   Card,
   CardFooter,
   CardHeader,
   Flex,
   Icon,
+  Link,
   Stack,
   Text,
   Tooltip,
   useClipboard,
 } from "@chakra-ui/react"
-import { Discussion } from "@hiveio/dhive"
 import { Check, Heart, MessageCircle, PiggyBank, Send } from "lucide-react"
 import { ReactElement } from "react"
 import PostAvatar from "./PostAvatar"
 import PostImage from "./PostImage"
 
-interface PostProprieties {
-  post?: Discussion
+export interface PostComponentProps {
+  postData: PostProps
+  userData: UserProps
 }
 
-export default function Post({ post }: PostProprieties): ReactElement {
-  const postMetadata = post
-    ? typeof post.json_metadata === "object"
-      ? post.json_metadata
-      : JSON.parse(post.json_metadata)
-    : {}
-  const postAuthor = post?.author || ""
+export default function Post({
+  postData,
+  userData,
+}: PostComponentProps): ReactElement {
+  const post = new PostModel(postData)
+  const user = new UserModel(userData)
 
-  const fullPostUrl = post ? `${getWebsiteURL()}/post${post.url}` : "#"
-  const { onCopy, hasCopied } = useClipboard(fullPostUrl)
-
-  const postBanner =
-    (postMetadata?.image && postMetadata.image[0]) ||
-    (post?.body && extractFirstLink(post?.body)) ||
-    ""
-
+  const { onCopy, hasCopied } = useClipboard(post.getFullUrl())
   return (
     <Card
       size="sm"
@@ -52,24 +46,29 @@ export default function Post({ post }: PostProprieties): ReactElement {
       <CardHeader pb={0}>
         <Flex gap="4" align={"end"}>
           <Flex flex="1" gap="2" alignItems="center">
-            <PostAvatar
-              name={postAuthor}
-              src={`https://images.ecency.com/webp/u/${postAuthor}/avatar/small`}
-            />
+            <Link href={post.getFullAuthorUrl()}>
+              <PostAvatar
+                name={user.name}
+                src={
+                  user.metadata?.profile.profile_image ||
+                  `https://images.ecency.com/webp/u/${user.name}/avatar/small`
+                }
+              />
+            </Link>
             <Flex flexDir="column" gap={0}>
               <Flex gap={1} alignItems="center">
                 <Text fontSize="14px" as="b">
-                  {post?.author}
+                  {post.author}
                 </Text>
                 <Text fontSize="14px" color="darkgray">
                   ·
                 </Text>
                 <Text fontSize="12px" color="darkgray" fontWeight="300">
-                  {post && formatTimeSince(post?.created)}
+                  {formatTimeSince(post.created)}
                 </Text>
               </Flex>
               <Text fontSize="14px" noOfLines={1}>
-                {post?.title}
+                {post.title}
               </Text>
             </Flex>
           </Flex>
@@ -77,20 +76,20 @@ export default function Post({ post }: PostProprieties): ReactElement {
             <Flex gap={1} align={"center"}>
               <PiggyBank strokeWidth={"1.5"} color="darkgray" size={"20px"} />
               <Text color={"darkgray"} fontSize={"13px"} fontWeight={"400"}>
-                ${post && getEarnings(post).toFixed(2)}
+                ${post.getEarnings()}
               </Text>
             </Flex>
           </Tooltip>
         </Flex>
       </CardHeader>
       <PostImage
-        src={postBanner}
-        alt={post?.title || ""}
-        linkUrl={post ? "post" + post.url : "#"}
+        src={post.getThumbnail()}
+        alt={post.title}
+        linkUrl={post.getFullUrl()}
       />
       <CardFooter pt={0} flexDirection={"column"} gap={2}>
         <Flex w={"100%"} justify={"space-between"} align={"center"}>
-          {post && getVoters(post)}
+          {getVoters(post)}
           <Stack direction={"row"}>
             <Tooltip label={hasCopied ? "Copied!" : "Copy link"}>
               <Icon
@@ -153,23 +152,7 @@ function formatTimeSince(dateString: string): string {
   }
 }
 
-function getEarnings(post: Discussion | any): number {
-  if (post.hasOwnProperty("payout")) return post.payout
-
-  const totalPayout = parseFloat(
-    post.total_payout_value.toString().split(" ")[0]
-  )
-  const curatorPayout = parseFloat(
-    post.curator_payout_value.toString().split(" ")[0]
-  )
-  const pendingPayout = parseFloat(
-    post.pending_payout_value.toString().split(" ")[0]
-  )
-  const totalEarnings = totalPayout + curatorPayout + pendingPayout
-  return totalEarnings
-}
-
-function getVoters(post: Discussion) {
+function getVoters(post: PostProps) {
   if (!post.active_votes || !post.active_votes.length)
     return <Text fontSize={"sm"}>No votes</Text>
 

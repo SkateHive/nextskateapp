@@ -11,8 +11,6 @@ export async function getData(username: string, threshold: number) {
     id: new Date().getTime(),
   }
 
-  console.log("dooing requests")
-
   // Make the Fetch request
   const response = await fetch("https://api.hive.blog", {
     method: "POST",
@@ -21,7 +19,5 @@ export async function getData(username: string, threshold: number) {
     },
     body: JSON.stringify(requestBody),
   })
-
-  console.log("dooing response")
   return await response.json()
 }

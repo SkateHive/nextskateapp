@@ -15,7 +15,6 @@ export async function generateMetadata({
 }: {
   params: { slug: [tag: string, user: string, postId: string] }
 }): Promise<Metadata> {
-  console.log(params)
   let [tag, user, postId] = params.slug
   const post = await getData(user, postId)
   const banner = JSON.parse(post.json_metadata).image
