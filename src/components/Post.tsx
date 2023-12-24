@@ -1,6 +1,5 @@
 "use client"
 
-import { useHiveUser } from "@/contexts/UserContext"
 import PostModel, { PostProps } from "@/lib/models/post"
 import UserModel, { UserProps } from "@/lib/models/user"
 import {
@@ -8,15 +7,15 @@ import {
   CardFooter,
   CardHeader,
   Flex,
-  Icon,
   Link,
   Stack,
   Text,
   Tooltip,
   useClipboard,
 } from "@chakra-ui/react"
+import { KeychainSDK, Vote } from "keychain-sdk"
 import { Check, Heart, MessageCircle, PiggyBank, Send } from "lucide-react"
-import { ReactElement } from "react"
+import { ReactElement, useState } from "react"
 import PostAvatar from "./PostAvatar"
 import PostIcon from "./PostIcon"
 import PostImage from "./PostImage"
@@ -33,12 +32,33 @@ export default function Post({
   const post = new PostModel(postData)
   const user = new UserModel(userData)
 
-  const { hiveUser, isLoading } = useHiveUser()
-  const isVotedByLoggedUser = Boolean(
-    !isLoading && hiveUser?.name && post.userHasVoted(hiveUser?.name)
+  const { onCopy, hasCopied } = useClipboard(post.getFullUrl())
+
+  const loggedUserData = localStorage.getItem("hiveuser")
+  const loggedUser = loggedUserData ? JSON.parse(loggedUserData) : null
+
+  const [isVoted, setIsVoted] = useState(
+    !!(loggedUser && loggedUser.name && post.userHasVoted(loggedUser.name))
   )
 
-  const { onCopy, hasCopied } = useClipboard(post.getFullUrl())
+  const handleVoteClick = async () => {
+    if (loggedUser) {
+      const voteWeight = isVoted ? 0 : 10000
+      const keychain = new KeychainSDK(window)
+      await keychain.vote({
+        username: loggedUser.name,
+        permlink: post.permlink,
+        author: post.author,
+        weight: voteWeight,
+      } as Vote)
+      setIsVoted((isVoted) => !isVoted)
+    }
+  }
+
+  const handleCommentClick = () => {
+    console.log("Comments..")
+  }
+
   return (
     <Card
       size="sm"
@@ -98,19 +118,21 @@ export default function Post({
         <Flex w={"100%"} justify={"space-between"} align={"center"}>
           {getVoters(post)}
           <Stack direction={"row"} gap={1}>
-            <Tooltip label={hasCopied ? "Copied!" : "Copy link"}>
-              <Icon
-                as={hasCopied ? Check : Send}
-                boxSize={6}
-                onClick={onCopy}
-                cursor={"pointer"}
-                strokeWidth={"1.5"}
-                color="darkgray"
-              />
-            </Tooltip>
-            <PostIcon icon={MessageCircle} label="Comments" size={6} />
             <PostIcon
-              active={isVotedByLoggedUser}
+              onClick={onCopy}
+              icon={hasCopied ? Check : Send}
+              label={hasCopied ? "Copied!" : "Copy link"}
+              size={6}
+            />
+            <PostIcon
+              onClick={handleCommentClick}
+              icon={MessageCircle}
+              label="Comments"
+              size={6}
+            />
+            <PostIcon
+              onClick={handleVoteClick}
+              active={isVoted}
               colorAccent="#ff4655"
               fill={true}
               icon={Heart}

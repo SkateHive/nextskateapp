@@ -31,7 +31,7 @@ export default class PostModel {
   total_payout_value: Asset | string
   curator_payout_value: Asset | string
   pending_payout_value: Asset | string
-  active_votes: any[]
+  active_votes: PostActiveVotes[]
   private _metadata: PostMetadata | null = null
   private _author_details: UserModel | null = null
 
@@ -118,7 +118,9 @@ export default class PostModel {
   }
 
   public userHasVoted(username: string) {
-    return this.active_votes.some((vote) => vote.voter === username)
+    return this.active_votes.some(
+      (vote) => vote.voter === username && vote.percent !== "0"
+    )
   }
 }
 

@@ -10,20 +10,26 @@ interface PostIconProps {
   colorAccent?: string
   active?: boolean
   fill?: boolean
+  onClick: () => any
 }
 
 export default function PostIcon({
   icon,
   label,
   size,
+  onClick,
   colorAccent = "darkgrey",
   active = false,
   fill = false,
 }: PostIconProps) {
-  const [isClicked, setIsCliked] = useState<boolean>(active)
-
-  const handleClick = () => {
-    setIsCliked((isClicked) => !isClicked)
+  const [isActive, setIsActive] = useState<boolean>(active)
+  const handleClick = async () => {
+    try {
+      await onClick()
+      setIsActive((isClicked) => !isClicked)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
@@ -37,8 +43,8 @@ export default function PostIcon({
           transform: "scale(1.2)",
         }}
         transition="transform 0.1s ease-out"
-        color={isClicked ? colorAccent : "darkgrey"}
-        fill={fill && isClicked ? colorAccent : "none"}
+        color={isActive ? colorAccent : "darkgrey"}
+        fill={fill && isActive ? colorAccent : "none"}
         onClick={handleClick}
       />
     </Tooltip>
