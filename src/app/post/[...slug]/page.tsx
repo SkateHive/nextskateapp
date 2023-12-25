@@ -43,7 +43,7 @@ async function getData(user: string, postId: string) {
 
 async function formatMarkdownNew(markdown: string) {
   try {
-    const md = new Remarkable({ html: true, linkify: true })
+    const md = new Remarkable({ html: true, linkify: true, breaks: true })
     const body = md.render(markdown)
     return body
   } catch (error) {
@@ -82,6 +82,10 @@ export default async function Page({ params }: { params: { slug: string } }) {
           },
           a: {
             textDecor: "underline",
+          },
+          iframe: {
+            aspectRatio: 4 / 3,
+            position: "relative!important",
           },
         }}
       />
