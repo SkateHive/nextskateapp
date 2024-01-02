@@ -1,5 +1,5 @@
-import { Box, Image, ImageProps } from "@chakra-ui/react"
-import { useRouter } from "next/navigation"
+import { Link } from "@chakra-ui/next-js"
+import { Image, ImageProps } from "@chakra-ui/react"
 
 interface PostImageProps extends ImageProps {
   src: string
@@ -13,15 +13,8 @@ export default function PostImage({
   linkUrl,
   ...props
 }: PostImageProps) {
-  const router = useRouter()
   return (
-    <Box
-      p={3}
-      cursor="pointer"
-      onClick={() => {
-        router.push(linkUrl)
-      }}
-    >
+    <Link href={linkUrl} p={3}>
       <Image
         border={"1px"}
         borderColor={"gray.50"}
@@ -34,6 +27,6 @@ export default function PostImage({
         alt={alt}
         loading="lazy"
       />
-    </Box>
+    </Link>
   )
 }

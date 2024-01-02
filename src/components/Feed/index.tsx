@@ -4,13 +4,7 @@ import { Button, VStack } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
 import Post, { PostComponentProps } from "../Post"
 
-interface FeedProps {
-  postsData: PostComponentProps[]
-}
-
-// export default function Feed({ postsData }: FeedProps) {
 export default function Feed() {
-  // const [posts, setPosts] = useState<PostComponentProps[]>(postsData)
   const [posts, setPosts] = useState<PostComponentProps[]>(
     [] as PostComponentProps[]
   )

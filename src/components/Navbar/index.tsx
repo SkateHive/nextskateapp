@@ -1,5 +1,6 @@
 "use client"
 
+import { Link } from "@chakra-ui/next-js"
 import {
   Box,
   Divider,
@@ -9,7 +10,7 @@ import {
   Tooltip,
 } from "@chakra-ui/react"
 import { Home } from "lucide-react"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 import AvatarLogin from "./AvatarLogin"
 
 function getPageName(pathname: string) {
@@ -22,7 +23,6 @@ function getPageName(pathname: string) {
 export default function Navbar() {
   const pathname = usePathname()
   const pageName = getPageName(pathname)
-  const router = useRouter()
 
   return (
     <nav>
@@ -35,13 +35,14 @@ export default function Navbar() {
             <AvatarLogin />
           ) : (
             <Tooltip label="Return Home">
-              <IconButton
-                aria-label="Home"
-                icon={<Home />}
-                variant="ghost"
-                size="lg"
-                onClick={() => router.back()}
-              />
+              <Link href="/">
+                <IconButton
+                  aria-label="Home"
+                  icon={<Home />}
+                  variant="ghost"
+                  size="lg"
+                />
+              </Link>
             </Tooltip>
           )}
         </Box>
