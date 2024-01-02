@@ -15,6 +15,7 @@ import {
 } from "@chakra-ui/react"
 import { KeychainSDK, Vote } from "keychain-sdk"
 import { Check, Heart, MessageCircle, PiggyBank, Send } from "lucide-react"
+import moment from "moment-timezone"
 import { ReactElement, useState } from "react"
 import PostAvatar from "./Avatar"
 import PostIcon from "./Icon"
@@ -92,7 +93,7 @@ export default function Post({
                   ·
                 </Text>
                 <Text fontSize="12px" color="darkgray" fontWeight="300">
-                  {formatTimeSince(post.created)}
+                  {moment.utc(post.created).fromNow()}
                 </Text>
               </Flex>
               <Text fontSize="14px" noOfLines={1}>
@@ -145,40 +146,6 @@ export default function Post({
       </CardFooter>
     </Card>
   )
-}
-
-function formatTimeSince(dateString: string): string {
-  const postDate = new Date(dateString)
-  const now = new Date()
-  const diffMs = now.getTime() - postDate.getTime()
-
-  const minutes = Math.floor(diffMs / 60000)
-  const hours = Math.floor(minutes / 60)
-  const days = Math.floor(hours / 24)
-
-  if (minutes < 60) {
-    return `${minutes}m`
-  } else if (hours < 24) {
-    return `${hours}h`
-  } else {
-    const day = postDate.getDate()
-    const monthNames: string[] = [
-      "Jan",
-      "Fev",
-      "Mar",
-      "Abr",
-      "Mai",
-      "Jun",
-      "Jul",
-      "Ago",
-      "Set",
-      "Out",
-      "Nov",
-      "Dez",
-    ]
-    const month = monthNames[postDate.getMonth()]
-    return `${day} ${month}`
-  }
 }
 
 function getVoters(post: PostProps) {

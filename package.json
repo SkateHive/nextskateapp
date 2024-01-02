@@ -19,6 +19,7 @@
     "framer-motion": "^10.16.16",
     "keychain-sdk": "^0.6.1",
     "lucide-react": "^0.295.0",
+    "moment-timezone": "^0.5.44",
     "next": "14.0.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
