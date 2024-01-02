@@ -16,9 +16,9 @@ import {
 import { KeychainSDK, Vote } from "keychain-sdk"
 import { Check, Heart, MessageCircle, PiggyBank, Send } from "lucide-react"
 import { ReactElement, useState } from "react"
-import PostAvatar from "./PostAvatar"
-import PostIcon from "./PostIcon"
-import PostImage from "./PostImage"
+import PostAvatar from "./Avatar"
+import PostIcon from "./Icon"
+import PostImage from "./Image"
 
 export interface PostComponentProps {
   postData: PostProps

@@ -1,7 +1,7 @@
-import FeedPage from "@/components/FeedPage"
-import { PostComponentProps } from "@/components/Post"
+import Post, { PostComponentProps } from "@/components/Post"
 import HiveClient from "@/lib/hiveclient"
 import PostModel from "@/lib/models/post"
+import { VStack } from "@chakra-ui/react"
 
 export const revalidate = 30
 
@@ -25,6 +25,13 @@ async function getData(threshold: number = 0): Promise<PostComponentProps[]> {
 }
 
 export default async function Home() {
-  const data = await getData()
-  return <FeedPage posts={data} />
+  const posts = await getData()
+  console.log(posts)
+  return (
+    <VStack align="stretch" spacing={[2, 4]} p={2}>
+      {posts.map(({ postData, userData }, i) => (
+        <Post key={i} postData={postData} userData={userData} />
+      ))}
+    </VStack>
+  )
 }
