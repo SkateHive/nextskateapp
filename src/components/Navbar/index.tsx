@@ -10,7 +10,7 @@ import {
   Tooltip,
 } from "@chakra-ui/react"
 import { Home } from "lucide-react"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import AvatarLogin from "./AvatarLogin"
 
 function getPageName(pathname: string) {
@@ -23,6 +23,7 @@ function getPageName(pathname: string) {
 export default function Navbar() {
   const pathname = usePathname()
   const pageName = getPageName(pathname)
+  const router = useRouter()
 
   return (
     <nav>
@@ -35,7 +36,7 @@ export default function Navbar() {
             <AvatarLogin />
           ) : (
             <Tooltip label="Return Home">
-              <Link href="/">
+              <Link href="/" scroll={false}>
                 <IconButton
                   aria-label="Home"
                   icon={<Home />}
