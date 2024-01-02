@@ -40,7 +40,7 @@ export default function Navbar() {
                 icon={<Home />}
                 variant="ghost"
                 size="lg"
-                onClick={() => router.push("/")}
+                onClick={() => router.back()}
               />
             </Tooltip>
           )}
