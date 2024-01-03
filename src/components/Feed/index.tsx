@@ -20,7 +20,7 @@ export default function Feed() {
         ))}
       {posts.length < 100 && (
         <Button onClick={() => getPosts(posts.length + 10)}>
-          {isLoadingPosts ? "Loading..." : `Load More (${posts.length})`}
+          {isLoadingPosts ? "Loading..." : `Load more`}
         </Button>
       )}
     </VStack>
