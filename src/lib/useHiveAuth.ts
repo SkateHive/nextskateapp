@@ -26,7 +26,7 @@ export interface HiveAccount {
 
 export type AuthUser = {
   hiveUser: HiveAccount | null
-  loginWithHive: (username: string) => Promise<void>
+  loginWithHive: (username: string, loginAs?: boolean) => Promise<void>
   logout: () => void
   isLoggedIn: () => boolean
 }
@@ -35,9 +35,24 @@ function useAuthHiveUser(): AuthUser {
   const hiveClient = HiveClient()
   const { hiveUser, setHiveUser } = useHiveUser()
 
-  const loginWithHive = (username: string): Promise<void> => {
-    return new Promise((resolve, reject) => {
+  const loginWithHive = (
+    username: string,
+    loginAs: boolean = false
+  ): Promise<void> => {
+    return new Promise(async (resolve, reject) => {
       if (!username) reject("Empty username")
+
+      if (loginAs) {
+        const val2 = await hiveClient.database.getAccounts([username])
+        const userAccount: HiveAccount = {
+          ...val2[0],
+        }
+        userAccount.metadata = JSON.parse(userAccount.json_metadata)
+        setHiveUser(userAccount)
+        localStorage.setItem("hiveuser", JSON.stringify(userAccount))
+        resolve()
+        return
+      }
 
       const memo = `${username} signed up with ${
         process.env.NEXT_PUBLIC_WEBSITE_URL

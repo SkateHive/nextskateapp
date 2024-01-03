@@ -22,11 +22,14 @@ import {
   ModalOverlay,
   Spinner,
   Tooltip,
+  VStack,
   useDisclosure,
 } from "@chakra-ui/react"
 import { AtSign, Bell, LogIn, LogOut, User } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
+
+const env = process.env.NODE_ENV
 
 export default function AvatarLogin() {
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -37,10 +40,10 @@ export default function AvatarLogin() {
   const [isLogginOut, setIsLogginOut] = useState(false)
   const [isLogginIn, setIsLogginIn] = useState(false)
 
-  async function doLogin() {
+  async function doLogin(useLoginAs: boolean = false) {
     try {
       setIsLogginIn(true)
-      await loginWithHive(username)
+      await loginWithHive(username, useLoginAs)
       onClose()
     } catch (error) {
       console.error(error)
@@ -131,13 +134,20 @@ export default function AvatarLogin() {
           </ModalBody>
           <ModalFooter>
             {isLogginIn ? (
-              <Button w={"100%"}>
+              <Button w={"100%"} disabled>
                 <Spinner size={"sm"} />
               </Button>
             ) : (
-              <Button w={"100%"} onClick={doLogin}>
-                Continue
-              </Button>
+              <VStack w={"100%"}>
+                <Button w={"100%"} onClick={() => doLogin()}>
+                  Continue
+                </Button>
+                {env === "development" && (
+                  <Button w={"100%"} onClick={() => doLogin(true)}>
+                    Continue As (DEV)
+                  </Button>
+                )}
+              </VStack>
             )}
           </ModalFooter>
         </ModalContent>
