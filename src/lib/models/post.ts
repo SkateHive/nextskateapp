@@ -134,7 +134,7 @@ export interface PostMetadata {
   image: string[]
 }
 
-interface PostActiveVotes {
+export interface PostActiveVotes {
   percent: string
   reputation: number
   rshares: number

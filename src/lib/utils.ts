@@ -40,3 +40,25 @@ export function extractFirstLink(markdownText: string): string | null {
   const match = markdownText.match(regex)
   return match ? match[1] : null
 }
+
+export function calculateHumanReadableReputation(rep: number) {
+  if (rep === 0) {
+    return 25
+  }
+
+  const neg = rep < 0
+  const repLevel = Math.log10(Math.abs(rep))
+  let reputationLevel = Math.max(repLevel - 9, 0)
+
+  if (reputationLevel < 0) {
+    reputationLevel = 0
+  }
+
+  if (neg) {
+    reputationLevel *= -1
+  }
+
+  reputationLevel = reputationLevel * 9 + 25
+
+  return Math.floor(reputationLevel)
+}

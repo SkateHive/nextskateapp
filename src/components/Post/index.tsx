@@ -12,6 +12,7 @@ import {
   Text,
   Tooltip,
   useClipboard,
+  useDisclosure,
 } from "@chakra-ui/react"
 import { KeychainSDK, Vote } from "keychain-sdk"
 import { Check, Heart, MessageCircle, PiggyBank, Send } from "lucide-react"
@@ -20,6 +21,7 @@ import { ReactElement, useState } from "react"
 import PostAvatar from "./Avatar"
 import PostIcon from "./Icon"
 import PostImage from "./Image"
+import PostVoters from "./Voters"
 
 export interface PostComponentProps {
   postData: PostProps
@@ -57,8 +59,13 @@ export default function Post({
     }
   }
 
+  const {
+    isOpen: isCommentsOpen,
+    onOpen: onCommentsOpen,
+    onClose: onCommentsClose,
+  } = useDisclosure()
   const handleCommentClick = () => {
-    console.log("Comments..")
+    onCommentsOpen()
   }
 
   return (
@@ -118,7 +125,13 @@ export default function Post({
       />
       <CardFooter pt={0} flexDirection={"column"} gap={2}>
         <Flex w={"100%"} justify={"space-between"} align={"center"}>
-          {getVoters(post)}
+          {/* {getVoters(post)} */}
+          <PostVoters
+            activeVoters={post.active_votes}
+            modalIsOpen={isCommentsOpen}
+            modalOnOpen={onCommentsOpen}
+            modalOnClose={onCommentsClose}
+          />
           <Stack direction={"row"} gap={1}>
             <PostIcon
               onClick={onCopy}
@@ -145,28 +158,5 @@ export default function Post({
         </Flex>
       </CardFooter>
     </Card>
-  )
-}
-
-function getVoters(post: PostProps) {
-  if (!post.active_votes || !post.active_votes.length)
-    return <Text fontSize={"sm"}>No votes</Text>
-
-  const votes = post.active_votes.sort((a, b) => b.reputation - a.reputation)
-  const bestReputationVoter: string = votes[0].voter
-  const qtdVotes = votes.length - 1
-
-  if (qtdVotes > 1)
-    return (
-      <Text fontSize={"sm"}>
-        Voted by <b>{bestReputationVoter}</b> and <b>{qtdVotes}</b> other
-        {qtdVotes > 1 && "s"}
-      </Text>
-    )
-
-  return (
-    <Text fontSize={"sm"}>
-      Voted by <Text as="b">{bestReputationVoter}</Text>
-    </Text>
   )
 }
