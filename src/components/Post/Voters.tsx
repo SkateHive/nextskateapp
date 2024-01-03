@@ -66,10 +66,16 @@ interface PostVotersModalProps {
 
 function PostVotersModal({ votes, onClose, isOpen }: PostVotersModalProps) {
   return (
-    <Modal onClose={onClose} isOpen={isOpen} isCentered scrollBehavior="inside">
+    <Modal
+      onClose={onClose}
+      isOpen={isOpen}
+      isCentered
+      scrollBehavior="inside"
+      size={{ base: "full", md: "md" }}
+    >
       <ModalOverlay />
-      <ModalContent margin={4}>
-        <ModalHeader>Comments</ModalHeader>
+      <ModalContent>
+        <ModalHeader>Voters</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <TableContainer>
