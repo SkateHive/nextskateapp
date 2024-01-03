@@ -60,12 +60,12 @@ export default function Post({
   }
 
   const {
-    isOpen: isCommentsOpen,
-    onOpen: onCommentsOpen,
-    onClose: onCommentsClose,
+    isOpen: isVotersOpen,
+    onOpen: onVotersOpen,
+    onClose: onVotersClose,
   } = useDisclosure()
   const handleCommentClick = () => {
-    onCommentsOpen()
+    console.log("Comments")
   }
 
   return (
@@ -125,12 +125,11 @@ export default function Post({
       />
       <CardFooter pt={0} flexDirection={"column"} gap={2}>
         <Flex w={"100%"} justify={"space-between"} align={"center"}>
-          {/* {getVoters(post)} */}
           <PostVoters
             activeVoters={post.active_votes}
-            modalIsOpen={isCommentsOpen}
-            modalOnOpen={onCommentsOpen}
-            modalOnClose={onCommentsClose}
+            modalIsOpen={isVotersOpen}
+            modalOnOpen={onVotersOpen}
+            modalOnClose={onVotersClose}
           />
           <Stack direction={"row"} gap={1}>
             <PostIcon

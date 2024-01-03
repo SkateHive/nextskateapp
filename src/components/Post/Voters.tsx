@@ -39,7 +39,7 @@ export default function PostVoters({
       {!activeVoters || !activeVoters.length ? (
         "No votes"
       ) : (
-        <Text as={"span"}>
+        <Text as={"span"} cursor={"pointer"} onClick={modalOnOpen}>
           Voted by <b>{bestReputationVoter}</b>
           {qtdVotes > 0 && (
             <span>
