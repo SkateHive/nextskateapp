@@ -48,6 +48,11 @@ function useAuthHiveUser(): AuthUser {
           ...val2[0],
         }
         userAccount.metadata = JSON.parse(userAccount.json_metadata)
+        if (
+          userAccount.metadata &&
+          !userAccount.metadata.hasOwnProperty("profile")
+        )
+          userAccount.metadata = JSON.parse(userAccount.posting_json_metadata)
         setHiveUser(userAccount)
         localStorage.setItem("hiveuser", JSON.stringify(userAccount))
         resolve()
@@ -83,6 +88,13 @@ function useAuthHiveUser(): AuthUser {
                   }
 
                   userAccount.metadata = JSON.parse(userAccount.json_metadata)
+                  if (
+                    userAccount.metadata &&
+                    !userAccount.metadata.hasOwnProperty("profile")
+                  )
+                    userAccount.metadata = JSON.parse(
+                      userAccount.posting_json_metadata
+                    )
 
                   setHiveUser(userAccount)
                   localStorage.setItem("hiveuser", JSON.stringify(userAccount))
