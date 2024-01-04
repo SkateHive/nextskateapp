@@ -15,8 +15,9 @@ export default function Feed() {
   }, [])
 
   return (
-    <VStack align="stretch" spacing={[2, 4]} p={2}>
+    <VStack align="stretch" spacing={[2, 4]}>
       <InfiniteScroll
+        style={{ padding: 2 }}
         dataLength={posts.length}
         next={() => getPosts(posts.length + 10)}
         hasMore={posts.length !== 100}
