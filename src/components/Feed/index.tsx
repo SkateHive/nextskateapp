@@ -1,12 +1,14 @@
 "use client"
 
 import { usePostsContext } from "@/contexts/PostsContext"
-import { Button, VStack } from "@chakra-ui/react"
+import { Flex, VStack } from "@chakra-ui/react"
 import { useEffect } from "react"
+import InfiniteScroll from "react-infinite-scroll-component"
+import { BeatLoader } from "react-spinners"
 import Post from "../Post"
 
 export default function Feed() {
-  const { posts, getPosts, isLoadingPosts } = usePostsContext()
+  const { posts, getPosts } = usePostsContext()
 
   useEffect(() => {
     if (posts.length == 0) getPosts(10)
@@ -14,15 +16,21 @@ export default function Feed() {
 
   return (
     <VStack align="stretch" spacing={[2, 4]} p={2}>
-      {posts.length > 1 &&
-        posts.map(({ postData, userData }, i) => (
-          <Post key={i} postData={postData} userData={userData} />
-        ))}
-      {posts.length < 100 && (
-        <Button onClick={() => getPosts(posts.length + 10)}>
-          {isLoadingPosts ? "Loading..." : `Load more`}
-        </Button>
-      )}
+      <InfiniteScroll
+        dataLength={posts.length}
+        next={() => getPosts(posts.length + 10)}
+        hasMore={posts.length !== 100}
+        loader={
+          <Flex w={"100%"} justify={"center"}>
+            <BeatLoader size={8} color="darkgrey" />
+          </Flex>
+        }
+      >
+        {posts.length > 1 &&
+          posts.map(({ postData, userData }, i) => (
+            <Post key={i} postData={postData} userData={userData} />
+          ))}
+      </InfiniteScroll>
     </VStack>
   )
 }
