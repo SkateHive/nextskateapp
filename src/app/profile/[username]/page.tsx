@@ -5,7 +5,7 @@ import PostModel from "@/lib/models/post"
 import { getUserFromUsername } from "@/lib/services/userService"
 import { VStack } from "@chakra-ui/react"
 
-const hiveClient = HiveClient()
+const hiveClient = HiveClient
 
 async function getBlogFromUsername(
   username: string
