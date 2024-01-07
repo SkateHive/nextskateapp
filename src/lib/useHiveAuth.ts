@@ -32,7 +32,7 @@ export type AuthUser = {
 }
 
 function useAuthHiveUser(): AuthUser {
-  const hiveClient = HiveClient()
+  const hiveClient = HiveClient
   const { hiveUser, setHiveUser } = useHiveUser()
 
   const loginWithHive = (

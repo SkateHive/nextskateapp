@@ -8,7 +8,7 @@ import type { Metadata } from "next"
 // Revalidate requests in 10 minutes
 export const revalidate = 600
 
-const hiveClient = HiveClient()
+const hiveClient = HiveClient
 
 export async function generateMetadata({
   params,

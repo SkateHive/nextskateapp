@@ -3,7 +3,7 @@ import HiveClient from "@/lib/hiveclient"
 import PostModel from "@/lib/models/post"
 
 const SKATEHIVE_TAG = "hive-173115"
-const hiveClient = HiveClient()
+const hiveClient = HiveClient
 
 export const revalidate = 30
 

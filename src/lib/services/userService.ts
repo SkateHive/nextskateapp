@@ -2,7 +2,7 @@
 
 import HiveClient from "@/lib/hiveclient"
 import { UserProps } from "../models/user"
-const hiveClient = HiveClient()
+const hiveClient = HiveClient
 
 export async function getUserFromUsername(
   username: string
