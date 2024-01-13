@@ -29,7 +29,7 @@ export default function PostSkeleton() {
               <Flex gap={1} alignItems="center">
                 <Skeleton h={4} w={32} />
               </Flex>
-              <Skeleton h={4} w={64} />
+              <Skeleton h={4} w={{ base: 48, md: 56, lg: 64 }} />
             </Flex>
           </Flex>
           <Flex gap={1} align={"center"}>
