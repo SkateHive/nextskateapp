@@ -39,9 +39,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
       <ProfileHeader userData={user} />
       <VStack align="stretch" spacing={4} p={2}>
         {posts &&
-          posts.map(({ postData, userData }, i) => (
-            <Post key={i} postData={postData} userData={userData} />
-          ))}
+          posts.map(({ postData }, i) => <Post key={i} postData={postData} />)}
       </VStack>
     </VStack>
   )
