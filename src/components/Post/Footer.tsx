@@ -1,4 +1,5 @@
 import { usePostContext } from "@/contexts/PostContext"
+import { SWR_POSTS_TAG } from "@/hooks/usePosts"
 import {
   CardFooter,
   Flex,
@@ -9,11 +10,13 @@ import {
 import { KeychainSDK, Vote } from "keychain-sdk"
 import { Check, Heart, MessageCircle, Send } from "lucide-react"
 import { useState } from "react"
+import { useSWRConfig } from "swr"
 import PostIcon from "./Icon"
 import PostVoters from "./Voters"
 
 export default function Footer() {
   const { post } = usePostContext()
+  const { mutate } = useSWRConfig()
   const { onCopy, hasCopied } = useClipboard(post.getFullUrl())
 
   const loggedUserData =
@@ -35,6 +38,7 @@ export default function Footer() {
         weight: voteWeight,
       } as Vote)
       setIsVoted((isVoted) => !isVoted)
+      mutate(SWR_POSTS_TAG)
     }
   }
 

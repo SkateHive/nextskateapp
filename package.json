@@ -25,7 +25,8 @@
     "react-dom": "^18.2.0",
     "react-infinite-scroll-component": "^6.1.0",
     "react-spinners": "^0.13.8",
-    "remarkable": "^2.0.1"
+    "remarkable": "^2.0.1",
+    "swr": "^2.2.4"
   },
   "devDependencies": {
     "@types/node": "^20.10.5",

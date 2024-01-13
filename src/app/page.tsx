@@ -1,5 +1,5 @@
 import Feed from "@/components/Feed"
 
-export default async function Home() {
+export default function Home() {
   return <Feed />
 }

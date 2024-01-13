@@ -28,11 +28,13 @@ import {
 import { AtSign, Bell, LogIn, LogOut, User } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
+import { useSWRConfig } from "swr"
 
 const env = process.env.NODE_ENV
 
 export default function AvatarLogin() {
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const { mutate } = useSWRConfig()
   const [username, setUsername] = useState("")
   const [errorMessage, setErrorMessage] = useState("")
   const { hiveUser, loginWithHive, logout, isLoggedIn } = useAuthHiveUser()
@@ -45,6 +47,7 @@ export default function AvatarLogin() {
       setIsLogginIn(true)
       await loginWithHive(username, useLoginAs)
       onClose()
+      mutate("posts")
     } catch (error) {
       console.error(error)
       setErrorMessage(error ? error.toString() : "Unknow error")
@@ -66,6 +69,7 @@ export default function AvatarLogin() {
             src={hiveUser.metadata?.profile.profile_image}
             borderRadius={"100%"}
             size="md"
+            bg="gray.200"
           />
         </Tooltip>
       </MenuButton>
