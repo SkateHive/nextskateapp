@@ -1,7 +1,5 @@
-"use client"
 import { Icon, Tooltip } from "@chakra-ui/react"
 import { LucideIcon } from "lucide-react"
-import { useState } from "react"
 
 interface PostIconProps {
   icon: LucideIcon
@@ -22,11 +20,9 @@ export default function PostIcon({
   active = false,
   fill = false,
 }: PostIconProps) {
-  const [isActive, setIsActive] = useState<boolean>(active)
   const handleClick = async () => {
     try {
       await onClick()
-      setIsActive((isClicked) => !isClicked)
     } catch (error) {
       console.log(error)
     }
@@ -43,8 +39,8 @@ export default function PostIcon({
           transform: "scale(1.2)",
         }}
         transition="transform 0.1s ease-out"
-        color={isActive ? colorAccent : "darkgrey"}
-        fill={fill && isActive ? colorAccent : "none"}
+        color={active ? colorAccent : "darkgrey"}
+        fill={fill && active ? colorAccent : "none"}
         onClick={handleClick}
       />
     </Tooltip>

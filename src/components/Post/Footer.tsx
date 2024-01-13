@@ -1,5 +1,5 @@
 import { usePostContext } from "@/contexts/PostContext"
-import { SWR_POSTS_TAG } from "@/hooks/usePosts"
+import { useHiveUser } from "@/contexts/UserContext"
 import {
   CardFooter,
   Flex,
@@ -7,11 +7,10 @@ import {
   useClipboard,
   useDisclosure,
 } from "@chakra-ui/react"
-import { KeychainSDK, Vote } from "keychain-sdk"
-import { Check, Heart, MessageCircle, Send } from "lucide-react"
-import { useState } from "react"
+import { Check, MessageCircle, Send } from "lucide-react"
 import { useSWRConfig } from "swr"
 import PostIcon from "./Icon"
+import Vote from "./Vote"
 import PostVoters from "./Voters"
 
 export default function Footer() {
@@ -19,28 +18,7 @@ export default function Footer() {
   const { mutate } = useSWRConfig()
   const { onCopy, hasCopied } = useClipboard(post.getFullUrl())
 
-  const loggedUserData =
-    typeof window !== "undefined" ? localStorage.getItem("hiveuser") : null
-  const loggedUser = loggedUserData ? JSON.parse(loggedUserData) : null
-
-  const [isVoted, setIsVoted] = useState(
-    !!(loggedUser && loggedUser.name && post.userHasVoted(loggedUser.name))
-  )
-
-  const handleVoteClick = async () => {
-    if (loggedUser) {
-      const voteWeight = isVoted ? 0 : 10000
-      const keychain = new KeychainSDK(window)
-      await keychain.vote({
-        username: loggedUser.name,
-        permlink: post.permlink,
-        author: post.author,
-        weight: voteWeight,
-      } as Vote)
-      setIsVoted((isVoted) => !isVoted)
-      mutate(SWR_POSTS_TAG)
-    }
-  }
+  const { hiveUser } = useHiveUser()
 
   const {
     isOpen: isVotersOpen,
@@ -52,7 +30,7 @@ export default function Footer() {
   }
 
   return (
-    <CardFooter pt={0} flexDirection={"column"} gap={2}>
+    <CardFooter pt={0} flexDirection={"column"} gap={2} key={hiveUser?.name}>
       <Flex w={"100%"} justify={"space-between"} align={"center"}>
         <PostVoters
           activeVoters={post.active_votes}
@@ -73,17 +51,7 @@ export default function Footer() {
             label="Comments"
             size={6}
           />
-          {loggedUser && (
-            <PostIcon
-              onClick={handleVoteClick}
-              active={isVoted}
-              colorAccent="#ff4655"
-              fill={true}
-              icon={Heart}
-              label="Upvote"
-              size={6}
-            />
-          )}
+          <Vote />
         </Stack>
       </Flex>
     </CardFooter>
