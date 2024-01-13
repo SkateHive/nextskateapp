@@ -51,7 +51,7 @@ export default class PostModel {
     this.active_votes = post?.active_votes || []
   }
 
-  getEarnings(): string {
+  getEarnings(): number {
     const totalPayout = parseFloat(
       this.total_payout_value.toString().split(" ")[0]
     )
@@ -61,7 +61,7 @@ export default class PostModel {
     const pendingPayout = parseFloat(
       this.pending_payout_value.toString().split(" ")[0]
     )
-    return (totalPayout + curatorPayout + pendingPayout).toFixed(2)
+    return totalPayout + curatorPayout + pendingPayout
   }
 
   getThumbnail(): string {

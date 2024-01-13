@@ -9,7 +9,7 @@ interface PostsContextProps {
 
 const PostsContext = createContext<PostsContextProps>({} as PostsContextProps)
 
-export const PostProvider = ({ children }: { children: React.ReactNode }) => {
+export const PostsProvider = ({ children }: { children: React.ReactNode }) => {
   const [posts, setPosts] = useState<PostComponentProps[]>(
     [] as PostComponentProps[]
   )

@@ -29,7 +29,7 @@ export default function Feed() {
       >
         {posts.length > 1 &&
           posts.map(({ postData, userData }, i) => (
-            <Post key={i} postData={postData} userData={userData} />
+            <Post key={i} userData={userData} postData={postData} />
           ))}
       </InfiniteScroll>
     </VStack>

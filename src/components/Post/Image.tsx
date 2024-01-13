@@ -1,30 +1,20 @@
+import { usePostContext } from "@/contexts/PostContext"
 import { Link } from "@chakra-ui/next-js"
-import { Image, ImageProps } from "@chakra-ui/react"
+import { Image } from "@chakra-ui/react"
 
-interface PostImageProps extends ImageProps {
-  src: string
-  alt: string
-  linkUrl: string
-}
-
-export default function PostImage({
-  src,
-  alt,
-  linkUrl,
-  ...props
-}: PostImageProps) {
+export default function PostImage() {
+  let { post } = usePostContext()
   return (
-    <Link href={linkUrl} p={3}>
+    <Link href={post.getFullUrl()} p={3}>
       <Image
         border={"1px"}
         borderColor={"gray.50"}
         w="100%"
-        src={src}
+        src={post.getThumbnail()}
         aspectRatio={16 / 9}
         objectFit="cover"
         borderRadius="md"
-        {...props}
-        alt={alt}
+        alt={post.title}
         loading="lazy"
       />
     </Link>
