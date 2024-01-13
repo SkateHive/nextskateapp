@@ -31,12 +31,12 @@ export default function PostVoters({
   modalOnClose,
 }: PostVotersProps) {
   const votes = activeVoters.sort((a, b) => b.reputation - a.reputation)
-  const bestReputationVoter: string = votes[0].voter
+  const bestReputationVoter: string | null = votes[0]?.voter ?? null
   const qtdVotes = votes.length - 1
 
   return (
     <Text fontSize={"sm"}>
-      {!activeVoters || !activeVoters.length ? (
+      {!bestReputationVoter ? (
         "No votes"
       ) : (
         <Text as={"span"} cursor={"pointer"} onClick={modalOnOpen}>
