@@ -69,15 +69,17 @@ export default function Footer() {
             label="Comments"
             size={6}
           />
-          <PostIcon
-            onClick={handleVoteClick}
-            active={isVoted}
-            colorAccent="#ff4655"
-            fill={true}
-            icon={Heart}
-            label="Upvote"
-            size={6}
-          />
+          {loggedUser && (
+            <PostIcon
+              onClick={handleVoteClick}
+              active={isVoted}
+              colorAccent="#ff4655"
+              fill={true}
+              icon={Heart}
+              label="Upvote"
+              size={6}
+            />
+          )}
         </Stack>
       </Flex>
     </CardFooter>
