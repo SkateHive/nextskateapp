@@ -10,7 +10,7 @@ import PostAvatar from "./Avatar"
 export default function Header() {
   const { post } = usePostContext()
   const [authorData, setAuthorData] = useState<UserModel>({} as UserModel)
-  const postAvatar = authorData.metadata?.profile.profile_image
+  const postAvatar = authorData.metadata?.profile?.profile_image
 
   useEffect(() => {
     const fetchAuthor = async () => {

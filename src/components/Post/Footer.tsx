@@ -7,8 +7,9 @@ import {
   useClipboard,
   useDisclosure,
 } from "@chakra-ui/react"
-import { Check, MessageCircle, Send } from "lucide-react"
+import { Check, Send } from "lucide-react"
 import { useSWRConfig } from "swr"
+import CommentIcon from "./CommentIcon"
 import PostIcon from "./Icon"
 import Vote from "./Vote"
 import PostVoters from "./Voters"
@@ -25,9 +26,6 @@ export default function Footer() {
     onOpen: onVotersOpen,
     onClose: onVotersClose,
   } = useDisclosure()
-  const handleCommentClick = () => {
-    console.log("Comments")
-  }
 
   return (
     <CardFooter pt={0} flexDirection={"column"} gap={2} key={hiveUser?.name}>
@@ -45,12 +43,7 @@ export default function Footer() {
             label={hasCopied ? "Copied!" : "Copy link"}
             size={6}
           />
-          <PostIcon
-            onClick={handleCommentClick}
-            icon={MessageCircle}
-            label="Comments"
-            size={6}
-          />
+          <CommentIcon />
           <Vote />
         </Stack>
       </Flex>
