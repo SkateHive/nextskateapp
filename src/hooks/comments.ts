@@ -71,11 +71,14 @@ export async function fetchComments(
 }
 
 export function useComments(author: string, permlink: string) {
+  console.log(author, permlink)
   const {
     data: comments,
     error,
     isLoading,
-  } = useSWR(SWR_POST_COMMENTS_TAG, () => fetchComments(author, permlink))
+  } = useSWR(`${SWR_POST_COMMENTS_TAG}/${permlink}`, () =>
+    fetchComments(author, permlink)
+  )
 
   return {
     comments,
