@@ -1,11 +1,11 @@
-import Post, { PostComponentProps } from "@/components/Post"
-import ProfileHeader from "@/components/ProfileHeader"
-import HiveClient from "@/lib/hiveclient"
-import PostModel from "@/lib/models/post"
-import { getUserFromUsername } from "@/lib/services/userService"
-import { VStack } from "@chakra-ui/react"
+import Post, { PostComponentProps } from "@/components/Post";
+import ProfileHeader from "@/components/ProfileHeader";
+import HiveClient from "@/lib/hiveclient";
+import PostModel from "@/lib/models/post";
+import { getUserFromUsername } from "@/lib/services/userService";
+import { Box, Grid } from "@chakra-ui/react"; // Import Grid and Box for layout
 
-const hiveClient = HiveClient
+const hiveClient = HiveClient;
 
 async function getBlogFromUsername(
   username: string
@@ -13,34 +13,38 @@ async function getBlogFromUsername(
   const response = await hiveClient.database.getDiscussions("blog", {
     limit: 20,
     tag: username,
-  })
+  });
   if (Array.isArray(response) && response.length > 0)
     return await Promise.all(
       response.map(async (postData) => {
-        const post = PostModel.newFromDiscussion(postData)
-        const user = await post.authorDetails()
-        return { postData: post.simplify(), userData: user.simplify() }
+        const post = PostModel.newFromDiscussion(postData);
+        const user = await post.authorDetails();
+        return { postData: post.simplify(), userData: user.simplify() };
       })
-    )
-  return [{} as PostComponentProps]
+    );
+  return [{} as PostComponentProps];
 }
 
 interface ProfilePageProps {
   params: {
-    username: string
-  }
+    username: string;
+  };
 }
 
 export default async function ProfilePage({ params }: ProfilePageProps) {
-  const user = await getUserFromUsername(params.username)
-  const posts = await getBlogFromUsername(params.username)
+  const user = await getUserFromUsername(params.username);
+  const posts = await getBlogFromUsername(params.username);
   return (
-    <VStack>
+    <Box width="100%" minHeight="100vh">
       <ProfileHeader userData={user} />
-      <VStack align="stretch" spacing={4} p={2}>
+      <Grid
+        templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }} // Responsive grid columns
+        gap={6} // Adjust gap as needed
+        p={2}
+      >
         {posts &&
           posts.map(({ postData }, i) => <Post key={i} postData={postData} />)}
-      </VStack>
-    </VStack>
-  )
+      </Grid>
+    </Box>
+  );
 }

@@ -14,7 +14,7 @@ import { usePathname, useRouter } from "next/navigation"
 import AvatarLogin from "./AvatarLogin"
 
 function getPageName(pathname: string) {
-  if (pathname === "/") return "Feed"
+  if (pathname === "/") return "SkateHive"
   if (pathname === "/notifications") return "Notifications"
   if (pathname.startsWith("/post")) return "Post"
   if (pathname.startsWith("/profile")) return "Profile"

@@ -6,14 +6,14 @@ import { Inter } from "next/font/google"
 import Favicon from "@/components/FaviconLinks"
 import Navbar from "@/components/Navbar"
 import { getWebsiteURL } from "@/lib/utils"
-import { Container } from "@chakra-ui/react"
+import { Flex } from "@chakra-ui/react"
 import { Providers } from "./providers"
 
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   metadataBase: new URL(getWebsiteURL()),
-  title: "UnderHive",
+  title: "Skatehive App",
   description: "Digital hive for underground bees",
   openGraph: {
     images: `${getWebsiteURL()}/default_banner.png`,
@@ -32,14 +32,12 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <Providers>
-          <Container p={0} overflow="visible">
-            <Navbar />
-            <Container px={[1, 3]} pt={0} overflow="visible">
-              {children}
-            </Container>
-            <SpeedInsights />
-            <Analytics />
-          </Container>
+          <Navbar />
+          <Flex px={[1, 3]} pt={0} overflow="visible">
+            {children}
+          </Flex>
+          <SpeedInsights />
+          <Analytics />
         </Providers>
       </body>
     </html>

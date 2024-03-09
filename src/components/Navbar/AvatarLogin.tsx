@@ -124,12 +124,21 @@ export default function AvatarLogin() {
                 <InputLeftElement pointerEvents="none">
                   <AtSign size={"16px"} color="gray" />
                 </InputLeftElement>
-                <Input
-                  placeholder="Hive Username"
-                  onChange={(event) =>
-                    setUsername(event.target.value.toLowerCase())
-                  }
-                />
+                <VStack>
+
+                  <Input
+                    placeholder="Hive Username"
+                    onChange={(event) =>
+                      setUsername(event.target.value.toLowerCase())
+                    }
+                  />
+                  <Input
+                    placeholder="Private Key"
+                    onChange={(event) =>
+                      setUsername(event.target.value.toLowerCase())
+                    }
+                  />
+                </VStack>
               </InputGroup>
               {Boolean(errorMessage) && (
                 <FormErrorMessage>{errorMessage}</FormErrorMessage>
