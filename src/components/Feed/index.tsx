@@ -24,7 +24,13 @@ export default function Feed() {
       >
         {/* Render skeletons to match the initial visiblePosts count or any fixed number that fills the screen */}
         {Array.from({ length: visiblePosts }).map((_, i) => (
-          <PostSkeleton key={i} />
+          <Grid
+            templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }}
+            gap={6}
+          >
+            <PostSkeleton key={i} />
+          </Grid>
+
         ))}
       </Grid>
     );

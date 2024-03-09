@@ -6,7 +6,7 @@ import { Inter } from "next/font/google"
 import Favicon from "@/components/FaviconLinks"
 import Navbar from "@/components/Navbar"
 import { getWebsiteURL } from "@/lib/utils"
-import { Flex } from "@chakra-ui/react"
+import { CardBody, Flex, background } from "@chakra-ui/react"
 import { Providers } from "./providers"
 
 const inter = Inter({ subsets: ["latin"] })
@@ -30,7 +30,7 @@ export default function RootLayout({
       <head>
         <Favicon />
       </head>
-      <body className={inter.className}>
+      <body style={{ backgroundColor: "black", color: "white" }}>
         <Providers>
           <Navbar />
           <Flex px={[1, 3]} pt={0} overflow="visible">

@@ -7,8 +7,7 @@ export default function PostImage() {
   return (
     <Link href={post.getFullUrl()} p={3}>
       <Image
-        border={"1px"}
-        borderColor={"gray.50"}
+        border={"1px solid limegreen"}
         w="100%"
         src={post.getThumbnail()}
         aspectRatio={16 / 9}

@@ -14,11 +14,14 @@ export interface PostComponentProps {
 export default function Post({ postData }: PostComponentProps) {
   return (
     <Card
+      bg={"black"}
+      border={"1px solid limegreen"}
+      color={"white"}
       size="sm"
       boxShadow="none"
       borderRadius="lg"
       _hover={{
-        outline: "1px solid",
+        outline: "1px solid green",
         outlineColor: "gray.100",
       }}
       mt={2}

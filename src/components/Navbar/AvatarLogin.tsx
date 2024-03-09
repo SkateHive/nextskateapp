@@ -62,7 +62,7 @@ export default function AvatarLogin() {
 
   return hiveUser ? (
     <Menu placement="bottom-end">
-      <MenuButton>
+      <MenuButton >
         <Tooltip label="Profile">
           <Avatar
             name={hiveUser.name}
@@ -73,22 +73,25 @@ export default function AvatarLogin() {
           />
         </Tooltip>
       </MenuButton>
-      <MenuList>
+      <MenuList bg="black">
         <MenuItem
           icon={<Bell size={"16px"} />}
           as={Link}
           href={"/notifications"}
+          bg="black"
         >
           Notifications
         </MenuItem>
         <MenuItem
+          bg="black"
           icon={<User size={"16px"} />}
           as={Link}
           href={`/profile/${hiveUser.name}`}
         >
           Profile
         </MenuItem>
-        <MenuItem icon={<LogOut size={"16px"} />} onClick={handleLogout}>
+        <MenuItem bg="black"
+          icon={<LogOut size={"16px"} />} onClick={handleLogout}>
           Logout
         </MenuItem>
       </MenuList>
@@ -115,7 +118,7 @@ export default function AvatarLogin() {
       )}
       <Modal isOpen={isOpen} isCentered onClose={onClose}>
         <ModalOverlay />
-        <ModalContent mx={4}>
+        <ModalContent bg={'black'} mx={4}>
           <ModalHeader>Log In</ModalHeader>
           <ModalCloseButton />
           <ModalBody>

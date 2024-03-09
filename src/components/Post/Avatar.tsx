@@ -14,6 +14,7 @@ export default function PostAvatar({ src, name }: PostAvatarProps) {
       width="40px"
       bg="gray.200"
       loading="lazy"
+      borderRadius={"20%"}
     />
   )
 }

@@ -8,6 +8,9 @@ import {
   Heading,
   IconButton,
   Tooltip,
+  Image,
+  HStack,
+  Text,
 } from "@chakra-ui/react"
 import { Home } from "lucide-react"
 import { usePathname, useRouter } from "next/navigation"
@@ -29,7 +32,13 @@ export default function Navbar() {
     <nav>
       <Flex m={3} align="center" justify="space-between">
         <Heading ml={3} size="2xl">
-          {pageName}
+          <HStack>
+
+            <Image boxSize={"48px"} src="https://www.skatehive.app/assets/skatehive.jpeg" alt="SkateHive" />
+            <Text>
+              {pageName}
+            </Text>
+          </HStack>
         </Heading>
         <Box mr={3}>
           {pathname === "/" ? (
