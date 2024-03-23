@@ -46,8 +46,13 @@ export default function AvatarLogin() {
     try {
       setIsLogginIn(true)
       await loginWithHive(username, useLoginAs)
+
       onClose()
       mutate("posts")
+      setTimeout(() => {
+        console.log("Logged in")
+      }, 10000)
+
     } catch (error) {
       console.error(error)
       setErrorMessage(error ? error.toString() : "Unknow error")
@@ -59,6 +64,9 @@ export default function AvatarLogin() {
     setIsLogginOut(true)
     logout()
   }
+
+
+
 
   return hiveUser ? (
     <Menu placement="bottom-end">
@@ -123,26 +131,22 @@ export default function AvatarLogin() {
           <ModalCloseButton />
           <ModalBody>
             <FormControl isInvalid={Boolean(errorMessage)}>
-              <InputGroup>
-                <InputLeftElement pointerEvents="none">
-                  <AtSign size={"16px"} color="gray" />
-                </InputLeftElement>
-                <VStack>
 
-                  <Input
-                    placeholder="Hive Username"
-                    onChange={(event) =>
-                      setUsername(event.target.value.toLowerCase())
-                    }
-                  />
-                  <Input
-                    placeholder="Private Key"
-                    onChange={(event) =>
-                      setUsername(event.target.value.toLowerCase())
-                    }
-                  />
-                </VStack>
-              </InputGroup>
+              <VStack>
+
+                <Input
+                  placeholder="Hive Username"
+                  onChange={(event) =>
+                    setUsername(event.target.value.toLowerCase())
+                  }
+                />
+                <Input
+                  placeholder="Private Key"
+                  onChange={(event) =>
+                    setUsername(event.target.value.toLowerCase())
+                  }
+                />
+              </VStack>
               {Boolean(errorMessage) && (
                 <FormErrorMessage>{errorMessage}</FormErrorMessage>
               )}

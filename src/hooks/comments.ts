@@ -71,7 +71,6 @@ export async function fetchComments(
 }
 
 export function useComments(author: string, permlink: string) {
-  console.log(author, permlink)
   const {
     data: comments,
     error,

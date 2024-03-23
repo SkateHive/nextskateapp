@@ -1,7 +1,7 @@
 import { useHiveUser } from "@/contexts/UserContext"
 import * as dhive from "@hiveio/dhive"
 import HiveClient from "./hiveclient"
-
+import { useState } from "react"
 interface HiveKeychainResponse {
   success: boolean
   publicKey: string
@@ -34,7 +34,7 @@ export type AuthUser = {
 function useAuthHiveUser(): AuthUser {
   const hiveClient = HiveClient
   const { hiveUser, setHiveUser } = useHiveUser()
-
+  const [privateKey, setPrivateKey] = useState<string>("")
   const loginWithHive = (
     username: string,
     loginAs: boolean = false
@@ -59,61 +59,61 @@ function useAuthHiveUser(): AuthUser {
         return
       }
 
-      const memo = `${username} signed up with ${
-        process.env.NEXT_PUBLIC_WEBSITE_URL
-      } app at ${Date.now()}`
+      const memo = `${username} signed up with ${process.env.NEXT_PUBLIC_WEBSITE_URL
+        } app at ${Date.now()}`
 
-      ;(window as any).hive_keychain.requestSignBuffer(
-        username,
-        memo,
-        "Posting",
-        async (response: HiveKeychainResponse) => {
-          if (response.success === true) {
-            try {
-              const publicKey = response.publicKey
-              const val = await hiveClient.keys.getKeyReferences([publicKey])
-              const accountName = val.accounts[0][0]
+        ; (window as any).hive_keychain.requestSignBuffer(
+          username,
+          memo,
+          "Posting",
+          async (response: HiveKeychainResponse) => {
+            if (response.success === true) {
+              try {
+                const publicKey = response.publicKey
+                const val = await hiveClient.keys.getKeyReferences([publicKey])
+                console.log(val)
+                const accountName = val.accounts[0][0]
+                console.log(accountName)
+                if (accountName === username) {
+                  const sig = dhive.Signature.fromString(response.result)
+                  const key = dhive.PublicKey.fromString(publicKey)
 
-              if (accountName === username) {
-                const sig = dhive.Signature.fromString(response.result)
-                const key = dhive.PublicKey.fromString(publicKey)
+                  if (key.verify(dhive.cryptoUtils.sha256(memo), sig) === true) {
+                    console.log(publicKey)
+                    const val2 = await hiveClient.database.getAccounts([
+                      accountName,
+                    ])
 
-                if (key.verify(dhive.cryptoUtils.sha256(memo), sig) === true) {
-                  const val2 = await hiveClient.database.getAccounts([
-                    accountName,
-                  ])
+                    const userAccount: HiveAccount = {
+                      ...val2[0],
+                    }
 
-                  const userAccount: HiveAccount = {
-                    ...val2[0],
-                  }
-
-                  userAccount.metadata = JSON.parse(userAccount.json_metadata)
-                  if (
-                    userAccount.metadata &&
-                    !userAccount.metadata.hasOwnProperty("profile")
-                  )
-                    userAccount.metadata = JSON.parse(
-                      userAccount.posting_json_metadata
+                    userAccount.metadata = JSON.parse(userAccount.json_metadata)
+                    if (
+                      userAccount.metadata &&
+                      !userAccount.metadata.hasOwnProperty("profile")
                     )
-
-                  setHiveUser(userAccount)
-                  localStorage.setItem("hiveuser", JSON.stringify(userAccount))
-                  resolve()
+                      userAccount.metadata = JSON.parse(
+                        userAccount.posting_json_metadata
+                      )
+                    setHiveUser(userAccount)
+                    localStorage.setItem("hiveuser", JSON.stringify(userAccount))
+                    resolve()
+                  } else {
+                    reject("Verification failed: signature mismatch.")
+                  }
                 } else {
-                  reject("Verification failed: signature mismatch.")
+                  reject("Verification failed: username mismatch.")
                 }
-              } else {
-                reject("Verification failed: username mismatch.")
+              } catch (error) {
+                console.error(error)
+                reject("Error during public key verification and user fetching.")
               }
-            } catch (error) {
-              console.error(error)
-              reject("Error during public key verification and user fetching.")
+            } else {
+              reject("Hive keychain request failed.")
             }
-          } else {
-            reject("Hive keychain request failed.")
           }
-        }
-      )
+        )
     })
   }
 
