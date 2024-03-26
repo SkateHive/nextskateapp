@@ -1,33 +1,38 @@
 "use client"
-import { usePosts } from "@/hooks/usePosts";
-import PostModel from "@/lib/models/post";
-import { Box, Flex, Grid } from "@chakra-ui/react";
-import { useState } from "react";
-import InfiniteScroll from "react-infinite-scroll-component";
-import { BeatLoader } from "react-spinners";
-import Post from "../Post";
-import PostSkeleton from "../Post/Skeleton";
+import { usePosts } from "@/hooks/usePosts"
+import PostModel from "@/lib/models/post"
+import { Box, Flex, Grid } from "@chakra-ui/react"
+import { useState } from "react"
+import InfiniteScroll from "react-infinite-scroll-component"
+import { BeatLoader } from "react-spinners"
+import Post from "../Post"
+import PostSkeleton from "../Post/Skeleton"
 
 export default function Feed() {
-  const { posts, error, isLoading } = usePosts();
-  const [visiblePosts, setVisiblePosts] = useState(20);
+  const { posts, error, isLoading } = usePosts()
+  const [visiblePosts, setVisiblePosts] = useState(20)
 
-  if (error) return "Error";
+  if (error) return "Error"
 
   if (isLoading || !posts)
     return (
       <Grid
         p={1}
-        templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }}
+        templateColumns={{
+          base: "repeat(1, 1fr)",
+          md: "repeat(2, 1fr)",
+          lg: "repeat(3, 1fr)",
+        }}
         gap={6}
         minHeight="100vh"
+        width={"100%"}
       >
         {/* Render skeletons to match the initial visiblePosts count or any fixed number that fills the screen */}
         {Array.from({ length: visiblePosts }).map((_, i) => (
           <PostSkeleton key={i} /> // Add key prop to the PostSkeleton component
         ))}
       </Grid>
-    );
+    )
 
   return (
     <Box>
@@ -40,10 +45,14 @@ export default function Feed() {
             <BeatLoader size={8} color="darkgrey" />
           </Flex>
         }
-        style={{ overflow: 'hidden' }}
+        style={{ overflow: "hidden" }}
       >
         <Grid
-          templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }}
+          templateColumns={{
+            base: "repeat(1, 1fr)",
+            md: "repeat(2, 1fr)",
+            lg: "repeat(3, 1fr)",
+          }}
           gap={6}
         >
           {posts.length > 0 &&
@@ -55,5 +64,5 @@ export default function Feed() {
         </Grid>
       </InfiniteScroll>
     </Box>
-  );
+  )
 }
