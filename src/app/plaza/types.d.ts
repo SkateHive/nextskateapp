@@ -27,6 +27,14 @@ export interface CommentProps {
     active_votes: any[];
 }
 
+export interface CommentBoxProps {
+    user: any;
+    parentAuthor: string;
+    parentPermlink: string;
+    onCommentPosted: () => void;
+}
+
+
 export interface PlazaProps {
     URLPermlink?: string;
     URLAuthor?: string;
