@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Flex, Text, Image, Link, VStack, HStack, Badge } from '@chakra-ui/react';
 import axios, { AxiosResponse } from 'axios'; // Import AxiosResponse
 import { useState, useEffect } from 'react';
+
 type MarkdownProps = {
   node?: any;
   alt?: any;
@@ -121,78 +122,9 @@ export const MarkdownRenderers = {
     );
   },
   p: ({ children, ...props }: RendererProps) => <p {...props} style={{ color: 'white', fontSize: '18px', paddingBottom: '15px' }}>{children}</p>,
-  a: ({ children, href, ...props }: RendererProps) => {
-    try {
-      const url = new URL(href);
-      if (url.pathname.startsWith('/post/hive-173115')) {
-        const pathSegments = url.pathname.split('/').filter(segment => segment !== '');
-        const author = (pathSegments[2] || '').replace(/^@/, '');
-        const permlink = pathSegments[3] || '';
-        const [fetchedDetails, setFetchedDetails] = useState<FetchedDetailsObject | null>(null);
-        useEffect(() => {
-          if (author && permlink) {
-            const fetchPostDetails = async () => {
-              const postDetailsResponse = await getPost(author, permlink);
-              if (postDetailsResponse) {
-                setFetchedDetails({ [`${author}/${permlink}`]: postDetailsResponse });
-              }
-            };
-            fetchPostDetails();
-          } else {
-            console.warn('Author or permlink is empty. Unable to fetch post details.');
-          }
-        }, [author, permlink]);
-
-        if (!fetchedDetails) {
-          return <Box>Loading post details...</Box>;
-        }
-
-        const fetchedPost: any = fetchedDetails[`${author}/${permlink}`];
-        return (
-          <Flex>
-
-            <Box
-              border="1px solid orange"
-              borderRadius="10px"
-              padding="10px"
-              display="flex"
-              alignItems="center"
-              backgroundColor="#1E1E1E"
-              marginBottom="10px"
-              minW={"100%"}
-            >
-              <Image
-                src={fetchedPost[`${author}/${permlink}`].json_metadata['image'][0]}
-                alt={`${fetchedPost.author}'s avatar`}
-                width="80px"
-                height="auto"
-                borderRadius="10%"
-                margin="5px"
-              />
-              <VStack marginLeft={"5px"}>
-                <Link href={`https://www.skatehive.app/post${fetchedPost[`${author}/${permlink}`].url}`} color="orange">
-                  {fetchedPost[`${author}/${permlink}`].title}
-                </Link>
-                <HStack>
-                  <Text fontSize="16px" color="white">
-                    {' '} App: {' '}
-                    {fetchedPost[`${author}/${permlink}`].json_metadata['app']}
-                  </Text>
-                  <Badge border={"1px dashed limegreen"} color="limegreen" bg={"transparent"} borderRadius="5px" padding="5px">
-                    {fetchedPost[`${author}/${permlink}`].payout.toFixed(2)} USD
-                  </Badge>
-                </HStack>
-              </VStack>
-            </Box>
-          </Flex>
-        );
-      }
-    } catch (error) {
-      console.error('Error parsing SkateHive URL:', error);
-    }
-
-    // If not a SkateHive link, or if there's an error parsing the URL, render the link as usual
-    return <a {...props} href={href} style={{ color: 'orange' }}>{children}</a>;
+  a: ({ href, children, ...props }: RendererProps) => {
+    // Just return a colored link 
+    return <Link href={href}  {...props} > {children} </Link>;
   },
   h1: ({ children, ...props }: RendererProps) => <h1 {...props} style={{ fontWeight: 'bold', color: 'white', fontSize: '28px', paddingBottom: '10px', paddingTop: "10px" }}>{children}</h1>,
   h2: ({ children, ...props }: RendererProps) => <h2 {...props} style={{ fontWeight: 'bold', color: 'white', fontSize: '26px', paddingBottom: '8px', paddingTop: "10px" }}>{children}</h2>,

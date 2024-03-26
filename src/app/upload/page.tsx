@@ -81,11 +81,12 @@ export default function Upload() {
                     </HStack>
                     <Box overflowY="auto" border={"1px solid limegreen"} p="10px" borderRadius={"10px"}>
                         <ReactMarkdown
-                            children={value}
                             components={MarkdownRenderers}
                             rehypePlugins={[rehypeRaw]}
                             remarkPlugins={[remarkGfm]}
-                        />
+                        >
+                            {value}
+                        </ReactMarkdown>
 
 
                     </Box>
