@@ -1,11 +1,13 @@
 import { usePostContext } from "@/contexts/PostContext"
-import { Link } from "@chakra-ui/next-js"
-import { Image } from "@chakra-ui/react"
+import { Button, Image, useDisclosure } from "@chakra-ui/react"
+import PostModal from "../PostModal"
 
 export default function PostImage() {
+  const { isOpen, onOpen, onClose } = useDisclosure()
   let { post } = usePostContext()
+
   return (
-    <Link href={post.getFullUrl()} p={3}>
+    <Button onClick={onOpen} height={"auto"} p={3}>
       <Image
         border={"1px solid limegreen"}
         w="100%"
@@ -16,6 +18,7 @@ export default function PostImage() {
         alt={post.title}
         loading="lazy"
       />
-    </Link>
+      <PostModal isOpen={isOpen} onClose={onClose} />
+    </Button>
   )
 }
