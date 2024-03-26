@@ -1,7 +1,7 @@
 import { usePostContext } from "@/contexts/PostContext"
 import { useHiveUser } from "@/contexts/UserContext"
 import { SWR_POSTS_TAG } from "@/hooks/usePosts"
-import { KeychainSDK, Vote } from "keychain-sdk"
+import { vote } from "@/lib/hive/functions"
 import { Heart } from "lucide-react"
 import { useState } from "react"
 import { useSWRConfig } from "swr"
@@ -19,13 +19,12 @@ export default function Vote() {
   const handleVoteClick = async () => {
     if (hiveUser) {
       const voteWeight = isVoted ? 0 : 10000
-      const keychain = new KeychainSDK(window)
-      await keychain.vote({
+      await vote({
         username: hiveUser.name,
         permlink: post.permlink,
         author: post.author,
         weight: voteWeight,
-      } as Vote)
+      })
       setIsVoted((isVoted) => !isVoted)
       mutate(SWR_POSTS_TAG)
     }
