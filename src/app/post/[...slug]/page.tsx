@@ -4,7 +4,11 @@ import { Container, Flex, Heading, Text } from "@chakra-ui/react"
 import { Remarkable } from "remarkable"
 
 import type { Metadata } from "next"
-
+import React from "react"
+import { MarkdownRenderers } from "@/app/upload/MarkdownRenderers"
+import ReactMarkdown from "react-markdown"
+import rehypeRaw from "rehype-raw"
+import remarkGfm from "remark-gfm"
 // Revalidate requests in 10 minutes
 export const revalidate = 600
 
@@ -66,7 +70,12 @@ export default async function Page({ params }: { params: { slug: string } }) {
       <Heading m={6} size="md">
         {post?.title}
       </Heading>
-      <Text
+      <ReactMarkdown
+        components={MarkdownRenderers}
+        rehypePlugins={[rehypeRaw]}
+        remarkPlugins={[remarkGfm]}
+      >{markdownPost}</ReactMarkdown>
+      {/* <Text
         m={6}
         as={Flex}
         flexDir="column"
@@ -88,7 +97,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
             position: "relative!important",
           },
         }}
-      />
+      /> */}
     </Container>
   )
 }

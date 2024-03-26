@@ -12,9 +12,14 @@ const voteOnContent = async (username: string, permlink: string, author: string,
   if (!username) {
     throw new Error("Username is missing");
   }
-  
+
+  if (typeof window === "undefined") {
+    throw new Error("This function can only be used in the browser.");
+  }
+
   return new Promise<void>((resolve, reject) => {
-    (window as any).hive_keychain.requestVote(
+    console.log(window.hive_keychain)
+    window.hive_keychain.requestVote(
       username,
       permlink,
       author,

@@ -1,5 +1,4 @@
 "use client"
-
 import {
   Badge,
   Box,
@@ -76,7 +75,6 @@ export default function Plaza() {
       )
 
       setComments(allComments.reverse())
-
       setIsLoadingComments(false)
 
       return allComments
@@ -171,13 +169,13 @@ export default function Plaza() {
   }
 
   const hideCommentBox = (comment: CommentProps) => () => {
-    // const updatedComments = comments.map((c) => {
-    //   if (c.id === comment.id) {
-    //     return { ...c, showCommentBox: false };
-    //   }
-    //   return c;
-    // });
-    // setComments(updatedComments)
+    const updatedComments = comments.map((c) => {
+      if (c.id === comment.id) {
+        return { ...c, showCommentBox: false };
+      }
+      return c;
+    });
+    setComments(updatedComments)
   }
 
   const handlePostComment = async () => {
@@ -298,33 +296,32 @@ export default function Plaza() {
 
   // make a state so it changes the color of the voting button instantly
 
-  // const [userVoted, setUserVoted] = useState(false);
+  const [userVoted, setUserVoted] = useState(false);
 
-  // const didUserVoted = async () => {
-  //   console.log(comments)
-  //   const userVoted = comments.some((comment) => {
-  //     console.log(comment.active_votes)
-  //     return comment.active_votes.some((vote) => vote.voter === username);
-  //   });
-  //   setUserVoted(userVoted);
-  //   console.log("User voted:", userVoted);
-  // }
+  const didUserVoted = async () => {
+    const userVoted = comments.some((comment) => {
+      // console.log(comment.active_votes)
+      return comment.active_votes.some((vote) => vote.voter === username);
+    });
+    setUserVoted(userVoted);
+    console.log("User voted:", userVoted);
+  }
 
-  // useEffect(() => {
-  //   console.log("Comments:", comments);
-  //   didUserVoted();
-  // }
-  //   , [comments]);
+  useEffect(() => {
+    didUserVoted();
+  }
+    , [comments]);
 
   const handleVote = async (comment: CommentProps) => {
-    setVotingBoxOpen(true)
+    // setVotingBoxOpen(true)
     if (!user || !username) {
       console.error("Username is missing")
       return
     }
 
     try {
-      await voteOnContent(user.name, comment.permlink, comment.author, 10000)
+      console.log("Voting on comment:", comment.permlink, username, comment.author)
+      await voteOnContent(username, comment.permlink, comment.author, 10000)
     } catch (error: any) {
       console.error("Error voting:", error)
     }
@@ -395,36 +392,6 @@ export default function Plaza() {
     }
   }
 
-  // create votingbox modal
-  // const VotingBoxModal = () => {
-  //     return (
-  //         <Box
-  //             style={{
-  //                 position: "fixed",
-  //                 top: "0",
-  //                 left: "0",
-  //                 width: "50%",
-  //                 height: "50%",
-  //                 backgroundColor: "rgba(0, 0, 0, 0.5)",
-  //                 zIndex: 1000,
-  //                 display: "flex",
-  //                 justifyContent: "center",
-  //                 alignItems: "center",
-  //             }}
-  //         >
-  //             <CloseButton
-  //                 onClick={() => setVotingBoxOpen(false)}
-  //             />
-  //             {/* <VotingBox
-  //                 onClose={() => setVotingBoxOpen(false)}
-  //                 user={user.user?.name}
-  //                 author={"author"}
-  //                 permlink=""
-  //                 userVote={() => { }}
-  //             /> */}
-  //         </Box>
-  //     );
-  // }
 
   return (
     <Center>
@@ -506,6 +473,7 @@ export default function Plaza() {
               <HStack>
                 {isUploading ? (
                   <Spinner size="sm" />
+
                 ) : (
                   <>
                     <FaImage style={{ marginRight: "5px" }} />
@@ -537,7 +505,11 @@ export default function Plaza() {
               onClick={handlePostComment}
               disabled={isPostingComment}
             >
-              {isPostingComment ? <Spinner size="sm" /> : "🗣 Post"}
+              {isPostingComment ? <HStack>
+                <Spinner size="sm" />
+                <Text color={"white"}> | sending to blockchain...</Text>
+
+              </HStack> : "🗣 Post"}
             </Button>
           </Box>
           {commentContent.length > 1 && (

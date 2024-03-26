@@ -12,46 +12,47 @@ import { CommentProps, CommentsProps } from './types';
 // import comment box
 import CommentBox from './commentBox';
 import { MarkdownRenderers } from '../upload/MarkdownRenderers';
-
-
+import { useHiveUser } from '@/contexts/UserContext';
+import voteOnContent from './voting';
 
 const Comment: React.FC<CommentProps> = ({ author, body, created, net_votes, permlink, repliesFetched, payout }) => {
     const avatarUrl = `https://images.ecency.com/webp/u/${author}/avatar/small`;
     // const { user } = useAuthUser();
     const [localNetVotes, setNetVotes] = useState(net_votes);
+    const { hiveUser } = useHiveUser();
 
-    // const handleVote = async () => {
-    //     if (!user || !user.name) {
-    //         console.error("Username is missing");
-    //         return;
-    //     }
+    const handleVote = async () => {
+        if (!hiveUser || !hiveUser.name) {
+            console.error("Username is missing");
+            return;
+        }
 
-    //     try {
-    //         // Perform the vote operation
-    //         // await voteOnContent(user.name, permlink, author, 10000);
+        try {
+            // Perform the vote operation
+            await voteOnContent(hiveUser.name, permlink, author, 10000);
+            console.log("Voted successfully!");
+            if (author) {
+                const author_alert = author;
+                alert("You just voted on " + author_alert + "'s comment! 🛹");
+            }
 
-    //         if (author) {
-    //             const author_alert = author;
-    //             alert("You just voted on " + author_alert + "'s comment! 🛹");
-    //         }
+            // Update the net_votes only if the vote operation is successful
+            setNetVotes(net_votes + 1);
+        } catch (error: any) {
+            console.error("Error voting:", error);
 
-    //         // Update the net_votes only if the vote operation is successful
-    //         setNetVotes(net_votes + 1);
-    //     } catch (error: any) {
-    //         console.error("Error voting:", error);
-
-    //         // Check if the error code is -32003 and handle it differently
-    //         if (error.code === -32003) {
-    //             // Handle this specific error case (optional)
-    //             // You can add custom logic here if needed
-    //             // await voteOnContent(user.name, permlink, author, 0);
-    //             setNetVotes(localNetVotes - 1);
-    //         } else {
-    //             // Handle other errors (if any)
-    //             // You can add custom error handling logic here
-    //         }
-    //     }
-    // };
+            // Check if the error code is -32003 and handle it differently
+            if (error.code === -32003) {
+                // Handle this specific error case (optional)
+                // You can add custom logic here if needed
+                // await voteOnContent(user.name, permlink, author, 0);
+                setNetVotes(localNetVotes - 1);
+            } else {
+                // Handle other errors (if any)
+                // You can add custom error handling logic here
+            }
+        }
+    };
 
     // add a comment box below the comment on click of reply button
     const [showCommentBox, setShowCommentBox] = useState(false);
@@ -86,22 +87,6 @@ const Comment: React.FC<CommentProps> = ({ author, body, created, net_votes, per
                     remarkPlugins={[remarkGfm]}
                     components={MarkdownRenderers}
 
-
-                // components={{
-                //     img: ({ node, alt, src, title, ...props }) => (
-                //         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                //             <img {...props} alt={alt} src={src} title={title} style={{ maxWidth: '100%', height: 'auto', borderRadius: "10px", border: '1px solid limegreen' }} />
-                //         </div>
-                //     ),
-                //     a: ({ node, children, ...props }) => <a {...props} style={{ color: 'yellow' }}>{children}</a>,
-                //     p: ({ node, children, ...props }) => <p {...props} style={{ color: 'white' }}>{children}</p>,
-                //     h1: ({ node, children, ...props }) => <h1 {...props} style={{ fontWeight: 'bold', color: 'yellow', fontSize: '24px' }}>{children}</h1>,
-                //     h2: ({ node, children, ...props }) => <h2 {...props} style={{ fontWeight: 'bold', color: 'yellow', fontSize: '20px' }}>{children}</h2>,
-                //     h3: ({ node, children, ...props }) => <h3 {...props} style={{ fontWeight: 'bold', color: 'yellow', fontSize: '18px' }}>{children}</h3>,
-                //     blockquote: ({ node, children, ...props }) => <blockquote {...props} style={{ borderLeft: '3px solid limegreen', paddingLeft: '10px', fontStyle: 'italic' }}>{children}</blockquote>,
-                //     ol: ({ node, children, ...props }) => <ol {...props} style={{ paddingLeft: '20px' }}>{children}</ol>,
-                //     ul: ({ node, children, ...props }) => <ul {...props} style={{ paddingLeft: '20px' }}>{children}</ul>,
-                // }}
                 >
                     {body}
                 </ReactMarkdown>
@@ -109,31 +94,31 @@ const Comment: React.FC<CommentProps> = ({ author, body, created, net_votes, per
                     <Text fontSize="sm">{new Date(created).toLocaleString()}</Text>
                     <Flex gap={3}>
                         {/* reply button */}
-                        <Button leftIcon={<span></span>} variant="outline" size="sm" onClick={handleReplyClick}>
+                        <Button leftIcon={<span></span>} color={"white"} variant="outline" size="sm" onClick={handleReplyClick}>
                             <p>Reply</p>
                         </Button>
 
-                        {/* <Button leftIcon={<span></span>} variant="outline" size="sm" onClick={handleVote}> */}
-                        {/* 
-                        <img
-                            src='https://cdn.discordapp.com/emojis/1060351346416554136.gif?size=240&quality=lossless'
-                            alt="Vote"
-                            style={{
-                                maxWidth: '24px',
-                                maxHeight: '24px',
-                                marginRight: '5px',
-                            }}
-                        />
-                        <p>{localNetVotes}</p>
+                        <Button leftIcon={<span></span>} color={"white"} variant="outline" size="sm" onClick={handleVote}>
 
-                    </Button> */}
+                            <img
+                                src='https://cdn.discordapp.com/emojis/1060351346416554136.gif?size=240&quality=lossless'
+                                alt="Vote"
+                                style={{
+                                    maxWidth: '24px',
+                                    maxHeight: '24px',
+                                    marginRight: '5px',
+                                }}
+                            />
+                            <p>{localNetVotes}</p>
+
+                        </Button>
                     </Flex>
                 </Flex>
 
                 {/* comment box */}
                 {showCommentBox && (
                     <CommentBox
-                        user={'user'}
+                        user={hiveUser}
                         parentAuthor={author}
                         parentPermlink={permlink}
                         onCommentPosted={() => setShowCommentBox(false)}

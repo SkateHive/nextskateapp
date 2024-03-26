@@ -98,6 +98,14 @@ export default function AvatarLogin() {
         >
           Profile
         </MenuItem>
+        <MenuItem
+          bg="black"
+          icon={<User size={"16px"} />}
+          as={Link}
+          href={`/plaza`}
+        >
+          Plaza
+        </MenuItem>
         <MenuItem bg="black"
           icon={<LogOut size={"16px"} />} onClick={handleLogout}>
           Logoutt

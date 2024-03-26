@@ -259,6 +259,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({ user, parentAuthor, parentPerml
   const [isLoading, setIsLoading] = useState(false);
   const gf = new GiphyFetch('qXGQXTPKyNJByTFZpW7Kb0tEFeB90faV')
   const fetchGifs = (offset: number) => gf.trending({ offset, limit: 10 })
+
   useEffect(() => {
     // This useEffect should fetch GIFs either trending or based on searchTerm
     const fetch = async () => {
