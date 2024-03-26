@@ -40,9 +40,6 @@ export default function Navbar() {
             <Text>
               {pageName}
             </Text>
-            <Button onClick={() => console.log(hiveUser)}>
-              log
-            </Button>
           </HStack>
         </Heading>
         <Box mr={3}
