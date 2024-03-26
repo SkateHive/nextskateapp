@@ -9,6 +9,7 @@ import { getWebsiteURL } from "@/lib/utils"
 import { CardBody, Flex, background } from "@chakra-ui/react"
 import { Providers } from "./providers"
 
+
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {

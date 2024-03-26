@@ -62,25 +62,25 @@ type PostDetails = {
   newProperty: string;
 };
 
-const getPost = async (author: string, permlink: string): Promise<PostDetails | null> => {
-  try {
-    const response: AxiosResponse = await axios.post('https://api.hive.blog/', {
-      jsonrpc: '2.0',
-      id: 1,
-      method: 'bridge.get_discussion',
-      params: [author, permlink],
-    });
-    if (response.status === 200 && response.data.result) {
-      return response.data.result as PostDetails;
-    } else {
-      console.error('Failed to fetch post details:', response.status, response.data.error);
-      return null;
-    }
-  } catch (error: any) {
-    console.error('Error fetching post details:', error.message);
-    return null;
-  }
-};
+// const getPost = async (author: string, permlink: string): Promise<PostDetails | null> => {
+//   try {
+//     const response: AxiosResponse = await axios.post('https://api.hive.blog/', {
+//       jsonrpc: '2.0',
+//       id: 1,
+//       method: 'bridge.get_discussion',
+//       params: [author, permlink],
+//     });
+//     if (response.status === 200 && response.data.result) {
+//       return response.data.result as PostDetails;
+//     } else {
+//       console.error('Failed to fetch post details:', response.status, response.data.error);
+//       return null;
+//     }
+//   } catch (error: any) {
+//     console.error('Error fetching post details:', error.message);
+//     return null;
+//   }
+// };
 
 export const MarkdownRenderers = {
   img: ({ alt, src, title, ...props }: RendererProps) => {
@@ -220,7 +220,7 @@ export const MarkdownRenderers = {
       <video
         {...props}
         src={src}
-        style={{ borderRadius: '10px', marginBottom: '20px', border: '2px grey solid', minWidth: '60%', minHeight: '40%' }}
+        style={{ borderRadius: '10px', marginBottom: '20px', border: '2px grey solid', minWidth: '70%', minHeight: '50%' }}
       />
     </div>
   ),
