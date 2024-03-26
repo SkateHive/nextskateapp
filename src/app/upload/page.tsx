@@ -10,7 +10,6 @@ import { useEffect } from "react";
 import { useState } from "react";
 import ReactMarkdown from 'react-markdown';
 import rehypeSanitize from 'rehype-sanitize';
-// get user info from context 
 import useAuthHiveUser from "@/lib/useHiveAuth"
 import { MarkdownRenderers } from "./MarkdownRenderers";
 import rehypeRaw from 'rehype-raw';
@@ -26,8 +25,6 @@ export default function Upload() {
     const handleTitleChange = (e: any) => {
         setTitle(e.target.value);
     }
-
-
     const handleSubmit = () => {
         console.log('title:', title);
         console.log('content:', value);
@@ -47,39 +44,52 @@ export default function Upload() {
                     </Box>
                     <Box>
                         <Text>Content</Text>
-                        <MDEditor
-                            onChange={(value, event, state) => setValue(value || "")}
-                            value={value}
-                            previewOptions={{
-                                rehypePlugins: [[rehypeSanitize]],
-                            }}
-                            preview="edit"
-                            minHeight={600}
-
-                        />
+                        <div style={{ height: '800px' }}>
+                            <MDEditor
+                                onChange={(value, event, state) => setValue(value || "")}
+                                value={value}
+                                previewOptions={{
+                                    rehypePlugins: [[rehypeSanitize]],
+                                }}
+                                preview="edit"
+                                height={'100%'}
+                            />
+                        </div>
                     </Box>
                 </Box>
-                <Box width={{ base: '100%', md: '50%' }} padding="4">
+                <Box width={{ base: '100%', md: '50%' }} padding="4" border={"1px solid limegreen"} borderRadius={"20px"}
+                >
                     <HStack>
                         <Box
                             border={"1px solid limegreen"}
                             p={5}
                             borderRadius={10}
-
                         >
 
                             <Avatar
                                 name={hiveUser?.name}
                                 src={hiveUser?.metadata?.profile.profile_image}
                                 borderRadius={"100%"}
-                                size="md"
+                                boxSize={'88px'}
                                 bg="gray.200"
                             />
+
                             <Text>{hiveUser?.name}</Text>
                         </Box>
-                        <Text>{title} </Text>
+                        <Box
+                            display="flex"
+                            justifyContent="center" // Horizontally center
+                            alignItems="center" // Vertically center
+                            border="1px solid limegreen"
+                            p={7}
+                            borderRadius={10}
+                            width="100%"
+                            minHeight="150px" // Ensure this is enough to observe vertical centering
+                        >
+                            <Text fontSize={"38px"}>{title} </Text>
+                        </Box>
                     </HStack>
-                    <Box overflowY="auto" border={"1px solid limegreen"} p="10px" borderRadius={"10px"}>
+                    <Box overflowY="auto" p="10px" borderRadius={"10px"} border={"1px solid limegreen"} height={"80%"}>
                         <ReactMarkdown
                             components={MarkdownRenderers}
                             rehypePlugins={[rehypeRaw]}
@@ -87,12 +97,13 @@ export default function Upload() {
                         >
                             {value}
                         </ReactMarkdown>
-
-
+                    </Box>
+                    <Box p={5}>
+                        <Button onClick={handleSubmit}>Submit</Button>
                     </Box>
                 </Box>
             </Flex>
-            <Button onClick={handleSubmit}>Submit</Button>
+
         </Box>
     )
 }
