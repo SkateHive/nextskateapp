@@ -100,7 +100,7 @@ export default function AvatarLogin() {
         </MenuItem>
         <MenuItem bg="black"
           icon={<LogOut size={"16px"} />} onClick={handleLogout}>
-          Logout
+          Logoutt
         </MenuItem>
       </MenuList>
     </Menu>
