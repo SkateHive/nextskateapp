@@ -15,7 +15,8 @@ import {
 import { http } from "viem"
 import { WagmiProvider } from "wagmi"
 import { base } from "wagmi/chains"
-const config = getDefaultConfig({
+
+const wagmiConfig = getDefaultConfig({
   appName: "SkateHive",
   projectId: "52f3a9b032f5caf26719af6939715629",
   chains: [base],
@@ -28,7 +29,7 @@ const queryClient = new QueryClient()
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <WagmiProvider config={config}>
+    <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider
           theme={darkTheme({
