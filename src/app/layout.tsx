@@ -1,16 +1,15 @@
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
+import { Share_Tech_Mono } from "next/font/google"
 
 import Favicon from "@/components/FaviconLinks"
 import Navbar from "@/components/Navbar"
 import { getWebsiteURL } from "@/lib/utils"
-import { CardBody, Flex, background } from "@chakra-ui/react"
+import { Flex } from "@chakra-ui/react"
 import { Providers } from "./providers"
 
-
-const inter = Inter({ subsets: ["latin"] })
+const share_tech_mono = Share_Tech_Mono({ subsets: ["latin"], weight: "400" })
 
 export const metadata: Metadata = {
   // metadataBase: new URL(getWebsiteURL()),
@@ -31,7 +30,10 @@ export default function RootLayout({
       <head>
         <Favicon />
       </head>
-      <body style={{ backgroundColor: "black", color: "white" }}>
+      <body
+        className={share_tech_mono.className}
+        style={{ backgroundColor: "black", color: "white" }}
+      >
         <Providers>
           <Navbar />
           <Flex px={[1, 3]} pt={0} overflow="visible">
