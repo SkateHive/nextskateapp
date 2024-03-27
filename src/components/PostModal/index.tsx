@@ -5,7 +5,7 @@ import ReactMarkdown from "react-markdown"
 import { MarkdownRenderers } from "@/app/upload/MarkdownRenderers"
 import { usePostContext } from "@/contexts/PostContext"
 import {
-  Container,
+  Box,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -31,23 +31,33 @@ interface PostModalInterface {
 
 export function PostModal({ isOpen, onClose }: PostModalInterface) {
   const { post } = usePostContext()
-  const { comments, isLoading, error } = useComments(post.author, post.permlink)
+  const { comments } = useComments(post.author, post.permlink)
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size={"6xl"}>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      size={{ base: "lg", md: "2xl", lg: "6xl", "2xl": "full" }}
+    >
       <ModalOverlay />
       <ModalContent
         bg={"black"}
         border={"1.4px solid limegreen"}
         borderRadius={32}
         p={4}
+        w={"100%"}
       >
         <ModalHeader>
           <Header />
         </ModalHeader>
         <ModalCloseButton mr={4} mt={2} color={"red"} />
-        <ModalBody display={"flex"} minH={"60vh"} gap={6}>
-          <Container
+        <ModalBody
+          display={"flex"}
+          flexDir={{ base: "column", lg: "row" }}
+          minH={"60vh"}
+          gap={6}
+        >
+          <Box
             bg={"black"}
             flex={1}
             p={4}
@@ -61,8 +71,8 @@ export function PostModal({ isOpen, onClose }: PostModalInterface) {
             >
               {post.body}
             </ReactMarkdown>
-          </Container>
-          <Container
+          </Box>
+          <Box
             bg={"black"}
             flex={1}
             p={4}
@@ -83,7 +93,7 @@ export function PostModal({ isOpen, onClose }: PostModalInterface) {
                 </Text>
               )}
             </Stack>
-          </Container>
+          </Box>
         </ModalBody>
         <ModalFooter></ModalFooter>
       </ModalContent>
