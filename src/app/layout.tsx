@@ -26,14 +26,16 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="pt-br">
+    <html lang="pt-br" >
       <head>
         <Favicon />
       </head>
       <body
         className={share_tech_mono.className}
-        style={{ backgroundColor: "black", color: "white" }}
-      >
+        style={{
+          background: "linear-gradient(to bottom right, black, black, black,grey, black, black)", // Changed gradient direction to bottom right and made violet darker
+          color: "white"
+        }}      >
         <Providers>
           <Navbar />
           <Flex px={[1, 3]} pt={0} overflow="visible">

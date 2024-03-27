@@ -41,7 +41,7 @@ export default function Navbar() {
               src="https://www.skatehive.app/assets/skatehive.jpeg"
               alt="SkateHive"
             />
-            <Text>{pageName}</Text>
+            {/* <Text>{pageName}</Text> */}
           </HStack>
         </Heading>
         <Box mr={3}>
@@ -54,7 +54,7 @@ export default function Navbar() {
                 _hover={{ bg: "transparent", color: "limegreen" }}
               >
                 {" "}
-                + Upload
+                + Upload 🛹
               </Button>
             </>
           ) : (

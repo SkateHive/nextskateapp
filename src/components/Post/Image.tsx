@@ -9,7 +9,7 @@ export default function PostImage() {
   return (
     <Link m={2} onClick={onOpen} height={"auto"}>
       <Image
-        border={"1px solid limegreen"}
+        border={"2px solid grey"}
         w="100%"
         src={post.getThumbnail()}
         aspectRatio={16 / 9}

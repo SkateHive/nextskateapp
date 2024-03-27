@@ -53,7 +53,7 @@ export default function Header() {
         <Tooltip label="Earnings">
           <Flex gap={1} align={"center"}>
             <FaHive strokeWidth={"1.5"} color="red" size={"20px"} />
-            <Text color={"gold"} fontSize={"18px"} fontWeight={"400"}>
+            <Text color={"green.200"} fontSize={"22px"} fontWeight={"bold"}>
               ${post.getEarnings().toFixed(2)}
             </Text>
           </Flex>

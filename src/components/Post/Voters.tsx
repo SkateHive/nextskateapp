@@ -74,7 +74,8 @@ function PostVotersModal({ votes, onClose, isOpen }: PostVotersModalProps) {
       size={{ base: "full", md: "md" }}
     >
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent
+        bg={"black"}>
         <ModalHeader>Voters</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
