@@ -23,6 +23,7 @@ import { useComments } from "@/hooks/comments"
 import rehypeRaw from "rehype-raw"
 import remarkGfm from "remark-gfm"
 import PostComment from "../Post/Comment"
+import { transform3SpeakContent } from "@/lib/utils"
 
 interface PostModalInterface {
   isOpen: boolean
@@ -32,7 +33,7 @@ interface PostModalInterface {
 export function PostModal({ isOpen, onClose }: PostModalInterface) {
   const { post } = usePostContext()
   const { comments } = useComments(post.author, post.permlink)
-
+  const postBody = transform3SpeakContent(post.body)
   return (
     <Modal
       isOpen={isOpen}
@@ -69,7 +70,7 @@ export function PostModal({ isOpen, onClose }: PostModalInterface) {
               rehypePlugins={[rehypeRaw]}
               remarkPlugins={[remarkGfm]}
             >
-              {post.body}
+              {postBody}
             </ReactMarkdown>
           </Box>
           <Box

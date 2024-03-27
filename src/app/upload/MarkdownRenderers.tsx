@@ -190,7 +190,7 @@ export const MarkdownRenderers = {
       <iframe
         {...props}
         src={src}
-        style={{ borderRadius: '20px', marginBottom: '10px', minWidth: '100%', minHeight: '352px' }}
+        style={{ borderRadius: '20px', marginBottom: '10px', minWidth: '100%', minHeight: '330px' }}
       />
     </Box>
   ),
