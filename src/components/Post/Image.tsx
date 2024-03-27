@@ -1,5 +1,5 @@
 import { usePostContext } from "@/contexts/PostContext"
-import { Button, Image, useDisclosure, Link } from "@chakra-ui/react"
+import { Image, Link, useDisclosure } from "@chakra-ui/react"
 import PostModal from "../PostModal"
 
 export default function PostImage() {
@@ -7,7 +7,7 @@ export default function PostImage() {
   let { post } = usePostContext()
 
   return (
-    <Link onClick={onOpen} height={"auto"} m={2}>
+    <Link m={2} onClick={onOpen} height={"auto"} m={2}>
       <Image
         border={"1px solid limegreen"}
         w="100%"
