@@ -6,6 +6,7 @@ import { Card } from "@chakra-ui/react"
 import Footer from "./Footer"
 import Header from "./Header"
 import PostImage from "./Image"
+import { transform } from "next/dist/build/swc"
 
 export interface PostComponentProps {
   postData: PostProps
@@ -21,8 +22,11 @@ export default function Post({ postData }: PostComponentProps) {
       boxShadow="none"
       borderRadius="lg"
       _hover={{
-        outline: "1px solid limegreen",
-        outlineColor: "gray.100",
+        transform: "scale(1.04)", // Added rotation here
+      }}
+      _active={{
+        transform: "scale(1.02)",
+        boxShadow: "0 0 100px limegreen", // Added glow effect here
       }}
       mt={2}
     >

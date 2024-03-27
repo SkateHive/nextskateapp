@@ -38,9 +38,9 @@ export function PostModal({ isOpen, onClose }: PostModalInterface) {
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      size={{ base: "lg", md: "2xl", lg: "6xl", "2xl": "full" }}
+      size={{ base: "lg", md: "2xl", lg: "4xl", "2xl": "6xl" }}
     >
-      <ModalOverlay />
+      <ModalOverlay style={{ backdropFilter: 'blur(5px)' }} />
       <ModalContent
         bg={"black"}
         border={"1.4px solid limegreen"}
