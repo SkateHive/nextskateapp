@@ -40,6 +40,7 @@ export default function Navbar() {
               boxSize={"48px"}
               src="https://www.skatehive.app/assets/skatehive.jpeg"
               alt="SkateHive"
+              borderRadius={"5px"}
             />
             {/* <Text>{pageName}</Text> */}
           </HStack>

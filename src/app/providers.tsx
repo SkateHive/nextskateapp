@@ -15,7 +15,6 @@ import {
 import { http } from "viem"
 import { WagmiProvider } from "wagmi"
 import { base } from "wagmi/chains"
-
 const config = getDefaultConfig({
   appName: "SkateHive",
   projectId: "52f3a9b032f5caf26719af6939715629",

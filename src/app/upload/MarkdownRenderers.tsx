@@ -190,7 +190,7 @@ export const MarkdownRenderers = {
       <iframe
         {...props}
         src={src}
-        style={{ borderRadius: '20px', marginBottom: '10px', minWidth: '100%', minHeight: '330px' }}
+        style={{ borderRadius: '20px', marginBottom: '10px', minWidth: '80%', minHeight: '330px' }}
       />
     </Box>
   ),
@@ -220,7 +220,7 @@ export const MarkdownRenderers = {
       <video
         {...props}
         src={src}
-        style={{ borderRadius: '10px', marginBottom: '20px', border: '2px grey solid', minWidth: '70%', minHeight: '50%' }}
+        style={{ borderRadius: '10px', marginBottom: '20px', border: '2px grey solid', minWidth: '7s0%', minHeight: '50%' }}
       />
     </div>
   ),
