@@ -47,7 +47,12 @@ function LoginModal({
   return (
     <Modal isOpen={isOpen} isCentered onClose={onClose}>
       <ModalOverlay />
-      <ModalContent bg={"black"} mx={4}>
+      <ModalContent
+        bg={"black"}
+        mx={4}
+        border={"1.2px solid limegreen"}
+        boxShadow={"0 0 20px limegreen"}
+      >
         <ModalHeader>Log In</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
