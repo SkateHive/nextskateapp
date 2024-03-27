@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
 import { PostsProvider } from "@/contexts/PostsContext"
 import { UserProvider } from "@/contexts/UserContext"
-import { ChakraProvider } from "@chakra-ui/react"
+import { ChakraProvider, extendTheme } from "@chakra-ui/react"
 
 import {
   RainbowKitProvider,
@@ -15,6 +15,16 @@ import {
 import { http } from "viem"
 import { WagmiProvider } from "wagmi"
 import { base } from "wagmi/chains"
+
+const chakraTheme = extendTheme({
+  styles: {
+    global: {
+      body: {
+        bg: "black",
+      },
+    },
+  },
+})
 
 const wagmiConfig = getDefaultConfig({
   appName: "SkateHive",
@@ -37,7 +47,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
             borderRadius: "small",
           })}
         >
-          <ChakraProvider>
+          <ChakraProvider theme={chakraTheme}>
             <UserProvider>
               <PostsProvider>{children}</PostsProvider>
             </UserProvider>
