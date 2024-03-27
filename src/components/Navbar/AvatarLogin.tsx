@@ -7,8 +7,6 @@ import {
   FormControl,
   FormErrorMessage,
   Input,
-  InputGroup,
-  InputLeftElement,
   Menu,
   MenuButton,
   MenuItem,
@@ -25,7 +23,7 @@ import {
   VStack,
   useDisclosure,
 } from "@chakra-ui/react"
-import { AtSign, Bell, LogIn, LogOut, User } from "lucide-react"
+import { Bell, LogIn, LogOut, User } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 import { useSWRConfig } from "swr"
@@ -52,7 +50,6 @@ export default function AvatarLogin() {
       setTimeout(() => {
         console.log("Logged in")
       }, 10000)
-
     } catch (error) {
       console.error(error)
       setErrorMessage(error ? error.toString() : "Unknow error")
@@ -65,12 +62,9 @@ export default function AvatarLogin() {
     logout()
   }
 
-
-
-
   return hiveUser ? (
     <Menu placement="bottom-end">
-      <MenuButton >
+      <MenuButton>
         <Tooltip label="Profile">
           <Avatar
             name={hiveUser.name}
@@ -106,9 +100,12 @@ export default function AvatarLogin() {
         >
           Plaza
         </MenuItem>
-        <MenuItem bg="black"
-          icon={<LogOut size={"16px"} />} onClick={handleLogout}>
-          Logoutt
+        <MenuItem
+          bg="black"
+          icon={<LogOut size={"16px"} />}
+          onClick={handleLogout}
+        >
+          Logout
         </MenuItem>
       </MenuList>
     </Menu>
@@ -126,7 +123,7 @@ export default function AvatarLogin() {
         <Button
           aria-label="Log in"
           rightIcon={<LogIn size={"16px"} />}
-          size={"sm"}
+          size={"md"}
           onClick={onOpen}
         >
           Log in
@@ -134,14 +131,12 @@ export default function AvatarLogin() {
       )}
       <Modal isOpen={isOpen} isCentered onClose={onClose}>
         <ModalOverlay />
-        <ModalContent bg={'black'} mx={4}>
+        <ModalContent bg={"black"} mx={4}>
           <ModalHeader>Log In</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <FormControl isInvalid={Boolean(errorMessage)}>
-
               <VStack>
-
                 <Input
                   placeholder="Hive Username"
                   onChange={(event) =>
