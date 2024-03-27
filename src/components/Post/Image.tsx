@@ -7,7 +7,7 @@ export default function PostImage() {
   let { post } = usePostContext()
 
   return (
-    <Link m={2} onClick={onOpen} height={"auto"} m={2}>
+    <Link m={2} onClick={onOpen} height={"auto"}>
       <Image
         border={"1px solid limegreen"}
         w="100%"
