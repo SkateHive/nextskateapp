@@ -9,6 +9,7 @@ import { getWebsiteURL } from "@/lib/utils"
 import { CardBody, Flex, background } from "@chakra-ui/react"
 import { Providers } from "./providers"
 
+// Removed '@fontsource/share-tech-mono' import as it's causing issues
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -31,6 +32,7 @@ export default function RootLayout({
       <head>
         <Favicon />
       </head>
+      <body style={{ backgroundColor: "black", color: "white" }}></body>
       <body style={{ backgroundColor: "black", color: "white" }}>
         <Providers>
           <Navbar />

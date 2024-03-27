@@ -1,4 +1,4 @@
-import { Text, Image } from "@chakra-ui/react"
+import { Text, Image, Box } from "@chakra-ui/react"
 const randomSentences = [
   "Don't mall grab, or do it, you do you...",
   "'Ok to push Mongo, it is! -master yoda'",
@@ -28,7 +28,9 @@ export default function Loading() {
   const randomSentence = randomSentences[randomIndex];
 
   return (
-    <center>
+    <Box
+      width={"100%"}
+    >
       <Text marginBottom={"12px"} >{randomSentence}</Text>
 
       <Image
@@ -36,6 +38,6 @@ export default function Loading() {
         boxSize="100%"
         src="/pepenation.gif"
       />
-    </center>
+    </Box>
   );
 }
