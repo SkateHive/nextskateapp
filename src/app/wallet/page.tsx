@@ -36,8 +36,6 @@ function Wallet() {
 
 function HiveBox() {
   const { hiveUser } = useHiveUser()
-  if (!hiveUser) return null
-
   return (
     <VStack
       w={"100%"}
@@ -51,23 +49,25 @@ function HiveBox() {
         Hive Wallet
       </Text>
       <Divider mt={-6} color="limegreen" />
-      <VStack align={"normal"}>
-        <HStack>
-          <Avatar
-            name={hiveUser.name}
-            src={hiveUser.metadata?.profile.profile_image}
-            borderRadius={"100%"}
-            size="md"
-            bg="gray.200"
-          />
-          <Text fontSize={22}>{hiveUser.name}</Text>
-        </HStack>
-        <VStack align={"normal"} gap={0}>
-          <Text>You Own: $5.43</Text>
-          <Text>Wallet Worth: $5.43</Text>
-          <Text>Available : $0.00</Text>
+      {hiveUser ? (
+        <VStack align={"normal"}>
+          <HStack>
+            <Avatar
+              name={hiveUser.name}
+              src={hiveUser.metadata?.profile.profile_image}
+              borderRadius={"100%"}
+              size="md"
+              bg="gray.200"
+            />
+            <Text fontSize={22}>{hiveUser.name}</Text>
+          </HStack>
+          <VStack align={"normal"} gap={0}>
+            <Text>You Own: $5.43</Text>
+            <Text>Wallet Worth: $5.43</Text>
+            <Text>Available : $0.00</Text>
+          </VStack>
         </VStack>
-      </VStack>
+      ) : null}
     </VStack>
   )
 }
@@ -75,6 +75,7 @@ function HiveBox() {
 function EthBox() {
   const account = useAccount()
   const [userTokens, setUserTokens] = useState<OwnedToken[] | null>()
+
   useEffect(() => {
     async function fetchTokens(ethAddress: string) {
       const userTokens = await alchemy.core.getTokensForOwner(ethAddress)
