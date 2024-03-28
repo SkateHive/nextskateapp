@@ -10,7 +10,6 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
-  ModalFooter,
   ModalHeader,
   ModalOverlay,
   Spinner,
@@ -53,47 +52,52 @@ function LoginModal({
         border={"1.2px solid limegreen"}
         boxShadow={"0 0 20px limegreen"}
       >
-        <ModalHeader>Log In</ModalHeader>
+        <ModalHeader>Hive Log In</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <FormControl isInvalid={Boolean(errorMessage)}>
-            <VStack>
+            <VStack align={"normal"}>
               <Input
+                borderColor={"green.600"}
+                color={"limegreen"}
+                _placeholder={{ color: "limegreen", opacity: 0.4 }}
+                focusBorderColor="limegreen"
                 placeholder="Hive Username"
                 onChange={(event) =>
                   setUsername(event.target.value.toLowerCase())
                 }
               />
-              <Input
+              {/* <Input
                 placeholder="Private Key"
                 onChange={(event) =>
                   setUsername(event.target.value.toLowerCase())
                 }
-              />
+              /> */}
+              <Button
+                w={"100%"}
+                onClick={() => doLogin()}
+                colorScheme="green"
+                variant={"outline"}
+                disabled={isLogginIn}
+              >
+                {isLogginIn ? <Spinner size={"sm"} /> : "Continue"}
+              </Button>
+              {environment === "development" && (
+                <Button
+                  w={"100%"}
+                  onClick={() => doLogin(true)}
+                  colorScheme="red"
+                  variant={"ghost"}
+                >
+                  Continue As (DEV)
+                </Button>
+              )}
             </VStack>
             {Boolean(errorMessage) && (
               <FormErrorMessage>{errorMessage}</FormErrorMessage>
             )}
           </FormControl>
         </ModalBody>
-        <ModalFooter>
-          {isLogginIn ? (
-            <Button w={"100%"} disabled>
-              <Spinner size={"sm"} />
-            </Button>
-          ) : (
-            <VStack w={"100%"}>
-              <Button w={"100%"} onClick={() => doLogin()}>
-                Continue
-              </Button>
-              {environment === "development" && (
-                <Button w={"100%"} onClick={() => doLogin(true)}>
-                  Continue As (DEV)
-                </Button>
-              )}
-            </VStack>
-          )}
-        </ModalFooter>
       </ModalContent>
     </Modal>
   )
