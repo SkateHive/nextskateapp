@@ -6,7 +6,7 @@ import { Share_Tech_Mono } from "next/font/google"
 import Favicon from "@/components/FaviconLinks"
 import Navbar from "@/components/Navbar"
 import { getWebsiteURL } from "@/lib/utils"
-import { Flex } from "@chakra-ui/react"
+import { ColorModeScript, Flex } from "@chakra-ui/react"
 import { Providers } from "./providers"
 
 const share_tech_mono = Share_Tech_Mono({ subsets: ["latin"], weight: "400" })
@@ -26,16 +26,12 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="pt-br" >
+    <html lang="pt-br">
       <head>
         <Favicon />
       </head>
-      <body
-        className={share_tech_mono.className}
-        style={{
-          background: "linear-gradient(to bottom right, black, black, black,grey, black, black)", // Changed gradient direction to bottom right and made violet darker
-          color: "white"
-        }}      >
+      <body className={share_tech_mono.className}>
+        <ColorModeScript initialColorMode="dark" />
         <Providers>
           <Navbar />
           <Flex px={[1, 3]} pt={0} overflow="visible">

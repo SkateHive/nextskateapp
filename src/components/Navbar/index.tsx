@@ -11,7 +11,6 @@ import {
   Heading,
   IconButton,
   Image,
-  Text,
   Tooltip,
 } from "@chakra-ui/react"
 import { ConnectButton } from "@rainbow-me/rainbowkit"
@@ -32,7 +31,7 @@ export default function Navbar() {
   const router = useRouter()
   const { hiveUser, loginWithHive, logout, isLoggedIn } = useAuthHiveUser()
   return (
-    <nav>
+    <Box>
       <Flex m={3} align="center" justify="space-between">
         <Heading ml={3} size="2xl">
           <HStack>
@@ -79,6 +78,6 @@ export default function Navbar() {
         </HStack>
       </Flex>
       <Divider mb={[0, 3]} color="darkgray" />
-    </nav>
+    </Box>
   )
 }
