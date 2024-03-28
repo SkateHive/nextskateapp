@@ -21,7 +21,7 @@ export default function Upload() {
     const [content, setContent] = useState('');
     const [preview, setPreview] = useState('');
     const { hiveUser, loginWithHive, logout, isLoggedIn } = useAuthHiveUser();
-
+    const [instaURL, setInstaURL] = useState('');
     const handleTitleChange = (e: any) => {
         setTitle(e.target.value);
     }
@@ -41,10 +41,12 @@ export default function Upload() {
                     <Box>
                         <Text>Title</Text>
                         <Input placeholder="Insert title, dumbass" type="text" value={title} onChange={handleTitleChange} />
+                        <Text>Upload from Instagram</Text>
+                        <Input placeholder="" type="text" value={instaURL} />
                     </Box>
                     <Box>
                         <Text>Content</Text>
-                        <div style={{ height: '800px' }}>
+                        <Box style={{ height: '800px' }}>
                             <MDEditor
                                 onChange={(value, event, state) => setValue(value || "")}
                                 value={value}
@@ -54,7 +56,7 @@ export default function Upload() {
                                 preview="edit"
                                 height={'100%'}
                             />
-                        </div>
+                        </Box>
                     </Box>
                 </Box>
                 <Box width={{ base: '100%', md: '50%' }} padding="4" border={"1px solid limegreen"} borderRadius={"20px"}
