@@ -4,16 +4,17 @@
 
 'use client'
 
-import { Box, Button, Heading, Text, Input, HStack, Flex, Avatar } from "@chakra-ui/react"
+import { Box, Button, Heading, Text, Input, HStack, Flex, Avatar, Center, Icon } from "@chakra-ui/react"
 import MDEditor, { commands } from "@uiw/react-md-editor";
-import { useEffect } from "react";
-import { useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import ReactMarkdown from 'react-markdown';
 import rehypeSanitize from 'rehype-sanitize';
 import useAuthHiveUser from "@/lib/useHiveAuth"
 import { MarkdownRenderers } from "./MarkdownRenderers";
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
+import { FaPlus } from "react-icons/fa"; // This is assuming you're using react-icons for icons
+
 
 export default function Upload() {
     const [value, setValue] = useState("Write your post, you can use markdown and html dont be lazy");
@@ -34,19 +35,72 @@ export default function Upload() {
         setPreview(content);
     }, [content])
 
+
+    const [isDragging, setIsDragging] = useState(false);
+
+    const onDragEnter = useCallback((event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        setIsDragging(true);
+    }, []);
+
+    const onDragLeave = useCallback((event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+
+        setIsDragging(false);
+    }, []);
+
+    const onDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        setIsDragging(true);
+    }, []);
+
+    const onDrop = useCallback((event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        setIsDragging(false); // Reset drag state
+        event.stopPropagation();
+
+        const files = event.dataTransfer.files;
+        if (files.length) {
+            // Process files here
+            // For example, create a markdown image or video link and append to the editor value
+            console.log('Dropped files:', files);
+        }
+    }, []);
+
+
+
     return (
         <Box width="100%">
             <Flex direction={{ base: 'column', md: 'row' }} width="100%">
                 <Box width={{ base: '100%', md: '50%' }} padding="4">
                     <Box>
-                        <Text>Title</Text>
+                        <Text color={"white"}>Title</Text>
                         <Input placeholder="Insert title, dumbass" type="text" value={title} onChange={handleTitleChange} />
-                        <Text>Upload from Instagram</Text>
-                        <Input placeholder="" type="text" value={instaURL} />
+                        {/* <Text color={"white"}>Upload from Instagram</Text>
+                        <Input placeholder="" type="text" value={instaURL} /> */}
                     </Box>
-                    <Box>
-                        <Text>Content</Text>
-                        <Box style={{ height: '800px' }}>
+                    <Box marginTop={3}>
+                        <Text color={"white"}>Content</Text>
+                        <Box
+                            onDragOver={onDragOver}
+                            onDragEnter={onDragEnter}
+                            onDragLeave={onDragLeave}
+                            onDrop={onDrop}
+                            style={{
+                                height: '800px',
+                                border: isDragging ? '2px dashed limegreen' : '2px dashed transparent',
+                                position: 'relative',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                transition: 'border 0.2s ease-in-out',
+                            }}
+                        >
+                            {isDragging && (
+                                <Center position="absolute" top="50%" left="50%" transform="translate(-50%, -50%)">
+                                    <Icon as={FaPlus} w={10} h={10} color="limegreen" />
+                                </Center>
+                            )}
                             <MDEditor
                                 onChange={(value, event, state) => setValue(value || "")}
                                 value={value}
@@ -55,6 +109,7 @@ export default function Upload() {
                                 }}
                                 preview="edit"
                                 height={'100%'}
+                                style={{ width: '100%', opacity: isDragging ? 0.3 : 1 }} // Adjust the opacity based on dragging state
                             />
                         </Box>
                     </Box>
