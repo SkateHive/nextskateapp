@@ -9,7 +9,7 @@ import {
   Tooltip,
   useDisclosure,
 } from "@chakra-ui/react"
-import { ScanEye } from "lucide-react"
+import { Eye } from "lucide-react"
 import moment from "moment-timezone"
 import Link from "next/link"
 import { useEffect, useState } from "react"
@@ -74,7 +74,7 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
               onClick={onOpen}
               mt={1}
               cursor={"pointer"}
-              as={ScanEye}
+              as={Eye}
               h={7}
               w={7}
               color="limegreen"
