@@ -1,22 +1,22 @@
 "use client"
 
+import useAuthHiveUser from "@/lib/useHiveAuth"
 import { Link } from "@chakra-ui/next-js"
 import {
   Box,
+  Button,
   Divider,
   Flex,
+  HStack,
   Heading,
   IconButton,
-  Tooltip,
   Image,
-  HStack,
-  Text,
-  Button,
+  Tooltip,
 } from "@chakra-ui/react"
+import { ConnectButton } from "@rainbow-me/rainbowkit"
 import { Home } from "lucide-react"
 import { usePathname, useRouter } from "next/navigation"
 import AvatarLogin from "./AvatarLogin"
-import useAuthHiveUser from "@/lib/useHiveAuth"
 function getPageName(pathname: string) {
   if (pathname === "/") return "SkateHive"
   if (pathname === "/notifications") return "Notifications"
@@ -31,23 +31,20 @@ export default function Navbar() {
   const router = useRouter()
   const { hiveUser, loginWithHive, logout, isLoggedIn } = useAuthHiveUser()
   return (
-    <nav>
+    <Box>
       <Flex m={3} align="center" justify="space-between">
         <Heading ml={3} size="2xl">
           <HStack>
-
-            <Image boxSize={"48px"} src="https://www.skatehive.app/assets/skatehive.jpeg" alt="SkateHive" />
-            <Text>
-              {pageName}
-            </Text>
-            <Button onClick={() => console.log(hiveUser)}>
-              log
-            </Button>
+            <Image
+              boxSize={"48px"}
+              src="https://www.skatehive.app/assets/skatehive.jpeg"
+              alt="SkateHive"
+              borderRadius={"5px"}
+            />
+            {/* <Text>{pageName}</Text> */}
           </HStack>
         </Heading>
-        <Box mr={3}
-
-        >
+        <Box mr={3}>
           {pathname === "/" ? (
             <>
               <Button
@@ -55,8 +52,10 @@ export default function Navbar() {
                 bg={"transparent"}
                 color={"white"}
                 _hover={{ bg: "transparent", color: "limegreen" }}
-              > + Upload</Button>
-              <AvatarLogin />
+              >
+                {" "}
+                + Upload 🛹
+              </Button>
             </>
           ) : (
             <Tooltip label="Return Home">
@@ -73,8 +72,12 @@ export default function Navbar() {
             </Tooltip>
           )}
         </Box>
+        <HStack>
+          <AvatarLogin />
+          <ConnectButton showBalance={false} label="Connect ETH wallet" />
+        </HStack>
       </Flex>
       <Divider mb={[0, 3]} color="darkgray" />
-    </nav >
+    </Box>
   )
 }

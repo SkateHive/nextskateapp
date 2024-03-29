@@ -14,17 +14,22 @@ export interface PostComponentProps {
 export default function Post({ postData }: PostComponentProps) {
   return (
     <Card
+      // bgGradient="linear(to-br, limegreen, black,black, black, limegreen)"
       bg={"black"}
-      border={"1px solid limegreen"}
-      color={"white"}
+      border={"0.6px solid white"}
+      // color={"white"}
       size="sm"
       boxShadow="none"
-      borderRadius="lg"
-      _hover={{
-        outline: "1px solid green",
-        outlineColor: "gray.100",
+      borderRadius="none"
+      // _hover={{
+      //   transform: "scale(1.04)", // Added rotation here
+      // }}
+      _active={{
+        transform: "scale(1.02)",
+        boxShadow: "0 0 30px limegreen", // Added glow effect here
       }}
-      mt={2}
+      p={2}
+      // mt={2}
     >
       <PostProvider postData={postData}>
         <Header />

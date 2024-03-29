@@ -1,12 +1,10 @@
 import { usePostContext } from "@/contexts/PostContext"
 import UserModel from "@/lib/models/user"
-import { CardHeader, Flex, Text, Tooltip } from "@chakra-ui/react"
-import { PiggyBank } from "lucide-react"
+import { CardHeader, Flex, HStack, Text } from "@chakra-ui/react"
 import moment from "moment-timezone"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import PostAvatar from "./Avatar"
-import { FaHive } from 'react-icons/fa6';
 export default function Header() {
   const { post } = usePostContext()
   const [authorData, setAuthorData] = useState<UserModel>({} as UserModel)
@@ -33,7 +31,7 @@ export default function Header() {
               }
             />
           </Link>
-          <Flex flexDir="column" gap={0}>
+          <Flex flexDir="column" gap={0} w={"100%"}>
             <Flex gap={1} alignItems="center">
               <Text fontSize="14px" as="b">
                 {post.author}
@@ -45,19 +43,13 @@ export default function Header() {
                 {moment.utc(post.created).fromNow()}
               </Text>
             </Flex>
-            <Text fontSize="16px" noOfLines={1}>
-              {post.title}
-            </Text>
+            <HStack justify={"space-between"} display={"flex"}>
+              <Text fontSize="16px" noOfLines={1}>
+                {post.title}
+              </Text>
+            </HStack>
           </Flex>
         </Flex>
-        <Tooltip label="Earnings">
-          <Flex gap={1} align={"center"}>
-            <FaHive strokeWidth={"1.5"} color="red" size={"20px"} />
-            <Text color={"gold"} fontSize={"18px"} fontWeight={"400"}>
-              ${post.getEarnings().toFixed(2)}
-            </Text>
-          </Flex>
-        </Tooltip>
       </Flex>
     </CardHeader>
   )

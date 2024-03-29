@@ -9,6 +9,8 @@ import { MarkdownRenderers } from "@/app/upload/MarkdownRenderers"
 import ReactMarkdown from "react-markdown"
 import rehypeRaw from "rehype-raw"
 import remarkGfm from "remark-gfm"
+import { transform3SpeakContent } from "@/lib/utils"
+
 // Revalidate requests in 10 minutes
 export const revalidate = 600
 
@@ -45,11 +47,14 @@ async function getData(user: string, postId: string) {
   return postContent
 }
 
+
 async function formatMarkdownNew(markdown: string) {
   try {
     const md = new Remarkable({ html: true, linkify: true, breaks: true })
-    const body = md.render(markdown)
-    return body
+    const body = transform3SpeakContent(markdown);
+    const Sbody = md.render(body)
+    console.log("Formatted markdown:", body)
+    return Sbody
   } catch (error) {
     console.error("Error formatting markdown:", error)
     return ""

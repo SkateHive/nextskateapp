@@ -1,21 +1,24 @@
 import { usePostContext } from "@/contexts/PostContext"
-import { Link } from "@chakra-ui/next-js"
-import { Image } from "@chakra-ui/react"
+import { Image, Link, useDisclosure } from "@chakra-ui/react"
+import PostModal from "../PostModal"
 
 export default function PostImage() {
+  const { isOpen, onOpen, onClose } = useDisclosure()
   let { post } = usePostContext()
+
   return (
-    <Link href={post.getFullUrl()} p={3}>
+    <Link m={2} onClick={onOpen} height={"auto"}>
       <Image
-        border={"1px solid limegreen"}
+        border={"2px solid grey"}
         w="100%"
         src={post.getThumbnail()}
-        aspectRatio={16 / 9}
+        aspectRatio={4 / 3}
         objectFit="cover"
         borderRadius="md"
         alt={post.title}
         loading="lazy"
       />
+      <PostModal isOpen={isOpen} onClose={onClose} />
     </Link>
   )
 }

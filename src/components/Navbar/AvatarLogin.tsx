@@ -3,75 +3,24 @@
 import useAuthHiveUser from "@/lib/useHiveAuth"
 import {
   Avatar,
-  Button,
-  FormControl,
-  FormErrorMessage,
-  Input,
-  InputGroup,
-  InputLeftElement,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Spinner,
   Tooltip,
-  VStack,
-  useDisclosure,
 } from "@chakra-ui/react"
-import { AtSign, Bell, LogIn, LogOut, User } from "lucide-react"
+import { Bell, LogOut, User } from "lucide-react"
 import Link from "next/link"
-import { useState } from "react"
-import { useSWRConfig } from "swr"
+import LoginButton from "../Hive/Login/LoginButton"
 
 const env = process.env.NODE_ENV
 
 export default function AvatarLogin() {
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  const { mutate } = useSWRConfig()
-  const [username, setUsername] = useState("")
-  const [privateKey, setPrivateKey] = useState("")
-  const [errorMessage, setErrorMessage] = useState("")
-  const { hiveUser, loginWithHive, logout, isLoggedIn } = useAuthHiveUser()
-
-  const [isLogginOut, setIsLogginOut] = useState(false)
-  const [isLogginIn, setIsLogginIn] = useState(false)
-
-  async function doLogin(useLoginAs: boolean = false) {
-    try {
-      setIsLogginIn(true)
-      await loginWithHive(username, useLoginAs, privateKey)
-
-      onClose()
-      mutate("posts")
-      setTimeout(() => {
-        console.log("Logged in")
-      }, 10000)
-
-    } catch (error) {
-      console.error(error)
-      setErrorMessage(error ? error.toString() : "Unknow error")
-      setIsLogginIn(false)
-    }
-  }
-
-  async function handleLogout() {
-    setIsLogginOut(true)
-    logout()
-  }
-
-
-
+  const { hiveUser, logout } = useAuthHiveUser()
 
   return hiveUser ? (
     <Menu placement="bottom-end">
-      <MenuButton >
+      <MenuButton>
         <Tooltip label="Profile">
           <Avatar
             name={hiveUser.name}
@@ -107,80 +56,12 @@ export default function AvatarLogin() {
         >
           Plaza
         </MenuItem>
-        <MenuItem bg="black"
-          icon={<LogOut size={"16px"} />} onClick={handleLogout}>
-          Logoutt
+        <MenuItem bg="black" icon={<LogOut size={"16px"} />} onClick={logout}>
+          Logout
         </MenuItem>
       </MenuList>
     </Menu>
   ) : (
-    <>
-      {isLogginOut ? (
-        <Button
-          aria-label="Loggin out"
-          rightIcon={<Spinner size={"sm"} />}
-          size={"sm"}
-        >
-          Loggin Out
-        </Button>
-      ) : (
-        <Button
-          aria-label="Log in"
-          rightIcon={<LogIn size={"16px"} />}
-          size={"sm"}
-          onClick={onOpen}
-        >
-          Log in
-        </Button>
-      )}
-      <Modal isOpen={isOpen} isCentered onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent bg={'black'} mx={4}>
-          <ModalHeader>Log In</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <FormControl isInvalid={Boolean(errorMessage)}>
-
-              <VStack>
-
-                <Input
-                  placeholder="Hive Username"
-                  onChange={(event) =>
-                    setUsername(event.target.value.toLowerCase())
-                  }
-                />
-                <Input
-                  placeholder="Private Key"
-                  onChange={(event1) =>
-                    setPrivateKey(event1.target.value)
-                  }
-                />
-              </VStack>
-              {Boolean(errorMessage) && (
-                <FormErrorMessage>{errorMessage}</FormErrorMessage>
-              )}
-            </FormControl>
-          </ModalBody>
-          <ModalFooter>
-            {isLogginIn ? (
-              <Button w={"100%"} disabled>
-                <Spinner size={"sm"} />
-              </Button>
-            ) : (
-              <VStack w={"100%"}>
-                <Button w={"100%"} onClick={() => doLogin()}>
-                  Continue
-                </Button>
-                {env === "development" && (
-                  <Button w={"100%"} onClick={() => doLogin(true)}>
-                    Continue As (DEV)
-                  </Button>
-                )}
-              </VStack>
-            )}
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </>
+    <LoginButton />
   )
 }

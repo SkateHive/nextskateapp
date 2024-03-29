@@ -22,8 +22,9 @@ export default function Feed() {
           base: "repeat(1, 1fr)",
           md: "repeat(2, 1fr)",
           lg: "repeat(3, 1fr)",
+          xl: "repeat(4, 1fr)",
         }}
-        gap={6}
+        gap={0}
         minHeight="100vh"
         width={"100%"}
       >
@@ -52,8 +53,9 @@ export default function Feed() {
             base: "repeat(1, 1fr)",
             md: "repeat(2, 1fr)",
             lg: "repeat(3, 1fr)",
+            xl: "repeat(4, 1fr)",
           }}
-          gap={6}
+          gap={0}
         >
           {posts.length > 0 &&
             posts
