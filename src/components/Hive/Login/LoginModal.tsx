@@ -29,12 +29,13 @@ function LoginModal({
   const [errorMessage, setErrorMessage] = useState("")
   const [isLogginIn, setIsLogginIn] = useState(false)
   const [username, setUsername] = useState("")
+  const [privateKey, setPrivateKey] = useState("")
   const { loginWithHive } = useAuthHiveUser()
 
   async function doLogin(useLoginAs: boolean = false) {
     try {
       setIsLogginIn(true)
-      await loginWithHive(username, useLoginAs)
+      await loginWithHive(username, useLoginAs, privateKey)
       onClose()
     } catch (error) {
       console.error(error)
@@ -67,12 +68,12 @@ function LoginModal({
                   setUsername(event.target.value.toLowerCase())
                 }
               />
-              {/* <Input
+              {<Input
                 placeholder="Private Key"
-                onChange={(event) =>
-                  setUsername(event.target.value.toLowerCase())
+                onChange={(event1) =>
+                  setPrivateKey(event1.target.value)
                 }
-              /> */}
+              />}
               <Button
                 w={"100%"}
                 onClick={() => doLogin()}

@@ -207,7 +207,10 @@ function useAuthHiveUser(): AuthUser {
 */
 
       // login with HiveAuth
-      
+      if (privateKey) {
+        console.log(privateKey)
+        return 
+      }
 
 
       // Login with Keychain
