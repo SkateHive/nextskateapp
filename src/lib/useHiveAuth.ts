@@ -3,6 +3,7 @@ import * as dhive from "@hiveio/dhive"
 import HiveClient from "./hiveclient"
 import { useState } from "react"
 import CryptoJS from 'crypto-js';
+import HAS from 'hive-auth-wrapper'
 
 
 interface HiveKeychainResponse {
@@ -67,6 +68,7 @@ function useAuthHiveUser(): AuthUser {
       }
 
       // store encrypted private key
+/*
       if (privateKey) {
         // check if user is using password
         let hivePrivateKey = dhive.PrivateKey.fromLogin(username, privateKey)
@@ -132,10 +134,10 @@ function useAuthHiveUser(): AuthUser {
         resolve()
         return
       }
-      
-/*
-      // grant posting authority to app
+*/
 
+      // grant posting authority to app
+/*
       if (privateKey) {
         // dhive private key instance
         const hivePrivateKey = dhive.PrivateKey.fromString(privateKey)
@@ -203,6 +205,10 @@ function useAuthHiveUser(): AuthUser {
       }
 
 */
+
+      // login with HiveAuth
+      
+
 
       // Login with Keychain
       const memo = `${username} signed up with ${process.env.NEXT_PUBLIC_WEBSITE_URL
