@@ -38,18 +38,18 @@ export function PostModal({ isOpen, onClose }: PostModalInterface) {
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      size={{ base: "lg", md: "2xl", lg: "4xl", "2xl": "6xl" }}
+      size={{ base: "lg", md: "2xl", lg: "6xl" }}
     >
       <ModalOverlay style={{ backdropFilter: "blur(5px)" }} />
       <ModalContent
         bg={"black"}
         border={"1.4px solid limegreen"}
-        borderRadius={32}
+        borderRadius={0}
         p={4}
         w={"100%"}
       >
         <ModalHeader>
-          <Header />
+          <Header variant="open" />
         </ModalHeader>
         <ModalCloseButton mr={4} mt={2} color={"red"} />
         <ModalBody
@@ -63,7 +63,7 @@ export function PostModal({ isOpen, onClose }: PostModalInterface) {
             flex={1}
             p={4}
             border={"1.4px solid limegreen"}
-            borderRadius="lg"
+            borderRadius={0}
           >
             <ReactMarkdown
               components={MarkdownRenderers}
@@ -78,7 +78,7 @@ export function PostModal({ isOpen, onClose }: PostModalInterface) {
             flex={1}
             p={4}
             border={"1.4px solid limegreen"}
-            borderRadius="lg"
+            borderRadius={0}
             height={"fit-content"}
           >
             <Stack divider={<StackDivider borderColor={"limegreen"} />} gap={4}>

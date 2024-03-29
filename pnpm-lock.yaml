@@ -110,6 +110,9 @@ dependencies:
   react-md-editor:
     specifier: ^0.2.2
     version: 0.2.2(react-dom@18.2.0)(react@18.2.0)
+  react-multi-carousel:
+    specifier: ^2.8.4
+    version: 2.8.4
   react-spinners:
     specifier: ^0.13.8
     version: 0.13.8(react-dom@18.2.0)(react@18.2.0)
@@ -11155,6 +11158,11 @@ packages:
       codemirror: 5.65.16
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
+  /react-multi-carousel@2.8.4:
+    resolution: {integrity: sha512-7Is5Wr+m2ebkR+oq2Su2tjUdBwpVtB2O6Tjb74KDNfxWe/FrsTQwezTJTk/r9cKCrRp9Li308v822/5bZm7XKg==}
+    engines: {node: '>=8'}
     dev: false
 
   /react-native-webview@11.26.1(react-native@0.73.6)(react@18.2.0):

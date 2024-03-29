@@ -10,6 +10,7 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
+  ModalFooter,
   ModalHeader,
   ModalOverlay,
   Spinner,
@@ -68,37 +69,43 @@ function LoginModal({
                   setUsername(event.target.value.toLowerCase())
                 }
               />
-              {<Input
-                placeholder="Private Key"
-                onChange={(event1) =>
-                  setPrivateKey(event1.target.value)
-                }
-              />}
-              <Button
-                w={"100%"}
-                onClick={() => doLogin()}
-                colorScheme="green"
-                variant={"outline"}
-                disabled={isLogginIn}
-              >
-                {isLogginIn ? <Spinner size={"sm"} /> : "Continue"}
-              </Button>
-              {environment === "development" && (
-                <Button
-                  w={"100%"}
-                  onClick={() => doLogin(true)}
-                  colorScheme="red"
-                  variant={"ghost"}
-                >
-                  Continue As (DEV)
-                </Button>
-              )}
+              {
+                <Input
+                  borderColor={"green.600"}
+                  color={"limegreen"}
+                  _placeholder={{ color: "limegreen", opacity: 0.4 }}
+                  focusBorderColor="limegreen"
+                  placeholder="Private Key"
+                  onChange={(event1) => setPrivateKey(event1.target.value)}
+                />
+              }
             </VStack>
             {Boolean(errorMessage) && (
               <FormErrorMessage>{errorMessage}</FormErrorMessage>
             )}
           </FormControl>
         </ModalBody>
+        <ModalFooter>
+          <Button
+            w={"100%"}
+            onClick={() => doLogin()}
+            colorScheme="green"
+            variant={"outline"}
+            disabled={isLogginIn}
+          >
+            {isLogginIn ? <Spinner size={"sm"} /> : "Continue"}
+          </Button>
+          {environment === "development" && (
+            <Button
+              w={"100%"}
+              onClick={() => doLogin(true)}
+              colorScheme="red"
+              variant={"ghost"}
+            >
+              Continue As (DEV)
+            </Button>
+          )}
+        </ModalFooter>
       </ModalContent>
     </Modal>
   )

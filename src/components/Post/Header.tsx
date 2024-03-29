@@ -1,13 +1,30 @@
 import { usePostContext } from "@/contexts/PostContext"
 import UserModel from "@/lib/models/user"
-import { CardHeader, Flex, HStack, Text } from "@chakra-ui/react"
+import {
+  CardHeader,
+  Flex,
+  HStack,
+  Icon,
+  Text,
+  Tooltip,
+  useDisclosure,
+} from "@chakra-ui/react"
+import { Eye } from "lucide-react"
 import moment from "moment-timezone"
 import Link from "next/link"
 import { useEffect, useState } from "react"
+import PostModal from "../PostModal"
 import PostAvatar from "./Avatar"
-export default function Header() {
+
+type Variant = "preview" | "open"
+interface HeaderInterface {
+  variant?: Variant
+}
+
+export default function Header({ variant = "preview" }: HeaderInterface) {
   const { post } = usePostContext()
   const [authorData, setAuthorData] = useState<UserModel>({} as UserModel)
+  const { isOpen, onOpen, onClose } = useDisclosure()
   const postAvatar = authorData.metadata?.profile?.profile_image
 
   useEffect(() => {
@@ -19,8 +36,9 @@ export default function Header() {
   }, [])
 
   return (
-    <CardHeader pb={0}>
-      <Flex gap="4" align={"end"}>
+    <CardHeader p={2} pb={0}>
+      <PostModal isOpen={isOpen} onClose={onClose} />
+      <Flex gap="4" align={"start"}>
         <Flex flex="1" gap="2" alignItems="center">
           <Link href={post.getFullAuthorUrl()}>
             <PostAvatar
@@ -50,6 +68,19 @@ export default function Header() {
             </HStack>
           </Flex>
         </Flex>
+        {variant === "preview" ? (
+          <Tooltip label="Open post">
+            <Icon
+              onClick={onOpen}
+              mt={1}
+              cursor={"pointer"}
+              as={Eye}
+              h={7}
+              w={7}
+              color="limegreen"
+            />
+          </Tooltip>
+        ) : null}
       </Flex>
     </CardHeader>
   )

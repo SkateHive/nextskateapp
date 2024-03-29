@@ -34,7 +34,7 @@ export default function Vote() {
       <Flex
         gap={1}
         align={"center"}
-        cursor={"pointer"}
+        cursor={hiveUser ? "pointer" : "default"}
         onClick={hiveUser ? handleVoteClick : () => {}}
       >
         <Text

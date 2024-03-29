@@ -19,9 +19,6 @@ export default function Post({ postData }: PostComponentProps) {
       size="sm"
       boxShadow="none"
       borderRadius="none"
-      _active={{
-        transform: "scale(1.02)",
-      }}
       p={2}
     >
       <PostProvider postData={postData}>
