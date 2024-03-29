@@ -2,10 +2,9 @@ import { usePostContext } from "@/contexts/PostContext"
 import { useHiveUser } from "@/contexts/UserContext"
 import { SWR_POSTS_TAG } from "@/hooks/usePosts"
 import { vote } from "@/lib/hive/functions"
-import { Heart } from "lucide-react"
+import { Flex, Text, Tooltip } from "@chakra-ui/react"
 import { useState } from "react"
 import { useSWRConfig } from "swr"
-import PostIcon from "./Icon"
 
 export default function Vote() {
   const { post } = usePostContext()
@@ -32,15 +31,22 @@ export default function Vote() {
 
   return (
     hiveUser && (
-      <PostIcon
-        onClick={handleVoteClick}
-        active={isVoted}
-        colorAccent="#ff4655"
-        fill={true}
-        icon={Heart}
-        label="Upvote"
-        size={6}
-      />
+      <Tooltip label="Earnings">
+        <Flex
+          gap={1}
+          align={"center"}
+          cursor={"pointer"}
+          onClick={handleVoteClick}
+        >
+          <Text
+            color={isVoted ? "limegreen" : "white"}
+            fontSize={"28px"}
+            fontWeight={"bold"}
+          >
+            ${post.getEarnings().toFixed(2)}
+          </Text>
+        </Flex>
+      </Tooltip>
     )
   )
 }

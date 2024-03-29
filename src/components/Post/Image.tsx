@@ -12,7 +12,7 @@ export default function PostImage() {
         border={"2px solid grey"}
         w="100%"
         src={post.getThumbnail()}
-        aspectRatio={16 / 9}
+        aspectRatio={4 / 3}
         objectFit="cover"
         borderRadius="md"
         alt={post.title}
