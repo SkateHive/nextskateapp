@@ -6,7 +6,6 @@ import { Card } from "@chakra-ui/react"
 import Footer from "./Footer"
 import Header from "./Header"
 import PostImage from "./Image"
-import { transform } from "next/dist/build/swc"
 
 export interface PostComponentProps {
   postData: PostProps
@@ -15,20 +14,22 @@ export interface PostComponentProps {
 export default function Post({ postData }: PostComponentProps) {
   return (
     <Card
-      bgGradient="linear(to-br, grey, black, black)"
-      border={"0px solid white  "}
-      color={"white"}
+      // bgGradient="linear(to-br, limegreen, black,black, black, limegreen)"
+      bg={"black"}
+      border={"0.6px solid white"}
+      // color={"white"}
       size="sm"
       boxShadow="none"
-      borderRadius="lg"
-      _hover={{
-        transform: "scale(1.04)", // Added rotation here
-      }}
+      borderRadius="none"
+      // _hover={{
+      //   transform: "scale(1.04)", // Added rotation here
+      // }}
       _active={{
         transform: "scale(1.02)",
-        boxShadow: "0 0 100px limegreen", // Added glow effect here
+        boxShadow: "0 0 30px limegreen", // Added glow effect here
       }}
-      mt={2}
+      p={2}
+      // mt={2}
     >
       <PostProvider postData={postData}>
         <Header />

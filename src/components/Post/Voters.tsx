@@ -35,12 +35,13 @@ export default function PostVoters({
   const qtdVotes = votes.length - 1
 
   return (
-    <Text fontSize={"sm"}>
+    <Text fontSize={"xs"}>
       {!bestReputationVoter ? (
         "No votes"
       ) : (
         <Text as={"span"} cursor={"pointer"} onClick={modalOnOpen}>
-          Voted by <b>{bestReputationVoter}</b>
+          Voted by <br />
+          <b>{bestReputationVoter}</b>
           {qtdVotes > 0 && (
             <span>
               {" and "}
@@ -74,8 +75,7 @@ function PostVotersModal({ votes, onClose, isOpen }: PostVotersModalProps) {
       size={{ base: "full", md: "md" }}
     >
       <ModalOverlay />
-      <ModalContent
-        bg={"black"}>
+      <ModalContent bg={"black"}>
         <ModalHeader>Voters</ModalHeader>
         <ModalCloseButton />
         <ModalBody>

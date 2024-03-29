@@ -14,14 +14,14 @@ export default function PostSkeleton() {
     <Card
       size="sm"
       boxShadow="none"
-      borderRadius="lg"
+      borderRadius="none"
       border={"1px solid limegreen"}
       _hover={{
         outline: "1px solid",
         outlineColor: "limegreen",
       }}
-      mt={2}
       bg={"black"}
+      p={2}
     >
       <CardHeader pb={0}>
         <Flex gap="4" align={"end"}>
@@ -46,7 +46,7 @@ export default function PostSkeleton() {
                 startColor="limegreen"
                 endColor="black"
                 h={4}
-                w={{ base: 32, md: 42, lg: 52 }}
+                w={"80%"}
               />
             </Flex>
           </Flex>
@@ -62,7 +62,7 @@ export default function PostSkeleton() {
           border={"1px"}
           borderColor={"gray.50"}
           w="100%"
-          aspectRatio={16 / 9}
+          aspectRatio={4 / 3}
           borderRadius="md"
         />
       </Box>

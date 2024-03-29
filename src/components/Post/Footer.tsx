@@ -1,24 +1,11 @@
 import { usePostContext } from "@/contexts/PostContext"
 import { useHiveUser } from "@/contexts/UserContext"
-import {
-  CardFooter,
-  Flex,
-  Stack,
-  useClipboard,
-  useDisclosure,
-} from "@chakra-ui/react"
-import { Check, Send } from "lucide-react"
-import { useSWRConfig } from "swr"
-import CommentIcon from "./CommentIcon"
-import PostIcon from "./Icon"
+import { CardFooter, Flex, useDisclosure } from "@chakra-ui/react"
 import Vote from "./Vote"
 import PostVoters from "./Voters"
 
 export default function Footer() {
   const { post } = usePostContext()
-  const { mutate } = useSWRConfig()
-  const { onCopy, hasCopied } = useClipboard(post.getFullUrl())
-
   const { hiveUser } = useHiveUser()
 
   const {
@@ -36,16 +23,9 @@ export default function Footer() {
           modalOnOpen={onVotersOpen}
           modalOnClose={onVotersClose}
         />
-        <Stack direction={"row"} gap={1}>
-          <PostIcon
-            onClick={onCopy}
-            icon={hasCopied ? Check : Send}
-            label={hasCopied ? "Copied!" : "Copy link"}
-            size={6}
-          />
-          <CommentIcon />
-          <Vote />
-        </Stack>
+        {/* <Stack direction={"row"} gap={1}>
+        </Stack> */}
+        <Vote />
       </Flex>
     </CardFooter>
   )

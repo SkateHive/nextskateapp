@@ -20,10 +20,10 @@ import {
 import Header from "../Post/Header"
 
 import { useComments } from "@/hooks/comments"
+import { transform3SpeakContent } from "@/lib/utils"
 import rehypeRaw from "rehype-raw"
 import remarkGfm from "remark-gfm"
 import PostComment from "../Post/Comment"
-import { transform3SpeakContent } from "@/lib/utils"
 
 interface PostModalInterface {
   isOpen: boolean
@@ -40,7 +40,7 @@ export function PostModal({ isOpen, onClose }: PostModalInterface) {
       onClose={onClose}
       size={{ base: "lg", md: "2xl", lg: "4xl", "2xl": "6xl" }}
     >
-      <ModalOverlay style={{ backdropFilter: 'blur(5px)' }} />
+      <ModalOverlay style={{ backdropFilter: "blur(5px)" }} />
       <ModalContent
         bg={"black"}
         border={"1.4px solid limegreen"}
