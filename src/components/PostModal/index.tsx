@@ -49,7 +49,7 @@ export function PostModal({ isOpen, onClose }: PostModalInterface) {
         w={"100%"}
       >
         <ModalHeader>
-          <Header />
+          <Header variant="open" />
         </ModalHeader>
         <ModalCloseButton mr={4} mt={2} color={"red"} />
         <ModalBody
