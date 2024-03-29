@@ -23,8 +23,6 @@ export default function Footer() {
           modalOnOpen={onVotersOpen}
           modalOnClose={onVotersClose}
         />
-        {/* <Stack direction={"row"} gap={1}>
-        </Stack> */}
         <Vote />
       </Flex>
     </CardFooter>
