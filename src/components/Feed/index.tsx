@@ -58,11 +58,12 @@ export default function Feed() {
           gap={0}
         >
           {posts.length > 0 &&
-            posts
-              .slice(0, visiblePosts)
-              .map((post, i) => (
+            posts.slice(0, visiblePosts).map((post, i) => {
+              console.log(post)
+              return (
                 <Post key={i} postData={PostModel.newFromDiscussion(post)} />
-              ))}
+              )
+            })}
         </Grid>
       </InfiniteScroll>
     </Box>
