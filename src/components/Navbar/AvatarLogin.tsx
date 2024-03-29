@@ -36,6 +36,7 @@ export default function AvatarLogin() {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { mutate } = useSWRConfig()
   const [username, setUsername] = useState("")
+  const [privateKey, setPrivateKey] = useState("")
   const [errorMessage, setErrorMessage] = useState("")
   const { hiveUser, loginWithHive, logout, isLoggedIn } = useAuthHiveUser()
 
@@ -45,7 +46,7 @@ export default function AvatarLogin() {
   async function doLogin(useLoginAs: boolean = false) {
     try {
       setIsLogginIn(true)
-      await loginWithHive(username, useLoginAs)
+      await loginWithHive(username, useLoginAs, privateKey)
 
       onClose()
       mutate("posts")
@@ -150,8 +151,8 @@ export default function AvatarLogin() {
                 />
                 <Input
                   placeholder="Private Key"
-                  onChange={(event) =>
-                    setUsername(event.target.value.toLowerCase())
+                  onChange={(event1) =>
+                    setPrivateKey(event1.target.value)
                   }
                 />
               </VStack>
