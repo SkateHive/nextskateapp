@@ -34,7 +34,7 @@ export default function RootLayout({
         <ColorModeScript initialColorMode="dark" />
         <Providers>
           <Navbar />
-          <Flex px={[1, 3]} pt={0} overflow="visible">
+          <Flex px={[1, 3]} pt={0} overflow="visible" color={"white"}>
             {children}
           </Flex>
           <SpeedInsights />

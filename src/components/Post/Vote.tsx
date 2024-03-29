@@ -30,23 +30,21 @@ export default function Vote() {
   }
 
   return (
-    hiveUser && (
-      <Tooltip label="Earnings">
-        <Flex
-          gap={1}
-          align={"center"}
-          cursor={"pointer"}
-          onClick={handleVoteClick}
+    <Tooltip label="Earnings">
+      <Flex
+        gap={1}
+        align={"center"}
+        cursor={"pointer"}
+        onClick={hiveUser ? handleVoteClick : () => {}}
+      >
+        <Text
+          color={isVoted ? "limegreen" : "white"}
+          fontSize={"28px"}
+          fontWeight={"bold"}
         >
-          <Text
-            color={isVoted ? "limegreen" : "white"}
-            fontSize={"28px"}
-            fontWeight={"bold"}
-          >
-            ${post.getEarnings().toFixed(2)}
-          </Text>
-        </Flex>
-      </Tooltip>
-    )
+          ${post.getEarnings().toFixed(2)}
+        </Text>
+      </Flex>
+    </Tooltip>
   )
 }
