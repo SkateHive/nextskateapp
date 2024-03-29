@@ -7,6 +7,7 @@
 import { Box, Button, Heading, Text, Input, HStack, Flex, Avatar, Center, Icon } from "@chakra-ui/react"
 import MDEditor, { commands } from "@uiw/react-md-editor";
 import React, { useEffect, useState, useCallback } from "react";
+import { useDropzone } from "react-dropzone";
 import ReactMarkdown from 'react-markdown';
 import rehypeSanitize from 'rehype-sanitize';
 import useAuthHiveUser from "@/lib/useHiveAuth"
@@ -14,6 +15,11 @@ import { MarkdownRenderers } from "./MarkdownRenderers";
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import { FaPlus } from "react-icons/fa"; // This is assuming you're using react-icons for icons
+
+const PINATA_API_KEY = process.env.NEXT_PUBLIC_PINATA_API_KEY
+const PINATA_SECRET = process.env.NEXT_PUBLIC_PINATA_SECRET
+const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN
+
 
 
 export default function Upload() {
@@ -23,6 +29,24 @@ export default function Upload() {
     const [preview, setPreview] = useState('');
     const { hiveUser, loginWithHive, logout, isLoggedIn } = useAuthHiveUser();
     const [instaURL, setInstaURL] = useState('');
+
+    const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
+    const [uploadedVideo, setUploadedVideo] = useState<string | null>(null);
+    const [isUploading, setIsUploading] = useState(false);
+    const [isVideoUploaded, setIsVideoUploaded] = useState(false);
+    const [videoFile, setVideoFile] = useState<File | null>(null);
+    const [videoUploadProgress, setVideoUploadProgress] = useState(0);
+    const [videoInfo, setVideoInfo] = useState<any | null>(null);
+    const [username, setUsername] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (hiveUser) {
+            setUsername(hiveUser.name);
+        }
+    }, [hiveUser])
+
+
+
     const handleTitleChange = (e: any) => {
         setTitle(e.target.value);
     }
@@ -54,6 +78,41 @@ export default function Upload() {
         setIsDragging(true);
     }, []);
 
+    const onDropImages = async (acceptedFiles: File[]) => {
+        setIsUploading(true);
+
+        // if it is a photo, upload to IPFS
+        if (acceptedFiles[0].type.startsWith("image/")) {
+            for (const file of acceptedFiles) {
+                await uploadFileToIPFS(file);
+            }
+
+            setIsUploading(false);
+            return;
+        }
+    };
+    const onDropVideos = async (acceptedFiles: File[]) => {
+        setIsUploading(true);
+
+        for (const file of acceptedFiles) {
+            await uploadFileToIPFS(file);
+        }
+
+        setIsUploading(false);
+    };
+    const { getRootProps: getImagesRootProps, getInputProps: getImagesInputProps } = useDropzone({
+        onDrop: onDropImages,
+        //@ts-ignore
+        accept: "image/*",
+        multiple: false,
+    });
+    const { getRootProps: getVideosRootProps, getInputProps: getVideosInputProps } = useDropzone({
+        onDrop: onDropVideos,
+        //@ts-ignore
+        accept: "video/mp4",
+        multiple: false,
+    });
+
     const onDrop = useCallback((event: React.DragEvent<HTMLDivElement>) => {
         event.preventDefault();
         setIsDragging(false); // Reset drag state
@@ -61,13 +120,105 @@ export default function Upload() {
 
         const files = event.dataTransfer.files;
         if (files.length) {
-            // Process files here
-            // For example, create a markdown image or video link and append to the editor value
-            console.log('Dropped files:', files);
+            return
         }
-    }, []);
+        // test if file is image or video 
+        // if image, upload to IPFS
+        const file = files[0];
+        if (file.type.startsWith("image/")) {
+            console.log('image file:', file);
+            onDropImages([file]);
+        } else if (file.type.startsWith("video/")) {
+            console.log('video file:', file);
+            onDropVideos([file]);
+        } else {
+            alert("Invalid file type. Only video files (MP4) and images are allowed.");
+        }
+    }
+        , []);
 
 
+
+    const uploadFileToIPFS = async (file: File) => {
+        try {
+            if (file.type.startsWith("video/mp4")) {
+                // Handle video file upload
+                const formData = new FormData();
+                formData.append("file", file);
+                formData.set("Content-Type", "multipart/form-data");
+                console.log('formData:', formData);
+                const response = await fetch(
+                    "https://api.pinata.cloud/pinning/pinFileToIPFS",
+                    {
+                        method: "POST",
+                        //@ts-ignore
+                        headers: {
+                            "pinata_api_key": PINATA_API_KEY,
+                            "pinata_secret_api_key": PINATA_SECRET,
+                        },
+                        body: formData,
+                    }
+                );
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${data.IpfsHash}?pinataGatewayToken=nxHSFa1jQsiF7IHeXWH-gXCY3LDLlZ7Run3aZXZc8DRCfQz4J4a94z9DmVftXyFE`;
+                    console.log('ipfsUrl:', ipfsUrl);
+                    setUploadedVideo(ipfsUrl);
+
+                    const transformedLink = `<iframe src="${ipfsUrl}" allowfullscreen></iframe>` + " ";
+
+                    setValue((prevMarkdown) => prevMarkdown + `\n${transformedLink}` + '\n');
+                    setUploadedFiles((prevFiles) => [...prevFiles, ipfsUrl]);
+                } else {
+                    const errorData = await response.json();
+                    console.error("Error uploading video file to Pinata IPFS:", errorData);
+                }
+            } else if (file.type.startsWith("image/")) {
+                // Handle image file upload
+                const formData = new FormData();
+                formData.append("file", file);
+                formData.set("Content-Type", "multipart/form-data");
+                console.log('formData:', formData);
+                const response = await fetch(
+                    "https://api.pinata.cloud/pinning/pinFileToIPFS",
+                    {
+                        method: "POST",
+                        //@ts-ignore
+                        headers: {
+                            "pinata_api_key": PINATA_API_KEY,
+                            "pinata_secret_api_key": PINATA_SECRET,
+                        },
+                        body: formData,
+                    }
+                );
+                console.log('response:', response);
+                if (response.ok) {
+                    const data = await response.json();
+                    const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${data.IpfsHash}?pinataGatewayToken=nxHSFa1jQsiF7IHeXWH-gXCY3LDLlZ7Run3aZXZc8DRCfQz4J4a94z9DmVftXyFE`;
+                    console.log('ipfsUrl:', ipfsUrl);
+                    const transformedLink = ` ![Image](${ipfsUrl})` + " ";
+
+                    setValue((prevMarkdown) => prevMarkdown + `\n${transformedLink}` + '\n');
+                    setUploadedFiles((prevFiles) => [...prevFiles, ipfsUrl]);
+                } else {
+                    const errorData = await response.json();
+                    console.error("Error uploading image file to Pinata IPFS:", errorData);
+                }
+            } else {
+                alert("Invalid file type. Only video files (MP4) and images are allowed.");
+            }
+        } catch (error) {
+            console.error("Error uploading file:", error);
+        }
+    };
+    useEffect(() => {
+        if (videoFile) {
+            uploadFileToIPFS(videoFile);
+
+        }
+    }
+        , [videoFile]);
 
     return (
         <Box width="100%">

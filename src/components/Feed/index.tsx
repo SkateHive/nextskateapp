@@ -8,6 +8,7 @@ import { BeatLoader } from "react-spinners"
 import Post from "../Post"
 import PostSkeleton from "../Post/Skeleton"
 
+
 export default function Feed() {
   const { posts, error, isLoading } = usePosts()
   const [visiblePosts, setVisiblePosts] = useState(20)
