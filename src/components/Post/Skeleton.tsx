@@ -62,7 +62,7 @@ export default function PostSkeleton() {
           border={"1px"}
           borderColor={"gray.50"}
           w="100%"
-          aspectRatio={4 / 3}
+          aspectRatio={16 / 9}
           borderRadius="md"
         />
       </Box>
