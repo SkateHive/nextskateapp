@@ -40,6 +40,7 @@ export default function Loading() {
         borderRadius={"20px"}
         boxSize="100%"
         src="/pepenation.gif"
+        as={"image"}
       />
     </Box>
   );

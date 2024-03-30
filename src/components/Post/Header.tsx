@@ -33,7 +33,7 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
       setAuthorData(author)
     }
     fetchAuthor()
-  }, [])
+  }, [post.author])
 
   return (
     <CardHeader p={2} pb={0}>

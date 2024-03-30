@@ -14,7 +14,7 @@ export default function UserAvatar({ username }: { username: string }) {
       setAuthorData(author)
     }
     fetchAuthor()
-  }, [])
+  }, [username])
 
   return (
     <Link href={`${getWebsiteURL()}/profile/${username}`}>

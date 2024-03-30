@@ -80,10 +80,13 @@ export default function Upload() {
             }
             setIsUploading(false);
         },
-        //@ts-ignore
-        accept: 'image/*,video/mp4',
+        accept: {
+            'image/*': ['.png', '.gif', '.jpeg', '.jpg'],
+            'video/*': ['.mp4']
+        },
         multiple: false
-    });
+    }
+    );
     // Custom toolbar button for file upload
     const extraCommands = [
         {
@@ -138,10 +141,12 @@ export default function Upload() {
 
 
         const options = imageUrls.map((imageUrl, index) => (
-            <HStack>
+            <HStack
+                key={index}
+
+            >
 
                 <Box
-                    key={index}
                     cursor="pointer"
                     width="100px"
                     height="100px"
@@ -161,7 +166,7 @@ export default function Upload() {
                 </Box>
             </HStack>
         ));
-
+        console.log(options)
         return options;
     };
 
@@ -178,7 +183,7 @@ export default function Upload() {
                         <Text fontSize={"22px"} color="limegreen">Title</Text>
 
                     </Center>
-                    <Input borderRadius={"0"} placeholder="Insert title" type="text" value={title} onChange={(e) => setTitle(e.target.value)} />
+                    <Input colorScheme="green" borderRadius={"0"} placeholder="Insert title" type="text" value={title} onChange={(e) => setTitle(e.target.value)} />
                     <Box marginTop="3" {...getRootProps()} >
                         {isUploading && <Center><Spinner /></Center>}
 
