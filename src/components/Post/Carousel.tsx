@@ -9,6 +9,8 @@ import "./Post.css"
 const SKATEHIVE_DISCORD_IMAGE =
   "https://ipfs.skatehive.app/ipfs/QmdTJSEE1286z1JqxKh8LtsuDjuKB1yRSBZy2AwEogzjVW?pinataGatewayToken=nxHSFa1jQsiF7IHeXWH-gXCY3LDLlZ7Run3aZXZc8DRCfQz4J4a94z9DmVftXyFE"
 
+const SKATEHIVE_LOGO = "https://www.skatehive.app/assets/skatehive.jpeg"
+
 const responsive = {
   mobile: {
     breakpoint: { max: 4200, min: 0 },
@@ -18,11 +20,19 @@ const responsive = {
 
 function PostCarousel() {
   let { post } = usePostContext()
-  const filteredImages = post
-    .metadata()
-    .image.filter(
-      (image) => ![post.getThumbnail(), SKATEHIVE_DISCORD_IMAGE].includes(image)
-    )
+
+  // lets make a regex to get markdown images from the post body 
+  // and add them to the carousel
+  const matchedImages = post.body.match(/!\[.*?\]\((.*?)\)/g)
+  const filteredImages = matchedImages ? matchedImages.map((image) => {
+    return image.replace(/!\[.*?\]\((.*?)\)/, "$1")
+  }) : [SKATEHIVE_LOGO]
+
+  // const filteredImages = post
+  //   .metadata()
+  //   .image.filter(
+  //     (image) => ![post.getThumbnail(), SKATEHIVE_DISCORD_IMAGE].includes(image)
+  //   )
 
   return (
     <Carousel responsive={responsive}>

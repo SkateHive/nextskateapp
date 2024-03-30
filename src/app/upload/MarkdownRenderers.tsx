@@ -159,7 +159,7 @@ export const MarkdownRenderers = {
     return <ul {...props} data-ordered={listType} style={{ paddingLeft: '10%', color: 'white' }}>{children}</ul>;
   },
   sub: ({ children, ...props }: RendererProps) => (<sub {...props} style={{ color: 'gray' }}>{children}</sub>),
-  hr: ({ children, ...props }: RendererProps) => <hr {...props} style={{ paddingBottom: '20px' }}>{children}</hr>,
+  hr: ({ children, ...props }: RendererProps) => <hr {...props} style={{ paddingBottom: '20px', color: 'yellow' }}>{children}</hr>,
   br: ({ children, ...props }: RendererProps) => <br {...props} style={{ paddingBottom: '20px' }}>{children}</br>,
   pre: ({ children, ...props }: RendererProps) => (
     <div
