@@ -68,8 +68,8 @@ export default function Upload() {
                 {/* Content Editing Area */}
                 <Box width={{ base: '100%', md: '50%' }} p="4">
                     <Text color="white">Title</Text>
-                    <Input placeholder="Insert title" type="text" value={title} onChange={(e) => setTitle(e.target.value)} />
-                    <Box marginTop="3" {...getRootProps()}>
+                    <Input borderRadius={"0"} placeholder="Insert title" type="text" value={title} onChange={(e) => setTitle(e.target.value)} />
+                    <Box marginTop="3" {...getRootProps()} >
                         {isUploading && <Center><Spinner /></Center>}
 
                         <MDEditor
@@ -83,18 +83,23 @@ export default function Upload() {
                             previewOptions={{ rehypePlugins: [[rehypeSanitize]] }}
                             height="600px"
                             preview="edit"
+                            style={{
+                                border: "1px solid limegreen",
+                                padding: "10px",
+                                backgroundColor: "navy",
+                            }}
                         />
                     </Box>
                 </Box>
                 {/* Preview and Submit Area */}
-                <Box width={{ base: '100%', md: '50%' }} p="4" border="1px solid limegreen" borderRadius="20px">
+                <Box width={{ base: '100%', md: '50%' }} p="4" border="1px solid limegreen" borderRadius="0px">
                     <HStack>
-                        <Avatar name={hiveUser?.name} src={hiveUser?.metadata?.profile?.profile_image} boxSize="88px" />
-                        <Box border="1px solid limegreen" p="7" borderRadius="10" width="100%">
+                        <Avatar name={hiveUser?.name} src={hiveUser?.metadata?.profile?.profile_image} boxSize="58px" borderRadius={0} border={"1px solid limegreen"} />
+                        <Box border="1px solid limegreen" p="7" borderRadius="0" width="100%">
                             <Text fontSize="28px">{title}</Text>
                         </Box>
                     </HStack>
-                    <Box overflowY="auto" p="10px" borderRadius="10px" border="1px solid limegreen" height="80%">
+                    <Box overflowY="auto" p="10px" borderRadius="0px" border="1px solid limegreen" height="80%">
                         <ReactMarkdown components={MarkdownRenderers} rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
                             {value}
                         </ReactMarkdown>
