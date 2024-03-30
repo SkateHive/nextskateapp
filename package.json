@@ -45,6 +45,7 @@
     "react-markdown": "^9.0.1",
     "react-md-editor": "^0.2.2",
     "react-multi-carousel": "^2.8.4",
+    "react-rewards": "^2.0.4",
     "react-spinners": "^0.13.8",
     "rehype-raw": "^7.0.0",
     "rehype-sanitize": "^6.0.0",
