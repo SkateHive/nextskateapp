@@ -156,7 +156,7 @@ export const MarkdownRenderers = {
   },
   ul: ({ ordered, children, ...props }: RendererProps) => {
     const listType = ordered ? "1" : "decimal";
-    return <ul {...props} data-ordered={listType} style={{ paddingLeft: '10%', color: 'white' }}>{children}</ul>;
+    return <ul {...props} data-ordered={listType} style={{ padding: '5%', paddingLeft: '10%', color: 'white' }}>{children}</ul>;
   },
   sub: ({ children, ...props }: RendererProps) => (<sub {...props} style={{ color: 'gray' }}>{children}</sub>),
   hr: ({ children, ...props }: RendererProps) => <hr {...props} style={{ paddingBottom: '20px', color: 'yellow' }}>{children}</hr>,
