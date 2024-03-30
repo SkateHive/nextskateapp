@@ -8,7 +8,6 @@ import { BeatLoader } from "react-spinners"
 import Post from "../Post"
 import PostSkeleton from "../Post/Skeleton"
 
-
 export default function Feed() {
   const { posts, error, isLoading } = usePosts()
   const [visiblePosts, setVisiblePosts] = useState(20)
@@ -60,7 +59,6 @@ export default function Feed() {
         >
           {posts.length > 0 &&
             posts.slice(0, visiblePosts).map((post, i) => {
-              console.log(post)
               return (
                 <Post key={i} postData={PostModel.newFromDiscussion(post)} />
               )
