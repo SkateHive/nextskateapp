@@ -5,7 +5,7 @@ import { Remarkable } from "remarkable"
 
 import type { Metadata } from "next"
 import React from "react"
-import { MarkdownRenderers } from "@/app/upload/MarkdownRenderers"
+import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers"
 import ReactMarkdown from "react-markdown"
 import rehypeRaw from "rehype-raw"
 import remarkGfm from "remark-gfm"

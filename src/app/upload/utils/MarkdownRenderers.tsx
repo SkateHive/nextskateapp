@@ -91,7 +91,7 @@ export const MarkdownRenderers = {
     }
 
     let image = (
-      <img
+      <Image
         {...props}
         alt={alt}
         src={src}

@@ -11,7 +11,7 @@ import rehypeSanitize from 'rehype-sanitize'; // Add this import
 import { CommentProps, CommentsProps } from './types';
 // import comment box
 import CommentBox from './commentBox';
-import { MarkdownRenderers } from '../upload/MarkdownRenderers';
+import { MarkdownRenderers } from '../upload/utils/MarkdownRenderers';
 import { useHiveUser } from '@/contexts/UserContext';
 import voteOnContent from './voting';
 

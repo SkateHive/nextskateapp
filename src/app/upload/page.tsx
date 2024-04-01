@@ -1,18 +1,20 @@
 'use client'
 
-import React, { useState, useCallback, useEffect } from "react";
-import { Box, Button, Input, HStack, Flex, Center, Text, Avatar, Spinner, Badge, VStack, Tooltip } from "@chakra-ui/react";
+import React, { useState, useCallback, useEffect, useRef, RefObject } from "react";
+import { Box, Button, Input, HStack, Flex, Center, Text, Avatar, Spinner, Badge, VStack, Tooltip, Slider, SliderTrack, SliderFilledTrack, SliderThumb } from "@chakra-ui/react";
 import { useDropzone } from "react-dropzone";
 import ReactMarkdown from 'react-markdown';
 import rehypeSanitize from 'rehype-sanitize';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import useAuthHiveUser from "@/lib/useHiveAuth";
-import { MarkdownRenderers } from "./MarkdownRenderers";
+import { MarkdownRenderers } from "./utils/MarkdownRenderers";
 import { FaImage, FaSave } from "react-icons/fa";
 import { uploadFileToIPFS } from "./uploadToIPFS";
 import MDEditor, { commands } from '@uiw/react-md-editor';
-
+import AuthorSearchBar from "./utils/searchBar";
+import hiveUpload from "./utils/hiveUpload";
+import { extractImageUrls } from "./utils/extractImages";
 const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN;
 const tutorialPost = `# Tutorial 
 
@@ -26,7 +28,7 @@ Write your article here, you can use markdown and html for it. If you never done
 
 ---
 
-<iframe src="https://ipfs.skatehive.app/ipfs/QmPdsChTSXQkqu3FLJHcAjqdLCqq5bCcnC1dKwCB8oLA1S?pinataGatewayToken=nxHSFa1jQsiF7IHeXWH-gXCY3LDLlZ7Run3aZXZc8DRCfQz4J4a94z9DmVftXyFE" allowfullscreen></iframe>
+<iframe src="https://ipfs.skatehive.app/ipfs/QmPdsChTSXQkqu3FLJHcAjqdLCqq5bCcnC1dKwCB8oLA1S?pinataGatewayToken=nxHSFa1jQsiF7IHeXWH-gXCY3LDLlZ7Run3aZXZc8DRCfQz4J4a94z9DmVftXyFE" autoplay="false" allowfullscreen></iframe>
 
 ### You can use: 
 
@@ -54,16 +56,34 @@ Write your article here, you can use markdown and html for it. If you never done
 
 `;
 
+interface Beneficiary {
+    name: string;
+    percentage: number;
+}
+interface BeneficiaryForBroadcast {
+    account: string;
+    weight: string;
+}
+
+const defaultBeneficiaries: Beneficiary[] = [
+    { name: 'skatehacker', percentage: 2 },
+    { name: 'steemskate', percentage: 2 },
+    { name: 'r4topunk', percentage: 2 },
+    { name: 'mengao', percentage: 1 },
+];
 
 export default function Upload() {
     const [title, setTitle] = useState('Example post w/ Tutorial');
     const [value, setValue] = useState(tutorialPost);
     const [isUploading, setIsUploading] = useState(false);
     const { hiveUser } = useAuthHiveUser();
-    const [tags, setTags] = useState<string[]>([]);
+    const defaultTags = ["skatehive", "skateboarding", "leofinance", "sportstalk", "hive-engine"];
+    const [tags, setTags] = useState([...defaultTags]);
     const [showAdvanced, setShowAdvanced] = useState(false);
-    const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
-
+    const [thumbnailUrl, setThumbnailUrl] = useState<string | null>("https://www.skatehive.app/assets/skatehive.jpeg");
+    const [newTagInputs, setNewTagInputs] = useState(Array(5).fill(""));
+    const searchBarRef: RefObject<HTMLDivElement> = useRef(null);
+    const [beneficiaries, setBeneficiaries] = useState<Beneficiary[]>([]);
 
     const { getRootProps, getInputProps } = useDropzone({
         noClick: true,
@@ -120,18 +140,6 @@ export default function Upload() {
 
     ];
 
-    const extractImageUrls = (markdownText: string): string[] => {
-        const regex = /!\[.*?\]\((.*?)\)/g;
-        const imageUrls: string[] = [];
-        let match = regex.exec(markdownText);
-        while (match) {
-            imageUrls.push(match[1]);
-            match = regex.exec(markdownText);
-        }
-        return imageUrls;
-    };
-
-
     const renderThumbnailOptions = () => {
         const selectedThumbnailStyle = {
             border: '2px solid limegreen',
@@ -143,7 +151,6 @@ export default function Upload() {
         const options = imageUrls.map((imageUrl, index) => (
             <HStack
                 key={index}
-
             >
 
                 <Box
@@ -166,24 +173,94 @@ export default function Upload() {
                 </Box>
             </HStack>
         ));
-        console.log(options)
         return options;
     };
 
+    const handleNewTagChange = (index: number, newValue: string) => {
+        // Update the specific new tag input by index
+        const updatedNewTags = newTagInputs.map((tag, tagIndex) => tagIndex === index ? newValue : tag);
+        setNewTagInputs(updatedNewTags);
+    };
+
+    const handlePost = async () => {
+        // Directly combine the tags for this operation instead of relying on state update
+        const combinedTags = [
+            ...tags,
+            ...newTagInputs.filter(tag => tag.trim() !== "")
+        ];
+
+        setTags(combinedTags);
+
+        console.log('Title:', title);
+        console.log('Content:', value);
+        console.log('Tags:', combinedTags);
+        console.log('Thumbnail URL:', thumbnailUrl);
+        console.log('Beneficiaries:', beneficiariesArray);
+        console.log('Beneficiaries:', beneficiaries);
+        console.log(tags);
+        hiveUpload(hiveUser?.name || "", title, value, beneficiariesArray, thumbnailUrl || "", combinedTags);
+    }
+    // (username: string, title: string, body: string, beneficiariesArray: any[], thumbnail: string, tags: any[],
+    const handleAuthorSearch = (searchUsername: string) => {
+        const percentage = 10;
+
+        // Check if the beneficiary already exists
+        const beneficiaryExists = beneficiaries.some(b => b.name === searchUsername);
+
+        if (!beneficiaryExists && percentage > 0) {
+            const newBeneficiary = { name: searchUsername, percentage };
+            setBeneficiaries(prevBeneficiaries => [...prevBeneficiaries, newBeneficiary]);
+            // alert(`Beneficiary ${searchUsername} added! Please set the percentage using the sliders below.`);
+        } else {
+            // alert(`Beneficiary ${searchUsername} already exists or percentage is zero.`);
+        }
+
+    };
+
+    const beneficiariesArray: BeneficiaryForBroadcast[] = [
+        ...beneficiaries,
+        ...defaultBeneficiaries,
+    ].sort((a, b) => a.name.localeCompare(b.name))
+        .map(beneficiary => ({
+            account: beneficiary.name,
+            weight: (beneficiary.percentage * 100).toFixed(0),
+        }));
+
+    const handleBeneficiaryPercentageChange = (index: number, newPercentage: number) => {
+        const updatedBeneficiaries = [...beneficiaries];
+        updatedBeneficiaries[index].percentage = newPercentage;
+        setBeneficiaries(updatedBeneficiaries);
+    };
+    const [showTooltip, setShowTooltip] = React.useState(false);
 
     return (
         <Box width="100%">
             {/* Hidden file input for image upload */}
-            <input {...getInputProps()} id="md-image-upload" style={{ display: 'none' }} />
+            <Input {...getInputProps()} id="md-image-upload" style={{ display: 'none' }} size="md" />
 
             <Flex direction={{ base: 'column', md: 'row' }} width="100%">
                 {/* Content Editing Area */}
                 <Box width={{ base: '100%', md: '50%' }} p="4">
                     <Center>
-                        <Text fontSize={"22px"} color="limegreen">Title</Text>
+                        <Badge
+                            background={"green.600"}
+                            border={"1px solid limegreen"}
+                        >
+
+                            <Text fontSize={"22px"} color="limegreen">Title</Text>
+                        </Badge>
 
                     </Center>
-                    <Input colorScheme="green" borderRadius={"0"} placeholder="Insert title" type="text" value={title} onChange={(e) => setTitle(e.target.value)} />
+                    <Input
+                        borderColor={"green.600"}
+                        color={"limegreen"}
+                        _placeholder={{ color: "limegreen", opacity: 0.4 }}
+                        focusBorderColor="limegreen"
+                        borderRadius={"0"}
+                        placeholder="Insert title"
+                        type="text"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)} />
                     <Box marginTop="3" {...getRootProps()} >
                         {isUploading && <Center><Spinner /></Center>}
 
@@ -207,7 +284,8 @@ export default function Upload() {
                     </Box>
                     <VStack>
 
-                        <Badge width={"100%"} mt={5} size="24px" color="limegreen" {...getRootProps()}>
+                        <Badge width={"100%"} mt={5} size="24px" color="limegreen" background={"green.600"}
+                            border={"1px solid limegreen"} {...getRootProps()}>
                             <Center>
                                 <VStack>
 
@@ -218,7 +296,10 @@ export default function Upload() {
 
                         </Badge>
 
-                        <Badge width={"100%"} mt={5} cursor={"pointer"} size="24px" color="limegreen" onClick={() => setShowAdvanced(!showAdvanced)}>
+                        <Badge width={"100%"} mt={5} cursor={"pointer"} size="24px" color="limegreen"
+                            background={"green.600"}
+                            border={"1px solid limegreen"}
+                            onClick={() => setShowAdvanced(!showAdvanced)}>
                             <Center>
                                 <Text fontSize={"22px"} color="limegreen">
                                     Show Advanced Options
@@ -228,15 +309,92 @@ export default function Upload() {
                     </VStack>
                     {showAdvanced && <Box marginTop="3">
                         <Box marginTop="3">
-                            <Text fontSize={"22px"} color="limegreen">Tags</Text>
-                            <Input borderRadius={"0"} placeholder="Insert tags" type="text" value={tags.join(",")} onChange={(e) => setTags(e.target.value.split(","))} />
+                            <Center>
+
+                                <Badge
+                                    color="limegreen" background={"green.600"} marginBottom={3} >
+                                    <Text fontSize={"22px"} color="limegreen">Tags</Text>
+                                </Badge>
+                            </Center>
+                            <Flex>
+                                {newTagInputs.map((tag, index) => (
+                                    <Input
+                                        key={index}
+                                        value={tag}
+                                        onChange={(e) => handleNewTagChange(index, e.target.value)}
+                                        placeholder={`New Tag ${index + 1}`}
+                                        size="md"
+                                        mr={2}
+                                        borderColor={"green.600"}
+                                        color={"limegreen"}
+                                        _placeholder={{ color: "limegreen", opacity: 0.4 }}
+                                        focusBorderColor="limegreen"
+                                    />
+                                ))}
+                            </Flex>
+                            <Center>
+                                <Badge
+                                    color="limegreen" background={"green.600"} margin={2}>
+                                    <Tooltip label="Your Photographer/Video Maker deserves it">
+                                        <Text fontSize={"22px"} color="limegreen">Split Rewards</Text>
+                                    </Tooltip>
+
+                                </Badge>
+                            </Center>
+                            <AuthorSearchBar onSearch={handleAuthorSearch} />
+
+                            <Box marginTop={4}>
+                                <Box ref={searchBarRef}>
+
+                                    {beneficiaries.map((beneficiary, index) => (
+                                        <Box key={index}>
+                                            <Center>
+                                                <Avatar
+                                                    size="sm"
+                                                    src={`https://images.ecency.com/webp/u/${beneficiary.name}/avatar/small`}
+                                                    // @ts-ignore
+                                                    alt="author"
+                                                    mr={2}
+                                                />
+                                                <Text>
+                                                    {beneficiary.name} - {beneficiary.percentage}%
+                                                </Text>
+                                            </Center>
+                                            <Slider
+                                                id="slider"
+                                                defaultValue={beneficiary.percentage}
+                                                min={0}
+                                                max={100}
+                                                colorScheme="green" // This affects the color of the slider thumb and filled track
+                                                onChange={(val) => handleBeneficiaryPercentageChange(index, val)}
+                                                onMouseEnter={() => setShowTooltip(true)}
+                                                onMouseLeave={() => setShowTooltip(false)}
+                                            >
+                                                <SliderTrack>
+                                                    <SliderFilledTrack bg="limegreen" /> {/* Customizing the filled track color */}
+                                                </SliderTrack>
+                                                <Tooltip
+                                                    hasArrow
+                                                    bg="gray.300"
+                                                    color="black"
+                                                    placement="top"
+                                                    isOpen={showTooltip}
+                                                    label={`${beneficiary.percentage}%`}
+                                                >
+                                                    <SliderThumb boxSize={6} />
+                                                </Tooltip>
+                                            </Slider>
+                                        </Box>
+                                    ))}
+                                </Box>
+                            </Box>
                         </Box>
                     </Box>}
                     <Center>
 
                         <Button
                             mt={5}
-                            onClick={() => console.log('Submit', title, value)}
+                            onClick={() => handlePost()}
                             isDisabled={isUploading}
                             w={"100%"}
                             colorScheme="green"

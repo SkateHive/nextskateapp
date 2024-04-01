@@ -22,7 +22,7 @@ import MDEditor, { commands } from "@uiw/react-md-editor"
 import ReactMarkdown from "react-markdown"
 import rehypeRaw from "rehype-raw"
 import remarkGfm from "remark-gfm"
-import { MarkdownRenderers } from "../upload/MarkdownRenderers"
+import { MarkdownRenderers } from "../upload/utils/MarkdownRenderers"
 
 // Utilities
 import moment from "moment"

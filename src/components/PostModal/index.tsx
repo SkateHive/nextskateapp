@@ -2,7 +2,7 @@
 
 import ReactMarkdown from "react-markdown"
 
-import { MarkdownRenderers } from "@/app/upload/MarkdownRenderers"
+import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers"
 import { usePostContext } from "@/contexts/PostContext"
 import {
   Box,
