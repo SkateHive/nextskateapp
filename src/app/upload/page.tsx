@@ -16,6 +16,7 @@ import AuthorSearchBar from "./utils/searchBar";
 import hiveUpload from "./utils/hiveUpload";
 import { extractImageUrls } from "./utils/extractImages";
 const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN;
+
 const tutorialPost = `# Tutorial 
 
 Write your article here, you can use markdown and html for it. If you never done that, read that post on the right and pay attention how is it made in the left blue side. After that, you can erase everything our use that template and the toolbar above to help. 
@@ -28,7 +29,7 @@ Write your article here, you can use markdown and html for it. If you never done
 
 ---
 
-<iframe src="https://ipfs.skatehive.app/ipfs/QmPdsChTSXQkqu3FLJHcAjqdLCqq5bCcnC1dKwCB8oLA1S?pinataGatewayToken=nxHSFa1jQsiF7IHeXWH-gXCY3LDLlZ7Run3aZXZc8DRCfQz4J4a94z9DmVftXyFE" autoplay="false" allowfullscreen></iframe>
+<iframe src="https://ipfs.skatehive.app/ipfs/QmPdsChTSXQkqu3FLJHcAjqdLCqq5bCcnC1dKwCB8oLA1S?pinataGatewayToken=nxHSFa1jQsiF7IHeXWH-gXCY3LDLlZ7Run3aZXZc8DRCfQz4J4a94z9DmVftXyFE" autoplay={false} allowfullscreen></iframe>
 
 ### You can use: 
 
@@ -84,7 +85,7 @@ export default function Upload() {
     const [newTagInputs, setNewTagInputs] = useState(Array(5).fill(""));
     const searchBarRef: RefObject<HTMLDivElement> = useRef(null);
     const [beneficiaries, setBeneficiaries] = useState<Beneficiary[]>([]);
-
+    const [defaultThumbnail, setDefaultThumbnail] = useState<string | null>("https://www.skatehive.app/assets/skatehive.jpeg");
     const { getRootProps, getInputProps } = useDropzone({
         noClick: true,
         noKeyboard: true,
@@ -197,8 +198,8 @@ export default function Upload() {
         console.log('Thumbnail URL:', thumbnailUrl);
         console.log('Beneficiaries:', beneficiariesArray);
         console.log('Beneficiaries:', beneficiaries);
-        console.log(tags);
-        hiveUpload(hiveUser?.name || "", title, value, beneficiariesArray, thumbnailUrl || "", combinedTags);
+        console.log(combinedTags);
+        hiveUpload(hiveUser?.name || "", title, value, beneficiariesArray, thumbnailUrl || "", combinedTags, hiveUser);
     }
     // (username: string, title: string, body: string, beneficiariesArray: any[], thumbnail: string, tags: any[],
     const handleAuthorSearch = (searchUsername: string) => {

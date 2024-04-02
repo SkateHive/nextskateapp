@@ -43,7 +43,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
           md: "repeat(2, 1fr)",
           lg: "repeat(3, 1fr)",
         }} // Responsive grid columns
-        gap={6} // Adjust gap as needed
+        gap={0} // Adjust gap as needed
         p={2}
       >
         {posts &&

@@ -16,28 +16,23 @@ const slugify = (text: string) => {
 }
 
 
-const hiveUpload = async (username: string, title: string, body: string, beneficiariesArray: any[], thumbnail: string, tags: any[],) => {
-    const user = useHiveUser();
-    console.log(user || "no user")
 
+const hiveUpload = async (username: string, title: string, body: string, beneficiariesArray: any[], thumbnail: string, tags: any[], user: any) => {
+    console.log(user || "no user")
     if (user && title) {
-        const username = user
         if (username) {
             const permlink = slugify(title.toLowerCase());
 
             // Define the beneficiaries
             let finalBeneficiaries = beneficiariesArray.map(b => ({
                 account: b.account,
-                weight: parseInt(b.weight, 10) // Convert the weight string to an integer
+                weight: parseInt(b.weight, 10)
             }));
 
 
-
-
-            // Define your comment options (e.g., max_accepted_payout, beneficiaries, etc.)
             const commentOptions = {
                 author: username,
-                permlink: permlink, // Use the video permlink if video is uploaded on 3Speak
+                permlink: permlink,
                 max_accepted_payout: '10000.000 HBD',
                 percent_hbd: 10000,
                 allow_votes: true,
@@ -66,8 +61,8 @@ const hiveUpload = async (username: string, title: string, body: string, benefic
                 'comment',
                 {
                     parent_author: '',
-                    // parent_permlink: 'testing798',
-                    parent_permlink: process.env.COMMUNITY || 'hive-173115',
+                    parent_permlink: 'testing79a8',
+                    // parent_permlink: process.env.COMMUNITY || 'hive-173115',
                     author: username,
                     permlink: permlink, // Use the video permlink if video is uploaded on 3Speak
                     title: title,
