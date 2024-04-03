@@ -75,7 +75,8 @@ function useAuthHiveUser(): AuthUser {
     localStorage.setItem("hiveuser", JSON.stringify(userAccount));
   }
 
-
+  // privatekey
+  console.log("teste")
   const loginWithHive = (
     username: string,
     loginAs: boolean = false,
