@@ -10,11 +10,14 @@ import remarkGfm from 'remark-gfm';
 import useAuthHiveUser from "@/lib/useHiveAuth";
 import { MarkdownRenderers } from "./utils/MarkdownRenderers";
 import { FaImage, FaSave } from "react-icons/fa";
-import { uploadFileToIPFS } from "./uploadToIPFS";
+import { uploadFileToIPFS } from "./utils/uploadToIPFS";
 import MDEditor, { commands } from '@uiw/react-md-editor';
 import AuthorSearchBar from "./utils/searchBar";
 import hiveUpload from "./utils/hiveUpload";
 import { extractImageUrls } from "./utils/extractImages";
+import PreviewModal from "./components/previewModal";
+
+
 const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN;
 
 const tutorialPost = `# Tutorial 
@@ -85,7 +88,9 @@ export default function Upload() {
     const [newTagInputs, setNewTagInputs] = useState(Array(5).fill(""));
     const searchBarRef: RefObject<HTMLDivElement> = useRef(null);
     const [beneficiaries, setBeneficiaries] = useState<Beneficiary[]>([]);
-    const [defaultThumbnail, setDefaultThumbnail] = useState<string | null>("https://www.skatehive.app/assets/skatehive.jpeg");
+    const [showPreview, setShowPreview] = useState(false);
+
+
     const { getRootProps, getInputProps } = useDropzone({
         noClick: true,
         noKeyboard: true,
@@ -199,6 +204,7 @@ export default function Upload() {
         console.log('Beneficiaries:', beneficiariesArray);
         console.log('Beneficiaries:', beneficiaries);
         console.log(combinedTags);
+        setShowPreview(true);
         hiveUpload(hiveUser?.name || "", title, value, beneficiariesArray, thumbnailUrl || "", combinedTags, hiveUser);
     }
     // (username: string, title: string, body: string, beneficiariesArray: any[], thumbnail: string, tags: any[],
@@ -236,6 +242,17 @@ export default function Upload() {
 
     return (
         <Box width="100%">
+            {showPreview &&
+                <PreviewModal
+                    isOpen={showPreview}
+                    onClose={() => setShowPreview(false)}
+                    title={title}
+                    body={value}
+                    thumbnailUrl={thumbnailUrl || "https://www.skatehive.app/assets/skatehive.jpeg"}
+                    user={hiveUser!}
+                    beneficiariesArray={beneficiariesArray}
+                />}
+
             {/* Hidden file input for image upload */}
             <Input {...getInputProps()} id="md-image-upload" style={{ display: 'none' }} size="md" />
 

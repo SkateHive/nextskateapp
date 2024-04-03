@@ -68,13 +68,16 @@ const hiveUpload = async (username: string, title: string, body: string, benefic
                     title: title,
                     body: body, // Use the complete post body here
                     json_metadata: JSON.stringify({
-                        tags: tags, // Pass the 'tags' array here
                         app: 'Skatehive App',
+                        tags: tags, // Pass the 'tags' array here
                         image: thumbnail, // Replace 'thumbnailIpfsURL' with 'thumbnailUrl'
                     }),
                 },
             ];
 
+            console.log(postOperation);
+
+            return;
             // Define the comment options operation
             const commentOptionsOperation = ['comment_options', commentOptions];
 
