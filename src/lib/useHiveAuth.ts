@@ -42,6 +42,40 @@ export type AuthUser = {
 function useAuthHiveUser(): AuthUser {
   const hiveClient = HiveClient
   const { hiveUser, setHiveUser } = useHiveUser()
+
+  const storeAccountForUsername = async (username: string) => {
+    const userData = await hiveClient.database.getAccounts([username])
+    const userAccount: HiveAccount = {
+      ...userData[0],
+    }
+
+    // Check if json_metadata is a valid JSON string before parsing
+    try {
+      if (userAccount.json_metadata) {
+        userAccount.metadata = JSON.parse(userAccount.json_metadata);
+      }
+    } catch (error) {
+      console.error("Error parsing json_metadata:", error);
+      userAccount.metadata = {}; // Initialize with an empty object or handle it as needed
+    }
+
+    // If metadata is empty or does not have a "profile" property, try parsing posting_json_metadata
+    if (!userAccount.metadata || !userAccount.metadata.hasOwnProperty("profile")) {
+      try {
+        if (userAccount.posting_json_metadata) {
+          userAccount.metadata = JSON.parse(userAccount.posting_json_metadata);
+        }
+      } catch (error) {
+        console.error("Error parsing posting_json_metadata:", error);
+        userAccount.metadata = {}; // Initialize with an empty object or handle it as needed
+      }
+    }
+
+    setHiveUser(userAccount);
+    localStorage.setItem("hiveuser", JSON.stringify(userAccount));
+  }
+
+
   const loginWithHive = (
     username: string,
     loginAs: boolean = false,
@@ -51,33 +85,29 @@ function useAuthHiveUser(): AuthUser {
       if (!username) reject("Empty username")
 
       if (loginAs) {
-        const val2 = await hiveClient.database.getAccounts([username])
-        const userAccount: HiveAccount = {
-          ...val2[0],
-        }
-        userAccount.metadata = JSON.parse(userAccount.json_metadata)
-        if (
-          userAccount.metadata &&
-          !userAccount.metadata.hasOwnProperty("profile")
-        )
-          userAccount.metadata = JSON.parse(userAccount.posting_json_metadata)
-        setHiveUser(userAccount)
-        localStorage.setItem("hiveuser", JSON.stringify(userAccount))
+        storeAccountForUsername(username)
         resolve()
         return
       }
 
       // store encrypted private key
-/*
+
       if (privateKey) {
         // check if user is using password
-        let hivePrivateKey = dhive.PrivateKey.fromLogin(username, privateKey)
+        localStorage.setItem("LoginMethod", "password")
+        let hivePrivateKey = dhive.PrivateKey.fromLogin(username, privateKey, 'posting')
         let hivePublicKey = hivePrivateKey.createPublic()
         let val = await hiveClient.keys.getKeyReferences([hivePublicKey.toString()])
         let accountName = val.accounts[0][0]
         if (accountName) {
+
+          let cryptoKey = localStorage.getItem("cryptoKey") || ""
+          let encrypted = CryptoJS.AES.encrypt(hivePrivateKey.toString(), cryptoKey).toString();
+          // save in localstorage
+          localStorage.setItem("postingKey", encrypted)
+          localStorage.setItem("username", username)
+          storeAccountForUsername(username)
           // user has used password
-          console.log("logged in with password")
 
         } else {
           // user did not use password
@@ -86,19 +116,18 @@ function useAuthHiveUser(): AuthUser {
           let val = await hiveClient.keys.getKeyReferences([hivePublicKey.toString()])
           let accountName = val.accounts[0][0]
           if (accountName === username) {
-            console.log("here")
-            //user has logged in using correct private key
+            // user has logged in using correct private key
             const userData = await hiveClient.database.getAccounts([
               username,
             ])
-    
+
             const userAccount: HiveAccount = {
               ...userData[0],
             }
             // check if user is using posting key
             let keyType = ""
             let checkAuth = userAccount.posting.key_auths;
-            for (var i = 0,len = checkAuth.length; i<len; i++) {
+            for (var i = 0, len = checkAuth.length; i < len; i++) {
               // checking if key is in posting array
               if (checkAuth[i][0] == hivePublicKey.toString()) {
                 keyType = "posting"
@@ -106,7 +135,7 @@ function useAuthHiveUser(): AuthUser {
             }
             // check if user is using active key
             checkAuth = userAccount.active.key_auths;
-            for (var i = 0,len = checkAuth.length; i<len; i++) {
+            for (var i = 0, len = checkAuth.length; i < len; i++) {
               // checking if key is in active array
               if (checkAuth[i][0] == hivePublicKey.toString()) {
                 keyType = "active"
@@ -114,17 +143,17 @@ function useAuthHiveUser(): AuthUser {
             }
             // check if user is using owner key
             checkAuth = userAccount.owner.key_auths;
-            for (var i = 0,len = checkAuth.length; i<len; i++) {
+            for (var i = 0, len = checkAuth.length; i < len; i++) {
               // checking if key is in owner array
               if (checkAuth[i][0] == hivePublicKey.toString()) {
                 keyType = "owner"
               }
             }
-            let cookie = []
-            cookie[0] = keyType
-            cookie[1] = privateKey 
-            var ciphertext = CryptoJS.AES.encrypt(JSON.stringify(cookie), 'secret key 123').toString();
-            localStorage.setItem("userInfo", ciphertext)
+            // let cookie = []
+            // cookie[0] = keyType
+            // cookie[1] = privateKey
+            // var ciphertext = CryptoJS.AES.encrypt(JSON.stringify(cookie), 'secret key 123').toString();
+            // localStorage.setItem("userInfo", ciphertext)
 
           } else {
             console.log("user not found")
@@ -134,82 +163,82 @@ function useAuthHiveUser(): AuthUser {
         resolve()
         return
       }
-*/
+
 
       // grant posting authority to app
-/*
-      if (privateKey) {
-        // dhive private key instance
-        const hivePrivateKey = dhive.PrivateKey.fromString(privateKey)
-        // get public key from private key
-        const hivePublicKey = hivePrivateKey.createPublic()
-        // get hive user from public key
-        const val = await hiveClient.keys.getKeyReferences([hivePublicKey.toString()])
-        const accountName = val.accounts[0][0]
-        // check if username from form match hive account name
-        if (accountName === username) {
-          const userData = await hiveClient.database.getAccounts([
-            username,
-          ])
-  
-          const userAccount: HiveAccount = {
-            ...userData[0],
-          }
-
-          const postingAuth = userAccount.posting;
-
-          //check for username duplication
-          const checkAuth = userAccount.posting.account_auths;
-          var arrayindex = -1;
-          for (var i = 0,len = checkAuth.length; i<len; i++) {
-            // hard coded app name!!!!!!!
-            // checking if user already granted posting auth
-            if (checkAuth[i][0]=="skatehive") {
-              arrayindex = i
-              return
+      /*
+            if (privateKey) {
+              // dhive private key instance
+              const hivePrivateKey = dhive.PrivateKey.fromString(privateKey)
+              // get public key from private key
+              const hivePublicKey = hivePrivateKey.createPublic()
+              // get hive user from public key
+              const val = await hiveClient.keys.getKeyReferences([hivePublicKey.toString()])
+              const accountName = val.accounts[0][0]
+              // check if username from form match hive account name
+              if (accountName === username) {
+                const userData = await hiveClient.database.getAccounts([
+                  username,
+                ])
+        
+                const userAccount: HiveAccount = {
+                  ...userData[0],
+                }
+      
+                const postingAuth = userAccount.posting;
+      
+                //check for username duplication
+                const checkAuth = userAccount.posting.account_auths;
+                var arrayindex = -1;
+                for (var i = 0,len = checkAuth.length; i<len; i++) {
+                  // hard coded app name!!!!!!!
+                  // checking if user already granted posting auth
+                  if (checkAuth[i][0]=="skatehive") {
+                    arrayindex = i
+                    return
+                  }
+                }
+      
+                //add account permission
+                // hard coded app name!!!!
+                postingAuth.account_auths.push([
+                  "skatehive",
+                  1,
+                ])
+                postingAuth.account_auths.sort();
+      
+                //object creation
+                const accObj = {
+                  account: username,
+                  json_metadata: userAccount.json_metadata,
+                  memo_key: userAccount.memo_key,
+                  posting: postingAuth,
+                }
+      
+                //account update broadcast
+                hiveClient.broadcast.updateAccount(accObj, hivePrivateKey).then(
+                  function(result) {
+                    console.log(
+                      'included in block: ' + result.block_num,
+                      'expired: ' + result.expired
+                    );
+                  },
+                  function(error) {
+                    console.error(error);
+                  }
+                );
+                resolve()
+                return
+              }
+      
             }
-          }
-
-          //add account permission
-          // hard coded app name!!!!
-          postingAuth.account_auths.push([
-            "skatehive",
-            1,
-          ])
-          postingAuth.account_auths.sort();
-
-          //object creation
-          const accObj = {
-            account: username,
-            json_metadata: userAccount.json_metadata,
-            memo_key: userAccount.memo_key,
-            posting: postingAuth,
-          }
-
-          //account update broadcast
-          hiveClient.broadcast.updateAccount(accObj, hivePrivateKey).then(
-            function(result) {
-              console.log(
-                'included in block: ' + result.block_num,
-                'expired: ' + result.expired
-              );
-            },
-            function(error) {
-              console.error(error);
-            }
-          );
-          resolve()
-          return
-        }
-
-      }
-
-*/
+      
+      */
 
       // login with HiveAuth
       if (privateKey) {
         console.log(privateKey)
-        return 
+        return
       }
 
 
@@ -226,9 +255,7 @@ function useAuthHiveUser(): AuthUser {
               try {
                 const publicKey = response.publicKey
                 const val = await hiveClient.keys.getKeyReferences([publicKey])
-                console.log(val)
                 const accountName = val.accounts[0][0]
-                console.log(accountName)
                 if (accountName === username) {
                   const sig = dhive.Signature.fromString(response.result)
                   const key = dhive.PublicKey.fromString(publicKey)
@@ -255,6 +282,7 @@ function useAuthHiveUser(): AuthUser {
                       )
                     setHiveUser(userAccount)
                     localStorage.setItem("hiveuser", JSON.stringify(userAccount))
+                    localStorage.setItem("LoginMethod", "keychain")
                     resolve()
                   } else {
                     reject("Verification failed: signature mismatch.")
@@ -277,6 +305,11 @@ function useAuthHiveUser(): AuthUser {
   const logout = () => {
     setHiveUser(null)
     localStorage.removeItem("hiveuser")
+    localStorage.removeItem("postingKey")
+    localStorage.removeItem("username")
+    localStorage.removeItem("userInfo")
+    localStorage.removeItem("LoginMethod")
+    localStorage.removeItem("cryptoKey")
     window.location.reload()
   }
 

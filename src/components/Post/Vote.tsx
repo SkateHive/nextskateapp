@@ -1,7 +1,7 @@
 import { usePostContext } from "@/contexts/PostContext"
 import { useHiveUser } from "@/contexts/UserContext"
 import { SWR_POSTS_TAG } from "@/hooks/usePosts"
-import { vote } from "@/lib/hive/functions"
+import { vote, voteWithPrivateKey } from "@/lib/hive/functions"
 import { Button, Text, Tooltip } from "@chakra-ui/react"
 import { useState } from "react"
 import { useReward } from "react-rewards"
@@ -23,18 +23,27 @@ export default function Vote() {
   )
 
   const handleVoteClick = async () => {
-    if (hiveUser) {
-      if (!isVoted) reward()
-      const voteWeight = isVoted ? 0 : 10000
+    const loginMethod = localStorage.getItem("LoginMethod");
+    const voteWeight = isVoted ? 0 : 10000;
+
+    if (!hiveUser) return;
+
+    if (!isVoted) reward();
+
+    if (loginMethod === "keychain") {
       await vote({
         username: hiveUser.name,
         permlink: post.permlink,
         author: post.author,
         weight: voteWeight,
-      })
-      setIsVoted((isVoted) => !isVoted)
-      mutate(SWR_POSTS_TAG)
+      });
+    } else if (loginMethod === "password") {
+      voteWithPrivateKey(hiveUser.name, post.permlink, post.author, voteWeight);
+      console.log("Voting with private key");
     }
+
+    setIsVoted((isVoted) => !isVoted);
+    mutate(SWR_POSTS_TAG);
   }
 
   return (
@@ -43,7 +52,7 @@ export default function Vote() {
         variant={"link"}
         disabled={isAnimating}
         colorScheme={isVoted || isAnimating ? "green" : "white"}
-        onClick={hiveUser ? handleVoteClick : () => {}}
+        onClick={handleVoteClick}
       >
         <span
           id={rewardId}

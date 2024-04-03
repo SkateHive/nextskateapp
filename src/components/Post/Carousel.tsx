@@ -33,14 +33,13 @@ function PostCarousel() {
 
   if (["samuelvelizsk8", "mark0318"].includes(post.author)) {
     videoLinks = [...iframeLinks, ...tSpeakLinks]
-    console.log(post.title)
   }
 
   const filteredImages = imageLinks.length
     ? imageLinks.filter(
-        (image) =>
-          ![SKATEHIVE_DISCORD_IMAGE, SKATEHIVE_LOGO].includes(image.url)
-      )
+      (image) =>
+        ![SKATEHIVE_DISCORD_IMAGE, SKATEHIVE_LOGO].includes(image.url)
+    )
     : [{ url: SKATEHIVE_LOGO }]
 
   return (
