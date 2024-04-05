@@ -4,6 +4,7 @@ import { SWR_POSTS_TAG } from "@/hooks/usePosts"
 import { vote, voteWithPrivateKey } from "@/lib/hive/functions"
 import { Button, Text, Tooltip } from "@chakra-ui/react"
 import { useState } from "react"
+import { RiArrowRightUpLine } from "react-icons/ri"
 import { useReward } from "react-rewards"
 import { useSWRConfig } from "swr"
 
@@ -23,12 +24,12 @@ export default function Vote() {
   )
 
   const handleVoteClick = async () => {
-    const loginMethod = localStorage.getItem("LoginMethod");
-    const voteWeight = isVoted ? 0 : 10000;
+    const loginMethod = localStorage.getItem("LoginMethod")
+    const voteWeight = isVoted ? 0 : 10000
 
-    if (!hiveUser) return;
+    if (!hiveUser) return
 
-    if (!isVoted) reward();
+    if (!isVoted) reward()
 
     if (loginMethod === "keychain") {
       await vote({
@@ -36,14 +37,14 @@ export default function Vote() {
         permlink: post.permlink,
         author: post.author,
         weight: voteWeight,
-      });
+      })
     } else if (loginMethod === "password") {
-      voteWithPrivateKey(hiveUser.name, post.permlink, post.author, voteWeight);
-      console.log("Voting with private key");
+      voteWithPrivateKey(hiveUser.name, post.permlink, post.author, voteWeight)
+      console.log("Voting with private key")
     }
 
-    setIsVoted((isVoted) => !isVoted);
-    mutate(SWR_POSTS_TAG);
+    setIsVoted((isVoted) => !isVoted)
+    mutate(SWR_POSTS_TAG)
   }
 
   return (
@@ -53,6 +54,7 @@ export default function Vote() {
         disabled={isAnimating}
         colorScheme={isVoted || isAnimating ? "green" : "white"}
         onClick={handleVoteClick}
+        gap={0}
       >
         <span
           id={rewardId}
@@ -70,6 +72,7 @@ export default function Vote() {
         >
           ${post.getEarnings().toFixed(2)}
         </Text>
+        <RiArrowRightUpLine size={40} style={{ marginLeft: "-4px" }} />
       </Button>
     </Tooltip>
   )
