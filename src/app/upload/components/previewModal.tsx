@@ -3,13 +3,22 @@
 
 import React from 'react';
 
-import { Box, Button, Divider, HStack, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, Image, CardHeader, Flex, Link, Avatar, Card } from '@chakra-ui/react';
+import { Box, Button, Center, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, Image, CardHeader, Flex, Link, Avatar, Card } from '@chakra-ui/react';
 import ReactMardown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import { MarkdownRenderers } from '../utils/MarkdownRenderers';
 import PostAvatar from '@/components/Post/Avatar';
 import { HiveAccount } from '@/lib/useHiveAuth';
+import { PostProvider } from '@/contexts/PostContext';
+import Post from '@/components/Post';
+import Header from '@/components/Post/Header';
+import Footer from '@/components/Post/Footer';
+import PostImage from '@/components/Post/Image';
+
+
+
+
 interface PreviewModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -21,53 +30,6 @@ interface PreviewModalProps {
 }
 
 
-{/* <CardHeader p={2} pb={0}>
-<PostModal isOpen={isOpen} onClose={onClose} />
-<Flex gap="4" align={"start"}>
-  <Flex flex="1" gap="2" alignItems="center">
-    <Link href={post.getFullAuthorUrl()}>
-      <PostAvatar
-        name={post.author}
-        src={
-          postAvatar ??
-          `https://images.ecency.com/webp/u/${post.author}/avatar/small`
-        }
-      />
-    </Link>
-    <Flex flexDir="column" gap={0} w={"100%"}>
-      <Flex gap={1} alignItems="center">
-        <Text fontSize="14px" as="b">
-          {post.author}
-        </Text>
-        <Text fontSize="14px" color="darkgray">
-          ·
-        </Text>
-        <Text fontSize="12px" color="darkgray" fontWeight="300">
-          {moment.utc(post.created).fromNow()}
-        </Text>
-      </Flex>
-      <HStack justify={"space-between"} display={"flex"}>
-        <Text fontSize="16px" noOfLines={1}>
-          {post.title}
-        </Text>
-      </HStack>
-    </Flex>
-  </Flex>
-  {variant === "preview" ? (
-    <Tooltip label="Open post">
-      <Icon
-        onClick={onOpen}
-        mt={1}
-        cursor={"pointer"}
-        as={Eye}
-        h={7}
-        w={7}
-        color="limegreen"
-      />
-    </Tooltip>
-  ) : null}
-</Flex>
-</CardHeader> */}
 interface BeneficiaryForBroadcast {
     account: string;
     weight: string;
@@ -98,8 +60,32 @@ const BeneficiariesCard: React.FC<BeneficiariesCard> = ({ beneficiariesArray }) 
 }
 
 
+
+
+
 const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, body, thumbnailUrl, user, beneficiariesArray }) => {
     console.log(user)
+    let postData = {
+        post_id: Number(1),
+        author: user.name || "skatehive",
+        permlink: 'permlink',
+        title: title,
+        body: body,
+        json_metadata: JSON.stringify({ images: [thumbnailUrl] }),
+        created: String(Date.now()),
+        url: 'url',
+        root_title: 'root_title',
+        total_payout_value: '4.20',
+        curator_payout_value: '0.0',
+        pending_payout_value: '0.0',
+        active_votes: [
+            { voter: "BamMargera", weight: 10000, percent: "0", reputation: 0, rshares: 0 },
+            { voter: "user2", weight: 5000, percent: "0", reputation: 0, rshares: 0 },
+            { voter: "user3", weight: 20000, percent: "0", reputation: 0, rshares: 0 },
+        ]
+    }
+
+
     return (
         <Modal isOpen={isOpen} onClose={onClose} size="xl">
             <ModalOverlay />
@@ -107,73 +93,27 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
                 <ModalHeader>{title}</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
-                    <HStack>
-                        <Box maxW={"50%"}>
-                            <ReactMardown
-                                className="markdown-body"
-                                components={MarkdownRenderers}
-                                rehypePlugins={[rehypeRaw]}
-                                remarkPlugins={[remarkGfm]}
+
+                    <Box maxW={"50%"}>
+                        <Center>
+
+                            <Card
+                                bg={"black"}
+                                border={"0.6px solid white"}
+                                size="sm"
+                                boxShadow="none"
+                                borderRadius="none"
+                                p={2}
                             >
-                                {body}
-                            </ReactMardown>
-                        </Box>
-                        <Divider colorScheme='green' orientation='vertical' />
-                        <Box mt={4}>
-                            <Text fontSize="sm" color="gray.500">
-                                This is a preview of how your post will look like on Hive.
-                            </Text>
-                            <Card>
+                                <PostProvider postData={postData}>
+                                    <Header />
 
-                                <CardHeader p={2} pb={0}>
-                                    <Flex gap="4" align={"start"}>
-
-                                        <Avatar
-                                            name={user?.name}
-                                            src={
-
-                                                `https://images.ecency.com/webp/u/${user?.name}/avatar/small`
-                                            }
-                                        />
-                                        <Flex flexDir="column" gap={0} w={"100%"}>
-                                            <Flex gap={1} alignItems="center">
-                                                <Text fontSize="14px" as="b">
-                                                    {user?.name}
-                                                </Text>
-                                                <Text fontSize="14px" color="darkgray">
-                                                    ·
-                                                </Text>
-                                                <Text fontSize="12px" color="darkgray" fontWeight="300">
-                                                    {new Date().toLocaleString()}
-                                                </Text>
-                                            </Flex>
-                                            <HStack justify={"space-between"} display={"flex"}>
-                                                <Text fontSize="16px" noOfLines={1}>
-                                                    {title}
-                                                </Text>
-                                            </HStack>
-
-                                        </Flex>
-                                    </Flex>
-                                </CardHeader>
+                                    <PostImage />
+                                    <Footer />
+                                </PostProvider>
                             </Card>
-
-
-
-                            <Text>
-                                Thumbail
-                            </Text>
-                            <Image src={thumbnailUrl} alt="Thumbnail" />
-
-                            <Text>
-                                Tags
-                            </Text>
-                            <Text>
-                                Beneficiaries
-                            </Text>
-                            <BeneficiariesCard beneficiariesArray={beneficiariesArray} />
-                        </Box>
-                    </HStack>
+                        </Center>
+                    </Box>
 
                 </ModalBody>
                 <ModalFooter>

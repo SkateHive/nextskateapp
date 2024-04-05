@@ -245,7 +245,10 @@ export default function Upload() {
             {showPreview &&
                 <PreviewModal
                     isOpen={showPreview}
-                    onClose={() => setShowPreview(false)}
+                    onClose={() => {
+                        setShowPreview(false)
+                    }
+                    }
                     title={title}
                     body={value}
                     thumbnailUrl={thumbnailUrl || "https://www.skatehive.app/assets/skatehive.jpeg"}
