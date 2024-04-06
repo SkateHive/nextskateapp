@@ -1,3 +1,6 @@
+"use server"
+
+import { Validation } from "@/types"
 import * as dhive from "@hiveio/dhive"
 import { HiveAccount } from "../useHiveAuth"
 import HiveClient from "./../hiveclient"
@@ -8,48 +11,79 @@ interface HiveKeychainResponse {
   result: string
 }
 
-async function hiveServerLogin2(username: string, privateKey: string) {
-  if (!username) return "Empty username"
-  if (!privateKey) return "Empty private key"
+interface ServerLoginResponse {
+  validation: Validation
+  key?: string
+  type?: dhive.KeyRole
+}
 
-  let hivePrivateKey = dhive.PrivateKey.fromLogin(
-    username,
-    privateKey,
-    "posting"
-  )
+async function getAccountByPassword(username: string, password: string) {
+  let hivePrivateKey = dhive.PrivateKey.fromLogin(username, password, "posting")
   let hivePublicKey = hivePrivateKey.createPublic()
   let val = await HiveClient.keys.getKeyReferences([hivePublicKey.toString()])
   let accountName = val.accounts[0][0]
+  return {
+    accountName,
+    hivePrivateKey,
+  }
+}
+
+export async function hiveServerLoginWithPassword(
+  username: string,
+  privateKey: string
+): Promise<ServerLoginResponse> {
+  console.log("hiveServerLoginWithPassword")
+  if (!username)
+    return { validation: { success: false, message: "Empty username" } }
+  if (!privateKey)
+    return { validation: { success: false, message: "Empty username" } }
+
+  const { accountName, hivePrivateKey } = await getAccountByPassword(
+    username,
+    privateKey
+  )
 
   if (accountName) {
     // user has used password
-    let cryptoKey = localStorage.getItem("cryptoKey") || ""
+    let cryptoKey = process.env.ENCRYPTION_KEY as string
     let encrypted = CryptoJS.AES.encrypt(
       hivePrivateKey.toString(),
       cryptoKey
     ).toString()
-    return encrypted
+    return {
+      validation: { success: true, message: "User has found" },
+      key: encrypted,
+      type: "posting",
+    }
   } else {
     // user did not use password
-    hivePrivateKey = dhive.PrivateKey.fromString(privateKey)
-    hivePublicKey = hivePrivateKey.createPublic()
+    let hivePrivateKey = dhive.PrivateKey.fromString(privateKey)
+    let hivePublicKey = hivePrivateKey.createPublic()
     let val = await HiveClient.keys.getKeyReferences([hivePublicKey.toString()])
     let accountName = val.accounts[0][0]
 
     if (accountName === username) {
       // user has logged in using correct private key
       const userData = await HiveClient.database.getAccounts([username])
+      const encryptedKey = CryptoJS.AES.encrypt(
+        hivePrivateKey.toString(),
+        privateKey
+      ).toString()
 
       const userAccount: HiveAccount = {
         ...userData[0],
       }
+
       // check if user is using posting key
-      let keyType = ""
       let checkAuth = userAccount.posting.key_auths
       for (var i = 0, len = checkAuth.length; i < len; i++) {
         // checking if key is in posting array
         if (checkAuth[i][0] == hivePublicKey.toString()) {
-          keyType = "posting"
+          return {
+            validation: { success: true, message: "User has found" },
+            key: encryptedKey,
+            type: "posting",
+          }
         }
       }
       // check if user is using active key
@@ -57,25 +91,33 @@ async function hiveServerLogin2(username: string, privateKey: string) {
       for (var i = 0, len = checkAuth.length; i < len; i++) {
         // checking if key is in active array
         if (checkAuth[i][0] == hivePublicKey.toString()) {
-          keyType = "active"
+          return {
+            validation: { success: true, message: "User has found" },
+            key: encryptedKey,
+            type: "active",
+          }
         }
       }
+
       // check if user is using owner key
       checkAuth = userAccount.owner.key_auths
       for (var i = 0, len = checkAuth.length; i < len; i++) {
         // checking if key is in owner array
         if (checkAuth[i][0] == hivePublicKey.toString()) {
-          keyType = "owner"
+          return {
+            validation: { success: true, message: "User has found" },
+            key: encryptedKey,
+            type: "owner",
+          }
         }
       }
-    } else {
-      // wrong credencials!!
-      return "user not found"
     }
+
+    return { validation: { success: false, message: "User not found" } }
   }
 }
 
-const hiveServerLogin = (
+const hiveServerLogin2 = (
   username: string,
   privateKey: string
 ): Promise<void> => {
