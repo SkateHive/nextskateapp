@@ -5,6 +5,7 @@ import {
   Button,
   FormControl,
   FormErrorMessage,
+  Image,
   Input,
   Modal,
   ModalBody,
@@ -15,7 +16,8 @@ import {
   Spinner,
   VStack,
 } from "@chakra-ui/react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import QRCode from 'react-qr-code'
 
 const environment = process.env.NODE_ENV
 
@@ -30,12 +32,15 @@ function LoginModal({
   const [isLogginIn, setIsLogginIn] = useState(false)
   const [username, setUsername] = useState("")
   const [privateKey, setPrivateKey] = useState("")
+  const [HASUrl, setHASUrl] = useState("")
+
   const { loginWithHive } = useAuthHiveUser()
+
 
   async function doLogin(useLoginAs: boolean = false) {
     try {
       setIsLogginIn(true)
-      await loginWithHive(username, useLoginAs, privateKey)
+      await loginWithHive(username, useLoginAs, privateKey, setHASUrl)
       onClose()
     } catch (error) {
       console.error(error)
@@ -92,6 +97,11 @@ function LoginModal({
                 >
                   Continue As (DEV)
                 </Button>
+              )}
+              {HASUrl && (
+                <div>
+                  <a href={HASUrl}><QRCode value={HASUrl}></QRCode></a>
+                </div>
               )}
             </VStack>
             {Boolean(errorMessage) && (

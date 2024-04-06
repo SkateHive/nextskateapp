@@ -32,9 +32,17 @@ export interface HiveAccount {
   metadata?: MetadataProps
 }
 
+interface Evt {
+  account: string
+  cmd: string
+  expire: undefined
+  key: string
+  uuid: string
+}
+
 export type AuthUser = {
   hiveUser: HiveAccount | null
-  loginWithHive: (username: string, loginAs?: boolean, privateKey?: string | undefined) => Promise<void>
+  loginWithHive: (username: string, loginAs?: boolean, privateKey?: string | undefined, setHASUrl?: (url: string) => void) => Promise<void>
   logout: () => void
   isLoggedIn: () => boolean
 }
@@ -45,7 +53,8 @@ function useAuthHiveUser(): AuthUser {
   const loginWithHive = (
     username: string,
     loginAs: boolean = false,
-    privateKey: string | undefined
+    privateKey: string | undefined,
+    setHASUrl?: (url: string) => void
   ): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       if (!username) reject("Empty username")
@@ -207,8 +216,65 @@ function useAuthHiveUser(): AuthUser {
 */
 
       // login with HiveAuth
-      if (privateKey) {
-        console.log(privateKey)
+      if (username) {
+        
+        // Your application information
+        const APP_META = {name:"SkateHive", description:"Skateboarding Community", icon:undefined}
+
+        // Create an authentication object
+        const auth = {
+          username: username,  // required - replace "username" with your Hive account name (without the @)
+          expire: undefined,
+          key: undefined
+        }
+
+        // Retrieving connection status
+        const status = HAS.status()
+        console.log(status)
+
+
+        let challenge_data = undefined
+        // optional - create a challenge to sign with the posting key
+        challenge_data = {
+            key_type: "posting",
+            challenge: JSON.stringify({
+                login: auth.username,
+                ts: Date.now(),
+            })
+        }
+    
+        try {
+          const res = await HAS.authenticate(auth, APP_META, challenge_data, (evt: Evt) => {
+              console.log(evt); // process auth_wait message
+              const auth_payload = {
+                account: username, 
+                uuid: evt.uuid,
+                key: evt.key,
+                host: "wss://hive-auth.arcange.eu"
+              }
+              console.log(auth_payload)
+              const auth_payload_base64 = btoa(JSON.stringify(auth_payload))
+              const HASUrl = "has://auth_req/" + auth_payload_base64
+              console.log(HASUrl)
+              if (setHASUrl) {
+                setHASUrl(HASUrl)
+              }
+          });
+          console.log(res)
+
+
+
+
+
+
+          resolve(res); // Authentication request approved
+        } catch (err) {
+          reject(err); // Authentication request rejected or error occurred
+        }
+        
+
+
+        resolve()
         return 
       }
 
