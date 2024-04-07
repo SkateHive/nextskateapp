@@ -13,7 +13,6 @@ import {
   Image,
   Tooltip,
 } from "@chakra-ui/react"
-import { ConnectButton } from "@rainbow-me/rainbowkit"
 import { Home } from "lucide-react"
 import { usePathname, useRouter } from "next/navigation"
 import AvatarLogin from "./AvatarLogin"
@@ -74,7 +73,6 @@ export default function Navbar() {
         </Box>
         <HStack>
           <AvatarLogin />
-          <ConnectButton showBalance={false} label="Connect ETH wallet" />
         </HStack>
       </Flex>
       <Divider mb={[0, 3]} color="darkgray" />

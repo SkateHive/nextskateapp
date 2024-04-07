@@ -17,8 +17,6 @@
     "@giphy/js-types": "^5.0.0",
     "@giphy/react-components": "^9.3.0",
     "@hiveio/dhive": "^1.2.8",
-    "@rainbow-me/rainbowkit": "2",
-    "@tanstack/react-query": "^5.28.8",
     "@uiw/react-md-editor": "^4.0.4",
     "@vercel/analytics": "^1.1.1",
     "@vercel/speed-insights": "^1.0.2",
@@ -51,9 +49,7 @@
     "rehype-sanitize": "^6.0.0",
     "remark-gfm": "^4.0.0",
     "remarkable": "^2.0.1",
-    "swr": "^2.2.4",
-    "viem": "2.x",
-    "wagmi": "2"
+    "swr": "^2.2.4"
   },
   "devDependencies": {
     "@types/crypto-js": "^4.2.2",
