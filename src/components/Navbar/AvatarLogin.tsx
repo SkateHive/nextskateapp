@@ -9,7 +9,7 @@ import {
   MenuList,
   Tooltip,
 } from "@chakra-ui/react"
-import { Bell, LogOut, User } from "lucide-react"
+import { Bell, LogOut, Rss, User, Wallet } from "lucide-react"
 import Link from "next/link"
 import LoginButton from "../Hive/Login/LoginButton"
 
@@ -50,7 +50,15 @@ export default function AvatarLogin() {
         </MenuItem>
         <MenuItem
           bg="black"
-          icon={<User size={"16px"} />}
+          icon={<Wallet size={"16px"} />}
+          as={Link}
+          href={`/wallet`}
+        >
+          Wallet
+        </MenuItem>
+        <MenuItem
+          bg="black"
+          icon={<Rss size={"16px"} />}
           as={Link}
           href={`/plaza`}
         >

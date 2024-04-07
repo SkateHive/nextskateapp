@@ -16,6 +16,7 @@ import {
 import { Home } from "lucide-react"
 import { usePathname, useRouter } from "next/navigation"
 import AvatarLogin from "./AvatarLogin"
+
 function getPageName(pathname: string) {
   if (pathname === "/") return "SkateHive"
   if (pathname === "/notifications") return "Notifications"

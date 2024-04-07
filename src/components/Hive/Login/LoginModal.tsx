@@ -1,10 +1,12 @@
 "use client"
 
 import useAuthHiveUser from "@/lib/useHiveAuth"
+import { default as ethWallet } from "@/lib/wallet/client"
 import {
   Button,
   FormControl,
   FormErrorMessage,
+  HStack,
   Input,
   Modal,
   ModalBody,
@@ -17,6 +19,14 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import { useState } from "react"
+import { ConnectButton, useConnect } from "thirdweb/react"
+import { createWallet, walletConnect } from "thirdweb/wallets"
+
+const wallets = [
+  createWallet("io.metamask"),
+  createWallet("com.coinbase.wallet"),
+  createWallet("me.rainbow"),
+]
 
 const environment = process.env.NODE_ENV
 
@@ -32,6 +42,8 @@ function LoginModal({
   const [username, setUsername] = useState("")
   const [privateKey, setPrivateKey] = useState("")
   const { loginWithHive } = useAuthHiveUser()
+  const { connect, isConnecting, error } = useConnect()
+  const wallet = walletConnect()
 
   async function doLogin(useLoginAs: boolean = false) {
     try {
@@ -86,25 +98,46 @@ function LoginModal({
           </FormControl>
         </ModalBody>
         <ModalFooter>
-          <Button
-            w={"100%"}
-            onClick={() => doLogin()}
-            colorScheme="green"
-            variant={"outline"}
-            disabled={isLogginIn}
-          >
-            {isLogginIn ? <Spinner size={"sm"} /> : "Continue"}
-          </Button>
-          {environment === "development" && (
-            <Button
-              w={"100%"}
-              onClick={() => doLogin(true)}
-              colorScheme="red"
-              variant={"ghost"}
-            >
-              Continue As (DEV)
-            </Button>
-          )}
+          <VStack w={"100%"}>
+            <HStack w={"100%"}>
+              <Button
+                w={"100%"}
+                onClick={() => doLogin()}
+                colorScheme="green"
+                variant={"outline"}
+                disabled={isLogginIn}
+              >
+                {isLogginIn ? <Spinner size={"sm"} /> : "Hive connect"}
+              </Button>
+              {environment === "development" && (
+                <Button
+                  w={"100%"}
+                  onClick={() => doLogin(true)}
+                  colorScheme="red"
+                  variant={"ghost"}
+                >
+                  Continue As (DEV)
+                </Button>
+              )}
+            </HStack>
+            <ConnectButton
+              theme={"dark"}
+              client={ethWallet}
+              wallets={wallets}
+              connectButton={{
+                label: "Connect ETH wallet",
+                style: {
+                  backgroundColor: "black",
+                  border: "1px solid white",
+                  color: "white",
+                  paddingBlock: "0",
+                  height: "40px",
+                  width: "100%",
+                  borderRadius: "6px",
+                },
+              }}
+            />
+          </VStack>
         </ModalFooter>
       </ModalContent>
     </Modal>
