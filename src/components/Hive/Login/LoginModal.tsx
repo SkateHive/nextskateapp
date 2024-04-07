@@ -1,7 +1,7 @@
 "use client"
 
 import useAuthHiveUser from "@/lib/useHiveAuth"
-import { default as ethWallet } from "@/lib/wallet/client"
+import { ethClient, wallets } from "@/lib/wallet/client"
 import {
   Button,
   FormControl,
@@ -19,14 +19,9 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import { useState } from "react"
+import { base } from "thirdweb/chains"
 import { ConnectButton, useConnect } from "thirdweb/react"
-import { createWallet, walletConnect } from "thirdweb/wallets"
-
-const wallets = [
-  createWallet("io.metamask"),
-  createWallet("com.coinbase.wallet"),
-  createWallet("me.rainbow"),
-]
+import { walletConnect } from "thirdweb/wallets"
 
 const environment = process.env.NODE_ENV
 
@@ -122,8 +117,9 @@ function LoginModal({
             </HStack>
             <ConnectButton
               theme={"dark"}
-              client={ethWallet}
+              client={ethClient}
               wallets={wallets}
+              chain={base}
               connectButton={{
                 label: "Connect ETH wallet",
                 style: {

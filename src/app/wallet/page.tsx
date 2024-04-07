@@ -1,9 +1,11 @@
 "use client"
 
 import { useHiveUser } from "@/contexts/UserContext"
+import { ethClient, wallets } from "@/lib/wallet/client"
 import { alchemy } from "@/lib/web3"
 import {
   Avatar,
+  Button,
   Divider,
   HStack,
   Stack,
@@ -19,9 +21,11 @@ import {
 } from "@chakra-ui/react"
 import { OwnedToken } from "alchemy-sdk"
 import { useEffect, useState } from "react"
-import { useAccount } from "wagmi"
+import { base } from "thirdweb/chains"
+import { ConnectButton, useActiveWallet, useDisconnect } from "thirdweb/react"
+import { Wallet } from "thirdweb/wallets"
 
-function Wallet() {
+function WalletPage() {
   return (
     <Stack
       direction={{ base: "column", md: "row" }}
@@ -73,8 +77,14 @@ function HiveBox() {
 }
 
 function EthBox() {
-  const account = useAccount()
+  const wallet = useActiveWallet()
+  const { disconnect } = useDisconnect()
   const [userTokens, setUserTokens] = useState<OwnedToken[] | null>()
+
+  function disconnectWallet() {
+    disconnect(wallet as Wallet)
+    setUserTokens(null)
+  }
 
   useEffect(() => {
     async function fetchTokens(ethAddress: string) {
@@ -82,8 +92,10 @@ function EthBox() {
       setUserTokens(userTokens.tokens)
       console.log(userTokens)
     }
-    if (account.address) fetchTokens(account.address)
-  }, [account.address])
+    if (wallet && wallet.getAccount()?.address) {
+      fetchTokens(wallet.getAccount()?.address as string)
+    }
+  }, [wallet])
 
   return (
     <VStack
@@ -99,8 +111,32 @@ function EthBox() {
       </Text>
       <Divider mt={-6} color="limegreen" />
       <VStack align={"normal"} gap={0}>
-        <Text>Address: {account.address}</Text>
-        <Text>Chain: {account.chain?.name}</Text>
+        {wallet ? (
+          <>
+            <Text>Address: {wallet.getAccount()?.address}</Text>
+            <Text>Chain: {wallet.getChain()?.name}</Text>
+            <Button onClick={disconnectWallet}>Disconnect</Button>
+          </>
+        ) : (
+          <ConnectButton
+            theme={"dark"}
+            client={ethClient}
+            wallets={wallets}
+            chain={base}
+            connectButton={{
+              label: "Connect ETH wallet",
+              style: {
+                backgroundColor: "black",
+                border: "1px solid white",
+                color: "white",
+                paddingBlock: "0",
+                height: "40px",
+                width: "100%",
+                borderRadius: "6px",
+              },
+            }}
+          />
+        )}
       </VStack>
       {userTokens && userTokens.length > 1 ? (
         <TableContainer>
@@ -118,9 +154,8 @@ function EthBox() {
             </Thead>
             <Tbody>
               {userTokens.map((token) => {
-                console.log(token)
                 return (
-                  <Tr key={token.symbol}>
+                  <Tr key={token.contractAddress}>
                     <Td textColor={"green.300"}>{token.name}</Td>
                     <Td textColor={"green.300"} isNumeric>
                       {token.balance ? parseFloat(token.balance).toFixed(2) : 0}
@@ -139,4 +174,4 @@ function EthBox() {
   )
 }
 
-export default Wallet
+export default WalletPage
