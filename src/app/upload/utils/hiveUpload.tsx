@@ -15,20 +15,35 @@ const slugify = (text: string) => {
         .replace(/-+$/, '');            // Trim - from end of text
 }
 
+const generatePermlink = (title: string) => {
+    const slugifiedTitle = slugify(title);
+    const timestamp = new Date().getTime(); // Ensures uniqueness
+    return `${slugifiedTitle}-${timestamp}`;
+};
 
 
 const hiveUpload = async (username: string, title: string, body: string, beneficiariesArray: any[], thumbnail: string, tags: any[], user: any) => {
-    console.log(user || "no user")
     if (user && title) {
         if (username) {
             const permlink = slugify(title.toLowerCase());
+            const formatBeneficiaries = (beneficiariesArray: any[]) => {
+                let seen = new Set();
+                let finalBeneficiaries = beneficiariesArray.filter(({ account }: { account: string }) => {
+                    const duplicate = seen.has(account);
+                    seen.add(account);
+                    return !duplicate;
+                }).map(beneficiary => ({
+                    account: beneficiary.account,
+                    weight: parseInt(beneficiary.weight, 10) // Ensure weight is an integer
+                }));
 
-            // Define the beneficiaries
-            let finalBeneficiaries = beneficiariesArray.map(b => ({
-                account: b.account,
-                weight: parseInt(b.weight, 10)
-            }));
+                // Sort beneficiaries by account name to maintain consistency
+                finalBeneficiaries = finalBeneficiaries.sort((a, b) => a.account.localeCompare(b.account));
+                return finalBeneficiaries;
+            };
 
+            // Use this function in your hiveUpload to prepare beneficiaries:
+            let finalBeneficiaries = formatBeneficiaries(beneficiariesArray);
 
             const commentOptions = {
                 author: username,
@@ -61,28 +76,28 @@ const hiveUpload = async (username: string, title: string, body: string, benefic
                 'comment',
                 {
                     parent_author: '',
-                    parent_permlink: 'testing79a8',
+                    parent_permlink: generatePermlink(title),
                     // parent_permlink: process.env.COMMUNITY || 'hive-173115',
                     author: username,
-                    permlink: permlink, // Use the video permlink if video is uploaded on 3Speak
+                    permlink: permlink,
                     title: title,
-                    body: body, // Use the complete post body here
+                    body: body,
                     json_metadata: JSON.stringify({
+                        tags: tags,
                         app: 'Skatehive App',
-                        tags: tags, // Pass the 'tags' array here
-                        image: thumbnail, // Replace 'thumbnailIpfsURL' with 'thumbnailUrl'
+                        image: thumbnail,
                     }),
                 },
             ];
 
-            console.log(postOperation);
+            console.log("Post Operation:", postOperation);
 
-            return;
             // Define the comment options operation
             const commentOptionsOperation = ['comment_options', commentOptions];
 
             // Construct the operations array
             const operations = [postOperation, commentOptionsOperation];
+            console.log("Öperations ", operations);
             // Request the broadcast using Hive Keychain
             window.hive_keychain.requestBroadcast(username, operations, 'posting', async (response: any) => {
                 if (response.success) {

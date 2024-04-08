@@ -76,7 +76,6 @@ function useAuthHiveUser(): AuthUser {
   }
 
   // privatekey
-  console.log("teste")
   const loginWithHive = (
     username: string,
     loginAs: boolean = false,

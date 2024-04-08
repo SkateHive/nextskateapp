@@ -40,7 +40,7 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
     return (
         <Box position="relative">
             <Input
-                placeholder="Search by username..."
+                placeholder="Add a new split..."
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 borderColor={"green.600"}
@@ -75,8 +75,6 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
                             <Avatar
                                 size="sm"
                                 src={`https://images.ecency.com/webp/u/${author}/avatar/small`}
-                                // @ts-ignore
-                                alt="author"
                                 mr={2}
                             />
 

@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useCallback, useEffect, useRef, RefObject } from "react";
-import { Box, Button, Input, HStack, Flex, Center, Text, Avatar, Spinner, Badge, VStack, Tooltip, Slider, SliderTrack, SliderFilledTrack, SliderThumb } from "@chakra-ui/react";
+import { Checkbox, Box, Button, Input, HStack, Flex, Center, Text, Avatar, Spinner, Badge, VStack, Tooltip, Slider, SliderTrack, SliderFilledTrack, SliderThumb } from "@chakra-ui/react";
 import { useDropzone } from "react-dropzone";
 import ReactMarkdown from 'react-markdown';
 import rehypeSanitize from 'rehype-sanitize';
@@ -21,6 +21,9 @@ import PreviewModal from "./components/previewModal";
 const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN;
 
 const tutorialPost = `# Tutorial 
+
+![Image](https://ipfs.skatehive.app/ipfs/QmYkb6yq2nXSccdMwmyNWXND8T1exqUW1uUiMAQcV4nfVP?pinataGatewayToken=nxHSFa1jQsiF7IHeXWH-gXCY3LDLlZ7Run3aZXZc8DRCfQz4J4a94z9DmVftXyFE)
+
 
 Write your article here, you can use markdown and html for it. If you never done that, read that post on the right and pay attention how is it made in the left blue side. After that, you can erase everything our use that template and the toolbar above to help. 
 
@@ -57,7 +60,6 @@ Write your article here, you can use markdown and html for it. If you never done
 <marquee> <h2> YOU CAN DO SOME FUN STUFF </h2></marquee>
 
 
-
 `;
 
 interface Beneficiary {
@@ -70,10 +72,8 @@ interface BeneficiaryForBroadcast {
 }
 
 const defaultBeneficiaries: Beneficiary[] = [
-    { name: 'skatehacker', percentage: 2 },
-    { name: 'steemskate', percentage: 2 },
-    { name: 'r4topunk', percentage: 2 },
-    { name: 'mengao', percentage: 1 },
+    { name: 'skatedev', percentage: 2 },
+    { name: 'steemskate', percentage: 3 },
 ];
 
 export default function Upload() {
@@ -84,12 +84,12 @@ export default function Upload() {
     const defaultTags = ["skatehive", "skateboarding", "leofinance", "sportstalk", "hive-engine"];
     const [tags, setTags] = useState([...defaultTags]);
     const [showAdvanced, setShowAdvanced] = useState(false);
-    const [thumbnailUrl, setThumbnailUrl] = useState<string | null>("https://www.skatehive.app/assets/skatehive.jpeg");
+    const [thumbnailUrl, setThumbnailUrl] = useState<string | null>("https://ipfs.skatehive.app/ipfs/QmYkb6yq2nXSccdMwmyNWXND8T1exqUW1uUiMAQcV4nfVP?pinataGatewayToken=nxHSFa1jQsiF7IHeXWH-gXCY3LDLlZ7Run3aZXZc8DRCfQz4J4a94z9DmVftXyFE");
     const [newTagInputs, setNewTagInputs] = useState(Array(5).fill(""));
     const searchBarRef: RefObject<HTMLDivElement> = useRef(null);
     const [beneficiaries, setBeneficiaries] = useState<Beneficiary[]>([]);
     const [showPreview, setShowPreview] = useState(false);
-
+    const [isChecked, setIsChecked] = useState(true);
 
     const { getRootProps, getInputProps } = useDropzone({
         noClick: true,
@@ -197,15 +197,7 @@ export default function Upload() {
 
         setTags(combinedTags);
 
-        console.log('Title:', title);
-        console.log('Content:', value);
-        console.log('Tags:', combinedTags);
-        console.log('Thumbnail URL:', thumbnailUrl);
-        console.log('Beneficiaries:', beneficiariesArray);
-        console.log('Beneficiaries:', beneficiaries);
-        console.log(combinedTags);
         setShowPreview(true);
-        hiveUpload(hiveUser?.name || "", title, value, beneficiariesArray, thumbnailUrl || "", combinedTags, hiveUser);
     }
     // (username: string, title: string, body: string, beneficiariesArray: any[], thumbnail: string, tags: any[],
     const handleAuthorSearch = (searchUsername: string) => {
@@ -240,6 +232,10 @@ export default function Upload() {
     };
     const [showTooltip, setShowTooltip] = React.useState(false);
 
+    const handleCheckMark = () => {
+        setIsChecked(!isChecked);
+    }
+
     return (
         <Box width="100%">
             {showPreview &&
@@ -251,9 +247,10 @@ export default function Upload() {
                     }
                     title={title}
                     body={value}
-                    thumbnailUrl={thumbnailUrl || "https://www.skatehive.app/assets/skatehive.jpeg"}
+                    thumbnailUrl={thumbnailUrl || "https://ipfs.skatehive.app/ipfs/QmYkb6yq2nXSccdMwmyNWXND8T1exqUW1uUiMAQcV4nfVP?pinataGatewayToken=nxHSFa1jQsiF7IHeXWH-gXCY3LDLlZ7Run3aZXZc8DRCfQz4J4a94z9DmVftXyFE"}
                     user={hiveUser!}
                     beneficiariesArray={beneficiariesArray}
+                    tags={tags}
                 />}
 
             {/* Hidden file input for image upload */}
@@ -267,7 +264,6 @@ export default function Upload() {
                             background={"green.600"}
                             border={"1px solid limegreen"}
                         >
-
                             <Text fontSize={"22px"} color="limegreen">Title</Text>
                         </Badge>
 
@@ -363,6 +359,48 @@ export default function Upload() {
                                 </Badge>
                             </Center>
                             <AuthorSearchBar onSearch={handleAuthorSearch} />
+                            <Checkbox defaultChecked colorScheme="green" size="lg" onChange={handleCheckMark} >Support Devs</Checkbox>
+
+                            {isChecked &&
+                                defaultBeneficiaries.map((beneficiary, index) => (
+                                    <Box key={index}>
+                                        <Center>
+                                            <Avatar
+                                                size="sm"
+                                                src={`https://images.ecency.com/webp/u/${beneficiary.name}/avatar/small`}
+                                                mr={2}
+                                            />
+                                            <Text>
+                                                {beneficiary.name} - {beneficiary.percentage}%
+                                            </Text>
+                                        </Center>
+                                        <Slider
+                                            id={`slider-${index}`} // Ensure unique ID for each slider
+                                            defaultValue={beneficiary.percentage}
+                                            min={0}
+                                            max={100}
+                                            colorScheme="green"
+                                            onChange={(val) => handleBeneficiaryPercentageChange(index, val)}
+                                            onMouseEnter={() => setShowTooltip(true)}
+                                            onMouseLeave={() => setShowTooltip(false)}
+                                        >
+                                            <SliderTrack>
+                                                <SliderFilledTrack bg="limegreen" />
+                                            </SliderTrack>
+                                            <Tooltip
+                                                hasArrow
+                                                bg="gray.300"
+                                                color="black"
+                                                placement="top"
+                                                isOpen={showTooltip}
+                                                label={`${beneficiary.percentage}%`}
+                                            >
+                                                <SliderThumb boxSize={6} />
+                                            </Tooltip>
+                                        </Slider>
+                                    </Box>
+                                ))
+                            }
 
                             <Box marginTop={4}>
                                 <Box ref={searchBarRef}>
