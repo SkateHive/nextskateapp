@@ -1,8 +1,10 @@
 import { usePostContext } from "@/contexts/PostContext"
 import { useHiveUser } from "@/contexts/UserContext"
 import { SWR_POSTS_TAG } from "@/hooks/usePosts"
-import { vote, voteWithPrivateKey } from "@/lib/hive/functions"
+import { vote } from "@/lib/hive/functions"
+import { voteWithPrivateKey } from "@/lib/hive/server-functions"
 import { Button, Text, Tooltip } from "@chakra-ui/react"
+import { VoteOperation } from "@hiveio/dhive"
 import { useState } from "react"
 import { RiArrowRightUpLine } from "react-icons/ri"
 import { useReward } from "react-rewards"
@@ -38,8 +40,18 @@ export default function Vote() {
         author: post.author,
         weight: voteWeight,
       })
-    } else if (loginMethod === "password") {
-      voteWithPrivateKey(hiveUser.name, post.permlink, post.author, voteWeight)
+    } else if (loginMethod === "privateKey") {
+      const vote: VoteOperation = [
+        "vote",
+        {
+          author: post.author,
+          permlink: post.permlink,
+          voter: hiveUser.name,
+          weight: voteWeight,
+        }
+      ]
+      const encryptedPrivateKey = localStorage.getItem("EncPrivateKey");
+      voteWithPrivateKey(encryptedPrivateKey, vote)
       console.log("Voting with private key")
     }
 

@@ -1,10 +1,8 @@
 import { useHiveUser } from "@/contexts/UserContext"
 import * as dhive from "@hiveio/dhive"
+import { hiveServerLoginWithPassword } from "./hive/server-functions"
 import HiveClient from "./hiveclient"
-import { useState } from "react"
-import CryptoJS from 'crypto-js';
-import HAS from 'hive-auth-wrapper'
-
+import CryptoJS from "crypto-js"
 
 interface HiveKeychainResponse {
   success: boolean
@@ -34,7 +32,11 @@ export interface HiveAccount {
 
 export type AuthUser = {
   hiveUser: HiveAccount | null
-  loginWithHive: (username: string, loginAs?: boolean, privateKey?: string | undefined) => Promise<void>
+  loginWithHive: (
+    username: string,
+    loginAs?: boolean,
+    privateKey?: string | undefined
+  ) => Promise<void>
   logout: () => void
   isLoggedIn: () => boolean
 }
@@ -52,30 +54,31 @@ function useAuthHiveUser(): AuthUser {
     // Check if json_metadata is a valid JSON string before parsing
     try {
       if (userAccount.json_metadata) {
-        userAccount.metadata = JSON.parse(userAccount.json_metadata);
+        userAccount.metadata = JSON.parse(userAccount.json_metadata)
       }
     } catch (error) {
-      console.error("Error parsing json_metadata:", error);
-      userAccount.metadata = {}; // Initialize with an empty object or handle it as needed
+      console.error("Error parsing json_metadata:", error)
+      userAccount.metadata = {} // Initialize with an empty object or handle it as needed
     }
 
     // If metadata is empty or does not have a "profile" property, try parsing posting_json_metadata
-    if (!userAccount.metadata || !userAccount.metadata.hasOwnProperty("profile")) {
+    if (
+      !userAccount.metadata ||
+      !userAccount.metadata.hasOwnProperty("profile")
+    ) {
       try {
         if (userAccount.posting_json_metadata) {
-          userAccount.metadata = JSON.parse(userAccount.posting_json_metadata);
+          userAccount.metadata = JSON.parse(userAccount.posting_json_metadata)
         }
       } catch (error) {
-        console.error("Error parsing posting_json_metadata:", error);
-        userAccount.metadata = {}; // Initialize with an empty object or handle it as needed
+        console.error("Error parsing posting_json_metadata:", error)
+        userAccount.metadata = {} // Initialize with an empty object or handle it as needed
       }
     }
 
-    setHiveUser(userAccount);
-    localStorage.setItem("hiveuser", JSON.stringify(userAccount));
+    setHiveUser(userAccount)
+    localStorage.setItem("hiveuser", JSON.stringify(userAccount))
   }
-
-  // privatekey
   const loginWithHive = (
     username: string,
     loginAs: boolean = false,
@@ -91,79 +94,30 @@ function useAuthHiveUser(): AuthUser {
       }
 
       // store encrypted private key
-
       if (privateKey) {
-        // check if user is using password
-        localStorage.setItem("LoginMethod", "password")
-        let hivePrivateKey = dhive.PrivateKey.fromLogin(username, privateKey, 'posting')
-        let hivePublicKey = hivePrivateKey.createPublic()
-        let val = await hiveClient.keys.getKeyReferences([hivePublicKey.toString()])
-        let accountName = val.accounts[0][0]
-        if (accountName) {
+        const { validation, key, type } = await hiveServerLoginWithPassword(
+          username,
+          privateKey
+        )
+        if (validation.success) {
+          localStorage.setItem("Username", username)
+          localStorage.setItem("EncPrivateKey", key as string)
+          localStorage.setItem("Type", type as string)
+          localStorage.setItem("LoginMethod", "privateKey")
+          const val2 = await hiveClient.database.getAccounts([
+            username,
+          ])
 
-          let cryptoKey = localStorage.getItem("cryptoKey") || ""
-          let encrypted = CryptoJS.AES.encrypt(hivePrivateKey.toString(), cryptoKey).toString();
-          // save in localstorage
-          localStorage.setItem("postingKey", encrypted)
-          localStorage.setItem("username", username)
-          storeAccountForUsername(username)
-          // user has used password
-
-        } else {
-          // user did not use password
-          hivePrivateKey = dhive.PrivateKey.fromString(privateKey)
-          hivePublicKey = hivePrivateKey.createPublic()
-          let val = await hiveClient.keys.getKeyReferences([hivePublicKey.toString()])
-          let accountName = val.accounts[0][0]
-          if (accountName === username) {
-            // user has logged in using correct private key
-            const userData = await hiveClient.database.getAccounts([
-              username,
-            ])
-
-            const userAccount: HiveAccount = {
-              ...userData[0],
-            }
-            // check if user is using posting key
-            let keyType = ""
-            let checkAuth = userAccount.posting.key_auths;
-            for (var i = 0, len = checkAuth.length; i < len; i++) {
-              // checking if key is in posting array
-              if (checkAuth[i][0] == hivePublicKey.toString()) {
-                keyType = "posting"
-              }
-            }
-            // check if user is using active key
-            checkAuth = userAccount.active.key_auths;
-            for (var i = 0, len = checkAuth.length; i < len; i++) {
-              // checking if key is in active array
-              if (checkAuth[i][0] == hivePublicKey.toString()) {
-                keyType = "active"
-              }
-            }
-            // check if user is using owner key
-            checkAuth = userAccount.owner.key_auths;
-            for (var i = 0, len = checkAuth.length; i < len; i++) {
-              // checking if key is in owner array
-              if (checkAuth[i][0] == hivePublicKey.toString()) {
-                keyType = "owner"
-              }
-            }
-            // let cookie = []
-            // cookie[0] = keyType
-            // cookie[1] = privateKey
-            // var ciphertext = CryptoJS.AES.encrypt(JSON.stringify(cookie), 'secret key 123').toString();
-            // localStorage.setItem("userInfo", ciphertext)
-
-          } else {
-            console.log("user not found")
-            // wrong credencials!!
+          const userAccount: HiveAccount = {
+            ...val2[0],
           }
+          localStorage.setItem("hiveuser", JSON.stringify(userAccount))
+          setHiveUser(userAccount)
+        } else {
+          console.error(validation.message)
+          return reject(validation.message)
         }
-        resolve()
-        return
       }
-
 
       // grant posting authority to app
       /*
@@ -237,10 +191,9 @@ function useAuthHiveUser(): AuthUser {
 
       // login with HiveAuth
       if (privateKey) {
-        console.log(privateKey)
+        //console.log(privateKey)
         return
       }
-
 
       // Login with Keychain
       const memo = `${username} signed up with ${process.env.NEXT_PUBLIC_WEBSITE_URL
@@ -271,15 +224,18 @@ function useAuthHiveUser(): AuthUser {
                     }
 
                     console.log(userAccount)
+                    console.log(userAccount.json_metadata)
 
-                    userAccount.metadata = JSON.parse(userAccount.json_metadata)
-                    if (
-                      userAccount.metadata &&
-                      !userAccount.metadata.hasOwnProperty("profile")
-                    )
-                      userAccount.metadata = JSON.parse(
-                        userAccount.posting_json_metadata
+                    if (userAccount.json_metadata) {
+                      userAccount.metadata = JSON.parse(userAccount.json_metadata)
+                      if (
+                        userAccount.metadata &&
+                        !userAccount.metadata.hasOwnProperty("profile")
                       )
+                        userAccount.metadata = JSON.parse(
+                          userAccount.posting_json_metadata
+                        )
+                    }
                     setHiveUser(userAccount)
                     localStorage.setItem("hiveuser", JSON.stringify(userAccount))
                     localStorage.setItem("LoginMethod", "keychain")
