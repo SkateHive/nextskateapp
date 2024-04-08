@@ -2,6 +2,7 @@ import { useHiveUser } from "@/contexts/UserContext"
 import * as dhive from "@hiveio/dhive"
 import { hiveServerLoginWithPassword } from "./hive/server-functions"
 import HiveClient from "./hiveclient"
+import CryptoJS from "crypto-js"
 
 interface HiveKeychainResponse {
   success: boolean
@@ -99,9 +100,19 @@ function useAuthHiveUser(): AuthUser {
           privateKey
         )
         if (validation.success) {
-          localStorage.setItem("username", username)
-          localStorage.setItem("postingKey", key as string)
-          localStorage.setItem("type", type as string)
+          localStorage.setItem("Username", username)
+          localStorage.setItem("EncPrivateKey", key as string)
+          localStorage.setItem("Type", type as string)
+          localStorage.setItem("LoginMethod", "privateKey")
+          const val2 = await hiveClient.database.getAccounts([
+            username,
+          ])
+
+          const userAccount: HiveAccount = {
+            ...val2[0],
+          }
+          localStorage.setItem("hiveuser", JSON.stringify(userAccount))
+          setHiveUser(userAccount)
         } else {
           console.error(validation.message)
           return reject(validation.message)
@@ -180,7 +191,7 @@ function useAuthHiveUser(): AuthUser {
 
       // login with HiveAuth
       if (privateKey) {
-        console.log(privateKey)
+        //console.log(privateKey)
         return
       }
 
@@ -214,15 +225,18 @@ function useAuthHiveUser(): AuthUser {
                   }
 
                   console.log(userAccount)
+                  console.log(userAccount.json_metadata)
 
-                  userAccount.metadata = JSON.parse(userAccount.json_metadata)
-                  if (
-                    userAccount.metadata &&
-                    !userAccount.metadata.hasOwnProperty("profile")
-                  )
-                    userAccount.metadata = JSON.parse(
-                      userAccount.posting_json_metadata
+                  if (userAccount.json_metadata) {
+                    userAccount.metadata = JSON.parse(userAccount.json_metadata)
+                    if (
+                      userAccount.metadata &&
+                      !userAccount.metadata.hasOwnProperty("profile")
                     )
+                      userAccount.metadata = JSON.parse(
+                        userAccount.posting_json_metadata
+                    )
+                  }
                   setHiveUser(userAccount)
                   localStorage.setItem("hiveuser", JSON.stringify(userAccount))
                   localStorage.setItem("LoginMethod", "keychain")
