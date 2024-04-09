@@ -1,7 +1,7 @@
 // path: src/app/upload/components/previewModal.tsx
 
 
-import React from 'react';
+import React, { use } from 'react';
 
 import { Divider, Badge, Progress, Box, Button, Center, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, Image, CardHeader, Flex, Link, Avatar, Card, HStack, VStack, Th, Table, Tr, Tbody, Td, Thead } from '@chakra-ui/react';
 import ReactMardown from 'react-markdown';
@@ -16,8 +16,8 @@ import Header from '@/components/Post/Header';
 import Footer from '@/components/Post/Footer';
 import PostImage from '@/components/Post/Image';
 import hiveUpload from '../utils/hiveUpload';
-
-
+import SocialsModal from './socialsModal';
+import { useEffect } from 'react';
 
 interface PreviewModalProps {
     isOpen: boolean;
@@ -40,12 +40,17 @@ interface BeneficiariesCard {
     beneficiariesArray: BeneficiaryForBroadcast[];
 }
 
-
 const BeneficiariesCard: React.FC<BeneficiariesCard> = ({ beneficiariesArray }) => {
     return (
         <Card bg='darkseagreen' border="1px solid limegreen">
             <CardHeader>
                 <VStack spacing={4} align="stretch">
+                    <Box>
+                        <Text color={"black"}>
+                            You - {100 - beneficiariesArray.reduce((acc, cur) => acc + Number(cur.weight), 0) / 100}%
+                        </Text>
+                        <Progress colorScheme="green" size="sm" value={100 - beneficiariesArray.reduce((acc, cur) => acc + Number(cur.weight), 0) / 100} />
+                    </Box>
                     {beneficiariesArray.map((beneficiary, index) => (
                         <Box key={index}>
                             <Text color="black">
@@ -54,21 +59,20 @@ const BeneficiariesCard: React.FC<BeneficiariesCard> = ({ beneficiariesArray }) 
                             <Progress colorScheme="green" size="sm" value={Number(beneficiary.weight) / 100} />
                         </Box>
                     ))}
-                    <Box>
-                        <Text color={"black"}>
-                            You - {100 - beneficiariesArray.reduce((acc, cur) => acc + Number(cur.weight), 0) / 100}%
-                        </Text>
-                        <Progress colorScheme="green" size="sm" value={100 - beneficiariesArray.reduce((acc, cur) => acc + Number(cur.weight), 0) / 100} />
-                    </Box>
                 </VStack>
             </CardHeader>
         </Card>
     );
 };
 
-
-
-
+const slugify = (text: string) => {
+    return text.toString().toLowerCase()
+        .replace(/\s+/g, '-')           // Replace spaces with -
+        .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+        .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+        .replace(/^-+/, '')             // Trim - from start of text
+        .replace(/-+$/, '');            // Trim - from end of text
+}
 
 const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, body, thumbnailUrl, user, beneficiariesArray, tags }) => {
 
@@ -86,98 +90,113 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
         curator_payout_value: '0.0',
         pending_payout_value: '0.0',
         active_votes: [
-            { voter: "BamMargera", weight: 10000, percent: "0", reputation: 0, rshares: 0 },
-            { voter: "user2", weight: 5000, percent: "0", reputation: 0, rshares: 0 },
-            { voter: "user3", weight: 20000, percent: "0", reputation: 0, rshares: 0 },
+            { voter: "BamMargera", weight: 10000, percent: "0", reputation: 78, rshares: 0 },
+            { voter: "SpiderMan", weight: 5000, percent: "0", reputation: 69, rshares: 0 },
+            { voter: "Magnolia", weight: 20000, percent: "0", reputation: 100, rshares: 0 },
         ]
     }
 
+    const [hasPosted, setHasPosted] = React.useState(true);
+    const [postLink, setPostLink] = React.useState("");
     const handlePost = () => {
-        console.log(beneficiariesArray)
         hiveUpload(String(user.name), title, body, beneficiariesArray, thumbnailUrl, tags, user)
+        // get a confirmation from hiveUpload function 
+        setHasPosted(true);
     }
 
+    const generatePermlink = (title: string) => {
+        const slugifiedTitle = slugify(title);
+        const timestamp = new Date().getTime(); // Ensures uniqueness
+        return `${slugifiedTitle}-${timestamp}`;
+    };
 
+    const buildPostLink = () => {
+        const username = user?.name;
+        if (username) {
+            const permlink = generatePermlink(title);
+            const link = `https://skatehive.app/post/hive-173115/@${username}/${permlink}`;
+            setPostLink(link);
+        }
+    }
+    useEffect(() => {
+        buildPostLink();
+    }
+        , [title, user]);
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} size="xl">
             <ModalOverlay style={{ backdropFilter: "blur(5px)" }} />
+
             <ModalContent backgroundColor={"black"} border={'1px solid limegreen'}>
-
-                <ModalHeader>Post Preview (Review details)</ModalHeader>
-                <Divider />
-                <ModalCloseButton />
-                <ModalBody>
-
-                    <Box >
-                        <Center>
-                            <VStack>
-                                <Box width={"100%"}>
-
-                                    <Card
-                                        bg={"black"}
-                                        border={"0.6px solid white"}
-                                        size="sm"
-                                        boxShadow="none"
-                                        borderRadius="none"
-                                        p={2}
-                                    >
-                                        <PostProvider postData={postDataForPreview}>
-                                            <Header />
-                                            <PostImage />
-                                            <Footer />
-                                        </PostProvider>
-                                    </Card>
-                                </Box>
-                                <Box border={'1px solid white'} w="sm" maxWidth="sm">
-                                    <Table >
-                                        <Thead>
-                                            <Tr>
-                                                <Th>Beneficiaries</Th>
-                                            </Tr>
-                                        </Thead>
-                                        <Tbody >
-                                            <Tr >
+                {hasPosted ? (
+                    <SocialsModal isOpen={hasPosted} onClose={onClose} postUrl={postLink} content={body} />
+                ) : (
+                    <>
+                        <ModalHeader>Post Preview (Review details)</ModalHeader>
+                        <Divider />
+                        <ModalCloseButton />
+                        <ModalBody>
+                            <Box>
+                                <Center>
+                                    <VStack>
+                                        <Box width={"100%"}>
+                                            <Card
+                                                bg={"black"}
+                                                border={"0.6px solid white"}
+                                                size="sm"
+                                                boxShadow="none"
+                                                borderRadius="none"
+                                                p={2}
+                                            >
+                                                <PostProvider postData={postDataForPreview}>
+                                                    <Header />
+                                                    <PostImage />
+                                                    <Footer />
+                                                </PostProvider>
+                                            </Card>
+                                        </Box>
+                                        <Box border={'1px solid white'} w="sm" maxWidth="sm">
+                                            <Table>
+                                                <Thead>
+                                                    <Tr>
+                                                        <Th>Beneficiaries</Th>
+                                                    </Tr>
+                                                </Thead>
+                                                <Tbody>
+                                                    <Tr>
+                                                        <Td>
+                                                            <BeneficiariesCard beneficiariesArray={beneficiariesArray} />
+                                                        </Td>
+                                                    </Tr>
+                                                </Tbody>
+                                            </Table>
+                                            <Table>
+                                                <Th>Tags</Th>
                                                 <Td>
-                                                    <BeneficiariesCard beneficiariesArray={beneficiariesArray} />
+                                                    <Flex flexWrap="wrap">
+                                                        {tags.map((tag, index) => (
+                                                            <Badge key={index} colorScheme="green" variant="solid" size="sm" m={1}>
+                                                                {tag}
+                                                            </Badge>
+                                                        ))}
+                                                    </Flex>
                                                 </Td>
-                                            </Tr>
-                                        </Tbody>
-
-                                    </Table>
-                                    <Table>
-
-                                        <Th>Tags</Th>
-                                        <Td>
-
-                                            <Flex flexWrap="wrap">
-                                                {tags.map((tag, index) => (
-                                                    <Badge key={index} colorScheme="green" variant="solid" size="sm" m={1}>
-                                                        {tag}
-                                                    </Badge>
-                                                ))}
-
-                                            </Flex>
-                                        </Td>
-                                    </Table>
-
-
-                                </Box>
+                                            </Table>
+                                        </Box>
+                                    </VStack>
+                                </Center>
+                            </Box>
+                        </ModalBody>
+                        <ModalFooter>
+                            <VStack width={'100%'}>
+                                <Button width={'100%'} colorScheme='red' onClick={onClose}>Let me try again, I am high</Button>
+                                <Button width={'100%'} colorScheme='green' onClick={handlePost}>Looks dope, confirm!</Button>
                             </VStack>
-                        </Center>
-                    </Box>
-
-                </ModalBody>
-                <ModalFooter>
-                    <VStack width={'100%'}>
-                        <Button width={'100%'} colorScheme='red' onClick={onClose}>Let me try again, I am high</Button>
-                        <Button width={'100%'} colorScheme='green' onClick={handlePost}>Looks dope, confirm!</Button>
-
-                    </VStack>
-
-                </ModalFooter>
+                        </ModalFooter>
+                    </>
+                )}
             </ModalContent>
-        </Modal >
+        </Modal>
     );
 };
 

@@ -37,6 +37,7 @@
     "moment": "^2.30.1",
     "moment-timezone": "^0.5.44",
     "next": "link:@vercel/speed-insights/next",
+    "openai": "^4.33.0",
     "react": "link:@vercel/analytics/react",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.3",
