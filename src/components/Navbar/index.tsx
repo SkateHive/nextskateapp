@@ -1,10 +1,8 @@
 "use client"
 
-import useAuthHiveUser from "@/lib/useHiveAuth"
 import { Link } from "@chakra-ui/next-js"
 import {
   Box,
-  Button,
   Divider,
   Flex,
   HStack,
@@ -15,8 +13,9 @@ import {
 } from "@chakra-ui/react"
 import { ConnectButton } from "@rainbow-me/rainbowkit"
 import { Home } from "lucide-react"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 import AvatarLogin from "./AvatarLogin"
+
 function getPageName(pathname: string) {
   if (pathname === "/") return "SkateHive"
   if (pathname === "/notifications") return "Notifications"
@@ -27,9 +26,7 @@ function getPageName(pathname: string) {
 
 export default function Navbar() {
   const pathname = usePathname()
-  const pageName = getPageName(pathname)
-  const router = useRouter()
-  const { hiveUser, loginWithHive, logout, isLoggedIn } = useAuthHiveUser()
+
   return (
     <Box>
       <Flex m={3} align="center" justify="space-between">
@@ -41,37 +38,23 @@ export default function Navbar() {
               alt="SkateHive"
               borderRadius={"5px"}
             />
+            {pathname === "/" ? null : (
+              <Tooltip label="Return Home">
+                <Link href="/" scroll={false}>
+                  <IconButton
+                    aria-label="Home"
+                    icon={<Home />}
+                    size="lg"
+                    color={"white"}
+                    bg={"transparent"}
+                    _hover={{ bg: "transparent", color: "limegreen" }}
+                  />
+                </Link>
+              </Tooltip>
+            )}
             {/* <Text>{pageName}</Text> */}
           </HStack>
         </Heading>
-        <Box mr={3}>
-          {pathname === "/" ? (
-            <>
-              <Button
-                onClick={() => router.push("/upload")}
-                bg={"transparent"}
-                color={"white"}
-                _hover={{ bg: "transparent", color: "limegreen" }}
-              >
-                {" "}
-                + Upload 🛹
-              </Button>
-            </>
-          ) : (
-            <Tooltip label="Return Home">
-              <Link href="/" scroll={false}>
-                <IconButton
-                  aria-label="Home"
-                  icon={<Home />}
-                  size="lg"
-                  color={"white"}
-                  bg={"transparent"}
-                  _hover={{ bg: "transparent", color: "limegreen" }}
-                />
-              </Link>
-            </Tooltip>
-          )}
-        </Box>
         <HStack>
           <AvatarLogin />
           <ConnectButton showBalance={false} label="Connect ETH wallet" />

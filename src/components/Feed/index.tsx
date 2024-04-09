@@ -1,16 +1,28 @@
 "use client"
+
 import { usePosts } from "@/hooks/usePosts"
 import PostModel from "@/lib/models/post"
-import { Box, Flex, Grid } from "@chakra-ui/react"
-import { useState } from "react"
+import { Link } from "@chakra-ui/next-js"
+import { Box, Button, ButtonGroup, Flex, Grid, HStack } from "@chakra-ui/react"
+import { useEffect, useState } from "react"
 import InfiniteScroll from "react-infinite-scroll-component"
 import { BeatLoader } from "react-spinners"
 import Post from "../Post"
 import PostSkeleton from "../Post/Skeleton"
 
+const postTypeName = {
+  created: "🆕 Latest",
+  trending: "🔥 Trending",
+}
+
 export default function Feed() {
-  const { posts, error, isLoading } = usePosts()
+  const { posts, error, isLoading, postType, setPostType } = usePosts()
   const [visiblePosts, setVisiblePosts] = useState(20)
+
+  useEffect(() => {
+    console.log(postType)
+    console.log(posts)
+  }, [postType])
 
   if (error) return "Error"
 
@@ -37,6 +49,32 @@ export default function Feed() {
 
   return (
     <Box>
+      <HStack justifyContent="center" marginBottom={"12px"}>
+        <ButtonGroup size="sm" isAttached variant="outline" colorScheme="green">
+          <Button
+            onClick={() => setPostType("trending")}
+            isActive={postType === "trending"}
+          >
+            Trending
+          </Button>
+          <Button
+            onClick={() => setPostType("created")}
+            isActive={postType === "created"}
+          >
+            Most Recent
+          </Button>
+        </ButtonGroup>
+
+        <Button
+          size={"sm"}
+          as={Link}
+          href={"/upload"}
+          colorScheme="green"
+          variant={"outline"}
+        >
+          + Upload 🛹
+        </Button>
+      </HStack>
       <InfiniteScroll
         dataLength={visiblePosts}
         next={() => setVisiblePosts((visiblePosts) => visiblePosts + 3)}
@@ -60,7 +98,10 @@ export default function Feed() {
           {posts.length > 0 &&
             posts.slice(0, visiblePosts).map((post, i) => {
               return (
-                <Post key={i} postData={PostModel.newFromDiscussion(post)} />
+                <Post
+                  key={`${postType}-${post.url}`}
+                  postData={PostModel.newFromDiscussion(post)}
+                />
               )
             })}
         </Grid>
