@@ -26,7 +26,6 @@ export async function commentWithKeychain(formParamsAsObject: any): Promise<Hive
 
   const keychain = new KeychainSDK(window);
   const post = await keychain.post(formParamsAsObject.data as Post);
-  console.log('post', post);
   if (post) {
     console.log('post', post);
     return {
@@ -43,20 +42,3 @@ export async function commentWithKeychain(formParamsAsObject: any): Promise<Hive
 }
 
 
-//  window.hive_keychain.requestBroadcast(author, operations, 'posting', async (response: any) => {
-
-// if (response.success) {
-//   console.log(response);
-//   return {
-//     success: true,
-//     result: response.result,
-//   };
-
-// } else {
-//   console.error('Error publishing post on Hive:', response.message);
-//   return {
-//     success: false,
-//     result: response.message,
-//   };
-// }
-// });

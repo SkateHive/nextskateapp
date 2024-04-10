@@ -30,7 +30,8 @@ import { useEffect } from 'react';
 import * as dhive from "@hiveio/dhive"
 import { commentWithPrivateKey } from "@/lib/hive/server-functions";
 import { commentWithKeychain } from '@/lib/hive/client-functions';
-import OpenAI from 'openai';
+import getSummary from '../utils/getSummaryAI';
+
 interface PreviewModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -45,11 +46,9 @@ interface BeneficiaryForBroadcast {
     account: string;
     weight: string;
 }
-
 interface BeneficiariesCard {
     beneficiariesArray: BeneficiaryForBroadcast[];
 }
-
 const BeneficiariesCard: React.FC<BeneficiariesCard> = ({ beneficiariesArray }) => {
     return (
         <Card bg='darkseagreen' border="1px solid limegreen">
@@ -74,7 +73,6 @@ const BeneficiariesCard: React.FC<BeneficiariesCard> = ({ beneficiariesArray }) 
         </Card>
     );
 };
-
 const slugify = (text: string) => {
     return text.toString().toLowerCase()
         .replace(/\s+/g, '-')           // Replace spaces with -
@@ -88,12 +86,11 @@ const generatePermlink = (title: string) => {
     const timestamp = new Date().getTime(); // Ensures uniqueness
     return `${slugifiedTitle}-${timestamp}`;
 };
-
-
 const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, body, thumbnailUrl, user, beneficiariesArray, tags }) => {
-    const [hasPosted, setHasPosted] = React.useState(false);
+    const [hasPosted, setHasPosted] = React.useState(true);
     const [postLink, setPostLink] = React.useState("");
     const [AiSummary, setAiSummary] = React.useState("");
+
     let postDataForPreview = {
         post_id: Number(1),
         author: user.name || "skatehive",
@@ -113,135 +110,107 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
             { voter: "Magnolia", weight: 20000, percent: "0", reputation: 100, rshares: 0 },
         ]
     }
-    const getSummary = async (body: string) => {
-        const prompt = `Summarize this content into a tweet-friendly sentence in up to 70 caracters. Exclude emojis and special characters that might conflict with URLs. Omit any 'Support Skatehive' sections. dont use emojis Content, dont use hashtags, ignore links: ${body}`;
-        const response = await openai.chat.completions.create({
-            messages: [{ role: 'user', content: prompt }],
-            model: 'gpt-3.5-turbo',
-        });
-        const summary = response.choices[0]?.message?.content || 'Check my new Post on Skatehive';
-        const encodedSummary = encodeURIComponent(summary);
-        return encodedSummary;
-    };
-
-
-    const openai = new OpenAI({
-        apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY || '',
-        dangerouslyAllowBrowser: true,
-    });
-
-
 
     const handlePost = async () => {
-
         const formatBeneficiaries = (beneficiariesArray: any[]) => {
             let seen = new Set();
-            let finalBeneficiaries = beneficiariesArray.filter(({ account }: { account: string }) => {
+            return beneficiariesArray.filter(({ account }: { account: string }) => {
                 const duplicate = seen.has(account);
                 seen.add(account);
                 return !duplicate;
             }).map(beneficiary => ({
                 account: beneficiary.account,
                 weight: parseInt(beneficiary.weight, 10) // Ensure weight is an integer
-            }));
-            finalBeneficiaries = finalBeneficiaries.sort((a, b) => a.account.localeCompare(b.account));
-            return finalBeneficiaries;
+            })).sort((a, b) => a.account.localeCompare(b.account));
         };
-        let finalBeneficiaries = formatBeneficiaries(beneficiariesArray);
 
+        const finalBeneficiaries = formatBeneficiaries(beneficiariesArray);
         const permlink = slugify(title.toLowerCase());
-
-
         const loginMethod = localStorage.getItem('LoginMethod');
+
         const summarizeBlog = async () => {
             const summary = await getSummary(body);
             setAiSummary(summary);
-            console.log(summary);
         };
-        summarizeBlog();
-        if (user && title && user.name) {
+
+        await summarizeBlog();
+
+        if (!user || !title || !user.name) {
             if (loginMethod === 'keychain') {
-
-
-                const formParamsAsObject =
-                {
-                    "data": {
-                        username: user.name,
-                        title: title,
-                        body: body,
-                        parent_perm: "blog",
-                        json_metadata: JSON.stringify({ format: "markdown", description: AiSummary, tags: tags }),
-                        permlink: permlink,
-                        comment_options: JSON.stringify({
-                            author: user.name,
-                            permlink: permlink,
-                            max_accepted_payout: '10000.000 HBD',
-                            percent_hbd: 10000,
-                            allow_votes: true,
-                            allow_curation_rewards: true,
-                            extensions: [
-                                [0, {
-                                    beneficiaries: finalBeneficiaries
-                                }]
-                            ]
-                        })
-                    }
-                }
-
-                let response = await commentWithKeychain(formParamsAsObject);
-                if (response?.success) {
-                    setHasPosted(true);
-                } else {
-                    alert('Something went wrong, please try again');
-                }
-            } else if (loginMethod === 'privateKey') {
-
-                const commentOptions: dhive.CommentOptionsOperation = [
-                    'comment_options',
-                    {
-                        author: user.name,
-                        permlink: permlink,
-                        max_accepted_payout: '10000.000 HBD',
-                        percent_hbd: 10000,
-                        allow_votes: true,
-                        allow_curation_rewards: true,
-                        extensions: [
-                            [0, {
-                                beneficiaries: finalBeneficiaries
-                            }]
-                        ]
-                    }
-                ];
-
-                const postOperation: dhive.CommentOperation = [
-                    'comment',
-                    {
-                        parent_author: '',
-                        parent_permlink: generatePermlink(title),
-                        // parent_permlink: process.env.COMMUNITY || 'hive-173115',
-                        author: user.name,
-                        permlink: permlink,
-                        title: title,
-                        body: body,
-                        json_metadata: JSON.stringify({
-                            tags: tags,
-                            app: 'Skatehive App',
-                            image: thumbnailUrl,
-                        }),
-                    },
-                ];
-                const operations = [postOperation, commentOptions];
-
-
-                commentWithPrivateKey(localStorage.getItem("EncPrivateKey"), postOperation, commentOptions);
-                // get real response 
-                setHasPosted(true);
-
+                alert('You have to log in with Hive Keychain to use this feature...');
             }
-        } else if (loginMethod === 'keychain') {
-            alert('You have to log in with Hive Keychain to use this feature...');
+            return;
         }
 
+        const formParamsAsObject = {
+            "data": {
+                username: user.name,
+                title: title,
+                body: body,
+                parent_perm: "blog",
+                json_metadata: JSON.stringify({ format: "markdown", description: AiSummary, tags: tags }),
+                permlink: permlink,
+                comment_options: JSON.stringify({
+                    author: user.name,
+                    permlink: permlink,
+                    max_accepted_payout: '10000.000 HBD',
+                    percent_hbd: 10000,
+                    allow_votes: true,
+                    allow_curation_rewards: true,
+                    extensions: [
+                        [0, {
+                            beneficiaries: finalBeneficiaries
+                        }]
+                    ]
+                })
+            }
+        }
+
+        if (loginMethod === 'keychain') {
+            const response = await commentWithKeychain(formParamsAsObject);
+            if (response?.success) {
+                setHasPosted(true);
+            } else {
+                alert('Something went wrong, please try again');
+            }
+        } else if (loginMethod === 'privateKey') {
+            const commentOptions: dhive.CommentOptionsOperation = [
+                'comment_options',
+                {
+                    author: user.name,
+                    permlink: permlink,
+                    max_accepted_payout: '10000.000 HBD',
+                    percent_hbd: 10000,
+                    allow_votes: true,
+                    allow_curation_rewards: true,
+                    extensions: [
+                        [0, {
+                            beneficiaries: finalBeneficiaries
+                        }]
+                    ]
+                }
+            ];
+
+            const postOperation: dhive.CommentOperation = [
+                'comment',
+                {
+                    parent_author: '',
+                    parent_permlink: generatePermlink(title),
+                    author: user.name,
+                    permlink: permlink,
+                    title: title,
+                    body: body,
+                    json_metadata: JSON.stringify({
+                        tags: tags,
+                        app: 'Skatehive App',
+                        image: thumbnailUrl,
+                    }),
+                },
+            ];
+
+            commentWithPrivateKey(localStorage.getItem("EncPrivateKey"), postOperation, commentOptions);
+            setHasPosted(true);
+        }
     }
 
     const buildPostLink = () => {
@@ -260,10 +229,9 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
     return (
         <Modal isOpen={isOpen} onClose={onClose} size="xl">
             <ModalOverlay style={{ backdropFilter: "blur(5px)" }} />
-
             <ModalContent backgroundColor={"black"} border={'1px solid limegreen'}>
                 {hasPosted ? (
-                    <SocialsModal isOpen={hasPosted} onClose={onClose} postUrl={postLink} content={body} />
+                    <SocialsModal isOpen={hasPosted} onClose={onClose} postUrl={postLink} content={body} aiSummary={AiSummary} />
                 ) : (
                     <>
                         <ModalHeader>Post Preview (Review details)</ModalHeader>

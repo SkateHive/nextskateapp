@@ -6,7 +6,6 @@ import * as React from 'react';
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Button, Flex, Image, Text, Link, VStack, Divider, Badge, Input, FormControl, FormLabel, Grid, GridItem } from '@chakra-ui/react';
 import { FaCopy, FaDiscord } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
-import OpenAI from 'openai';
 import { useState } from 'react';
 import { Toast } from '@chakra-ui/react';
 interface SocialModalProps {
@@ -14,9 +13,11 @@ interface SocialModalProps {
     onClose: () => void;
     postUrl: string;
     content: any;
+    aiSummary: string;
+
 }
 
-const SocialModal: React.FC<SocialModalProps> = ({ isOpen, onClose, postUrl, content }) => {
+const SocialModal: React.FC<SocialModalProps> = ({ isOpen, onClose, postUrl, content, aiSummary }) => {
     const useToast = Toast;
 
     const [postLinkCopied, setPostLinkCopied] = React.useState(false);
@@ -39,30 +40,14 @@ const SocialModal: React.FC<SocialModalProps> = ({ isOpen, onClose, postUrl, con
         }
     };
 
-    const openai = new OpenAI({
-        apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY || '',
-        dangerouslyAllowBrowser: true,
-    });
 
-    const [tweetSummary, setTweetSummary] = useState('Skateboard is Cool');
 
-    const getSummary = async (body: string) => {
-        const prompt = `Summarize this content into a tweet-friendly sentence in up to 70 caracters. Exclude emojis and special characters that might conflict with URLs. Omit any 'Support Skatehive' sections. dont use emojis Content, dont use hashtags, ignore links: ${body}`;
-        const response = await openai.chat.completions.create({
-            messages: [{ role: 'user', content: prompt }],
-            model: 'gpt-3.5-turbo',
-        });
-        const summary = response.choices[0]?.message?.content || 'Check my new Post on Skatehive';
-        const encodedSummary = encodeURIComponent(summary);
-        return encodedSummary;
-    };
+
 
     const handleShareWarpCast = async () => {
         try {
             const postPageUrl = encodeURI(generatePostUrl());
-            const summary = await getSummary(content);
-            setTweetSummary(summary);
-            const warptext = `${summary} ${postPageUrl}`;
+            const warptext = `${aiSummary} ${postPageUrl}`;
 
             window.open(`https://warpcast.com/~/compose?text=${warptext}`, '_blank');
         }
@@ -74,10 +59,8 @@ const SocialModal: React.FC<SocialModalProps> = ({ isOpen, onClose, postUrl, con
     const handleShareTwitter = async () => {
         try {
             const postPageUrl = encodeURI(generatePostUrl());
-            const summary = await getSummary(content);
-            setTweetSummary(summary);
             // assemble text + url in just one string 
-            const tweetText = `${summary} ${postPageUrl}`;
+            const tweetText = `${aiSummary} ${postPageUrl}`;
             window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, '_blank');
 
         }
@@ -91,10 +74,8 @@ const SocialModal: React.FC<SocialModalProps> = ({ isOpen, onClose, postUrl, con
     const handleShareDiscord = async () => {
         try {
             const postPageUrl = encodeURI(generatePostUrl());
-            const summary = await getSummary(content);
-            setTweetSummary(summary);
             // assemble text + url in just one string 
-            const tweetText = `${summary} ${postPageUrl}`;
+            const tweetText = `${aiSummary} ${postPageUrl}`;
             // copy tweetText to clipboard
             navigator.clipboard.writeText(tweetText);
 
