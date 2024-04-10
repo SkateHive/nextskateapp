@@ -17,13 +17,13 @@ import {
   StackDivider,
   Text,
 } from "@chakra-ui/react"
-import Header from "../Post/Header"
+import Header from "../PostCard/Header"
 
 import { useComments } from "@/hooks/comments"
 import { transform3SpeakContent } from "@/lib/utils"
 import rehypeRaw from "rehype-raw"
 import remarkGfm from "remark-gfm"
-import PostComment from "../Post/Comment"
+import PostComment from "../PostCard/Comment"
 
 interface PostModalInterface {
   isOpen: boolean

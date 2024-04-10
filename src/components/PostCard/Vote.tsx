@@ -1,7 +1,7 @@
 import { usePostContext } from "@/contexts/PostContext"
 import { useHiveUser } from "@/contexts/UserContext"
 import { SWR_POSTS_TAG } from "@/hooks/usePosts"
-import { vote } from "@/lib/hive/functions"
+import { vote } from "@/lib/hive/client-functions"
 import { voteWithPrivateKey } from "@/lib/hive/server-functions"
 import { Button, Text, Tooltip } from "@chakra-ui/react"
 import { VoteOperation } from "@hiveio/dhive"
@@ -79,12 +79,12 @@ export default function Vote() {
         />
         <Text
           // color={isVoted ? "limegreen" : "white"}
-          fontSize={"28px"}
+          fontSize={"18px"}
           fontWeight={"bold"}
         >
           ${post.getEarnings().toFixed(2)}
         </Text>
-        <RiArrowRightUpLine size={40} style={{ marginLeft: "-4px" }} />
+        <RiArrowRightUpLine size={25} style={{ marginLeft: "-4px" }} />
       </Button>
     </Tooltip>
   )

@@ -130,21 +130,21 @@ export async function hiveServerLoginWithPassword(
 
 export async function voteWithPrivateKey(encryptedPrivateKey: string | null, vote: dhive.VoteOperation) {
 
-    if (encryptedPrivateKey === null) throw new Error("Private key not found")
-    const privateKey = decryptPrivateKey(encryptedPrivateKey);
+  if (encryptedPrivateKey === null) throw new Error("Private key not found")
+  const privateKey = decryptPrivateKey(encryptedPrivateKey);
 
-    const client = new dhive.Client("https://api.hive.blog")
-    client.broadcast.vote(vote[1], dhive.PrivateKey.from(privateKey)).then((result) => {
-      console.log(result)
-    }
-    ).catch((error) => {
-      console.error(error)
-    }
-    )
+  const client = new dhive.Client("https://api.hive.blog")
+  client.broadcast.vote(vote[1], dhive.PrivateKey.from(privateKey)).then((result) => {
+    console.log(result)
+  }
+  ).catch((error) => {
+    console.error(error)
+  }
+  )
 }
 
 export async function commentWithPrivateKey(encryptedPrivateKey: string | null, commentOperation: dhive.CommentOperation, commentOptionsOperation: dhive.CommentOptionsOperation) {
-//export async function commentWithPrivateKey(encryptedPrivateKey: string | null, account: string, title: string, body: string, json_metadata: string, tags: string) {
+  //export async function commentWithPrivateKey(encryptedPrivateKey: string | null, account: string, title: string, body: string, json_metadata: string, tags: string) {
   if (encryptedPrivateKey === null) throw new Error("Private key not found")
   const privateKey = dhive.PrivateKey.fromString(decryptPrivateKey(encryptedPrivateKey))
   const client = new dhive.Client("https://api.hive.blog")

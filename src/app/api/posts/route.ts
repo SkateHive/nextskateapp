@@ -1,4 +1,4 @@
-import { PostComponentProps } from "@/components/Post"
+import { PostComponentProps } from "@/components/PostCard"
 import HiveClient from "@/lib/hiveclient"
 import PostModel from "@/lib/models/post"
 

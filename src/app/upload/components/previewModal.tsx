@@ -1,24 +1,36 @@
 // path: src/app/upload/components/previewModal.tsx
 
-
-import React, { use } from 'react';
-
-import { Divider, Badge, Progress, Box, Button, Center, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, Image, CardHeader, Flex, Link, Avatar, Card, HStack, VStack, Th, Table, Tr, Tbody, Td, Thead } from '@chakra-ui/react';
-import ReactMardown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
-import remarkGfm from 'remark-gfm';
-import { MarkdownRenderers } from '../utils/MarkdownRenderers';
-import PostAvatar from '@/components/Post/Avatar';
+import React from 'react';
+import {
+    Divider,
+    Badge,
+    Progress,
+    Box,
+    Button,
+    Center,
+    Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay,
+    Text,
+    CardHeader, Card,
+    Flex,
+    VStack,
+    Table,
+    Thead,
+    Th,
+    Tr,
+    Tbody,
+    Td,
+} from '@chakra-ui/react';
 import { HiveAccount } from '@/lib/useHiveAuth';
 import { PostProvider } from '@/contexts/PostContext';
-import Post from '@/components/Post';
-import Header from '@/components/Post/Header';
-import Footer from '@/components/Post/Footer';
-import PostImage from '@/components/Post/Image';
-import hiveUpload from '../utils/hiveUpload';
+import Header from '@/components/PostCard/Header';
+import Footer from '@/components/PostCard/Footer';
+import PostImage from '@/components/PostCard/Image';
 import SocialsModal from './socialsModal';
 import { useEffect } from 'react';
-
+import * as dhive from "@hiveio/dhive"
+import { commentWithPrivateKey } from "@/lib/hive/server-functions";
+import { commentWithKeychain } from '@/lib/hive/client-functions';
+import OpenAI from 'openai';
 interface PreviewModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -29,8 +41,6 @@ interface PreviewModalProps {
     beneficiariesArray: any[];
     tags: string[];
 }
-
-
 interface BeneficiaryForBroadcast {
     account: string;
     weight: string;
@@ -73,9 +83,17 @@ const slugify = (text: string) => {
         .replace(/^-+/, '')             // Trim - from start of text
         .replace(/-+$/, '');            // Trim - from end of text
 }
+const generatePermlink = (title: string) => {
+    const slugifiedTitle = slugify(title);
+    const timestamp = new Date().getTime(); // Ensures uniqueness
+    return `${slugifiedTitle}-${timestamp}`;
+};
+
 
 const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, body, thumbnailUrl, user, beneficiariesArray, tags }) => {
-
+    const [hasPosted, setHasPosted] = React.useState(false);
+    const [postLink, setPostLink] = React.useState("");
+    const [AiSummary, setAiSummary] = React.useState("");
     let postDataForPreview = {
         post_id: Number(1),
         author: user.name || "skatehive",
@@ -95,20 +113,136 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
             { voter: "Magnolia", weight: 20000, percent: "0", reputation: 100, rshares: 0 },
         ]
     }
-
-    const [hasPosted, setHasPosted] = React.useState(true);
-    const [postLink, setPostLink] = React.useState("");
-    const handlePost = () => {
-        hiveUpload(String(user.name), title, body, beneficiariesArray, thumbnailUrl, tags, user)
-        // get a confirmation from hiveUpload function 
-        setHasPosted(true);
-    }
-
-    const generatePermlink = (title: string) => {
-        const slugifiedTitle = slugify(title);
-        const timestamp = new Date().getTime(); // Ensures uniqueness
-        return `${slugifiedTitle}-${timestamp}`;
+    const getSummary = async (body: string) => {
+        const prompt = `Summarize this content into a tweet-friendly sentence in up to 70 caracters. Exclude emojis and special characters that might conflict with URLs. Omit any 'Support Skatehive' sections. dont use emojis Content, dont use hashtags, ignore links: ${body}`;
+        const response = await openai.chat.completions.create({
+            messages: [{ role: 'user', content: prompt }],
+            model: 'gpt-3.5-turbo',
+        });
+        const summary = response.choices[0]?.message?.content || 'Check my new Post on Skatehive';
+        const encodedSummary = encodeURIComponent(summary);
+        return encodedSummary;
     };
+
+
+    const openai = new OpenAI({
+        apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY || '',
+        dangerouslyAllowBrowser: true,
+    });
+
+
+
+    const handlePost = async () => {
+
+        const formatBeneficiaries = (beneficiariesArray: any[]) => {
+            let seen = new Set();
+            let finalBeneficiaries = beneficiariesArray.filter(({ account }: { account: string }) => {
+                const duplicate = seen.has(account);
+                seen.add(account);
+                return !duplicate;
+            }).map(beneficiary => ({
+                account: beneficiary.account,
+                weight: parseInt(beneficiary.weight, 10) // Ensure weight is an integer
+            }));
+            finalBeneficiaries = finalBeneficiaries.sort((a, b) => a.account.localeCompare(b.account));
+            return finalBeneficiaries;
+        };
+        let finalBeneficiaries = formatBeneficiaries(beneficiariesArray);
+
+        const permlink = slugify(title.toLowerCase());
+
+
+        const loginMethod = localStorage.getItem('LoginMethod');
+        const summarizeBlog = async () => {
+            const summary = await getSummary(body);
+            setAiSummary(summary);
+            console.log(summary);
+        };
+        summarizeBlog();
+        if (user && title && user.name) {
+            if (loginMethod === 'keychain') {
+
+
+                const formParamsAsObject =
+                {
+                    "data": {
+                        username: user.name,
+                        title: title,
+                        body: body,
+                        parent_perm: "blog",
+                        json_metadata: JSON.stringify({ format: "markdown", description: AiSummary, tags: tags }),
+                        permlink: permlink,
+                        comment_options: JSON.stringify({
+                            author: user.name,
+                            permlink: permlink,
+                            max_accepted_payout: '10000.000 HBD',
+                            percent_hbd: 10000,
+                            allow_votes: true,
+                            allow_curation_rewards: true,
+                            extensions: [
+                                [0, {
+                                    beneficiaries: finalBeneficiaries
+                                }]
+                            ]
+                        })
+                    }
+                }
+
+                let response = await commentWithKeychain(formParamsAsObject);
+                if (response?.success) {
+                    setHasPosted(true);
+                } else {
+                    alert('Something went wrong, please try again');
+                }
+            } else if (loginMethod === 'privateKey') {
+
+                const commentOptions: dhive.CommentOptionsOperation = [
+                    'comment_options',
+                    {
+                        author: user.name,
+                        permlink: permlink,
+                        max_accepted_payout: '10000.000 HBD',
+                        percent_hbd: 10000,
+                        allow_votes: true,
+                        allow_curation_rewards: true,
+                        extensions: [
+                            [0, {
+                                beneficiaries: finalBeneficiaries
+                            }]
+                        ]
+                    }
+                ];
+
+                const postOperation: dhive.CommentOperation = [
+                    'comment',
+                    {
+                        parent_author: '',
+                        parent_permlink: generatePermlink(title),
+                        // parent_permlink: process.env.COMMUNITY || 'hive-173115',
+                        author: user.name,
+                        permlink: permlink,
+                        title: title,
+                        body: body,
+                        json_metadata: JSON.stringify({
+                            tags: tags,
+                            app: 'Skatehive App',
+                            image: thumbnailUrl,
+                        }),
+                    },
+                ];
+                const operations = [postOperation, commentOptions];
+
+
+                commentWithPrivateKey(localStorage.getItem("EncPrivateKey"), postOperation, commentOptions);
+                // get real response 
+                setHasPosted(true);
+
+            }
+        } else if (loginMethod === 'keychain') {
+            alert('You have to log in with Hive Keychain to use this feature...');
+        }
+
+    }
 
     const buildPostLink = () => {
         const username = user?.name;

@@ -7,8 +7,8 @@ import { Box, Button, ButtonGroup, Flex, Grid, HStack } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
 import InfiniteScroll from "react-infinite-scroll-component"
 import { BeatLoader } from "react-spinners"
-import Post from "../Post"
-import PostSkeleton from "../Post/Skeleton"
+import Post from "../PostCard"
+import PostSkeleton from "../PostCard/Skeleton"
 
 const postTypeName = {
   created: "🆕 Latest",

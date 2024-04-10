@@ -1,4 +1,4 @@
-import { PostComponentProps } from "@/components/Post"
+import { PostComponentProps } from "@/components/PostCard"
 import { createContext, useContext, useState } from "react"
 
 interface PostsContextProps {
