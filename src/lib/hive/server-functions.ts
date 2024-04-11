@@ -6,11 +6,7 @@ import { HiveAccount } from "../useHiveAuth"
 import HiveClient from "./../hiveclient"
 import CryptoJS from "crypto-js"
 
-interface HiveKeychainResponse {
-  success: boolean
-  publicKey: string
-  result: string
-}
+
 
 interface ServerLoginResponse {
   validation: Validation

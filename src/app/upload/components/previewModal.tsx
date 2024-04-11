@@ -110,6 +110,16 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
             { voter: "Magnolia", weight: 20000, percent: "0", reputation: 100, rshares: 0 },
         ]
     }
+    useEffect(() => {
+        const summarizeBlog = async () => {
+            const summary = await getSummary(body);
+            setAiSummary(summary);
+        };
+
+        if (body) {
+            summarizeBlog();
+        }
+    }, [body]);
 
     const handlePost = async () => {
         const formatBeneficiaries = (beneficiariesArray: any[]) => {
@@ -133,7 +143,6 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
             setAiSummary(summary);
         };
 
-        await summarizeBlog();
 
         if (!user || !title || !user.name) {
             if (loginMethod === 'keychain') {
