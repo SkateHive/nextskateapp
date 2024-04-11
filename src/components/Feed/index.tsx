@@ -9,7 +9,7 @@ import InfiniteScroll from "react-infinite-scroll-component"
 import { BeatLoader } from "react-spinners"
 import Post from "../PostCard"
 import PostSkeleton from "../PostCard/Skeleton"
-
+import { useHiveUser } from "@/contexts/UserContext"
 const postTypeName = {
   created: "🆕 Latest",
   trending: "🔥 Trending",
@@ -18,12 +18,7 @@ const postTypeName = {
 export default function Feed() {
   const { posts, error, isLoading, postType, setPostType } = usePosts()
   const [visiblePosts, setVisiblePosts] = useState(20)
-
-  useEffect(() => {
-    console.log(postType)
-    console.log(posts)
-  }, [postType])
-
+  const hiveUser = useHiveUser()
   if (error) return "Error"
 
   if (isLoading || !posts)
@@ -63,6 +58,18 @@ export default function Feed() {
           >
             Most Recent
           </Button>
+          {/* Following Section */}
+          {hiveUser.hiveUser !== null && (
+
+            <Button
+              onClick={() => setPostType("created")}
+              isActive={postType === "created"}
+            >
+              My Crew
+            </Button>
+          )}
+
+
         </ButtonGroup>
 
         <Button

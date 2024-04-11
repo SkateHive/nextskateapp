@@ -75,10 +75,13 @@ function HiveBox() {
 function EthBox() {
   const account = useAccount()
   const [userTokens, setUserTokens] = useState<OwnedToken[] | null>()
-
+  console.log("Account", account.address)
   useEffect(() => {
+
     async function fetchTokens(ethAddress: string) {
+      console.log("Fetching Tokens")
       const userTokens = await alchemy.core.getTokensForOwner(ethAddress)
+      console.log(userTokens)
       setUserTokens(userTokens.tokens)
       console.log(userTokens)
     }

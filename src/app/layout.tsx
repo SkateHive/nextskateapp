@@ -1,5 +1,3 @@
-import { Analytics } from "@vercel/analytics/react"
-import { SpeedInsights } from "@vercel/speed-insights/next"
 import type { Metadata } from "next"
 import { Share_Tech_Mono } from "next/font/google"
 
@@ -37,8 +35,6 @@ export default function RootLayout({
           <Flex px={[1, 3]} pt={0} overflow="visible" color={"white"}>
             {children}
           </Flex>
-          <SpeedInsights />
-          <Analytics />
         </Providers>
       </body>
     </html>

@@ -31,7 +31,8 @@ import * as dhive from "@hiveio/dhive"
 import { commentWithPrivateKey } from "@/lib/hive/server-functions";
 import { commentWithKeychain } from '@/lib/hive/client-functions';
 import getSummary from '../utils/getSummaryAI';
-
+import slugify from '../utils/slugify';
+import generatePermlink from '../utils/generatePermlink';
 interface PreviewModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -73,19 +74,7 @@ const BeneficiariesCard: React.FC<BeneficiariesCard> = ({ beneficiariesArray }) 
         </Card>
     );
 };
-const slugify = (text: string) => {
-    return text.toString().toLowerCase()
-        .replace(/\s+/g, '-')           // Replace spaces with -
-        .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
-        .replace(/\-\-+/g, '-')         // Replace multiple - with single -
-        .replace(/^-+/, '')             // Trim - from start of text
-        .replace(/-+$/, '');            // Trim - from end of text
-}
-const generatePermlink = (title: string) => {
-    const slugifiedTitle = slugify(title);
-    const timestamp = new Date().getTime(); // Ensures uniqueness
-    return `${slugifiedTitle}-${timestamp}`;
-};
+
 const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, body, thumbnailUrl, user, beneficiariesArray, tags }) => {
     const [hasPosted, setHasPosted] = React.useState(false);
     const [postLink, setPostLink] = React.useState("");

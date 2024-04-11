@@ -12,7 +12,7 @@ import { MarkdownRenderers } from "./utils/MarkdownRenderers";
 import { FaImage, FaSave } from "react-icons/fa";
 import { uploadFileToIPFS } from "./utils/uploadToIPFS";
 import MDEditor, { commands } from '@uiw/react-md-editor';
-import AuthorSearchBar from "./utils/searchBar";
+import AuthorSearchBar from "./components/searchBar";
 import { extractImageUrls } from "./utils/extractImages";
 import PreviewModal from "./components/previewModal";
 import tutorialPost from "./utils/tutorialPost";
@@ -77,7 +77,7 @@ export default function Upload() {
             name: 'uploadImage',
             keyCommand: 'uploadImage',
             buttonProps: { 'aria-label': 'Upload image' },
-            icon: (<Tooltip label="Upload Image or Video"><FaImage color="yellow" /></Tooltip>),
+            icon: (<Tooltip label="Upload Image or Video"><span><FaImage color="yellow" /></span></Tooltip>),
             execute: (state: any, api: any) => {
                 // Trigger file input click
                 const element = document.getElementById('md-image-upload');
@@ -90,7 +90,7 @@ export default function Upload() {
             name: 'saveDraftInTxt', // Corrected from 'saveDraftintxt'
             keyCommand: 'saveDraftInTxt', // Also corrected for consistency
             buttonProps: { 'aria-label': 'Save Draft' },
-            icon: (<Tooltip label="Save Draft" ><FaSave color="limegreen" /></Tooltip>),
+            icon: (<Tooltip label="Save Draft" ><span><FaSave color="limegreen" /></span></Tooltip>),
             execute: (state: any, api: any) => {
                 // save .txt from value in the local machine
                 const element = document.createElement('a');

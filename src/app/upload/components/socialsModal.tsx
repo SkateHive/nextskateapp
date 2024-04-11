@@ -1,7 +1,5 @@
 // path: src/lib/pages/upload/SocialModal.tsx 
 
-// Create a modal using chakra and typescript that will display options of sharing the post the user just created 
-
 import * as React from 'react';
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Button, Flex, Image, Text, Link, VStack, Divider, Badge, Input, FormControl, FormLabel, Grid, GridItem } from '@chakra-ui/react';
 import { FaCopy, FaDiscord } from 'react-icons/fa';
@@ -39,11 +37,6 @@ const SocialModal: React.FC<SocialModalProps> = ({ isOpen, onClose, postUrl, con
             console.error('Failed to copy the link:', error);
         }
     };
-
-
-
-
-
     const handleShareWarpCast = async () => {
         try {
             const postPageUrl = encodeURI(generatePostUrl());
@@ -55,7 +48,6 @@ const SocialModal: React.FC<SocialModalProps> = ({ isOpen, onClose, postUrl, con
             console.error('Failed to share in WarpCast:', error);
         }
     }
-
     const handleShareTwitter = async () => {
         try {
             const postPageUrl = encodeURI(generatePostUrl());
@@ -68,9 +60,6 @@ const SocialModal: React.FC<SocialModalProps> = ({ isOpen, onClose, postUrl, con
             console.error('Failed to share in Twitter:', error);
         }
     }
-
-    // https://discord.com/channels/631777256234156033/631778823716864011
-
     const handleShareDiscord = async () => {
         try {
             const postPageUrl = encodeURI(generatePostUrl());

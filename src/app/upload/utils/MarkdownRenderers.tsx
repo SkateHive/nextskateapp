@@ -1,7 +1,5 @@
 import React from 'react';
-import { Box, Flex, Text, Image, Link, VStack, HStack, Badge, color } from '@chakra-ui/react';
-import axios, { AxiosResponse } from 'axios'; // Import AxiosResponse
-import { useState, useEffect } from 'react';
+import { Image } from '@chakra-ui/react';
 
 type MarkdownProps = {
   node?: any;
@@ -122,9 +120,7 @@ export const MarkdownRenderers = {
     );
   },
   p: ({ children, ...props }: RendererProps) => <p {...props} style={{ color: 'white', fontSize: '18px', paddingBottom: '15px', paddingLeft: '10px' }}>{children}</p>,
-  a: ({ href, children, ...props }: RendererProps) => {
-    return <Link color={"yellow.200"} href={href}  {...props} > {children} </Link>;
-  },
+  a: ({ href, children, ...props }: RendererProps) => <a style={{ color: "yellow" }} href={href}  {...props} > {children} </a>,
   h1: ({ children, ...props }: RendererProps) => <h1 {...props} style={{ fontWeight: 'bold', color: '#00ff55', fontSize: '28px', paddingBottom: '10px', paddingTop: "10px", paddingLeft: '10px' }}>{children}</h1>,
   h3: ({ children, ...props }: RendererProps) => <h3 {...props} style={{ fontWeight: 'bold', color: '#00ff55', fontSize: '24px', paddingBottom: '6px', paddingTop: "12px", paddingLeft: '10px' }}>{children}</h3>,
   h2: ({ children, ...props }: RendererProps) => <h2 {...props} style={{ fontWeight: 'bold', color: '#00ff55', fontSize: '26px', paddingBottom: '8px', paddingTop: "10px", paddingLeft: '10px' }}>{children}</h2>,

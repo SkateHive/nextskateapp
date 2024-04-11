@@ -12,6 +12,7 @@ import {
 import { Bell, LogOut, User } from "lucide-react"
 import Link from "next/link"
 import LoginButton from "../Hive/Login/LoginButton"
+import { FaSpeakap, FaWallet } from "react-icons/fa"
 
 const env = process.env.NODE_ENV
 
@@ -50,7 +51,15 @@ export default function AvatarLogin() {
         </MenuItem>
         <MenuItem
           bg="black"
-          icon={<User size={"16px"} />}
+          icon={<FaWallet size={"16px"} />}
+          as={Link}
+          href={`/wallet`}
+        >
+          Wallet
+        </MenuItem>
+        <MenuItem
+          bg="black"
+          icon={<FaSpeakap size={"16px"} />}
           as={Link}
           href={`/plaza`}
         >
