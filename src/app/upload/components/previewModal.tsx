@@ -87,7 +87,7 @@ const generatePermlink = (title: string) => {
     return `${slugifiedTitle}-${timestamp}`;
 };
 const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, body, thumbnailUrl, user, beneficiariesArray, tags }) => {
-    const [hasPosted, setHasPosted] = React.useState(true);
+    const [hasPosted, setHasPosted] = React.useState(false);
     const [postLink, setPostLink] = React.useState("");
     const [AiSummary, setAiSummary] = React.useState("");
 
