@@ -15,7 +15,7 @@ export default function Post({ postData }: PostComponentProps) {
   return (
     <Card
       bg={"black"}
-      border={"0.6px solid white"}
+      border={"0.6px solid limegreen"}
       size="sm"
       boxShadow="none"
       borderRadius="none"

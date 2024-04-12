@@ -134,7 +134,7 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
           </Link>
           <Flex flexDir="column" gap={0} w={"100%"}>
             <Flex gap={1} alignItems="center">
-              <Text fontSize="14px" as="b">
+              <Text color="green" fontSize="14px" as="b">
                 {post.author}
               </Text>
               <Text fontSize="14px" color="darkgray">
@@ -145,7 +145,7 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
               </Text>
             </Flex>
             <HStack justify={"space-between"} display={"flex"}>
-              <Text fontSize="16px" noOfLines={1}>
+              <Text color={"limegreen"} fontSize="16px" noOfLines={1}>
                 {post.title}
               </Text>
             </HStack>

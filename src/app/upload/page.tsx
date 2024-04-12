@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useCallback, useEffect, useRef, RefObject } from "react";
-import { Checkbox, Box, Button, Input, HStack, Flex, Center, Text, Avatar, Spinner, Badge, VStack, Tooltip, Slider, SliderTrack, SliderFilledTrack, SliderThumb } from "@chakra-ui/react";
+import { Checkbox, Box, Button, Input, HStack, Flex, Center, Text, Avatar, Spinner, Badge, VStack, Tooltip, Slider, SliderTrack, SliderFilledTrack, SliderThumb, Divider } from "@chakra-ui/react";
 import { useDropzone } from "react-dropzone";
 import ReactMarkdown from 'react-markdown';
 import rehypeSanitize from 'rehype-sanitize';
@@ -16,6 +16,7 @@ import AuthorSearchBar from "./components/searchBar";
 import { extractImageUrls } from "./utils/extractImages";
 import PreviewModal from "./components/previewModal";
 import tutorialPost from "./utils/tutorialPost";
+import { Divide } from "lucide-react";
 
 const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN;
 
@@ -236,7 +237,7 @@ export default function Upload() {
                             background={"green.600"}
                             border={"1px solid limegreen"}
                         >
-                            <Text fontSize={"22px"} color="limegreen">Title</Text>
+                            <Text fontSize={"22px"} color="black">Title</Text>
                         </Badge>
 
                     </Center>
@@ -247,6 +248,7 @@ export default function Upload() {
                         focusBorderColor="limegreen"
                         borderRadius={"0"}
                         placeholder="Insert title"
+                        style={{ caretColor: "limegreen" }}
                         type="text"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)} />
@@ -267,7 +269,7 @@ export default function Upload() {
                             style={{
                                 border: "1px solid limegreen",
                                 padding: "10px",
-                                backgroundColor: "navy",
+                                backgroundColor: "black",
                             }}
                         />
                     </Box>
@@ -276,9 +278,9 @@ export default function Upload() {
                         <Badge width={"100%"} mt={5} size="24px" color="limegreen" background={"green.600"}
                             border={"1px solid limegreen"} {...getRootProps()}>
                             <Center>
-                                <VStack>
+                                <VStack padding={5}>
 
-                                    <Text fontSize={"22px"} color="limegreen">Select Thumbnail</Text>
+                                    <Text fontSize={"22px"} color="black">Select Thumbnail</Text>
                                     <Flex flexWrap="wrap">{renderThumbnailOptions()}</Flex>
                                 </VStack>
                             </Center>
@@ -290,7 +292,7 @@ export default function Upload() {
                             border={"1px solid limegreen"}
                             onClick={() => setShowAdvanced(!showAdvanced)}>
                             <Center>
-                                <Text fontSize={"22px"} color="limegreen">
+                                <Text fontSize={"22px"} color="black">
                                     Show Advanced Options
                                 </Text>
                             </Center>
@@ -383,8 +385,6 @@ export default function Upload() {
                                                 <Avatar
                                                     size="sm"
                                                     src={`https://images.ecency.com/webp/u/${beneficiary.name}/avatar/small`}
-                                                    // @ts-ignore
-                                                    alt="author"
                                                     mr={2}
                                                 />
                                                 <Text>
@@ -438,14 +438,15 @@ export default function Upload() {
 
                 </Box>
                 {/* Preview and Submit Area */}
-                <Box width={{ base: '100%', md: '50%' }} p="4" border="1px solid limegreen" borderRadius="2px">
+                <Box width={{ base: '100%', md: '50%' }} p="4" borderRadius="2px" border="1px solid limegreen">
                     <HStack>
-                        <Avatar name={hiveUser?.name} src={hiveUser?.metadata?.profile?.profile_image} boxSize="58px" borderRadius={'4px'} border={"1px solid limegreen"} />
-                        <Box border="1px solid limegreen" p="7" borderRadius="4px" width="100%">
-                            <Text fontSize="28px">{title}</Text>
+                        <Avatar name={hiveUser?.name} src={hiveUser?.metadata?.profile?.profile_image} boxSize="58px" borderRadius={'10px'} />
+                        <Box p="7" borderRadius="4px" width="100%">
+                            <Text fontSize="22px">{title}</Text>
                         </Box>
                     </HStack>
-                    <Box overflowY="auto" p="10px" borderRadius="4px" border="1px solid limegreen" height="80%">
+                    <Divider />
+                    <Box overflowY="hidden" p="5px" borderRadius="4px" height="80%">
                         <ReactMarkdown components={MarkdownRenderers} rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
                             {value}
                         </ReactMarkdown>

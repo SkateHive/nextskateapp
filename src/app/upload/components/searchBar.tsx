@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { Input, Box, List, ListItem, Avatar, Text } from "@chakra-ui/react";
+import React, { useState, useEffect, useCallback } from "react";
+import { Input, InputGroup, InputLeftElement, Box, List, ListItem, Avatar, Text, Spinner } from "@chakra-ui/react";
 import { Client } from "@hiveio/dhive";
+import debounce from 'lodash/debounce';
+import { FaSearch } from "react-icons/fa";
 
 interface AuthorSearchBarProps {
     onSearch: (selectedUsername: string) => void;
@@ -13,9 +15,10 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
     const client = new Client(["https://api.hive.blog"]);
 
     const fetchAuthors = async (query: string) => {
+        if (!query) return; // Early return if query is empty
         setIsLoading(true);
         try {
-            const result = await client.database.call("lookup_accounts", [query, 10]);
+            const result = await client.database.call("lookup_accounts", [query, 5]);
             setAuthors(result);
         } catch (error) {
             console.error(error);
@@ -23,13 +26,18 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
         setIsLoading(false);
     };
 
+    // Create a debounced function using useCallback to ensure it doesn't get recreated on each render
+    const debouncedFetchAuthors = useCallback(debounce((search: string) => {
+        fetchAuthors(search);
+    }, 800), []); // Dependency array is empty, so the function is created only once
+
     useEffect(() => {
         if (username.trim() !== "") {
-            fetchAuthors(username);
+            debouncedFetchAuthors(username);
         } else {
             setAuthors([]);
         }
-    }, [username]);
+    }, [username, debouncedFetchAuthors]);
 
     const handleSearch = (selectedUsername: string) => {
         setUsername(selectedUsername);
@@ -39,50 +47,44 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
 
     return (
         <Box position="relative">
-            <Input
-                placeholder="Add a new split..."
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                borderColor={"green.600"}
-                color={"limegreen"}
-                _placeholder={{ color: "limegreen", opacity: 0.4 }}
-                focusBorderColor="limegreen"
-            />
-            {isLoading ? (
-                <div>Loading...</div>
-            ) : (
-                <List
-                    position="absolute"
-                    top="100%"
-                    left="0"
-                    right="0"
-                    bg="white"
-                    boxShadow="md"
-                    zIndex="999"
-                >
-                    {authors.map((author) => (
-                        <ListItem
-                            key={author}
-                            onClick={() => handleSearch(author)}
-                            p={2}
-                            cursor="pointer"
-                            display="flex"
-                            backgroundColor={"black"}
-                            border="1px limegreen solid"
-                            alignItems="center"
-                            _hover={{ bg: "gray.100" }}
-                        >
-                            <Avatar
-                                size="sm"
-                                src={`https://images.ecency.com/webp/u/${author}/avatar/small`}
-                                mr={2}
-                            />
+            <InputGroup>
+                {isLoading ? (
+                    <InputLeftElement pointerEvents="none">
+                        <Spinner color="limegreen" />
+                    </InputLeftElement>
+                ) : (
+                    <InputLeftElement pointerEvents="none">
+                        <FaSearch color="limegreen" />
+                    </InputLeftElement>
+                )}
+                <Input
+                    placeholder="Find a Skater/Photographer..."
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    borderColor="green.600"
+                    color="limegreen"
+                    _placeholder={{ color: "limegreen", opacity: 0.4 }}
+                    focusBorderColor="limegreen"
+                />
+            </InputGroup>
 
-                            <Text>{author}</Text>
-                        </ListItem>
-                    ))}
-                </List>
-            )}
+            <List position="absolute" top="100%" left="0" right="0" bg="white" boxShadow="md" zIndex="999">
+                {authors.map((author) => (
+                    <ListItem
+                        key={author}
+                        onClick={() => handleSearch(author)}
+                        p={2}
+                        cursor="pointer"
+                        display="flex"
+                        backgroundColor={"black"}
+                        alignItems="center"
+                        _hover={{ bg: "limegreen", color: "black" }}
+                    >
+                        <Avatar borderRadius={"5px"} size="sm" src={`https://images.ecency.com/webp/u/${author}/avatar/small`} mr={2} />
+                        <Text>{author}</Text>
+                    </ListItem>
+                ))}
+            </List>
         </Box>
     );
 };

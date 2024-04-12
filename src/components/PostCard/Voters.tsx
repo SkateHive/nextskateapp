@@ -39,7 +39,7 @@ export default function PostVoters({
       {!bestReputationVoter ? (
         "No votes"
       ) : (
-        <Text as={"span"} cursor={"pointer"} onClick={modalOnOpen}>
+        <Text color={"limegreen"} as={"span"} cursor={"pointer"} onClick={modalOnOpen}>
           Voted by <br />
           <b>{bestReputationVoter}</b>
           {qtdVotes > 0 && (

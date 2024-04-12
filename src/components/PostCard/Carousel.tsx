@@ -51,14 +51,14 @@ function PostCarousel() {
             src={video.url}
             width={"100%"}
             height={"100%"}
-            style={{ aspectRatio: "16/9" }}
+            style={{ aspectRatio: "16/9", border: "2px solid limegreen" }}
           />
         )
       })}
       {filteredImages.map((image, i) => (
         <Image
           key={i}
-          border={"1px solid white"}
+          border={"2px solid limegreen"}
           w="100%"
           src={image.url}
           aspectRatio={16 / 9}
