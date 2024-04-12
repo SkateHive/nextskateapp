@@ -189,7 +189,7 @@ export const MarkdownRenderers = {
       <iframe
         {...props}
         src={src}
-        style={{ borderRadius: '20px', marginBottom: '10px', minWidth: '100%', aspectRatio: '16/9', height: '100%', border: '2px limegreen solid' }}
+        style={{ borderRadius: '20px', marginBottom: '10px', minWidth: '100%', aspectRatio: '16/9', height: '100%', border: '2px #A6E22E solid' }}
       />
     </center>
   ),
@@ -248,7 +248,7 @@ export const MarkdownRenderers = {
     <td
       {...props}
       style={{
-        border: '1px solid limegreen',
+        border: '1px solid #A6E22E',
         backgroundColor: '#001a09',
         padding: '8px',
         textAlign: 'left',
@@ -263,7 +263,7 @@ export const MarkdownRenderers = {
     <strong {...props} style={{ color: '#00ff55' }}>{children}</strong>
   ),
   code: ({ children, ...props }: RendererProps) => (
-    <code {...props} style={{ color: 'limegreen', backgroundColor: '#001a09', padding: '2px', borderRadius: '4px' }}>{children}</code>
+    <code {...props} style={{ color: '#A6E22E', backgroundColor: '#001a09', padding: '2px', borderRadius: '4px' }}>{children}</code>
   ),
 };
 

@@ -43,32 +43,61 @@ function PostCarousel() {
     : [{ url: SKATEHIVE_LOGO }]
 
   return (
-    <Carousel responsive={responsive}>
-      {videoLinks.map((video, i) => {
-        return (
-          <iframe
-            key={1}
-            src={video.url}
-            width={"100%"}
-            height={"100%"}
-            style={{ aspectRatio: "16/9", border: "2px solid limegreen" }}
+    <div style={{ position: 'relative' }}>
+      <Carousel responsive={responsive}>
+        {videoLinks.map((video, i) => {
+          return (
+            <iframe
+              key={1}
+              src={video.url}
+              width={"100%"}
+              height={"100%"}
+              style={{ aspectRatio: "16/9", border: "0px solid limegreen" }}
+            />
+          )
+        })}
+        {filteredImages.map((image, i) => (
+          <Image
+            key={i}
+            border={"0px solid limegreen"}
+            w="100%"
+            src={image.url}
+            aspectRatio={16 / 9}
+            objectFit="cover"
+            borderRadius="none"
+            alt={post.title}
+            loading="lazy"
           />
-        )
-      })}
-      {filteredImages.map((image, i) => (
-        <Image
-          key={i}
-          border={"2px solid limegreen"}
-          w="100%"
-          src={image.url}
-          aspectRatio={16 / 9}
-          objectFit="cover"
-          borderRadius="none"
-          alt={post.title}
-          loading="lazy"
-        />
-      ))}
-    </Carousel>
+        ))}
+      </Carousel>
+      <div style={{
+        backgroundColor: 'rgba(0, 128, 0, 0.3)',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backdropFilter: 'grayscale(0.5) brightness(0.8) contrast(2) sepia(0.1)',
+      }} />
+      <div style={{
+        backgroundImage: 'url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5x7Nk1Rjy1lTjF_ZMyOv0AzPef98WQKgR1Dy0szzpQA&s")',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        opacity: 0.2,
+      }} />
+      <div style={{
+        backgroundImage: 'url("https://global.discourse-cdn.com/business7/uploads/notch/original/2X/0/005e870f89c55433413ac324ce978c372c3739a1.gif")',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        opacity: 0.1,
+      }} />
+    </div>
   )
 }
 
