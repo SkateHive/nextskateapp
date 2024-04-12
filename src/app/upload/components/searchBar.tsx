@@ -1,5 +1,7 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { Input, InputGroup, InputLeftElement, Box, List, ListItem, Avatar, Text, Spinner } from "@chakra-ui/react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import {
+    Box, InputGroup, InputLeftElement, Spinner, Input, List, ListItem, Avatar, Text
+} from '@chakra-ui/react';
 import { Client } from "@hiveio/dhive";
 import debounce from 'lodash/debounce';
 import { FaSearch } from "react-icons/fa";
@@ -13,6 +15,7 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
     const [authors, setAuthors] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const client = new Client(["https://api.hive.blog"]);
+    const [isListVisible, setIsListVisible] = useState(false);
 
     const fetchAuthors = async (query: string) => {
         if (!query) return; // Early return if query is empty
@@ -44,9 +47,25 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
         setAuthors([]);
         onSearch(selectedUsername);
     };
+    // Handler for hiding the list
+    const containerRef = useRef<HTMLDivElement>(null);
 
+    const hideList = (event: MouseEvent) => {
+        if (!containerRef.current?.contains(event.target as Node)) {
+            setIsListVisible(false);
+        }
+    };
+
+
+    // Effect to add and remove the event listener
+    useEffect(() => {
+        document.addEventListener('mousedown', hideList);
+        return () => {
+            document.removeEventListener('mousedown', hideList);
+        };
+    }, []);
     return (
-        <Box position="relative">
+        <Box position="relative" ref={containerRef}>
             <InputGroup>
                 {isLoading ? (
                     <InputLeftElement pointerEvents="none">
@@ -60,7 +79,10 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
                 <Input
                     placeholder="Find a Skater/Photographer..."
                     value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    onChange={(e) => {
+                        setUsername(e.target.value);
+                        setIsListVisible(true);
+                    }}
                     borderColor="green.600"
                     color="limegreen"
                     _placeholder={{ color: "limegreen", opacity: 0.4 }}
@@ -68,23 +90,28 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
                 />
             </InputGroup>
 
-            <List position="absolute" top="100%" left="0" right="0" bg="white" boxShadow="md" zIndex="999">
-                {authors.map((author) => (
-                    <ListItem
-                        key={author}
-                        onClick={() => handleSearch(author)}
-                        p={2}
-                        cursor="pointer"
-                        display="flex"
-                        backgroundColor={"black"}
-                        alignItems="center"
-                        _hover={{ bg: "limegreen", color: "black" }}
-                    >
-                        <Avatar borderRadius={"5px"} size="sm" src={`https://images.ecency.com/webp/u/${author}/avatar/small`} mr={2} />
-                        <Text>{author}</Text>
-                    </ListItem>
-                ))}
-            </List>
+            {isListVisible && (
+                <List position="absolute" top="100%" left="0" right="0" bg="white" boxShadow="md" zIndex="999">
+                    {authors.map((author) => (
+                        <ListItem
+                            key={author}
+                            onClick={() => {
+                                handleSearch(author);
+                                setIsListVisible(false);
+                            }}
+                            p={2}
+                            cursor="pointer"
+                            display="flex"
+                            backgroundColor={"black"}
+                            alignItems="center"
+                            _hover={{ bg: "limegreen", color: "black" }}
+                        >
+                            <Avatar borderRadius={"5px"} size="sm" src={`https://images.ecency.com/webp/u/${author}/avatar/small`} mr={2} />
+                            <Text>{author}</Text>
+                        </ListItem>
+                    ))}
+                </List>
+            )}
         </Box>
     );
 };

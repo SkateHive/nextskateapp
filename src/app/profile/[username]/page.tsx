@@ -4,7 +4,7 @@ import HiveClient from "@/lib/hiveclient"
 import PostModel from "@/lib/models/post"
 import { getUserFromUsername } from "@/lib/services/userService"
 import { Box, Grid } from "@chakra-ui/react" // Import Grid and Box for layout
-
+import ProfileTabs from "./profileTabs"
 const hiveClient = HiveClient
 
 async function getBlogFromUsername(
@@ -37,6 +37,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   return (
     <Box width="100%" minHeight="100vh">
       <ProfileHeader userData={user} />
+      <ProfileTabs params={params} />
       <Grid
         templateColumns={{
           base: "repeat(1, 1fr)",
@@ -46,6 +47,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
         gap={0} // Adjust gap as needed
         p={2}
       >
+
         {posts &&
           posts.map(({ postData }, i) => <Post key={i} postData={postData} />)}
       </Grid>

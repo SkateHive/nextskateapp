@@ -28,6 +28,13 @@ export interface HiveAccount {
   json_metadata: string
   memo_key: string
   metadata?: MetadataProps
+  balance: string | dhive.Asset
+  savings_balance: string | dhive.Asset
+  savings_hbd_balance: string | dhive.Asset
+  vesting_shares: string | dhive.Asset
+  vesting_balance: string | dhive.Asset
+  witness_votes: string[]
+
 }
 
 export type AuthUser = {

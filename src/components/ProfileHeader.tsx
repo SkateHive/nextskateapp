@@ -33,9 +33,9 @@ export default function ProfileHeader({ userData }: ProfileProps) {
           <Text fontSize={{ base: "md", lg: "xl" }} fontWeight={"bold"}>
             @{user.name}
           </Text>
-          <Text fontSize={"xs"} w={"100%"} noOfLines={3}>
+          {/* <Text fontSize={"xs"} w={"100%"} noOfLines={3}>
             {user.metadata?.profile?.about || "No bio available"}
-          </Text>
+          </Text> */}
         </VStack>
       </HStack>
     </VStack>
