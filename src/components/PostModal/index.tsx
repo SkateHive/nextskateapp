@@ -24,7 +24,7 @@ import { transform3SpeakContent } from "@/lib/utils"
 import rehypeRaw from "rehype-raw"
 import remarkGfm from "remark-gfm"
 import PostComment from "../PostCard/Comment"
-
+import CommentsSection from "./commentSection"
 interface PostModalInterface {
   isOpen: boolean
   onClose(): void
@@ -73,28 +73,9 @@ export function PostModal({ isOpen, onClose }: PostModalInterface) {
               {postBody}
             </ReactMarkdown>
           </Box>
-          <Box
-            bg={"black"}
-            flex={1}
-            p={4}
-            border={"1.4px solid limegreen"}
-            borderRadius={0}
-            height={"fit-content"}
-          >
-            <Stack divider={<StackDivider borderColor={"limegreen"} />} gap={4}>
-              {comments && comments.length > 1 ? (
-                comments
-                  .toReversed()
-                  .map((comment, i) => (
-                    <PostComment key={comment.id} comment={comment} />
-                  ))
-              ) : (
-                <Text w={"100%"} align={"center"}>
-                  Nothing yet
-                </Text>
-              )}
-            </Stack>
-          </Box>
+
+          {comments && <CommentsSection comments={comments} />}
+
         </ModalBody>
         <ModalFooter></ModalFooter>
       </ModalContent>
