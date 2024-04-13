@@ -150,6 +150,14 @@ export default function AvatarLogin() {
         </MenuItem>
         <MenuItem
           bg="black"
+          icon={<FaEthereum size={"16px"} />}
+          as={Link}
+          href={`/dao`}
+        >
+          Dao
+        </MenuItem>
+        <MenuItem
+          bg="black"
           icon={<FaWallet size={"16px"} />}
           as={Link}
           href={`/wallet`}
