@@ -12,20 +12,22 @@ interface PostCommentProps {
 
 export default function PostComment({ comment }: PostCommentProps) {
   return (
-    <Flex gap={2} direction={"column"}>
-      <UserAvatar username={comment.author} />
-      <Flex direction={"column"}>
-        <Flex gap={1} alignItems="center">
-          <Text fontSize="14px" as="b">
-            {comment.author}
-          </Text>
-          <Text fontSize="14px" color="darkgray">
-            ·
-          </Text>
-          <Text fontSize="12px" color="darkgray" fontWeight="300">
-            {moment.utc(comment.last_update).fromNow()}
-          </Text>
-        </Flex>
+    <Flex gap={2} direction={"column"}  >
+      <Flex gap={1} alignItems="center" border={"1px solid white"} mb={-2} >
+        <UserAvatar username={comment.author} />
+
+        <Text fontSize="14px" as="b">
+          {comment.author}
+        </Text>
+        <Text fontSize="14px" color="darkgray">
+          ·
+        </Text>
+        <Text fontSize="12px" color="darkgray" fontWeight="300">
+          {moment.utc(comment.last_update).fromNow()}
+        </Text>
+      </Flex>
+      <Flex direction={"column"} border={"1px solid"} p={5}>
+
         <Markdown content={comment.body} />
       </Flex>
 

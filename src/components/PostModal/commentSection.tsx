@@ -12,23 +12,25 @@ interface CommentsSectionProps { comments: Comment[] | undefined, isCommentReply
 const CommentsSection = ({ comments, isCommentReply = false }: CommentsSectionProps) => {
     if (!comments) return null
 
-    const hasComments = comments.length > 0
+    // Filter out comments from the author "hivebuzz"
+    const filteredComments = comments.filter(comment => comment.author !== 'hivebuzz');
+
+    const hasComments = filteredComments.length > 0
     if (!hasComments && isCommentReply) return null
 
     return (
         <Box
             bg="black"
             p={4}
-            // border="1.4px solid limegreen"
-            border={isCommentReply ? "" : "1.4px solid limegreen"}
+            border={isCommentReply ? "" : "0px solid limegreen"}
             borderLeft={isCommentReply ? "1.4px solid limegreen" : ""}
             pl={isCommentReply ? 8 : 4}
             borderRadius={0}
             height="fit-content"
         >
-            <Stack divider={<StackDivider borderColor="limegreen" />} gap={4}>
+            <Stack gap={0}>
                 {hasComments ? (
-                    comments.toReversed().map((comment, i) => (
+                    filteredComments.reverse().map((comment, i) => (
                         <PostComment key={comment.id} comment={comment} />
                     ))
                 ) : (
