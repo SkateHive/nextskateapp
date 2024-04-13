@@ -2,20 +2,17 @@ import { Flex, Text } from "@chakra-ui/react"
 import moment from "moment-timezone"
 import Markdown from "../Markdown"
 import UserAvatar from "../UserAvatar"
+import { useComments } from '@/hooks/comments';
+import { Comment } from '@/hooks/comments';
+import CommentsSection from "@/components/PostModal/commentSection"
 
 interface PostCommentProps {
-  comment: {
-    author: string
-    body: string
-    last_update: string
-    permlink: string
-    url: string
-  }
+  comment: Comment
 }
 
 export default function PostComment({ comment }: PostCommentProps) {
   return (
-    <Flex gap={2}>
+    <Flex gap={2} direction={"column"}>
       <UserAvatar username={comment.author} />
       <Flex direction={"column"}>
         <Flex gap={1} alignItems="center">
@@ -31,6 +28,9 @@ export default function PostComment({ comment }: PostCommentProps) {
         </Flex>
         <Markdown content={comment.body} />
       </Flex>
+
+      <CommentsSection comments={comment.replies} isCommentReply={true} />
     </Flex>
+
   )
 }

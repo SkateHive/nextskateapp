@@ -32,7 +32,9 @@ interface PostModalInterface {
 
 export function PostModal({ isOpen, onClose }: PostModalInterface) {
   const { post } = usePostContext()
+  // console.log("PostModal", post)
   const { comments } = useComments(post.author, post.permlink)
+  // console.log("PostModal", comments)
   const postBody = transform3SpeakContent(post.body)
   return (
     <Modal
@@ -73,9 +75,7 @@ export function PostModal({ isOpen, onClose }: PostModalInterface) {
               {postBody}
             </ReactMarkdown>
           </Box>
-
-          {comments && <CommentsSection comments={comments} />}
-
+          <CommentsSection comments={comments} />
         </ModalBody>
         <ModalFooter></ModalFooter>
       </ModalContent>

@@ -1,22 +1,33 @@
 // src/components/CommentsSection.jsx
-
-import React from 'react';
+'use client'
+import React, { useEffect } from 'react';
 import { Box, Stack, StackDivider, Text } from '@chakra-ui/react';
 import PostComment from '../PostCard/Comment';
 
 import { Comment } from '@/hooks/comments';
-const CommentsSection = ({ comments }: { comments: Comment[] }) => {
+import { useComments } from '@/hooks/comments';
+
+interface CommentsSectionProps { comments: Comment[] | undefined, isCommentReply?: boolean }
+
+const CommentsSection = ({ comments, isCommentReply = false }: CommentsSectionProps) => {
+    if (!comments) return null
+
+    const hasComments = comments.length > 0
+    if (!hasComments && isCommentReply) return null
 
     return (
         <Box
             bg="black"
             p={4}
-            border="1.4px solid limegreen"
+            // border="1.4px solid limegreen"
+            border={isCommentReply ? "" : "1.4px solid limegreen"}
+            borderLeft={isCommentReply ? "1.4px solid limegreen" : ""}
+            pl={isCommentReply ? 8 : 4}
             borderRadius={0}
             height="fit-content"
         >
             <Stack divider={<StackDivider borderColor="limegreen" />} gap={4}>
-                {comments && comments.length > 1 ? (
+                {hasComments ? (
                     comments.toReversed().map((comment, i) => (
                         <PostComment key={comment.id} comment={comment} />
                     ))

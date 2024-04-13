@@ -116,7 +116,7 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
 
   return (
     <CardHeader p={2} pb={0}>
-      <PostModal isOpen={isOpen} onClose={onClose} />
+      {isOpen && <PostModal isOpen={isOpen} onClose={onClose} />}
       <Flex
         gap="4"
         align={"start"}
