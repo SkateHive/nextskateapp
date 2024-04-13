@@ -31,8 +31,6 @@ export default function Vote() {
 
     if (!hiveUser) return
 
-    if (!isVoted) reward()
-
     if (loginMethod === "keychain") {
       await vote({
         username: hiveUser.name,
@@ -55,6 +53,7 @@ export default function Vote() {
       console.log("Voting with private key")
     }
 
+    if (!isVoted) reward()
     setIsVoted((isVoted) => !isVoted)
     mutate(SWR_POSTS_TAG)
   }
