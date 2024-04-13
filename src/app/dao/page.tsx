@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect } from "react";
-import { Box, Stack, Text, Center, Button } from "@chakra-ui/react";
+import { Box, Stack, Text, Center, Button, Divider } from "@chakra-ui/react";
 import fetchProposals from "./utils/fetchProposals";
 import { Proposal } from "./utils/fetchProposals";
 import getSummary from "@/lib/getSummaryAI";
@@ -56,6 +56,7 @@ const DaoPage = () => {
                     proposals.map((proposal, i) => (
                         <Box key={i} bg="black" p={4} border="0.6px solid limegreen" borderRadius="none">
                             <Text>Title: {proposal.title}</Text>
+                            <Divider />
                             <Text>Summary: {decodeURIComponent(proposal.summary ?? '')}</Text>
                             {proposal.choices.map((choice, choiceIndex) => (
                                 <Button key={choiceIndex} onClick={() => voteOnProposal(proposal.id, choiceIndex + 1)}>
