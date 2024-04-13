@@ -37,7 +37,7 @@ export interface Comment {
   permlink: string
   promoted: string
   reblogged_by: any[]
-  replies: any[]
+  replies: Comment[]
   reward_weight: number
   root_author: string
   root_permlink: string
@@ -66,7 +66,14 @@ export async function fetchComments(
   const comments = await HiveClient.database.call("get_content_replies", [
     author,
     permlink,
-  ])
+  ]) as Comment[]
+
+  comments.map(async comment => {
+    if (comment.children > 0) {
+      comment.replies = await fetchComments(comment.author, comment.permlink);
+    }
+  })
+
   return comments as Comment[]
 }
 
@@ -75,7 +82,7 @@ export function useComments(author: string, permlink: string) {
     data: comments,
     error,
     isLoading,
-  } = useSWR(`${SWR_POST_COMMENTS_TAG}/${permlink}`, () =>
+  } = useSWR(`comments/${author}/${permlink}`, () =>
     fetchComments(author, permlink)
   )
 
@@ -85,3 +92,4 @@ export function useComments(author: string, permlink: string) {
     isLoading,
   }
 }
+

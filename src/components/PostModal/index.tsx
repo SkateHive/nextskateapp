@@ -13,9 +13,9 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Stack,
-  StackDivider,
   Text,
+  Center,
+  VStack,
 } from "@chakra-ui/react"
 import Header from "../PostCard/Header"
 
@@ -23,7 +23,11 @@ import { useComments } from "@/hooks/comments"
 import { transform3SpeakContent } from "@/lib/utils"
 import rehypeRaw from "rehype-raw"
 import remarkGfm from "remark-gfm"
-import PostComment from "../PostCard/Comment"
+import CommentsSection from "./commentSection"
+import HiveClient from "@/lib/hiveclient"
+import Post from "../PostCard"
+import { PostProps } from "@/lib/models/post"
+import { use, useState, useEffect } from "react"
 
 interface PostModalInterface {
   isOpen: boolean
@@ -34,6 +38,52 @@ export function PostModal({ isOpen, onClose }: PostModalInterface) {
   const { post } = usePostContext()
   const { comments } = useComments(post.author, post.permlink)
   const postBody = transform3SpeakContent(post.body)
+  const [postData, setPostData] = useState<PostProps[]>([])
+
+  const fetchPosts = async (username: string) => {
+    try {
+      const query = {
+        tag: username,
+        limit: 3
+      };
+      const hiveClient = HiveClient;
+      const response = await hiveClient.database.getDiscussions("blog", query);
+      console.log(response);
+
+      // export interface PostProps {
+      //   post_id: number
+      //   author: string
+      //   permlink: string
+      //   title: string
+      //   body: string
+      //   json_metadata: string
+      //   created: string
+      //   url: string
+      //   root_title: string
+      //   total_payout_value: Asset | string
+      //   curator_payout_value: Asset | string
+      //   pending_payout_value: Asset | string
+      //   active_votes: PostActiveVotes[]
+      // }
+
+      // Assuming the response is an array of posts, map each post to match the PostProps type
+      // console.log("RESPONSE:", response[0].author);
+      // const formattedResponse = response.map((post: any) => ({
+      //   post_id: 1,
+      //   author: response.
+      // }));
+      // setPostData(formattedResponse);
+    }
+    catch (error) {
+      console.log(error);
+    }
+  }
+
+
+  useEffect(() => {
+    fetchPosts(post.author)
+  }, [post.author])
+
   return (
     <Modal
       isOpen={isOpen}
@@ -60,10 +110,11 @@ export function PostModal({ isOpen, onClose }: PostModalInterface) {
         >
           <Box
             bg={"black"}
-            flex={1}
-            p={4}
-            border={"1.4px solid limegreen"}
+            flex={0}
+            p={0}
+            border={"0px solid limegreen"}
             borderRadius={0}
+            minW={"50%"}
           >
             <ReactMarkdown
               components={MarkdownRenderers}
@@ -73,27 +124,28 @@ export function PostModal({ isOpen, onClose }: PostModalInterface) {
               {postBody}
             </ReactMarkdown>
           </Box>
-          <Box
-            bg={"black"}
-            flex={1}
-            p={4}
-            border={"1.4px solid limegreen"}
-            borderRadius={0}
-            height={"fit-content"}
-          >
-            <Stack divider={<StackDivider borderColor={"limegreen"} />} gap={4}>
-              {comments && comments.length > 1 ? (
-                comments
-                  .toReversed()
-                  .map((comment, i) => (
-                    <PostComment key={comment.id} comment={comment} />
-                  ))
-              ) : (
-                <Text w={"100%"} align={"center"}>
-                  Nothing yet
-                </Text>
-              )}
-            </Stack>
+          <Box minW={"50%"}>
+            <Center>
+              <Text
+                fontSize={"2xl"}
+              >
+                Comments
+              </Text>
+            </Center>
+            <CommentsSection comments={comments} />
+            <Center>
+              <Text
+                fontSize={"2xl"}
+              >
+                More from {post.author}
+              </Text>
+              {/* <VStack>
+
+                {postData.map((post: PostProps, index: number) => (
+                  <Post key={index} postData={post} />
+                ))}
+              </VStack> */}
+            </Center>
           </Box>
         </ModalBody>
         <ModalFooter></ModalFooter>

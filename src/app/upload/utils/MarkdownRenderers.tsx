@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image } from '@chakra-ui/react';
+import { Image, Divider } from '@chakra-ui/react';
 
 type MarkdownProps = {
   node?: any;
@@ -119,12 +119,14 @@ export const MarkdownRenderers = {
       </span>
     );
   },
-  p: ({ children, ...props }: RendererProps) => <p {...props} style={{ color: 'white', fontSize: '18px', paddingBottom: '15px', paddingLeft: '10px' }}>{children}</p>,
+  p: ({ children, ...props }: RendererProps) => <p {...props} style={{ color: 'white', fontSize: '18px', paddingBottom: '15px' }}>{children}</p>,
   a: ({ href, children, ...props }: RendererProps) => <a style={{ color: "yellow" }} href={href}  {...props} > {children} </a>,
   h1: ({ children, ...props }: RendererProps) => <h1 {...props} style={{ fontWeight: 'bold', color: '#00ff55', fontSize: '28px', paddingBottom: '10px', paddingTop: "10px", paddingLeft: '10px' }}>{children}</h1>,
   h3: ({ children, ...props }: RendererProps) => <h3 {...props} style={{ fontWeight: 'bold', color: '#00ff55', fontSize: '24px', paddingBottom: '6px', paddingTop: "12px", paddingLeft: '10px' }}>{children}</h3>,
   h2: ({ children, ...props }: RendererProps) => <h2 {...props} style={{ fontWeight: 'bold', color: '#00ff55', fontSize: '26px', paddingBottom: '8px', paddingTop: "10px", paddingLeft: '10px' }}>{children}</h2>,
   h4: ({ children, ...props }: RendererProps) => <h4 {...props} style={{ fontWeight: 'bold', color: '#00ff55', fontSize: '22px', paddingBottom: '6px', paddingTop: "12px", paddingLeft: '10px' }}>{children}</h4>,
+  em: ({ children, ...props }: RendererProps) => <em {...props} style={{ color: 'limegreen' }}>{children}</em>,
+
   blockquote: ({ children, ...props }: RendererProps) => (
     <div
       style={{
@@ -155,7 +157,9 @@ export const MarkdownRenderers = {
     return <ul {...props} data-ordered={listType} style={{ padding: '5%', paddingLeft: '10%', color: 'white' }}>{children}</ul>;
   },
   sub: ({ children, ...props }: RendererProps) => (<sub {...props} style={{ color: 'gray' }}>{children}</sub>),
-  hr: ({ children, ...props }: RendererProps) => <hr {...props} style={{ paddingBottom: '20px', color: 'yellow' }}>{children}</hr>,
+  hr: ({ children, ...props }: RendererProps) =>
+
+    <Divider {...props} style={{ paddingBottom: '20px', color: 'limegreen', marginBottom: '5px' }}>{children}</Divider>,
   br: ({ children, ...props }: RendererProps) => <br {...props} style={{ paddingBottom: '20px' }}>{children}</br>,
   pre: ({ children, ...props }: RendererProps) => (
     <div
@@ -189,7 +193,7 @@ export const MarkdownRenderers = {
       <iframe
         {...props}
         src={src}
-        style={{ borderRadius: '20px', marginBottom: '10px', minWidth: '100%', aspectRatio: '16/9', height: '100%', border: '2px #A6E22E solid' }}
+        style={{ borderRadius: '20px', marginBottom: '10px', maxWidth: '100%', minWidth: '100%', aspectRatio: '16/9', height: '100%', border: '2px #A6E22E solid' }}
       />
     </center>
   ),
