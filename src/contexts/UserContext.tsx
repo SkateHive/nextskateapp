@@ -1,7 +1,7 @@
 import { HiveAccount } from "@/lib/useHiveAuth"
 import { createContext, useContext, useEffect, useState } from "react"
 
-interface HiveUserContextProps {
+export interface HiveUserContextProps {
   hiveUser: HiveAccount | null
   setHiveUser: (user: HiveAccount | null) => void
   isLoading: boolean | undefined
@@ -14,6 +14,8 @@ const HiveUserContext = createContext<HiveUserContextProps | undefined>(
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<HiveAccount | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>()
+
+
 
   useEffect(() => {
     const userData = localStorage.getItem("hiveuser")

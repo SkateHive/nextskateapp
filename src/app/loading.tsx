@@ -39,7 +39,7 @@ export default function Loading() {
       <Image
         borderRadius={"20px"}
         boxSize="100%"
-        src="/pepenation.gif"
+        src="https://www.memeatlas.com/images/pepes/pepe-mandelbrot.gif"
         as={"image"}
       />
     </Box>
