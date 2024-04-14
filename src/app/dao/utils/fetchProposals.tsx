@@ -3,10 +3,15 @@ import getSummary from "@/lib/getSummaryAI"; // Confirm the path alias "@/" is c
 
 export interface Proposal {
     id: string;
+    author: string;
     title: string;
     body: string;
     choices: string[];
     start: number;
+    created: number;
+    scores: number[];
+    scores_total: number;
+    scores_updated: number;
     end: number;
     snapshot: number;
     state: string;
