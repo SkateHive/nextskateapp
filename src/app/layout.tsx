@@ -13,6 +13,7 @@ export const metadata: Metadata = {
   // metadataBase: new URL(getWebsiteURL()),
   title: "Skatehive App",
   description: "Digital hive for underground bees",
+  manifest: "/manifest.json",
   openGraph: {
     images: `${getWebsiteURL()}/default_banner.png`,
   },
@@ -25,7 +26,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-br">
+
       <head>
+        <link rel="manifest" href="manifest.json">
+        </link>
         <Favicon />
       </head>
       <body className={share_tech_mono.className}>

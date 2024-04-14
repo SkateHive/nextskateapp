@@ -4,6 +4,7 @@ import { useHiveUser } from "@/contexts/UserContext"
 import { alchemy } from "@/lib/web3"
 import {
   Avatar,
+  Button,
   Divider,
   HStack,
   Stack,
@@ -20,6 +21,13 @@ import {
 import { OwnedToken } from "alchemy-sdk"
 import { useEffect, useState } from "react"
 import { useAccount } from "wagmi"
+import { claimRewards } from "@/lib/hive/client-functions"
+import { HiveAccount } from "@/lib/useHiveAuth"
+
+function ClaimRewards(hiveUser: HiveAccount) { 
+ if (hiveUser) claimRewards(hiveUser)
+
+}
 
 function Wallet() {
   return (
@@ -62,9 +70,12 @@ function HiveBox() {
             <Text fontSize={22}>{hiveUser.name}</Text>
           </HStack>
           <VStack align={"normal"} gap={0}>
-            <Text>You Own: $5.43</Text>
-            <Text>Wallet Worth: $5.43</Text>
-            <Text>Available : $0.00</Text>
+            <Text>You Own: {String(hiveUser.balance)}</Text>
+            <Text>Wallet Worth: </Text>
+            <Text>Rewards to Claim : <br/> HBD: {String(hiveUser.reward_hbd_balance)}<br/> 
+                                           Hive {String(hiveUser.reward_hive_balance)}<br/>
+                                           HP {String(hiveUser.reward_vesting_hive)}</Text>
+                                           <Button onClick={() => ClaimRewards(hiveUser)}>Claim!</Button>
           </VStack>
         </VStack>
       ) : null}
@@ -75,7 +86,7 @@ function HiveBox() {
 function EthBox() {
   const account = useAccount()
   const [userTokens, setUserTokens] = useState<OwnedToken[] | null>()
-  console.log("Account", account.address)
+  //console.log("Account", account.address)
   useEffect(() => {
 
     async function fetchTokens(ethAddress: string) {
