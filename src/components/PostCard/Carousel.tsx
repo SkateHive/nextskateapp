@@ -45,8 +45,9 @@ function PostCarousel() {
 
   return (
     <div style={{ position: 'relative' }}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}>
+    // onMouseEnter={() => setHover(true)}
+    // onMouseLeave={() => setHover(false)}
+    >
       <Carousel responsive={responsive}>
         {videoLinks.map((video, i) => (
           <iframe
@@ -71,7 +72,7 @@ function PostCarousel() {
           />
         ))}
       </Carousel>
-      <div style={{
+      {/* <div style={{
         backgroundImage: 'url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5x7Nk1Rjy1lTjF_ZMyOv0AzPef98WQKgR1Dy0szzpQA&s")',
         position: 'absolute',
         top: 0,
@@ -102,7 +103,7 @@ function PostCarousel() {
             opacity: 0.1,
           }} />
         </div>
-      )}
+      )} */}
     </div>
   )
 

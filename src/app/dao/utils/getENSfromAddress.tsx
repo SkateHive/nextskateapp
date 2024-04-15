@@ -17,13 +17,9 @@ export const getENSnamefromAddress = async (address: string) => {
     })
 
     if (ensName) {
-        console.log("ENS Name found:", ensName);
         return ensName;
     } else {
-        console.log("No ENS Name found for address:", address);
-        return address;
+        return `${address.slice(0, 6)}...${address.slice(-4)}`;
     }
-    console.log(ensName)
-    return ensName
 }
 
