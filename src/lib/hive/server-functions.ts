@@ -152,5 +152,35 @@ export async function commentWithPrivateKey(encryptedPrivateKey: string | null, 
   )
 }
 
+export async function claimRewardsWithPrivateKey(hiveUser: HiveAccount, encryptedPrivateKey: string | null) {
+
+  if (encryptedPrivateKey === null) throw new Error("Private key not found")
+  const privateKey = dhive.PrivateKey.fromString(decryptPrivateKey(encryptedPrivateKey))
+
+  const rewardHiveBalance = String(hiveUser.reward_hive_balance).split(' ')[0]
+  const rewardHBDBalance = String(hiveUser.reward_hbd_balance).split(' ')[0]
+  const rewardVests = String(hiveUser.reward_vesting_balance).split(' ')[0]
+
+  const operation: dhive.Operation = [
+         "claim_reward_balance",
+         {
+          account: hiveUser.name,
+          reward_hive: rewardHiveBalance,
+          reward_hbd: rewardHBDBalance,
+          reward_vests: rewardVests
+         }
+        ]
+
+  const client = new dhive.Client("https://api.hive.blog")
+  client.broadcast.sendOperations([operation], privateKey).then((result) => {
+    console.log(result)
+  }
+  ).catch((error) => {
+    console.error(error)
+  }
+  )
+  
+}
+
 
 
