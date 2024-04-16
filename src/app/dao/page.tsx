@@ -14,6 +14,8 @@ import {
   Text,
   VStack,
   Flex,
+  Input,
+  Textarea,
 } from "@chakra-ui/react"
 import { normalize } from "path"
 import React, { useEffect, useState } from "react"
@@ -31,8 +33,6 @@ import { getENSnamefromAddress } from "./utils/getENSfromAddress"
 import voteOnProposal from "./utils/voteOnProposal"
 import ProposalListItem from "./utils/components/proposalListItem"
 
-
-
 import {
   Modal,
   ModalBody,
@@ -44,36 +44,57 @@ import {
 } from "@chakra-ui/react"
 
 interface VoteConfirmationModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onConfirm: () => void
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: (reason: string) => void;  // Specify that onConfirm takes a string argument
+  choice: string;
+  setReason: (reason: string) => void;
+  reason: string;
 }
 
-const VoteConfirmationModal: React.FC<VoteConfirmationModalProps> = ({ isOpen, onClose, onConfirm }) => {
+
+const VoteConfirmationModal: React.FC<VoteConfirmationModalProps> = ({
+  isOpen, onClose, onConfirm, choice, setReason, reason
+}) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent
+        bg={"#201d21"}
+        border={"1px solid limegreen"}
+      >
         <ModalHeader>Confirm Vote</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <Text>
-            Are you sure you want to vote on this proposal? This action cannot
-            be undone.
+            {`Are you sure you want to vote "${choice.toUpperCase()}" on this proposal? This action cannot be undone.`}
+          </Text>
+
+          <Textarea
+            value={reason}
+            onChange={(event) => setReason(event.target.value)}
+            placeholder="Reason for your vote"
+            height={"120px"}
+            mt={2}
+          />
+          <Text mt={2} fontSize="12px" color="gray.500">
+            Please note that voting is irreversible and binding. Make sure you have read and understood the proposal before voting.
           </Text>
         </ModalBody>
         <ModalFooter>
           <Button colorScheme="red" mr={3} onClick={onClose}>
             Cancel
           </Button>
-          <Button variant="ghost" onClick={onConfirm}>
+          <Button colorScheme="green" variant="outline" onClick={() => onConfirm(reason)}>
             Confirm
           </Button>
+
         </ModalFooter>
       </ModalContent>
     </Modal>
-  )
-}
+  );
+};
+
 
 
 const DaoPage = () => {
@@ -87,6 +108,8 @@ const DaoPage = () => {
   const [confirmationModalOpen, setConfirmationModalOpen] = useState(false)
   const [ProposerName, setProposerName] = useState<string | null>(null)
   const [isCreateProposalModalOpen, setIsCreateProposalModalOpen] = useState(false)
+  const [selectedChoice, setSelectedChoice] = useState<number | null>(null);
+  const [reason, setReason] = useState<string>("");
 
   const ensProposerName = useEnsName({
     address: (ProposerName || "0x0") as `0x${string}`,
@@ -227,12 +250,34 @@ const DaoPage = () => {
             bg="black"
             p={4}
             border="0.6px solid limegreen"
-            borderRadius="none"
+            borderRadius="10px"
             width={"50%"}
             minHeight={"100%"}
           >
+            {mainProposal?.author && (
+              <>
+
+                <HStack justifyContent="space-between">
+                  <Text>
+                    Start:{" "}
+                    <Badge>
+                      {new Date(
+                        mainProposal?.start * 1000
+                      ).toLocaleDateString()}
+                    </Badge>
+                  </Text>
+                  <Text>
+                    End:
+                    <Badge>
+                      {" "}
+                      {new Date(mainProposal.end * 1000).toLocaleDateString()}
+                    </Badge>
+                  </Text>
+                </HStack>
+              </>
+            )}
             <Box
-              bg="black"
+              bg="#201d21"
               p={4}
               border="0.6px solid limegreen"
               borderRadius="none"
@@ -241,16 +286,16 @@ const DaoPage = () => {
               <Text fontSize={"28px"}> {mainProposal?.title}</Text>
             </Box>
             <Box
-              bg="black"
+              bg="#201d21"
               p={0}
               border="0.6px solid limegreen"
               borderRadius="none"
             >
               <HStack>
                 {ensProposerAvatar.data ? (
-                  <Image boxSize={"46px"} src={ensProposerAvatar.data} />
+                  <Image alt="" boxSize={"46px"} src={ensProposerAvatar.data} />
                 ) : (
-                  <Image boxSize={"46px"} src={"/pepenation.gif"} />
+                  <Image alt="" boxSize={"46px"} src={"/pepenation.gif"} />
                 )}
 
                 <Text>
@@ -261,7 +306,7 @@ const DaoPage = () => {
               </HStack>
             </Box>
             <Box
-              bg="black"
+              bg="#201d21"
               p={4}
               border="0.6px solid limegreen"
               borderRadius="none"
@@ -289,28 +334,7 @@ const DaoPage = () => {
               >
                 {mainProposal?.scores[1] ?? 0}
               </Progress>
-              {mainProposal?.author && (
-                <>
 
-                  <HStack justifyContent="space-between">
-                    <Text>
-                      Start:{" "}
-                      <Badge>
-                        {new Date(
-                          mainProposal?.start * 1000
-                        ).toLocaleDateString()}
-                      </Badge>
-                    </Text>
-                    <Text>
-                      End:
-                      <Badge>
-                        {" "}
-                        {new Date(mainProposal.end * 1000).toLocaleDateString()}
-                      </Badge>
-                    </Text>
-                  </HStack>
-                </>
-              )}
               <br />
               {mainProposal && mainProposal.state !== "active" && (
                 <>
@@ -343,15 +367,17 @@ const DaoPage = () => {
                 {mainProposal && mainProposal.state === "active" && (
                   mainProposal.choices.map((choice, choiceIndex) => (
                     <Button
-                      colorScheme={choice.toUpperCase() == "FOR" ? "green" : "red"}
+                      colorScheme={choice.toUpperCase() === "FOR" ? "green" : "red"}
                       variant="outline"
                       key={choiceIndex}
-                      onClick={() =>
-                        voteOnProposal(ethAccount, mainProposal.id, choiceIndex + 1)
-                      }
+                      onClick={() => {
+                        setSelectedChoice(choiceIndex);
+                        setConfirmationModalOpen(true);
+                      }}
                     >
                       {choice.toUpperCase()}
                     </Button>
+
                   ))
                 )}
               </Flex>
@@ -373,6 +399,22 @@ const DaoPage = () => {
           </Box>
         </HStack>
       )}
+      {confirmationModalOpen && mainProposal && (
+        <VoteConfirmationModal
+          isOpen={confirmationModalOpen}
+          onClose={() => setConfirmationModalOpen(false)}
+          choice={mainProposal.choices[selectedChoice ?? 0]}
+          onConfirm={(reason: string) => {  // Add type annotation here
+            if (selectedChoice !== null) {
+              voteOnProposal(ethAccount, mainProposal.id, selectedChoice + 1, reason);
+              setConfirmationModalOpen(false);
+            }
+          }}
+          setReason={setReason}
+          reason={reason}
+        />
+      )}
+
     </Box>
   )
 }

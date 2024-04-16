@@ -188,9 +188,14 @@ const CreateProposalModal = () => {
                         width="100%" // Make full width on mobile
                     >
                         <Input
-                            placeholder="Title"
+                            placeholder="Proposal Title"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
+                            borderColor={"green.600"}
+                            border={"2px solid"}
+                            color={"limegreen"}
+                            _placeholder={{ color: "limegreen", opacity: 0.4 }}
+                            focusBorderColor="limegreen"
                         />
                         <MDEditor
                             value={value}
@@ -203,7 +208,7 @@ const CreateProposalModal = () => {
                             height="600px"
                             preview="edit"
                             style={{
-                                border: "1px solid limegreen",
+                                border: "2px solid limegreen",
                                 padding: "10px",
                                 backgroundColor: "black",
                             }}

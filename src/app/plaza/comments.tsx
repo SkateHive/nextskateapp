@@ -66,7 +66,7 @@ const Comment: React.FC<CommentProps> = ({ author, body, created, net_votes, per
                 <Flex justifyContent="space-between" alignItems="">
                     {/* <Link to={`https://skatehive.app/profile/${author}`}> */}
                     <Flex padding="5px" alignItems="center">
-                        <Image src={avatarUrl} borderRadius="full" boxSize="40px" mr="3" />
+                        <Image alt='' src={avatarUrl} borderRadius="full" boxSize="40px" mr="3" />
                         <Text fontWeight="bold">@{author}</Text>
                     </Flex>
                     {/* </Link> */}

@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useCallback, useEffect, useRef, RefObject } from "react";
-import { Checkbox, Box, Button, Input, HStack, Flex, Center, Text, Avatar, Spinner, Badge, VStack, Tooltip, Slider, SliderTrack, SliderFilledTrack, SliderThumb, Divider } from "@chakra-ui/react";
+import { Image, Checkbox, Box, Button, Input, HStack, Flex, Center, Text, Avatar, Spinner, Badge, VStack, Tooltip, Slider, SliderTrack, SliderFilledTrack, SliderThumb, Divider } from "@chakra-ui/react";
 import { useDropzone } from "react-dropzone";
 import ReactMarkdown from 'react-markdown';
 import rehypeSanitize from 'rehype-sanitize';
@@ -129,7 +129,7 @@ export default function Upload() {
                     }}
                     style={imageUrl === thumbnailUrl ? selectedThumbnailStyle : {}}
                 >
-                    <img
+                    <Image
                         src={imageUrl}
                         alt={`Thumbnail ${index}`}
                         style={{ maxWidth: "100%", maxHeight: "100%" }}

@@ -41,6 +41,7 @@ export default function Loading() {
         boxSize="100%"
         src="https://www.memeatlas.com/images/pepes/pepe-mandelbrot.gif"
         as={"image"}
+        alt=""
       />
     </Box>
   );

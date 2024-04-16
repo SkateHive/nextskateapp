@@ -82,7 +82,7 @@ export default function AvatarLogin() {
 
                     if (chain.unsupported) {
                       return (
-                        <Button color={"red"} leftIcon={<Image boxSize={"28px"} src="/pepenation.gif" />} onClick={openChainModal} >
+                        <Button color={"red"} leftIcon={<Image alt="" boxSize={"28px"} src="/pepenation.gif" />} onClick={openChainModal} >
                           Wrong network
                         </Button>
                       );

@@ -6,7 +6,7 @@ const hub = 'https://hub.snapshot.org';
 const client = new snapshot.Client712(hub);
 
 
-const voteOnProposal = async (ethAccount: any, proposalId: string, choiceId: number) => {
+const voteOnProposal = async (ethAccount: any, proposalId: string, choiceId: number, reason: string) => {
 
     if (!ethAccount.isConnected) {
         alert('Please connect your wallet');
@@ -19,7 +19,7 @@ const voteOnProposal = async (ethAccount: any, proposalId: string, choiceId: num
         proposal: proposalId,
         type: 'single-choice',
         choice: choiceId,
-        reason: 'I believe this choice makes the most sense.',
+        reason: reason,
         app: 'Skatehive App'
     });
     console.log('Voting receipt:', receipt);
