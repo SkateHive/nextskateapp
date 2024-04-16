@@ -172,7 +172,7 @@ const DaoPage = () => {
         <Grid templateColumns="1fr 2fr 1fr" gap={6} alignItems="center">
           <GridItem colSpan={2} display="flex" alignItems="center">
             <HStack spacing={4}>
-              <Image boxSize="86px" src={avatar || "/infinitypepe.gif"} />
+              <Image alt="Connected User Avatar" boxSize="86px" src={avatar || "/infinitypepe.gif"} />
               <VStack>
                 <Text fontSize="16px" color="limegreen">
                   {connectedUserEnsName}
@@ -214,6 +214,7 @@ const DaoPage = () => {
               ) : (
                 proposals.map((proposal, i) => (
                   <ProposalListItem
+                    key={i}
                     setMainProposal={setMainProposal}
                     setProposerName={setProposerName}
                     proposal={proposal}
