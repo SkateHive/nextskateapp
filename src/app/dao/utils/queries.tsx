@@ -23,6 +23,7 @@ export const proposalsQuery = `
       created 
       scores
       scores_total
+      scores_by_strategy
       space {
         id
         name

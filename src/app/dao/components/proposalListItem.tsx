@@ -1,6 +1,6 @@
 import { Box, Badge, HStack, Text, Center } from "@chakra-ui/react"
 import React from "react"
-import { Proposal } from "../fetchProposals"
+import { Proposal } from "../utils/fetchProposals"
 import { useEnsAvatar, useEnsName } from "wagmi"
 import { normalize } from "viem/ens"
 import { mainnet } from "viem/chains"

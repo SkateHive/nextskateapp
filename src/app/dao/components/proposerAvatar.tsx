@@ -1,6 +1,6 @@
 import { Avatar } from "@chakra-ui/react"
 import React, { useEffect, useState } from "react"
-import { getENSavatar } from "../getENSavatar"
+import { getENSavatar } from "../utils/getENSavatar"
 
 interface ProposerAvatarProps {
     authorAddress: string

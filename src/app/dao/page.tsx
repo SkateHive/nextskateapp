@@ -26,76 +26,13 @@ import remarkGfm from "remark-gfm"
 import { mainnet } from "viem/chains"
 import { useAccount, useEnsAvatar, useEnsName } from "wagmi"
 import { MarkdownRenderers } from "../upload/utils/MarkdownRenderers"
-import CreateProposalModal from "./utils/components/createProposalModal"
+import CreateProposalModal from "./components/createProposalModal"
 import fetchProposals, { Proposal } from "./utils/fetchProposals"
 import { getENSavatar } from "./utils/getENSavatar"
 import { getENSnamefromAddress } from "./utils/getENSfromAddress"
 import voteOnProposal from "./utils/voteOnProposal"
-import ProposalListItem from "./utils/components/proposalListItem"
-
-import {
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-} from "@chakra-ui/react"
-
-interface VoteConfirmationModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: (reason: string) => void;  // Specify that onConfirm takes a string argument
-  choice: string;
-  setReason: (reason: string) => void;
-  reason: string;
-}
-
-
-const VoteConfirmationModal: React.FC<VoteConfirmationModalProps> = ({
-  isOpen, onClose, onConfirm, choice, setReason, reason
-}) => {
-  return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <ModalOverlay />
-      <ModalContent
-        bg={"#201d21"}
-        border={"1px solid limegreen"}
-      >
-        <ModalHeader>Confirm Vote</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          <Text>
-            {`Are you sure you want to vote "${choice.toUpperCase()}" on this proposal? This action cannot be undone.`}
-          </Text>
-
-          <Textarea
-            value={reason}
-            onChange={(event) => setReason(event.target.value)}
-            placeholder="Reason for your vote"
-            height={"120px"}
-            mt={2}
-          />
-          <Text mt={2} fontSize="12px" color="gray.500">
-            Please note that voting is irreversible and binding. Make sure you have read and understood the proposal before voting.
-          </Text>
-        </ModalBody>
-        <ModalFooter>
-          <Button colorScheme="red" mr={3} onClick={onClose}>
-            Cancel
-          </Button>
-          <Button colorScheme="green" variant="outline" onClick={() => onConfirm(reason)}>
-            Confirm
-          </Button>
-
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
-  );
-};
-
-
+import ProposalListItem from "./components/proposalListItem"
+import VoteConfirmationModal from "./components/voteWithReasonModal"
 
 const DaoPage = () => {
   const [proposals, setProposals] = useState<Proposal[]>([])
@@ -110,6 +47,7 @@ const DaoPage = () => {
   const [isCreateProposalModalOpen, setIsCreateProposalModalOpen] = useState(false)
   const [selectedChoice, setSelectedChoice] = useState<number | null>(null);
   const [reason, setReason] = useState<string>("");
+  const [formattedAddress, setFormattedAddress] = useState<string>("")
 
   const ensProposerName = useEnsName({
     address: (ProposerName || "0x0") as `0x${string}`,
@@ -145,6 +83,10 @@ const DaoPage = () => {
   }
   useEffect(() => {
     if (ethAccount.address && ethAccount.address.length > 0) {
+
+      // get the ethAccount.address and tranform it in a normal string Type 
+      const formattedAddress = ethAccount.address.toString()
+      setFormattedAddress(formattedAddress)
       getConnectedUserAvatar(ethAccount.address)
         .then((avatar) => {
           console.log("Avatar loaded:")
@@ -223,7 +165,8 @@ const DaoPage = () => {
         </Grid>
       </Box>
       {isCreateProposalModalOpen ? (
-        <CreateProposalModal />
+        <CreateProposalModal connectedUserAddress={formattedAddress} />
+
       ) : (
         <HStack align={"flex-start"} mt={2}>
           <Box width={"50%"}>
