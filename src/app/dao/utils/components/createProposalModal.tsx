@@ -4,7 +4,8 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Web3Provider } from '@ethersproject/providers';
 import snapshot from '@snapshot-labs/snapshot.js';
 import {
-    Tooltip, Box, HStack, VStack, useBreakpointValue, Button
+    Tooltip, Box, HStack, VStack, useBreakpointValue, Button,
+    Input
 } from "@chakra-ui/react";
 import { FaImage, FaSave } from "react-icons/fa";
 import MDEditor, { commands } from '@uiw/react-md-editor';
@@ -76,12 +77,12 @@ export interface ProposalData {
 
 const hub = 'https://hub.snapshot.org';
 const client = new snapshot.Client712(hub);
-
 const CreateProposalModal = () => {
     const [value, setValue] = useState('');
     const [spaceInfo, setSpaceInfo] = useState<SpaceInfo | null>(null);
     const [currentBlockNumber, setCurrentBlockNumber] = useState(0);
     const web3 = useMemo(() => new Web3Provider(window.ethereum), []);
+    const [title, setTitle] = useState('');
     const extraCommands = [
         {
             name: 'uploadImage',
@@ -154,7 +155,7 @@ const CreateProposalModal = () => {
             const proposalData = {
                 space: "skatehive.eth",
                 type: "single-choice",
-                title: 'Dynamic Proposal',
+                title: title,
                 body: value,
                 discussion: '',
                 choices: ['For', 'Against'],
@@ -162,7 +163,7 @@ const CreateProposalModal = () => {
                 end: end,
                 snapshot: currentBlockNumber,
                 plugins: JSON.stringify({}),
-                app: 'YourAppIdentifier'
+                app: 'Skatehive App'
             };
 
             console.log("Submitting proposal with data:", JSON.stringify(proposalData, null, 2));
@@ -186,6 +187,11 @@ const CreateProposalModal = () => {
                     <Box
                         width="100%" // Make full width on mobile
                     >
+                        <Input
+                            placeholder="Title"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                        />
                         <MDEditor
                             value={value}
                             onChange={(value) => setValue(value || "")}

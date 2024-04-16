@@ -13,6 +13,7 @@ import {
   Stack,
   Text,
   VStack,
+  Flex,
 } from "@chakra-ui/react"
 import { normalize } from "path"
 import React, { useEffect, useState } from "react"
@@ -28,6 +29,52 @@ import fetchProposals, { Proposal } from "./utils/fetchProposals"
 import { getENSavatar } from "./utils/getENSavatar"
 import { getENSnamefromAddress } from "./utils/getENSfromAddress"
 import voteOnProposal from "./utils/voteOnProposal"
+import ProposalListItem from "./utils/components/proposalListItem"
+
+
+
+import {
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+} from "@chakra-ui/react"
+
+interface VoteConfirmationModalProps {
+  isOpen: boolean
+  onClose: () => void
+  onConfirm: () => void
+}
+
+const VoteConfirmationModal: React.FC<VoteConfirmationModalProps> = ({ isOpen, onClose, onConfirm }) => {
+  return (
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Confirm Vote</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <Text>
+            Are you sure you want to vote on this proposal? This action cannot
+            be undone.
+          </Text>
+        </ModalBody>
+        <ModalFooter>
+          <Button colorScheme="red" mr={3} onClick={onClose}>
+            Cancel
+          </Button>
+          <Button variant="ghost" onClick={onConfirm}>
+            Confirm
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  )
+}
+
 
 const DaoPage = () => {
   const [proposals, setProposals] = useState<Proposal[]>([])
@@ -36,12 +83,10 @@ const DaoPage = () => {
   const [mainProposal, setMainProposal] = useState<Proposal | null>(null)
   const ethAccount = useAccount()
   const [avatar, setAvatar] = useState<string | null>(null)
-  const [connectedUserEnsName, setConnectedUserEnsName] = useState<
-    string | null
-  >(null)
+  const [connectedUserEnsName, setConnectedUserEnsName] = useState<string | null>(null)
   const [confirmationModalOpen, setConfirmationModalOpen] = useState(false)
   const [ProposerName, setProposerName] = useState<string | null>(null)
-  const [proposerAvatar, setProposerAvatar] = useState<string | null>(null)
+  const [isCreateProposalModalOpen, setIsCreateProposalModalOpen] = useState(false)
 
   const ensProposerName = useEnsName({
     address: (ProposerName || "0x0") as `0x${string}`,
@@ -52,17 +97,6 @@ const DaoPage = () => {
     chainId: mainnet.id,
   })
 
-  console.log("ens", ProposerName, ensProposerName.data)
-
-  const [isCreateProposalModalOpen, setIsCreateProposalModalOpen] =
-    useState(false)
-
-  const result = useEnsName({
-    address: "0x41CB654D1F47913ACAB158a8199191D160DAbe4A",
-    chainId: mainnet.id,
-  })
-  //   console.log("ens", { result })
-
   useEffect(() => {
     setMainProposal(proposals[0])
     console.log(proposals)
@@ -70,20 +104,17 @@ const DaoPage = () => {
 
   const getConnectedUserAvatar = async (address: string) => {
     try {
-      // Fetch ENS name and avatar in parallel
       const [connectedUserEnsName, ensAvatar] = await Promise.all([
         getENSnamefromAddress(address),
         getENSavatar(address),
       ])
 
-      // Update state with fetched data
       setConnectedUserEnsName(connectedUserEnsName)
       setAvatar(ensAvatar)
 
       return ensAvatar
     } catch (error) {
       console.error("Failed to fetch ENS data:", error)
-      // Handle errors or set default values as necessary
       setConnectedUserEnsName("")
       setAvatar(null)
       return null
@@ -101,13 +132,7 @@ const DaoPage = () => {
     }
   }, [ethAccount.address])
 
-  const formatEthAddress = (address: string) => {
-    // if address is not end with .eth
-    if (!address.endsWith(".eth")) {
-      return address
-    }
-    return `${address.slice(0, 6)}...${address.slice(-4)}`
-  }
+
   useEffect(() => {
     fetchProposals({ setProposals, setLoadingProposals, setLoadingSummaries })
   }, [])
@@ -127,11 +152,9 @@ const DaoPage = () => {
       totalVotes,
     }
   }
-
   const handleCreateProposalButton = () => {
     setIsCreateProposalModalOpen(!isCreateProposalModalOpen)
   }
-
   return (
     <Box width={"100%"}>
       <Center>
@@ -142,8 +165,8 @@ const DaoPage = () => {
       <Box
         bg="black"
         p={4}
-        border="0.6px solid limegreen"
-        borderRadius="none"
+        border="0.6px solid white"
+        borderRadius="10px"
         width={"100%"}
       >
         <Grid templateColumns="1fr 2fr 1fr" gap={6} alignItems="center">
@@ -167,7 +190,7 @@ const DaoPage = () => {
             alignItems="flex-end"
           >
             <Button
-              colorScheme="green"
+              colorScheme="yellow"
               variant="outline"
               onClick={() => handleCreateProposalButton()}
             >
@@ -213,6 +236,35 @@ const DaoPage = () => {
               border="0.6px solid limegreen"
               borderRadius="none"
             >
+
+              <Text fontSize={"28px"}> {mainProposal?.title}</Text>
+            </Box>
+            <Box
+              bg="black"
+              p={0}
+              border="0.6px solid limegreen"
+              borderRadius="none"
+            >
+              <HStack>
+                {ensProposerAvatar.data ? (
+                  <Image boxSize={"46px"} src={ensProposerAvatar.data} />
+                ) : (
+                  <Image boxSize={"46px"} src={"/pepenation.gif"} />
+                )}
+
+                <Text>
+                  {/* {(ProposerName ?? "") ||
+                      formatEthAddress(mainProposal?.author)} */}
+                  {ensProposerName.data || ProposerName}
+                </Text>
+              </HStack>
+            </Box>
+            <Box
+              bg="black"
+              p={4}
+              border="0.6px solid limegreen"
+              borderRadius="none"
+            >
               <Center>
                 <Badge fontSize="28px" color="limegreen">
                   Score
@@ -236,6 +288,28 @@ const DaoPage = () => {
               >
                 {mainProposal?.scores[1] ?? 0}
               </Progress>
+              {mainProposal?.author && (
+                <>
+
+                  <HStack justifyContent="space-between">
+                    <Text>
+                      Start:{" "}
+                      <Badge>
+                        {new Date(
+                          mainProposal?.start * 1000
+                        ).toLocaleDateString()}
+                      </Badge>
+                    </Text>
+                    <Text>
+                      End:
+                      <Badge>
+                        {" "}
+                        {new Date(mainProposal.end * 1000).toLocaleDateString()}
+                      </Badge>
+                    </Text>
+                  </HStack>
+                </>
+              )}
               <br />
               {mainProposal && mainProposal.state !== "active" && (
                 <>
@@ -243,7 +317,7 @@ const DaoPage = () => {
                     <Text fontSize="14px" color="limegreen">
                       Quorum:{" "}
                       {mainProposal &&
-                      checkProposalOutcome(mainProposal).quorumReached
+                        checkProposalOutcome(mainProposal).quorumReached
                         ? "Reached"
                         : "Not Reached"}{" "}
                       (
@@ -259,165 +333,45 @@ const DaoPage = () => {
                   </HStack>
                 </>
               )}
+              <Flex
+                justifyContent="space-between"
+                alignItems="center"
+                flexDirection="row"
+              >
+
+                {mainProposal && mainProposal.state === "active" && (
+                  mainProposal.choices.map((choice, choiceIndex) => (
+                    <Button
+                      colorScheme={choice.toUpperCase() == "FOR" ? "green" : "red"}
+                      variant="outline"
+                      key={choiceIndex}
+                      onClick={() =>
+                        voteOnProposal(ethAccount, mainProposal.id, choiceIndex + 1)
+                      }
+                    >
+                      {choice.toUpperCase()}
+                    </Button>
+                  ))
+                )}
+              </Flex>
             </Box>
 
-            <Text fontSize="24px" color="limegreen">
-              Proposer
-            </Text>
-            {mainProposal?.author && (
-              <>
-                <VStack>
-                  {ensProposerAvatar.data ? (
-                    <Image boxSize={"86px"} src={ensProposerAvatar.data} />
-                  ) : (
-                    <Image boxSize={"86px"} src={"/pepenation.gif"} />
-                  )}
 
-                  <Text>
-                    {/* {(ProposerName ?? "") ||
-                      formatEthAddress(mainProposal?.author)} */}
-                    {ensProposerName.data || ProposerName}
-                  </Text>
-                </VStack>
-                <Text fontSize={"28px"}> {mainProposal?.title}</Text>
-                <VStack justifyContent="flex-start">
-                  <Text>
-                    Start:{" "}
-                    <Badge>
-                      {new Date(
-                        mainProposal?.start * 1000
-                      ).toLocaleDateString()}
-                    </Badge>
-                  </Text>
-                  <Text>
-                    End:
-                    <Badge>
-                      {" "}
-                      {new Date(mainProposal.end * 1000).toLocaleDateString()}
-                    </Badge>
-                  </Text>
-                </VStack>
-              </>
-            )}
-
-            <ReactMarkdown
-              components={MarkdownRenderers}
-              rehypePlugins={[rehypeRaw, rehypeSanitize]}
-              remarkPlugins={[remarkGfm]}
+            <Box
+              mt={2}
             >
-              {mainProposal?.body ?? ""}
-            </ReactMarkdown>
+
+              <ReactMarkdown
+                components={MarkdownRenderers}
+                rehypePlugins={[rehypeRaw, rehypeSanitize]}
+                remarkPlugins={[remarkGfm]}
+              >
+                {mainProposal?.body ?? ""}
+              </ReactMarkdown>
+            </Box>
           </Box>
         </HStack>
       )}
-    </Box>
-  )
-}
-
-interface ProposerAvatarProps {
-  authorAddress: string
-}
-
-const ProposerAvatar: React.FC<ProposerAvatarProps> = ({ authorAddress }) => {
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
-
-  useEffect(() => {
-    const loadAvatar = async () => {
-      try {
-        const url = await getENSavatar(authorAddress)
-        setAvatarUrl(url || "/infinitypepe.gif") // Ensure fallback to a default avatar if none is found
-      } catch (error) {
-        console.error(
-          "Failed to fetch avatar for address:",
-          authorAddress,
-          error
-        )
-        setAvatarUrl("infinitypepe.gif") // Use default avatar on error
-      }
-    }
-
-    if (authorAddress) {
-      loadAvatar()
-    }
-  }, [authorAddress])
-
-  return (
-    <Avatar
-      borderRadius={5}
-      boxSize={"22px"}
-      src={avatarUrl || "/infinitypepe.gif"}
-      name={authorAddress}
-    />
-  )
-}
-
-function ProposalListItem({
-  proposal,
-  setMainProposal,
-  setProposerName,
-}: {
-  proposal: Proposal
-  setMainProposal: (proposal: Proposal) => void
-  setProposerName: (author: string) => void
-}) {
-  const handleSelectProposal = (proposal: Proposal) => {
-    setMainProposal(proposal)
-    setProposerName(proposal.author)
-  }
-  const result = useEnsName({
-    address: proposal.author as `0x${string}`,
-    chainId: mainnet.id,
-  })
-  const resultAvatar = useEnsAvatar({
-    name: normalize(result.data || ""),
-    chainId: mainnet.id,
-  })
-  const ethAccount = useAccount()
-  // console.log("ens", result.data)
-  // console.log("avatar", resultAvatar)
-  return (
-    <Box
-      cursor={"pointer"}
-      onClick={() => handleSelectProposal(proposal)}
-      key={proposal.id}
-      bg="black"
-      p={4}
-      border="0.6px solid limegreen"
-      borderRadius="none"
-    >
-      <HStack justifyContent={"flex-start"}>
-        <Text>{proposal.title}</Text>
-        <Badge> {proposal.state} </Badge>
-      </HStack>
-      <HStack ml={2}>
-        <Center>
-          <ProposerAvatar authorAddress={proposal.author} />
-          <Text ml={2}> {result.data || proposal.author}</Text>
-        </Center>
-      </HStack>
-
-      <Text
-        border={"0.6px solid darkgrey"}
-        p={2}
-        mt={2}
-        mb={2}
-        borderRadius={5}
-        fontSize={"12px"}
-      >
-        Summary: {decodeURIComponent(proposal.summary ?? "")}
-      </Text>
-      {proposal.choices.map((choice, choiceIndex) => (
-        <Button
-          colorScheme={choice.toUpperCase() == "FOR" ? "green" : "red"}
-          variant="outline"
-          key={choiceIndex}
-          onClick={() =>
-            voteOnProposal(ethAccount, proposal.id, choiceIndex + 1)
-          }
-        >
-          {choice.toUpperCase()}
-        </Button>
-      ))}
     </Box>
   )
 }
