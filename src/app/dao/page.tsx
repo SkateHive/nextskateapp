@@ -46,6 +46,10 @@ const DaoPage = () => {
     address: (ProposerName || "0x0") as `0x${string}`,
     chainId: mainnet.id,
   })
+  const ensProposerAvatar = useEnsAvatar({
+    name: normalize(ensProposerName.data || ""),
+    chainId: mainnet.id,
+  })
 
   console.log("ens", ProposerName, ensProposerName.data)
 
@@ -262,7 +266,11 @@ const DaoPage = () => {
             {mainProposal?.author && (
               <>
                 <VStack>
-                  <Image boxSize={"86px"} src={"/pepenation.gif"} />
+                  {ensProposerAvatar.data ? (
+                    <Image boxSize={"86px"} src={ensProposerAvatar.data} />
+                  ) : (
+                    <Image boxSize={"86px"} src={"/pepenation.gif"} />
+                  )}
 
                   <Text>
                     {/* {(ProposerName ?? "") ||
