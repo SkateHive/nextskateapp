@@ -130,7 +130,9 @@ const DaoPage = () => {
     }
 
     return (
-        <Box>
+        <Box
+            width={"100%"}
+        >
             <Center>
                 <Text fontSize="28px" color="limegreen">DAO</Text>
             </Center>
@@ -139,6 +141,7 @@ const DaoPage = () => {
                 p={4}
                 border="0.6px solid limegreen"
                 borderRadius="none"
+                width={"100%"}
             >
                 <Grid
                     templateColumns="1fr 2fr 1fr"
@@ -156,7 +159,7 @@ const DaoPage = () => {
                     </GridItem>
                     <GridItem colSpan={1} display="flex" flexDirection="column" alignItems="flex-end">
                         <Button colorScheme="green" variant="outline" onClick={() => handleCreateProposalButton()}>
-                            Create Proposal
+                            {isCreateProposalModalOpen ? 'Go Back' : 'Create Proposal'}
                         </Button>
                     </GridItem>
                 </Grid>
@@ -168,6 +171,8 @@ const DaoPage = () => {
 
                 <HStack
                     align={"flex-start"}
+                    mt={2}
+
                 >
                     <Box width={"50%"}>
                         <Stack>
