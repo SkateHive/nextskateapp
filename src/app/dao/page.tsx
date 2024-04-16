@@ -41,6 +41,14 @@ const DaoPage = () => {
   const [confirmationModalOpen, setConfirmationModalOpen] = useState(false)
   const [ProposerName, setProposerName] = useState<string | null>(null)
   const [proposerAvatar, setProposerAvatar] = useState<string | null>(null)
+
+  const ensProposerName = useEnsName({
+    address: (ProposerName || "0x0") as `0x${string}`,
+    chainId: mainnet.id,
+  })
+
+  console.log("ens", ProposerName, ensProposerName.data)
+
   const [isCreateProposalModalOpen, setIsCreateProposalModalOpen] =
     useState(false)
 
@@ -48,7 +56,7 @@ const DaoPage = () => {
     address: "0x41CB654D1F47913ACAB158a8199191D160DAbe4A",
     chainId: mainnet.id,
   })
-  console.log("ens", { result })
+  //   console.log("ens", { result })
 
   useEffect(() => {
     setMainProposal(proposals[0])
@@ -87,10 +95,7 @@ const DaoPage = () => {
         })
     }
   }, [ethAccount.address])
-  const handleSelectProposal = (proposal: Proposal) => {
-    setMainProposal(proposal)
-    setProposerName(proposal.author)
-  }
+
   const formatEthAddress = (address: string) => {
     // if address is not end with .eth
     if (!address.endsWith(".eth")) {
@@ -180,7 +185,11 @@ const DaoPage = () => {
                 </Center>
               ) : (
                 proposals.map((proposal, i) => (
-                  <ProposalListItem proposal={proposal} />
+                  <ProposalListItem
+                    setMainProposal={setMainProposal}
+                    setProposerName={setProposerName}
+                    proposal={proposal}
+                  />
                 ))
               )}
             </Stack>
@@ -256,8 +265,9 @@ const DaoPage = () => {
                   <Image boxSize={"86px"} src={"/pepenation.gif"} />
 
                   <Text>
-                    {(ProposerName ?? "") ||
-                      formatEthAddress(mainProposal?.author)}
+                    {/* {(ProposerName ?? "") ||
+                      formatEthAddress(mainProposal?.author)} */}
+                    {ensProposerName.data || ProposerName}
                   </Text>
                 </VStack>
                 <Text fontSize={"28px"}> {mainProposal?.title}</Text>
@@ -332,22 +342,33 @@ const ProposerAvatar: React.FC<ProposerAvatarProps> = ({ authorAddress }) => {
   )
 }
 
-function ProposalListItem({ proposal }: { proposal: Proposal }) {
-const result = useEnsName({
+function ProposalListItem({
+  proposal,
+  setMainProposal,
+  setProposerName,
+}: {
+  proposal: Proposal
+  setMainProposal: (proposal: Proposal) => void
+  setProposerName: (author: string) => void
+}) {
+  const handleSelectProposal = (proposal: Proposal) => {
+    setMainProposal(proposal)
+    setProposerName(proposal.author)
+  }
+  const result = useEnsName({
     address: proposal.author as `0x${string}`,
     chainId: mainnet.id,
-    })
-    const resultAvatar = useEnsAvatar({
-        name: normalize(result.data || ""),
-        chainId: mainnet.id,
-    })    
-    console.log("ens", result.data)
-    console.log("avatar", resultAvatar)
+  })
+  const resultAvatar = useEnsAvatar({
+    name: normalize(result.data || ""),
+    chainId: mainnet.id,
+  })
+  // console.log("ens", result.data)
+  // console.log("avatar", resultAvatar)
   return (
-    // <Box cursor={"pointer"} onClick={() => handleSelectProposal(proposal)} key={proposal.id} bg="black" p={4} border="0.6px solid limegreen" borderRadius="none">
     <Box
       cursor={"pointer"}
-      onClick={() => {}}
+      onClick={() => handleSelectProposal(proposal)}
       key={proposal.id}
       bg="black"
       p={4}
@@ -380,12 +401,10 @@ const result = useEnsName({
           colorScheme={choice.toUpperCase() == "FOR" ? "green" : "red"}
           variant="outline"
           key={choiceIndex}
-        //   onClick={() =>
-        //     voteOnProposal(ethAccount, proposal.id, choiceIndex + 1)
-        //   }
-          onClick={() =>
-            {}
-          }
+          //   onClick={() =>
+          //     voteOnProposal(ethAccount, proposal.id, choiceIndex + 1)
+          //   }
+          onClick={() => {}}
         >
           {choice.toUpperCase()}
         </Button>
