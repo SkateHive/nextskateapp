@@ -1,18 +1,18 @@
 "use client"
 import {
-    Avatar,
-    Badge,
-    Box,
-    Button,
-    Center,
-    Grid,
-    GridItem,
-    HStack,
-    Image,
-    Progress,
-    Stack,
-    Text,
-    VStack,
+  Avatar,
+  Badge,
+  Box,
+  Button,
+  Center,
+  Grid,
+  GridItem,
+  HStack,
+  Image,
+  Progress,
+  Stack,
+  Text,
+  VStack,
 } from "@chakra-ui/react"
 import { normalize } from "path"
 import React, { useEffect, useState } from "react"
@@ -27,6 +27,7 @@ import CreateProposalModal from "./utils/components/createProposalModal"
 import fetchProposals, { Proposal } from "./utils/fetchProposals"
 import { getENSavatar } from "./utils/getENSavatar"
 import { getENSnamefromAddress } from "./utils/getENSfromAddress"
+import voteOnProposal from "./utils/voteOnProposal"
 
 const DaoPage = () => {
   const [proposals, setProposals] = useState<Proposal[]>([])
@@ -371,6 +372,7 @@ function ProposalListItem({
     name: normalize(result.data || ""),
     chainId: mainnet.id,
   })
+  const ethAccount = useAccount()
   // console.log("ens", result.data)
   // console.log("avatar", resultAvatar)
   return (
@@ -409,10 +411,9 @@ function ProposalListItem({
           colorScheme={choice.toUpperCase() == "FOR" ? "green" : "red"}
           variant="outline"
           key={choiceIndex}
-          //   onClick={() =>
-          //     voteOnProposal(ethAccount, proposal.id, choiceIndex + 1)
-          //   }
-          onClick={() => {}}
+          onClick={() =>
+            voteOnProposal(ethAccount, proposal.id, choiceIndex + 1)
+          }
         >
           {choice.toUpperCase()}
         </Button>
