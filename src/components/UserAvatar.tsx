@@ -28,7 +28,7 @@ export default function UserAvatar({ username }: { username: string }) {
         width="40px"
         bg="gray.200"
         loading="lazy"
-        borderRadius={0}
+        borderRadius={5}
       />
     </Link>
   )

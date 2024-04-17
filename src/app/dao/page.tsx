@@ -103,7 +103,8 @@ const DaoPage = () => {
   }, [])
   useEffect(() => {
     console.log(proposals)
-  }, [proposals])
+    extractPermlink(proposals[0])
+  }, [proposals, proposals[0]])
 
   const checkProposalOutcome = (proposal: Proposal) => {
     const totalVotes = proposal.scores.reduce((acc, score) => acc + score, 0)
@@ -119,6 +120,18 @@ const DaoPage = () => {
   }
   const handleCreateProposalButton = () => {
     setIsCreateProposalModalOpen(!isCreateProposalModalOpen)
+  }
+
+  // every proposal comes with a hiveuser and a permlink in its body , I want to extract the permlink and use it to fetch the post from the hive blockchain
+  const extractPermlink = (proposal: Proposal) => {
+    if (proposal) {
+      // const body = proposal["body"]
+      // const permlink = body.split(" ")[body.split(" ").length - 1]
+      console.log(proposal.body)
+      const body = proposal.body
+      const permlink = body.split(" ")[body.split(" ").length - 1]
+      console.log(permlink)
+    }
   }
   return (
     <Box width={"100%"}>

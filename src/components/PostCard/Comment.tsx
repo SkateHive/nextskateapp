@@ -12,8 +12,8 @@ interface PostCommentProps {
 
 export default function PostComment({ comment }: PostCommentProps) {
   return (
-    <Flex gap={2} direction={"column"}  >
-      <Flex gap={1} alignItems="center" border={"1px solid white"} mb={-2} >
+    <Flex gap={2} direction={"column"} mt={3} >
+      <Flex gap={1} alignItems="center" border={"1px solid white"} mb={-2} borderTopRadius={10} >
         <UserAvatar username={comment.author} />
 
         <Text fontSize="14px" as="b">
@@ -26,7 +26,7 @@ export default function PostComment({ comment }: PostCommentProps) {
           {moment.utc(comment.last_update).fromNow()}
         </Text>
       </Flex>
-      <Flex direction={"column"} border={"1px solid"} p={5}>
+      <Flex direction={"column"} border={"1px solid"} p={5} bg={"#201d21"} >
 
         <Markdown content={comment.body} />
       </Flex>
