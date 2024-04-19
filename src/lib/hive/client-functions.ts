@@ -1,5 +1,5 @@
 'use client';
-import { KeychainRequestResponse, KeychainSDK, Post, Vote, KeychainKeyTypes, Broadcast } from "keychain-sdk"
+import { KeychainRequestResponse, KeychainSDK, Post, Vote, KeychainKeyTypes, Broadcast, Login } from "keychain-sdk"
 import { Client, Operation, PrivateKey } from "@hiveio/dhive"
 import CryptoJS from 'crypto-js';
 import { KeychainTransactionResult } from "keychain-sdk";
@@ -75,5 +75,29 @@ export async function commentWithKeychain(formParamsAsObject: any): Promise<Hive
       publicKey: 'deu merda'
     }
 
+  }
+}
+
+export async function loginWithKeychain(username: string) {
+  try
+  {
+    const memo = `${username} signed up with ${process.env.NEXT_PUBLIC_WEBSITE_URL} app at ${Date.now()}`
+    const keychain = new KeychainSDK(window);
+    undefined
+    const formParamsAsObject = {
+     "data": {
+          "username": username,
+          "message": memo,
+          "method" : KeychainKeyTypes.posting,
+          "title": "Login"
+     }
+}
+    
+    const login = await keychain
+         .login(
+              formParamsAsObject.data as Login);
+    console.log({ login });
+  } catch (error) {
+    console.log({ error });
   }
 }

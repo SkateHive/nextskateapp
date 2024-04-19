@@ -1,12 +1,15 @@
-import UserModel from "@/lib/models/user"
+//import UserModel from "@/lib/models/user"
 import { getWebsiteURL } from "@/lib/utils"
 import { Link } from "@chakra-ui/next-js"
 import { Avatar } from "@chakra-ui/react"
-import { useEffect, useState } from "react"
+//import { useEffect, useState } from "react"
+import { HiveAccount } from "@/lib/models/user"
 
-export default function UserAvatar({ username }: { username: string }) {
+export default function UserAvatar({ hiveAccount } : { hiveAccount : HiveAccount } ) {
+
+  /*
   const [authorData, setAuthorData] = useState<UserModel>({} as UserModel)
-  const postAvatar = authorData.metadata?.profile?.profile_image
+
 
   useEffect(() => {
     const fetchAuthor = async () => {
@@ -15,18 +18,22 @@ export default function UserAvatar({ username }: { username: string }) {
     }
     fetchAuthor()
   }, [username])
+  */
+  const postAvatar = hiveAccount.metadata?.profile?.profile_image
+  console.log(postAvatar, "here")
+  console.log(hiveAccount)
 
   return (
-    <Link href={`${getWebsiteURL()}/profile/${username}`}>
+    <Link href={`${getWebsiteURL()}/profile/${hiveAccount.name}`}>
       <Avatar
-        name={username}
+        name={hiveAccount.name}
         src={
           postAvatar ??
-          `https://images.ecency.com/webp/u/${username}/avatar/small`
+          `https://images.ecency.com/webp/u/${hiveAccount.name}/avatar/small`
         }
         height="40px"
         width="40px"
-        bg="gray.200"
+        bg="transparent"
         loading="lazy"
         borderRadius={5}
       />

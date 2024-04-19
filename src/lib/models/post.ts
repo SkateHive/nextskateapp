@@ -1,6 +1,7 @@
 import { Asset, Discussion } from "@hiveio/dhive"
 import { extractFirstLink, getWebsiteURL } from "../utils"
-import UserModel from "./user"
+import { HiveAccount } from "./user"
+// import UserModel from "./user"
 
 export interface PostProps {
   post_id: number
@@ -33,7 +34,7 @@ export default class PostModel {
   pending_payout_value: Asset | string
   active_votes: PostActiveVotes[]
   private _metadata: PostMetadata | null = null
-  private _author_details: UserModel | null = null
+  private _author_details: HiveAccount | null = null
 
   constructor(post?: PostProps) {
     this.post_id = post?.post_id || 0
@@ -98,11 +99,13 @@ export default class PostModel {
     }
   }
 
+  /*
   public async authorDetails(): Promise<UserModel> {
     if (!this._author_details)
       this._author_details = await UserModel.getNewFromUsername(this.author)
     return this._author_details
   }
+  */
 
   metadata(): PostMetadata {
     if (!this._metadata) this._metadata = JSON.parse(this.json_metadata)

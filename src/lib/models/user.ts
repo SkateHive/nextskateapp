@@ -1,5 +1,16 @@
-import { getUserFromUsername } from "../services/userService"
+//import { getUserFromUsername } from "../services/userService"
 
+import { Account } from "@hiveio/dhive"
+
+interface HiveAccountMetadataProps {
+  [key: string]: any
+}
+export interface HiveAccount extends Account {
+
+  metadata?: HiveAccountMetadataProps
+}
+
+/*
 export interface UserProps {
   id: number
   name: string
@@ -30,7 +41,6 @@ export default class UserModel {
       posting_json_metadata: this.posting_json_metadata,
     }
   }
-
   static async getNewFromUsername(username: string) {
     const userData = await getUserFromUsername(username)
     return new UserModel(userData)
@@ -47,3 +57,4 @@ interface UserProfile {
   cover_image: string
   about: string
 }
+*/

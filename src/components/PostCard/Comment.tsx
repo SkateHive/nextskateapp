@@ -5,16 +5,24 @@ import UserAvatar from "../UserAvatar"
 import { useComments } from '@/hooks/comments';
 import { Comment } from '@/hooks/comments';
 import CommentsSection from "@/components/PostModal/commentSection"
+import useHiveAccount from "@/hooks/useHiveAccount";
 
 interface PostCommentProps {
   comment: Comment
 }
 
 export default function PostComment({ comment }: PostCommentProps) {
+
+  const { hiveAccount, isLoading } = useHiveAccount(comment.author)
+  if (isLoading || !hiveAccount) return <div>Loading...</div>
+
+  console.log(hiveAccount, "here")
+
+
   return (
-    <Flex gap={2} direction={"column"} mt={3} >
-      <Flex gap={1} alignItems="center" border={"1px solid white"} mb={-2} borderTopRadius={10} >
-        <UserAvatar username={comment.author} />
+    <Flex gap={2} direction={"column"}  >
+      <Flex gap={1} alignItems="center" border={"1px solid white"} mb={-2} >
+        <UserAvatar hiveAccount={hiveAccount} />
 
         <Text fontSize="14px" as="b">
           {comment.author}

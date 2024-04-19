@@ -1,6 +1,6 @@
 "use client"
 
-import { usePosts } from "@/hooks/usePosts"
+import usePosts from "@/hooks/usePosts"
 import PostModel from "@/lib/models/post"
 import { Link } from "@chakra-ui/next-js"
 import { Box, Button, ButtonGroup, Flex, Grid, HStack } from "@chakra-ui/react"
@@ -16,7 +16,8 @@ const postTypeName = {
 }
 
 export default function Feed() {
-  const { posts, error, isLoading, postType, setPostType } = usePosts()
+  const SKATEHIVE_TAG = "hive-173115"
+  const { posts, error, isLoading, queryCategory, setQueryCategory, setDiscussionQuery } = usePosts("trending", {tag: SKATEHIVE_TAG, limit: 100})
   const [visiblePosts, setVisiblePosts] = useState(20)
   const hiveUser = useHiveUser()
   if (error) return "Error"
@@ -47,14 +48,14 @@ export default function Feed() {
       <HStack justifyContent="center" marginBottom={"12px"}>
         <ButtonGroup size="sm" isAttached variant="outline" colorScheme="green">
           <Button
-            onClick={() => setPostType("trending")}
-            isActive={postType === "trending"}
+            onClick={() => setQueryCategory("trending")}
+            isActive={queryCategory === "trending"}
           >
             Trending
           </Button>
           <Button
-            onClick={() => setPostType("created")}
-            isActive={postType === "created"}
+            onClick={() => setQueryCategory("created")}
+            isActive={queryCategory === "created"}
           >
             Most Recent
           </Button>
@@ -62,8 +63,8 @@ export default function Feed() {
           {hiveUser.hiveUser !== null && (
 
             <Button
-              onClick={() => setPostType("created")}
-              isActive={postType === "created"}
+              onClick={() => setQueryCategory("created")}
+              isActive={queryCategory === "created"}
             >
               My Crew
             </Button>
@@ -106,7 +107,7 @@ export default function Feed() {
             posts.slice(0, visiblePosts).map((post, i) => {
               return (
                 <Post
-                  key={`${postType}-${post.url}`}
+                  key={`${queryCategory}-${post.url}`}
                   postData={PostModel.newFromDiscussion(post)}
                 />
               )

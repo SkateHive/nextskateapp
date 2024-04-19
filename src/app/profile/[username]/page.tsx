@@ -1,11 +1,14 @@
+'use client'
 import Post, { PostComponentProps } from "@/components/PostCard"
 import ProfileHeader from "@/components/ProfileHeader"
 import HiveClient from "@/lib/hiveclient"
 import PostModel from "@/lib/models/post"
-import { getUserFromUsername } from "@/lib/services/userService"
+// import { getUserFromUsername } from "@/lib/services/userService"
 import { Box, Grid } from "@chakra-ui/react" // Import Grid and Box for layout
 import ProfileTabs from "./profileTabs"
 const hiveClient = HiveClient
+import useHiveAccount from "@/hooks/useHiveAccount"
+import { HiveAccount } from "@/lib/models/user"
 
 async function getBlogFromUsername(
   username: string
@@ -32,11 +35,16 @@ interface ProfilePageProps {
 }
 
 export default async function ProfilePage({ params }: ProfilePageProps) {
-  const user = await getUserFromUsername(params.username)
+  //const user = await getUserFromUsername(params.username)
+  const { hiveAccount, isLoading } = useHiveAccount(params.username)
+
+  if (isLoading || !hiveAccount) return <div>Loading...</div>
+
   const posts = await getBlogFromUsername(params.username)
+
   return (
     <Box width="100%" minHeight="100vh">
-      <ProfileHeader userData={user} />
+      <ProfileHeader user={hiveAccount} />
       <ProfileTabs params={params} />
       <Grid
         templateColumns={{
