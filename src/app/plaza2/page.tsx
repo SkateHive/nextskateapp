@@ -79,7 +79,7 @@ const PlazaCommentSection = () => {
         <Box width={"100%"}>
             <Center>
                 <Text fontSize={"24px"} marginBottom={"12px"}>
-                    Comments
+                    Plaza
                 </Text>
             </Center>
             <Box  {...getRootProps()} m={5} >
@@ -104,7 +104,13 @@ const PlazaCommentSection = () => {
                     }}
                 />
             </Box>
-            <CommentsSection comments={comments} />
+            <Center>
+                <Box
+                    maxW={["100%", "50%"]} // This will make the width 100% on mobile and 50% on larger screens
+                >
+                    <CommentsSection comments={comments} />
+                </Box>
+            </Center>
         </Box>
     );
 }
