@@ -15,26 +15,9 @@ interface MetadataProps {
 }
 
 // Define the Account type
-export interface HiveAccount {
-  name: string
-  reward_hbd_balance: string | dhive.Asset
-  reward_hive_balance: string | dhive.Asset
-  reward_vesting_balance: string | dhive.Asset
-  reward_vesting_hive: string | dhive.Asset
-  owner: dhive.Authority
-  active: dhive.Authority
-  posting: dhive.Authority
-  posting_json_metadata: string
-  json_metadata: string
-  memo_key: string
-  metadata?: MetadataProps
-  balance: string | dhive.Asset
-  savings_balance: string | dhive.Asset
-  savings_hbd_balance: string | dhive.Asset
-  vesting_shares: string | dhive.Asset
-  vesting_balance: string | dhive.Asset
-  witness_votes: string[]
+export interface HiveAccount extends dhive.Account {
 
+  metadata?: MetadataProps
 }
 
 export type AuthUser = {

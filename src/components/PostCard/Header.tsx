@@ -1,5 +1,5 @@
 import { usePostContext } from "@/contexts/PostContext"
-import UserModel from "@/lib/models/user"
+//import UserModel from "@/lib/models/user"
 import { getWebsiteURL } from "@/lib/utils"
 import {
   Button,
@@ -24,6 +24,8 @@ import { useEffect, useState } from "react"
 import { FaDiscord } from "react-icons/fa"
 import PostModal from "../PostModal"
 import PostAvatar from "./Avatar"
+import { HiveAccount } from "@/lib/models/user"
+import useHiveAccount from "@/hooks/useHiveAccount"
 
 type Variant = "preview" | "open"
 interface HeaderInterface {
@@ -32,9 +34,8 @@ interface HeaderInterface {
 
 export default function Header({ variant = "preview" }: HeaderInterface) {
   const { post } = usePostContext()
-  const [authorData, setAuthorData] = useState<UserModel>({} as UserModel)
+  //const [authorData, setAuthorData] = useState<HiveAccount>({} as HiveAccount)
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const postAvatar = authorData.metadata?.profile?.profile_image
 
   const [isSmallerThan400] = useMediaQuery("(max-width: 400px)")
 
@@ -106,6 +107,7 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
     }
   }
 
+  /*
   useEffect(() => {
     const fetchAuthor = async () => {
       const author = await UserModel.getNewFromUsername(post.author)
@@ -113,6 +115,12 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
     }
     fetchAuthor()
   }, [post.author])
+  */
+
+  const { hiveAccount, isLoading } = useHiveAccount(post.author)
+  if (isLoading || !hiveAccount) return <div>Loading...</div>
+
+  const postAvatar = hiveAccount.metadata?.profile?.profile_image
 
   return (
     <CardHeader p={2} pb={0}>

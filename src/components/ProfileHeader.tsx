@@ -1,14 +1,15 @@
 "use client"
 
-import UserModel, { UserProps } from "@/lib/models/user"
+import { HiveAccount } from "@/lib/models/user"
 import { Avatar, HStack, Image, Text, VStack } from "@chakra-ui/react"
+//import { getUserAccount } from "@/lib/hive/client-functions"
 
 interface ProfileProps {
-  userData: UserProps
+  user: HiveAccount
 }
 
-export default function ProfileHeader({ userData }: ProfileProps) {
-  const user = new UserModel(userData)
+export default function ProfileHeader( { user } : ProfileProps) {
+  //const user = new UserModel(userData)
 
   return (
     <VStack align={"start"}>

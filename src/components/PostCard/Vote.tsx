@@ -1,6 +1,6 @@
 import { usePostContext } from "@/contexts/PostContext"
 import { useHiveUser } from "@/contexts/UserContext"
-import { SWR_POSTS_TAG } from "@/hooks/usePosts"
+//import { SWR_POSTS_TAG } from "@/hooks/usePosts"
 import { vote } from "@/lib/hive/client-functions"
 import { voteWithPrivateKey } from "@/lib/hive/server-functions"
 import { Button, Text, Tooltip } from "@chakra-ui/react"
@@ -55,7 +55,7 @@ export default function Vote() {
 
     if (!isVoted) reward()
     setIsVoted((isVoted) => !isVoted)
-    mutate(SWR_POSTS_TAG)
+    //mutate(SWR_POSTS_TAG)
   }
 
   return (
