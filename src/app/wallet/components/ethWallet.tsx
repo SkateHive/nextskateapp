@@ -2,10 +2,8 @@
 import React from "react";
 import {
     Avatar,
-    Button,
     Divider,
     HStack,
-    Stack,
     Table,
     TableContainer,
     Tbody,
@@ -21,7 +19,6 @@ import {
     AccordionButton,
     AccordionPanel,
     AccordionIcon,
-    Link,
     Center,
     Image,
     Badge,
@@ -45,7 +42,6 @@ function EthBox() {
 
     const getPortfolio = async () => {
         const Portfolio = await axios.get(`https://pioneers.dev/api/v1/portfolio/${account.address}`);
-        console.log("Portfolio", Portfolio);
         setPortfolio(Portfolio.data);
     };
 
@@ -95,30 +91,30 @@ function EthBox() {
                 </HStack>
             </Center>
             <Divider mt={-6} color="limegreen" />
-
-            <HStack>
-                <Avatar boxSize={'48px'} src={String(userENSavatar)} bg="transparent">
-                    <AvatarBadge boxSize="1.25em" bg="transparent" border="none">
-                        <Image
-                            src={Types.blockchainDictionary[account.chain?.name.toLowerCase() ?? '']?.logo || 'logos/ethereum_logo.png'}
-                            boxSize="24px"
-                            alt={`${account.chain?.name} logo`}
-                        />
-                    </AvatarBadge>
-                </Avatar>
-                <Text>{userENSname || formatEthWallet(String(account.address))}</Text>
-            </HStack>
-            <Box ml={10} mr={10} border={"1px solid yellow"} bg="#201d21">
+            <Center>
+                <HStack minWidth={"100%"} border={"1px solid yellow"} p={5} borderTopRadius={10} mb={-6} justifyContent={"center"}>
+                    <Avatar boxSize={'48px'} src={String(userENSavatar)} bg="transparent">
+                        <AvatarBadge boxSize="1.25em" bg="transparent" border="none">
+                            <Image
+                                src={Types.blockchainDictionary[account.chain?.name.toLowerCase() ?? '']?.logo || 'logos/ethereum_logo.png'}
+                                boxSize="24px"
+                                alt={`${account.chain?.name} logo`}
+                            />
+                        </AvatarBadge>
+                    </Avatar>
+                    <Text>{userENSname || formatEthWallet(String(account.address))}</Text>
+                </HStack>
+            </Center>
+            <Box minWidth={"100%"} border={"1px solid yellow"} bg="#201d21">
 
                 <Center>
-                    <VStack>
+                    <VStack m={5}>
 
                         <Text>Tokens Value: {portfolio?.totalBalanceUsdTokens.toFixed(2)}</Text>
                         <Text>Net Worth: {portfolio?.totalNetWorth.toFixed(2)}</Text>
                     </VStack>
                 </Center>
             </Box>
-
             <Accordion allowMultiple>
                 {groupedTokens && Object.keys(groupedTokens).map((network) => (
                     <AccordionItem key={network}>
@@ -126,7 +122,6 @@ function EthBox() {
                             <Flex justifyContent="space-between" w="100%">
                                 <Box>
                                     <HStack flex="1" textAlign="left">
-
                                         <Image
                                             src={Types.blockchainDictionary[network]?.logo || '/path/to/default_logo.png'} // Fallback to a default logo if none is specified
                                             boxSize="24px"
@@ -137,10 +132,8 @@ function EthBox() {
                                             {/* Display network name with first letter capitalized */}
                                         </Text>
                                     </HStack>
-
                                 </Box>
                                 <Box>
-
                                     <Badge bg={Types.blockchainDictionary[network]?.color || 'black'}>
 
                                         <Text color={"black"} isTruncated flex="1" textAlign="right">

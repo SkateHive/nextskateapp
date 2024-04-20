@@ -103,8 +103,7 @@ const DaoPage = () => {
   }, [])
   useEffect(() => {
     console.log(proposals)
-    extractPermlink(proposals[0])
-  }, [proposals, proposals[0]])
+  }, [proposals])
 
   const checkProposalOutcome = (proposal: Proposal) => {
     const totalVotes = proposal.scores.reduce((acc, score) => acc + score, 0)

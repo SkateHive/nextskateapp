@@ -115,7 +115,7 @@ const CreateProposalConfirmationModal: React.FC<CreateProposalConfirmationModalP
             console.error("Failed to create proposal:", error);
             alert("Error creating proposal: " + error.message);
         }
-    }, [web3, proposalBody, connectedUserAddress, title, hiveUser]);
+    }, [web3, proposalBody, connectedUserAddress, title, hiveUser, fetchCurrentBlockNumber]);
 
     return (
         <>

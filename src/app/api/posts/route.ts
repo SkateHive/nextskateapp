@@ -16,6 +16,7 @@ async function getData(limit: number = 0): Promise<PostComponentProps[]> {
     return await Promise.all(
       response.map(async (postData) => {
         const post = PostModel.newFromDiscussion(postData)
+        //@ts-ignore
         const user = await post.authorDetails()
         return { postData: post.simplify(), userData: user.simplify() }
       })

@@ -93,15 +93,16 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
         }
 
     ];
-    useEffect(() => {
-        fetchSpaceInfo();
-        fetchCurrentBlockNumber();
-    }, [web3]);
-
     const fetchCurrentBlockNumber = async () => {
         const blockNumber = await web3.getBlockNumber();
         setCurrentBlockNumber(blockNumber);
     };
+    useEffect(() => {
+        fetchSpaceInfo();
+        fetchCurrentBlockNumber();
+    }, [web3, fetchCurrentBlockNumber]);
+
+
 
     const fetchSpaceInfo = async () => {
         try {

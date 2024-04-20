@@ -100,14 +100,14 @@ const Comment: React.FC<CommentProps> = ({ author, body, created, net_votes, per
 
                         <Button leftIcon={<span></span>} color={"white"} variant="outline" size="sm" onClick={handleVote}>
 
-                            <img
+                            <Image
                                 src='https://cdn.discordapp.com/emojis/1060351346416554136.gif?size=240&quality=lossless'
                                 alt="Vote"
-                                style={{
-                                    maxWidth: '24px',
-                                    maxHeight: '24px',
-                                    marginRight: '5px',
-                                }}
+
+                                maxWidth='24px'
+                                maxHeight='24px'
+                                marginRight='5px'
+
                             />
                             <p>{localNetVotes}</p>
 

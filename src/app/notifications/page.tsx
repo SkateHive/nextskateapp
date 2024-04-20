@@ -8,6 +8,7 @@ import { useCallback, useEffect, useState } from "react"
 
 import { NotificationContent } from "./components/NotificationContent"
 import { getData } from "./lib/useData"
+import { get } from "lodash"
 
 export interface Notification {
   msg: string
@@ -32,7 +33,7 @@ export default function NotificationsPage() {
 
   useEffect(() => {
     getNotifications()
-  }, [isLoading])
+  }, [isLoading, getNotifications])
 
   const show_load_button =
     notifications.length > 1 && notifications.length < 100

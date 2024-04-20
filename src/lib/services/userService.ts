@@ -1,6 +1,7 @@
 "use server"
 
 import HiveClient from "@/lib/hiveclient"
+//@ts-ignore
 import { UserProps } from "../models/user"
 const hiveClient = HiveClient
 
