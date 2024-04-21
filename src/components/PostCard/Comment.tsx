@@ -16,9 +16,6 @@ export default function PostComment({ comment }: PostCommentProps) {
   const { hiveAccount, isLoading } = useHiveAccount(comment.author)
   if (isLoading || !hiveAccount) return <div>Loading...</div>
 
-  console.log(hiveAccount, "here")
-
-
   return (
     <Flex gap={2} direction={"column"}  >
       <Flex gap={1} alignItems="center" border={"1px solid white"} mb={-2} >

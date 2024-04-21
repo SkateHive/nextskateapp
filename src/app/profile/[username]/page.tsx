@@ -4,12 +4,18 @@ import ProfileHeader from "@/components/ProfileHeader"
 import HiveClient from "@/lib/hiveclient"
 import PostModel from "@/lib/models/post"
 // import { getUserFromUsername } from "@/lib/services/userService"
-import { Box, Grid } from "@chakra-ui/react" // Import Grid and Box for layout
+import { Box, Grid, Flex } from "@chakra-ui/react" // Import Grid and Box for layout
 import ProfileTabs from "./profileTabs"
-const hiveClient = HiveClient
 import useHiveAccount from "@/hooks/useHiveAccount"
+import usePosts from "@/hooks/usePosts"
 import { HiveAccount } from "@/lib/models/user"
+import { useState } from "react"
+import InfiniteScroll from "react-infinite-scroll-component"
+import { BeatLoader } from "react-spinners"
 
+const hiveClient = HiveClient
+
+/*
 async function getBlogFromUsername(
   username: string
 ): Promise<PostComponentProps[]> {
@@ -28,38 +34,55 @@ async function getBlogFromUsername(
     )
   return [{} as PostComponentProps]
 }
-
+*/
 interface ProfilePageProps {
   params: {
     username: string
   }
 }
 
-export default async function ProfilePage({ params }: ProfilePageProps) {
+export default function ProfilePage({ params }: ProfilePageProps) {
   //const user = await getUserFromUsername(params.username)
-  const { hiveAccount, isLoading } = useHiveAccount(params.username)
-
-  if (isLoading || !hiveAccount) return <div>Loading...</div>
-
-  const posts = await getBlogFromUsername(params.username)
-
+  const [visiblePosts, setVisiblePosts] = useState(20)
+  const { hiveAccount } = useHiveAccount(params.username)
+  const { posts, error, isLoading, queryCategory, setQueryCategory, setDiscussionQuery } = usePosts("blog", {tag: params.username, limit: 100})
+  // const posts = await getBlogFromUsername(params.username)
+  if (!hiveAccount || !posts) return <div>Loading...</div>
   return (
     <Box width="100%" minHeight="100vh">
       <ProfileHeader user={hiveAccount} />
       <ProfileTabs params={params} />
-      <Grid
-        templateColumns={{
-          base: "repeat(1, 1fr)",
-          md: "repeat(2, 1fr)",
-          lg: "repeat(3, 1fr)",
-        }} // Responsive grid columns
-        gap={0} // Adjust gap as needed
-        p={2}
+      <InfiniteScroll
+        dataLength={visiblePosts}
+        next={() => setVisiblePosts((visiblePosts) => visiblePosts + 3)}
+        hasMore={visiblePosts < posts.length}
+        loader={
+          <Flex justify="center">
+            <BeatLoader size={8} color="darkgrey" />
+          </Flex>
+        }
+        style={{ overflow: "hidden" }}
       >
-
-        {posts &&
-          posts.map(({ postData }, i) => <Post key={i} postData={postData} />)}
-      </Grid>
+        <Grid
+          templateColumns={{
+            base: "repeat(1, 1fr)",
+            md: "repeat(2, 1fr)",
+            lg: "repeat(3, 1fr)",
+            xl: "repeat(4, 1fr)",
+          }}
+          gap={0}
+        >
+          {posts.length > 0 &&
+            posts.slice(0, visiblePosts).map((post, i) => {
+              return (
+                <Post
+                  key={`${queryCategory}-${post.url}`}
+                  postData={PostModel.newFromDiscussion(post)}
+                />
+              )
+            })}
+        </Grid>
+      </InfiniteScroll>
     </Box>
   )
 }
