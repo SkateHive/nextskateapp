@@ -25,6 +25,8 @@ import { convertVestingSharesToHivePower } from "../utils/calculateHP"
 import { RadioReceiverIcon, SendIcon } from "lucide-react"
 import { AiOutlineThunderbolt } from "react-icons/ai";
 import { BsArrowDownCircleFill } from "react-icons/bs";
+import { useHivePrice } from "@/hooks/useHivePrice"
+import { set } from "lodash"
 const HIVE_LOGO_URL = "https://cryptologos.cc/logos/hive-blockchain-hive-logo.png";
 const HBD_LOGO_URL = "https://i.ibb.co/C6TPhs3/HBD.png";
 const SAVINGS_LOGO_URL = "https://i.ibb.co/rMVdTYt/savings-hive.png";
@@ -34,13 +36,33 @@ const DEFAULT_AVATAR_URL = "https://i.gifer.com/origin/f1/f1a737e4cfba336f974af0
 
 function HiveBox() {
     const { hiveUser } = useHiveUser()
-    const vestingShares = String(hiveUser?.vesting_shares).split(" ")[0]
+    const hivePrice = useHivePrice()
+
+    // Hive 
+
+    // HivePower
+    const vestingShares = hiveUser?.vesting_shares
     const delegatedVestingShares = hiveUser?.delegated_vesting_shares
     const receivedVestingShares = hiveUser?.received_vesting_shares
     const [hivePower, setHivePower] = useState('')
+
     const [delegatedToUserInUSD, setDelegatedToUserInUSD] = useState('')
     const [HPthatUserDelegated, setHPthatUserDelegated] = useState(0)
     const [totalHP, setTotalHP] = useState(0)
+
+
+
+
+
+    // HBD
+
+    // Savings
+    const [hiveUsdValue, setHiveUsdValue] = useState(0)
+    const [HPUsdValue, setHPUsdValue] = useState(0)
+    const [delegatedHPUsdValue, setDelegatedHPUsdValue] = useState(0)
+    const [HBDUsdValue, setHBDUsdValue] = useState(0)
+    const [savingsUSDvalue, setSavingsUSDvalue] = useState(0)
+
 
     const calculateHP = async () => {
         const HP = await convertVestingSharesToHivePower(String(vestingShares), String(delegatedVestingShares), String(receivedVestingShares)).then((res) => {
@@ -51,15 +73,34 @@ function HiveBox() {
             setTotalHP(sum)
         })
     }
+    const calculateHiveUsdValue = () => {
+        if (hivePrice && hiveUser) {
+            const hiveUsd = hivePrice * Number(String(hiveUser.balance).split(" ")[0]);
+            const HPUsd = hivePrice * Number(hivePower);
+            console.log(hivePower, String(hivePower).split(" ")[0], "hivePower")
+            console.log(HPUsd, "HPUSD", totalHP, "totalHP")
+            const delegatedHPUsd = hivePrice * HPthatUserDelegated;
+            const savingsValue = 1 * Number(String(hiveUser.savings_hbd_balance).split(" ")[0]);
+            //replace for useHBDprice hook 
+            const HBDUsd = 1 * Number(String(hiveUser.hbd_balance).split(" ")[0]);
+            setHiveUsdValue(hiveUsd);
+            setHPUsdValue(HPUsd);
+            setDelegatedHPUsdValue(delegatedHPUsd);
+            setHBDUsdValue(HBDUsd);
+            setSavingsUSDvalue(savingsValue);
+
+        }
+    };
 
     useEffect(() => {
         calculateHP();
-    }, [hiveUser]);
+        calculateHiveUsdValue();
+    }, [hiveUser, hivePrice]);
 
     return (
         <VStack
             w={"100%"}
-            gap={6}
+            gap={3} // Reduced gap from 6 to 3
             align={"normal"}
             p={4}
             flex="1"
@@ -109,9 +150,12 @@ function HiveBox() {
                                 <GridItem>
                                     <Box p={3}>
                                         <Menu>
-                                            <MenuButton border={"1px solid red"} width={"full"} as={Button} leftIcon={<Avatar boxSize={"30px"} src={HIVE_LOGO_URL} />} variant="outline">
+                                            <MenuButton p={8} border={"1px solid red"} width={"full"} as={Button} leftIcon={<Avatar boxSize={"30px"} src={HIVE_LOGO_URL} />} variant="outline">
                                                 <Center>
-                                                    <Text>{String(hiveUser.balance)} </Text>
+                                                    <VStack>
+                                                        <Text>{String(hiveUser.balance)} </Text>
+                                                        <Text fontSize={12}> (~${hiveUsdValue.toFixed(2)})</Text>
+                                                    </VStack>
                                                 </Center>
                                             </MenuButton>
                                             <MenuList bg={"black"}>
@@ -126,9 +170,12 @@ function HiveBox() {
                                     </Box>
                                     <Box p={3} borderRadius={5}>
                                         <Menu>
-                                            <MenuButton border={"1px solid red"} width={"full"} as={Button} leftIcon={<Avatar borderRadius={'none'} boxSize={"30px"} src={HBD_LOGO_URL} />} variant="outline">
+                                            <MenuButton p={8} border={"1px solid red"} width={"full"} as={Button} leftIcon={<Avatar borderRadius={'none'} boxSize={"30px"} src={HBD_LOGO_URL} />} variant="outline">
                                                 <Center>
-                                                    <Text>{String(hiveUser.hbd_balance)}</Text>
+                                                    <VStack>
+                                                        <Text>{String(hiveUser.hbd_balance)}</Text>
+                                                        <Text fontSize={12}> (~${HBDUsdValue.toFixed(2)})</Text>
+                                                    </VStack>
                                                 </Center>
                                             </MenuButton>
                                             <MenuList bg={"black"}>
@@ -145,10 +192,13 @@ function HiveBox() {
                                 <GridItem>
                                     <Box p={3}>
                                         <Menu>
-                                            <MenuButton border={"1px solid red"} width={"full"} as={Button} leftIcon={<Avatar borderRadius={"none"} boxSize={"30px"} src={SAVINGS_LOGO_URL} />} variant="outline">
+                                            <MenuButton p={8} border={"1px solid red"} width={"full"} as={Button} leftIcon={<Avatar borderRadius={"none"} boxSize={"30px"} src={SAVINGS_LOGO_URL} />} variant="outline">
                                                 <Center>
                                                     <Tooltip label="20% APR">
-                                                        <Text>Savs: {String(hiveUser.savings_hbd_balance)}</Text>
+                                                        <VStack>
+                                                            <Text>Savs: {String(hiveUser.savings_hbd_balance)}</Text>
+                                                            <Text fontSize={12}> (~${savingsUSDvalue.toFixed(2)})</Text>
+                                                        </VStack>
                                                     </Tooltip>
                                                 </Center>
                                             </MenuButton>
@@ -164,9 +214,12 @@ function HiveBox() {
                                     </Box>
                                     <Box p={3}>
                                         <Menu>
-                                            <MenuButton border={"1px solid red"} width={"full"} as={Button} leftIcon={<Avatar boxSize={"30px"} src={HIVE_POWER_LOGO_URL} />} variant="outline">
+                                            <MenuButton p={8} border={"1px solid red"} width={"full"} as={Button} leftIcon={<Avatar boxSize={"30px"} src={HIVE_POWER_LOGO_URL} />} variant="outline">
                                                 <Center>
-                                                    <Text>Power: {totalHP.toFixed(3)} </Text>
+                                                    <VStack>
+                                                        <Text>HP: {hivePower}</Text>
+                                                        <Text fontSize={12}> (~${HPUsdValue.toFixed(2)})</Text>
+                                                    </VStack>
                                                 </Center>
                                             </MenuButton>
                                             <MenuList bg={"black"}>
