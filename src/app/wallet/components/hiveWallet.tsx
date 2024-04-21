@@ -39,30 +39,27 @@ function HiveBox() {
     const hivePrice = useHivePrice()
 
     // Hive 
+    const [hiveUsdValue, setHiveUsdValue] = useState(0)
 
     // HivePower
     const vestingShares = hiveUser?.vesting_shares
     const delegatedVestingShares = hiveUser?.delegated_vesting_shares
     const receivedVestingShares = hiveUser?.received_vesting_shares
     const [hivePower, setHivePower] = useState('')
-
     const [delegatedToUserInUSD, setDelegatedToUserInUSD] = useState('')
     const [HPthatUserDelegated, setHPthatUserDelegated] = useState(0)
     const [totalHP, setTotalHP] = useState(0)
-
-
-
-
-
-    // HBD
-
-    // Savings
-    const [hiveUsdValue, setHiveUsdValue] = useState(0)
     const [HPUsdValue, setHPUsdValue] = useState(0)
     const [delegatedHPUsdValue, setDelegatedHPUsdValue] = useState(0)
+
+    // HBD
     const [HBDUsdValue, setHBDUsdValue] = useState(0)
+
+    // Savings
     const [savingsUSDvalue, setSavingsUSDvalue] = useState(0)
 
+    // Total 
+    const [totalValue, setTotalValue] = useState(0)
 
     const calculateHP = async () => {
         const HP = await convertVestingSharesToHivePower(String(vestingShares), String(delegatedVestingShares), String(receivedVestingShares)).then((res) => {
@@ -77,8 +74,7 @@ function HiveBox() {
         if (hivePrice && hiveUser) {
             const hiveUsd = hivePrice * Number(String(hiveUser.balance).split(" ")[0]);
             const HPUsd = hivePrice * Number(hivePower);
-            console.log(hivePower, String(hivePower).split(" ")[0], "hivePower")
-            console.log(HPUsd, "HPUSD", totalHP, "totalHP")
+
             const delegatedHPUsd = hivePrice * HPthatUserDelegated;
             const savingsValue = 1 * Number(String(hiveUser.savings_hbd_balance).split(" ")[0]);
             //replace for useHBDprice hook 
@@ -88,6 +84,9 @@ function HiveBox() {
             setDelegatedHPUsdValue(delegatedHPUsd);
             setHBDUsdValue(HBDUsd);
             setSavingsUSDvalue(savingsValue);
+            console.log(hiveUsd, HPUsd, HBDUsd, savingsValue)
+            const total = hiveUsd + HPUsd + HBDUsd + savingsValue;
+            setTotalValue(total);
 
         }
     };
@@ -142,7 +141,11 @@ function HiveBox() {
                                 <FaGift onClick={() => claimRewards(hiveUser)}>Claim!</FaGift>
                             </Tooltip>
                         </HStack>
+
                     </Center>
+                    <Text fontSize={12} color={"gray.400"}>
+                        {totalValue.toFixed(2)} USD
+                    </Text>
                     <Box>
                         <Center>
 
