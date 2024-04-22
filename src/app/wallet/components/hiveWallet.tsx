@@ -96,151 +96,160 @@ function HiveBox() {
         calculateHiveUsdValue();
     }, [hiveUser, hivePrice]);
 
+    const [isOpened, setIsOpened] = useState(false);
+
+
     return (
         <VStack
             w={"100%"}
-            gap={3} // Reduced gap from 6 to 3
+            gap={6} // Reduced gap from 6 to 3
             align={"normal"}
             p={4}
             flex="1"
             bg={"#201d21"}
-            borderRadius={10}
+            borderRadius={"10px"} border={"1px solid red"}
         >
-            <Center>
-                <HStack>
+            <Center onClick={() => setIsOpened(!isOpened)} >
+                <HStack cursor={"pointer"}>
                     <FaHive />
                     <Text align={"center"} fontSize={28}>
                         Hive Wallet
                     </Text>
                 </HStack>
             </Center>
-            <Divider mt={-6} color="limegreen" />
+            <Divider mt={-6} />
             {hiveUser ? (
                 <VStack align={"normal"}>
                     <Center>
-                        <HStack>
-                            <Avatar
-                                name={hiveUser.name}
-                                src={hiveUser.metadata?.profile.profile_image}
-                                borderRadius={"100%"}
-                                size="md"
-                                bg="gray.200"
-                            />
-                            <Text fontSize={22}>{hiveUser.name}</Text>
-                            <Tooltip
-                                border={"1px solid red"}
-                                color={"black"}
-                                bg={"white"}
-                                placement="right-start"
-                                label={
-                                    <Text>Rewards to Claim : <br /> HBD: {String(hiveUser.reward_hbd_balance)}<br />
-                                        Hive {String(hiveUser.reward_hive_balance)}<br />
-                                        HP {String(hiveUser.reward_vesting_hive)}
-                                    </Text>}
-                            >
-                                <FaGift onClick={() => claimRewards(hiveUser)}>Claim!</FaGift>
-                            </Tooltip>
-                        </HStack>
+                        <Box w={'100%'} paddingBottom={4} >
+
+                            <HStack minWidth={"100%"} border={"1px solid white"} p={5} borderTopRadius={10} mb={-6} justifyContent={"center"} bg="red.900">
+                                <Avatar
+                                    name={hiveUser.name}
+                                    src={hiveUser.metadata?.profile.profile_image}
+                                    borderRadius={"100%"}
+                                    boxSize={'48px'}
+                                    bg="gray.200"
+                                />
+                                <Text fontSize={22}>{hiveUser.name}</Text>
+                                <Tooltip
+                                    border={"1px solid red"}
+                                    color={"black"}
+                                    bg={"white"}
+                                    placement="right-start"
+                                    label={
+                                        <Text>Rewards to Claim : <br /> HBD: {String(hiveUser.reward_hbd_balance)}<br />
+                                            Hive {String(hiveUser.reward_hive_balance)}<br />
+                                            HP {String(hiveUser.reward_vesting_hive)}
+                                        </Text>}
+                                >
+                                    <FaGift onClick={() => claimRewards(hiveUser)}>Claim!</FaGift>
+                                </Tooltip>
+
+                            </HStack>
+                        </Box>
 
                     </Center>
-                    <Text fontSize={12} color={"gray.400"}>
-                        {totalValue.toFixed(2)} USD
-                    </Text>
-                    <Box>
+
+                    <Box minWidth={"100%"} border={"1px solid white"} bg="red.700" onClick={() => setIsOpened(!isOpened)} cursor={"pointer"}>
+
                         <Center>
+                            <VStack m={5}>
+                                <Text fontWeight={"bold"} fontSize={"34px"}>Available: ${hiveUsdValue.toFixed(2)} </Text>
 
-                            <Grid templateColumns="repeat(2, 1fr)" gap={1} >
-                                <GridItem>
-                                    <Box p={3}>
-                                        <Menu>
-                                            <MenuButton p={8} border={"1px solid red"} width={"full"} as={Button} leftIcon={<Avatar boxSize={"30px"} src={HIVE_LOGO_URL} />} variant="outline">
-                                                <Center>
-                                                    <VStack>
-                                                        <Text>{String(hiveUser.balance)} </Text>
-                                                        <Text fontSize={12}> (~${hiveUsdValue.toFixed(2)})</Text>
-                                                    </VStack>
-                                                </Center>
-                                            </MenuButton>
-                                            <MenuList bg={"black"}>
-                                                <MenuItem bg={"black"} icon={<SendIcon />} _hover={{ bg: "red" }}>
-                                                    Send Hive
-                                                </MenuItem>
-                                                <MenuItem bg={"black"} icon={<AiOutlineThunderbolt size={"28px"} />} _hover={{ bg: "red" }}>
-                                                    Power Up
-                                                </MenuItem>
-                                            </MenuList>
-                                        </Menu>
-                                    </Box>
-                                    <Box p={3} borderRadius={5}>
-                                        <Menu>
-                                            <MenuButton p={8} border={"1px solid red"} width={"full"} as={Button} leftIcon={<Avatar borderRadius={'none'} boxSize={"30px"} src={HBD_LOGO_URL} />} variant="outline">
-                                                <Center>
-                                                    <VStack>
-                                                        <Text>{String(hiveUser.hbd_balance)}</Text>
-                                                        <Text fontSize={12}> (~${HBDUsdValue.toFixed(2)})</Text>
-                                                    </VStack>
-                                                </Center>
-                                            </MenuButton>
-                                            <MenuList bg={"black"}>
-                                                <MenuItem bg={"black"} icon={<SendIcon />} _hover={{ bg: "red" }}>
-                                                    Send HBD
-                                                </MenuItem>
-                                                <MenuItem bg={"black"} icon={<BsArrowDownCircleFill size={"28px"} />} _hover={{ bg: "red" }}>
-                                                    Deposit HBD
-                                                </MenuItem>
-                                            </MenuList>
-                                        </Menu>
-                                    </Box>
-                                </GridItem>
-                                <GridItem>
-                                    <Box p={3}>
-                                        <Menu>
-                                            <MenuButton p={8} border={"1px solid red"} width={"full"} as={Button} leftIcon={<Avatar borderRadius={"none"} boxSize={"30px"} src={SAVINGS_LOGO_URL} />} variant="outline">
-                                                <Center>
-                                                    <Tooltip label="20% APR">
-                                                        <VStack>
-                                                            <Text>Savs: {String(hiveUser.savings_hbd_balance)}</Text>
-                                                            <Text fontSize={12}> (~${savingsUSDvalue.toFixed(2)})</Text>
-                                                        </VStack>
-                                                    </Tooltip>
-                                                </Center>
-                                            </MenuButton>
-                                            <MenuList bg={"black"}>
-                                                <MenuItem bg={"black"} icon={<SendIcon />} _hover={{ bg: "red" }}>
-                                                    Withdraw HBD
-                                                </MenuItem>
-                                                <MenuItem bg={"black"} icon={<AiOutlineThunderbolt size={"28px"} />} _hover={{ bg: "red" }}>
-                                                    Deposit HBD
-                                                </MenuItem>
-                                            </MenuList>
-                                        </Menu>
-                                    </Box>
-                                    <Box p={3}>
-                                        <Menu>
-                                            <MenuButton p={8} border={"1px solid red"} width={"full"} as={Button} leftIcon={<Avatar boxSize={"30px"} src={HIVE_POWER_LOGO_URL} />} variant="outline">
-                                                <Center>
-                                                    <VStack>
-                                                        <Text>HP: {hivePower}</Text>
-                                                        <Text fontSize={12}> (~${HPUsdValue.toFixed(2)})</Text>
-                                                    </VStack>
-                                                </Center>
-                                            </MenuButton>
-                                            <MenuList bg={"black"}>
-                                                <MenuItem bg={"black"} icon={<SendIcon />} _hover={{ bg: "red" }}>
-                                                    Delegate
-                                                </MenuItem>
-                                                <MenuItem bg={"black"} icon={<AiOutlineThunderbolt size={"28px"} />} _hover={{ bg: "red" }}>
-                                                    Power Down
-                                                </MenuItem>
-                                            </MenuList>
-                                        </Menu>
-                                    </Box>
-                                </GridItem>
-                            </Grid>
-
+                                <Text fontSize={"18px"} >Tokens Value:  </Text>
+                            </VStack>
                         </Center>
-
                     </Box>
+                    {/* <Text fontSize={12} color={"gray.400"}>
+                        {totalValue.toFixed(2)} USD
+                    </Text> */}
+                    {isOpened && (
+
+                        <Box>
+                            <Center>
+                                <VStack width={"100%"}>
+
+                                    <Menu >
+                                        <MenuButton width={"full"} p={8} border={"1px solid red"} as={Button} leftIcon={<Avatar boxSize={"30px"} src={HIVE_LOGO_URL} />} variant="outline">
+                                            <Center>
+                                                <VStack>
+                                                    <Text fontSize={24} >{String(hiveUser.balance)} </Text>
+                                                    <Text fontSize={12}> (~${hiveUsdValue.toFixed(2)})</Text>
+                                                </VStack>
+                                            </Center>
+                                        </MenuButton>
+                                        <MenuList placeContent={"cente"} bg={"black"} minWidth={"100%"}>
+                                            <MenuItem bg={"black"} icon={<SendIcon />} _hover={{ bg: "red" }}>
+                                                Send Hive
+                                            </MenuItem>
+                                            <MenuItem bg={"black"} icon={<AiOutlineThunderbolt size={"28px"} />} _hover={{ bg: "red" }}>
+                                                Power Up
+                                            </MenuItem>
+                                        </MenuList>
+                                    </Menu>
+                                    <Menu>
+                                        <MenuButton p={8} border={"1px solid red"} width={"full"} as={Button} leftIcon={<Avatar borderRadius={'none'} boxSize={"30px"} src={HBD_LOGO_URL} />} variant="outline">
+                                            <Center>
+                                                <VStack>
+                                                    <Text fontSize={24}>{String(hiveUser.hbd_balance)}</Text>
+                                                    <Text fontSize={12}> (~${HBDUsdValue.toFixed(2)})</Text>
+                                                </VStack>
+                                            </Center>
+                                        </MenuButton>
+                                        <MenuList bg={"black"}>
+                                            <MenuItem bg={"black"} icon={<SendIcon />} _hover={{ bg: "red" }}>
+                                                Send HBD
+                                            </MenuItem>
+                                            <MenuItem bg={"black"} icon={<BsArrowDownCircleFill size={"28px"} />} _hover={{ bg: "red" }}>
+                                                Deposit HBD
+                                            </MenuItem>
+                                        </MenuList>
+                                    </Menu>
+                                    <Menu>
+                                        <MenuButton p={8} border={"1px solid red"} width={"full"} as={Button} leftIcon={<Avatar borderRadius={"none"} boxSize={"30px"} src={SAVINGS_LOGO_URL} />} variant="outline">
+                                            <Center>
+                                                <Tooltip label="20% APR">
+                                                    <VStack>
+                                                        <Text fontSize={24}>{String(hiveUser.savings_hbd_balance)}</Text>
+                                                        <Text fontSize={12}> (~${savingsUSDvalue.toFixed(2)})</Text>
+                                                    </VStack>
+                                                </Tooltip>
+                                            </Center>
+                                        </MenuButton>
+                                        <MenuList bg={"black"}>
+                                            <MenuItem bg={"black"} icon={<SendIcon />} _hover={{ bg: "red" }}>
+                                                Withdraw HBD
+                                            </MenuItem>
+                                            <MenuItem bg={"black"} icon={<AiOutlineThunderbolt size={"28px"} />} _hover={{ bg: "red" }}>
+                                                Deposit HBD
+                                            </MenuItem>
+                                        </MenuList>
+                                    </Menu>
+                                    <Menu>
+                                        <MenuButton p={8} border={"1px solid red"} width={"full"} as={Button} leftIcon={<Avatar boxSize={"30px"} src={HIVE_POWER_LOGO_URL} />} variant="outline">
+                                            <Center>
+                                                <VStack>
+                                                    <Text fontSize={24}>HP: {hivePower}</Text>
+                                                    <Text fontSize={12}> (~${HPUsdValue.toFixed(2)})</Text>
+                                                </VStack>
+                                            </Center>
+                                        </MenuButton>
+                                        <MenuList bg={"black"}>
+                                            <MenuItem bg={"black"} icon={<SendIcon />} _hover={{ bg: "red" }}>
+                                                Delegate
+                                            </MenuItem>
+                                            <MenuItem bg={"black"} icon={<AiOutlineThunderbolt size={"28px"} />} _hover={{ bg: "red" }}>
+                                                Power Down
+                                            </MenuItem>
+                                        </MenuList>
+                                    </Menu>
+
+                                </VStack>
+                            </Center>
+
+                        </Box>
+                    )}
                 </VStack>
             ) : null
             }
