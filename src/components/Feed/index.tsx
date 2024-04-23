@@ -10,14 +10,10 @@ import InfiniteScroll from "react-infinite-scroll-component"
 import { BeatLoader } from "react-spinners"
 import Post from "../PostCard"
 import PostSkeleton from "../PostCard/Skeleton"
-const postTypeName = {
-  created: "🆕 Latest",
-  trending: "🔥 Trending",
-}
 
 export default function Feed() {
   const { posts, error, isLoading, postType, setPostType } = usePosts()
-  const [visiblePosts, setVisiblePosts] = useState(1)
+  const [visiblePosts, setVisiblePosts] = useState(12)
   const hiveUser = useHiveUser()
   if (error) return "Error"
 
