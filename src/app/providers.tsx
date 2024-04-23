@@ -26,7 +26,7 @@ const chakraTheme = extendTheme({
   },
 })
 
-const wagmiConfig = getDefaultConfig({
+export const wagmiConfig = getDefaultConfig({
   appName: "SkateHive",
   projectId: "52f3a9b032f5caf26719af6939715629",
   chains: [base, mainnet],

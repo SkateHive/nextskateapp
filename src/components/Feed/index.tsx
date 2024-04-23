@@ -1,15 +1,15 @@
 "use client"
 
+import { useHiveUser } from "@/contexts/UserContext"
 import { usePosts } from "@/hooks/usePosts"
 import PostModel from "@/lib/models/post"
 import { Link } from "@chakra-ui/next-js"
 import { Box, Button, ButtonGroup, Flex, Grid, HStack } from "@chakra-ui/react"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import InfiniteScroll from "react-infinite-scroll-component"
 import { BeatLoader } from "react-spinners"
 import Post from "../PostCard"
 import PostSkeleton from "../PostCard/Skeleton"
-import { useHiveUser } from "@/contexts/UserContext"
 const postTypeName = {
   created: "🆕 Latest",
   trending: "🔥 Trending",
@@ -17,7 +17,7 @@ const postTypeName = {
 
 export default function Feed() {
   const { posts, error, isLoading, postType, setPostType } = usePosts()
-  const [visiblePosts, setVisiblePosts] = useState(20)
+  const [visiblePosts, setVisiblePosts] = useState(1)
   const hiveUser = useHiveUser()
   if (error) return "Error"
 
@@ -60,7 +60,6 @@ export default function Feed() {
           </Button>
           {/* Following Section */}
           {hiveUser.hiveUser !== null && (
-
             <Button
               onClick={() => setPostType("created")}
               isActive={postType === "created"}
@@ -68,8 +67,6 @@ export default function Feed() {
               My Crew
             </Button>
           )}
-
-
         </ButtonGroup>
 
         <Button

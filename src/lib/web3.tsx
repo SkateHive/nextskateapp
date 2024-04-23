@@ -7,3 +7,9 @@ const config = {
   network: Network.BASE_MAINNET,
 }
 export const alchemy = new Alchemy(config)
+
+export function formatEthereumAddress(address: `0x${string}`) {
+  const firstFour = address.slice(2, 6)
+  const lastFour = address.slice(-4)
+  return `0x${firstFour}...${lastFour}`
+}
