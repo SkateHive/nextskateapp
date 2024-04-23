@@ -13,6 +13,8 @@ import {
     Box,
     Image,
     Input,
+    InputGroup,
+    InputLeftElement,
 } from "@chakra-ui/react";
 import { FaDonate } from "react-icons/fa";
 import { useWriteContract } from "wagmi";
@@ -21,12 +23,13 @@ import { SenditABI } from "../../lib/abi/senditABI";
 import { memberABI } from "@/lib/abi/memberABI";
 import { nogsABI } from "@/lib/abi/nogsABI";
 import { parseUnits } from "viem";
-
+import { formatETHaddress } from "@/lib/utils";
 interface TipModalProps {
     isOpen: boolean;
     onClose: () => void;
     token: string | null;
     author: string;
+    authorETHwallet: string;
 }
 interface TokenInfo {
     address: `0x${string}`;
@@ -38,10 +41,11 @@ interface TokenInfo {
 interface TokenDictionary {
     [key: string]: TokenInfo;
 }
-const TipModal: React.FC<TipModalProps> = ({ isOpen, onClose, token, author }) => {
+const TipModal: React.FC<TipModalProps> = ({ isOpen, onClose, token, author, authorETHwallet }) => {
     const account = useAccount();
     const { data: hash, writeContract } = useWriteContract();
     const [amount, setAmount] = React.useState<string>("0");
+
 
     const tokenDictionary: { [key: string]: TokenInfo } = {
         SENDIT: {
@@ -62,6 +66,7 @@ const TipModal: React.FC<TipModalProps> = ({ isOpen, onClose, token, author }) =
     };
 
     const sendToken = async (amount: string, tokenKey: string) => {
+
         if (tokenKey in tokenDictionary) {
             const { address, abi } = tokenDictionary[tokenKey];
             console.log(`${tokenKey} transfer initiated`);
@@ -70,7 +75,7 @@ const TipModal: React.FC<TipModalProps> = ({ isOpen, onClose, token, author }) =
                     address, // contract address of the token
                     abi, // ABI for the token's contract
                     functionName: 'transfer',
-                    args: ['0xEed943aA972dd394146e6F77B9434DF07f36a282', parseUnits(amount, 18)], // Assuming the recipient's address is `author` and token decimals is 18
+                    args: [authorETHwallet, parseUnits(amount, 18)], // Assuming the recipient's address is `author` and token decimals is 18
                 });
                 console.log(`Transaction hash: ${hash}`);
             } catch (error) {
@@ -85,28 +90,35 @@ const TipModal: React.FC<TipModalProps> = ({ isOpen, onClose, token, author }) =
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
-            <ModalContent>
-                <ModalHeader>Support {author}</ModalHeader>
+            <ModalContent bg={"black"} border={"1px solid limegreen"}>
+                <ModalHeader>Support {author} with {token}</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
-                    <Text>Your Address: {account.address}</Text>
-                    <Text>Send {token} to {author}</Text>
-                    {tokenInfo && tokenInfo.tokenLogo && (
-                        <Image src={tokenInfo.tokenLogo} alt={`${token} Logo`} width="100px" mx="auto" my={4} />
-                    )}
-                    <Box>
-                        <Input
-                            placeholder="Amount"
-                            value={amount}
-                            onChange={(e) => setAmount(e.target.value)}
-                        />
+                    <Text>From: {formatETHaddress(String(account.address))}</Text>
+                    <Text>To: {formatETHaddress(String(authorETHwallet))}</Text>
+
+
+                    <Box mt={5}>
+                        <InputGroup>
+                            <InputLeftElement>
+                                {tokenInfo && tokenInfo.tokenLogo && (
+                                    <Image src={tokenInfo.tokenLogo} alt={`${token} Logo`} width="100px" mx="auto" my={4} />
+                                )}
+                            </InputLeftElement>
+                            <Input
+                                type="number"
+                                placeholder="Amount"
+                                value={amount}
+                                onChange={(e) => setAmount(e.target.value)}
+                                style={{ direction: 'rtl' }}
+                            />
+                        </InputGroup>
+
                     </Box>
                 </ModalBody>
                 <ModalFooter>
-                    <Button colorScheme="blue" mr={3} onClick={onClose}>
-                        Close
-                    </Button>
-                    <Button onClick={() => token && sendToken(amount, token)} colorScheme="green">
+
+                    <Button onClick={() => token && sendToken(amount, token)} variant="outline" border="1px solid limegreen">
                         Send
                     </Button>
                 </ModalFooter>

@@ -73,3 +73,7 @@ export function transform3SpeakContent(content: string): string {
   }
   return content;
 }
+
+export function formatETHaddress(address: string) {
+  return `${address.slice(0, 6)}...${address.slice(-4)}`
+}
