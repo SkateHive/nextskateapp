@@ -88,10 +88,10 @@ const CommentsSection = ({ comments, isCommentReply = false }: CommentsSectionPr
             height="fit-content"
         >
 
-            <Box marginTop="3" {...getRootProps()} >
-                {isUploading && <Center><Spinner /></Center>}
+            {/* <Box marginTop="3" {...getRootProps()} >
+                {isUploading && <Center><Spinner /></Center>} */}
 
-                <MDEditor
+            {/* <MDEditor
                     value={value}
                     onChange={(value) => setValue(value || "")}
                     commands={[
@@ -107,8 +107,8 @@ const CommentsSection = ({ comments, isCommentReply = false }: CommentsSectionPr
                         padding: "10px",
                         backgroundColor: "black",
                     }}
-                />
-            </Box>
+                /> */}
+            {/* </Box>
             <Button
                 colorScheme="green"
                 size="sm"
@@ -119,7 +119,7 @@ const CommentsSection = ({ comments, isCommentReply = false }: CommentsSectionPr
             >
                 Send it
 
-            </Button>
+            </Button> */}
             <Stack gap={0}>
                 {hasComments ? (
                     filteredComments.reverse().map((comment, i) => (

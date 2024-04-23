@@ -9,7 +9,6 @@ import { useState } from "react"
 import { RiArrowRightUpLine } from "react-icons/ri"
 import { useReward } from "react-rewards"
 import { useSWRConfig } from "swr"
-
 export default function Vote() {
   const { post } = usePostContext()
   const { mutate } = useSWRConfig()
