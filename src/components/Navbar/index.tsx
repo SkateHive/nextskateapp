@@ -24,12 +24,14 @@ import {
   keyframes,
   useDisclosure,
 } from "@chakra-ui/react"
+import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit"
 import { Bell, Home, HomeIcon, User } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
 import { FaHive, FaSpeakap, FaWallet } from "react-icons/fa"
 import { FaEthereum } from "react-icons/fa6"
 import { useAccount } from "wagmi"
+import LoginModal from "../Hive/Login/LoginModal"
 import CommunityTotalPayout from "../communityTotalPayout"
 import AvatarLogin from "./AvatarLogin"
 import checkRewards from "./utils/checkReward"
@@ -47,6 +49,15 @@ export default function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const ethAccount = useAccount()
+
+  const {
+    isOpen: isLoginOpen,
+    onOpen: onLoginOpen,
+    onClose: onLoginClose,
+  } = useDisclosure()
+
+  const { openConnectModal } = useConnectModal()
+  const { openAccountModal } = useAccountModal()
 
   console.log({
     hiveUser,
@@ -140,9 +151,11 @@ export default function Navbar() {
               leftIcon={
                 <Icon color={hiveUser ? "red.400" : "white"} as={FaHive} />
               }
+              onClick={() => (hiveUser ? null : onLoginOpen())}
             >
               {hiveUser ? <p>{hiveUser.name}</p> : <span>Login</span>}
             </Button>
+            <LoginModal onClose={onLoginClose} isOpen={isLoginOpen} />
             <Button
               width={"100%"}
               bg="black"
@@ -151,6 +164,11 @@ export default function Navbar() {
                   color={ethAccount.address ? "blue.400" : "white"}
                   as={FaEthereum}
                 />
+              }
+              onClick={() =>
+                !ethAccount.address && openConnectModal
+                  ? openConnectModal()
+                  : openAccountModal && openAccountModal()
               }
             >
               {ethAccount.address ? (
