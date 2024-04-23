@@ -1,5 +1,5 @@
 'use client';
-import { KeychainRequestResponse, KeychainSDK, Post, Vote, KeychainKeyTypes, Broadcast, Login } from "keychain-sdk"
+import { KeychainRequestResponse, KeychainSDK, Post, Vote, KeychainKeyTypes, Broadcast, Login, Transfer } from "keychain-sdk"
 import { Client, Operation, PrivateKey } from "@hiveio/dhive"
 import CryptoJS from 'crypto-js';
 import { KeychainTransactionResult } from "keychain-sdk";
@@ -18,33 +18,33 @@ export async function claimRewards(hiveUser: HiveAccount) {
   const rewardVests = hiveUser.reward_vesting_balance
 
   const operation: Operation = [
-         "claim_reward_balance",
-         {
-          account: hiveUser.name,
-          reward_hive: rewardHiveBalance,
-          reward_hbd: rewardHBDBalance,
-          reward_vests: rewardVests
-         }
-        ]
+    "claim_reward_balance",
+    {
+      account: hiveUser.name,
+      reward_hive: rewardHiveBalance,
+      reward_hbd: rewardHBDBalance,
+      reward_vests: rewardVests
+    }
+  ]
 
   const keychain = new KeychainSDK(window)
   const formParamsAsObject = {
     "data": {
-         "username": hiveUser.name,
-         "operations": [operation],
-         "method" : KeychainKeyTypes.posting
+      "username": hiveUser.name,
+      "operations": [operation],
+      "method": KeychainKeyTypes.posting
     }
   }
-  
+
   try {
     const broadcast = await keychain
-         .broadcast(
-              formParamsAsObject.data as Broadcast);
-      console.log({ broadcast });
+      .broadcast(
+        formParamsAsObject.data as Broadcast);
+    console.log({ broadcast });
   } catch (error) {
     console.log({ error });
   }
-  
+
 }
 
 export async function vote(props: Vote): Promise<KeychainRequestResponse> {
@@ -79,24 +79,47 @@ export async function commentWithKeychain(formParamsAsObject: any): Promise<Hive
 }
 
 export async function loginWithKeychain(username: string) {
-  try
-  {
+  try {
     const memo = `${username} signed up with ${process.env.NEXT_PUBLIC_WEBSITE_URL} app at ${Date.now()}`
     const keychain = new KeychainSDK(window);
     undefined
     const formParamsAsObject = {
-     "data": {
-          "username": username,
-          "message": memo,
-          "method" : KeychainKeyTypes.posting,
-          "title": "Login"
-     }
-}
-    
+      "data": {
+        "username": username,
+        "message": memo,
+        "method": KeychainKeyTypes.posting,
+        "title": "Login"
+      }
+    }
+
     const login = await keychain
-         .login(
-              formParamsAsObject.data as Login);
+      .login(
+        formParamsAsObject.data as Login);
     console.log({ login });
+  } catch (error) {
+    console.log({ error });
+  }
+}
+
+export async function transferWithKeychain(username: string, destination: string, amount: string, memo: string, currency: string) {
+  try {
+    const keychain = new KeychainSDK(window);
+
+    const formParamsAsObject = {
+      "data": {
+        "username": username,
+        "to": destination,
+        "amount": amount,
+        "memo": memo,
+        "enforce": false,
+        "currency": currency,
+      }
+    }
+
+    const transfer = await keychain
+      .transfer(
+        formParamsAsObject.data as Transfer);
+    console.log({ transfer });
   } catch (error) {
     console.log({ error });
   }

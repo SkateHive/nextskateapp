@@ -12,6 +12,7 @@ import usePosts from "@/hooks/usePosts"
 import TipModal from "./TipModal"
 import { usePostContext } from "@/contexts/PostContext";
 import { useUserData } from "@/hooks/useUserData"
+import HiveTipModal from "./HiveTipModal"
 
 export default function TipButton() {
     const [isTipModalOpen, setIsTipModalOpen] = useState(false)
@@ -20,12 +21,16 @@ export default function TipButton() {
     const [author] = post?.author.split("/") || []
     const userData = useUserData(author)
     const [authorETHwallet, setAuthorETHwallet] = useState("")
-
-    const openTipModal = (token: string) => {
+    const [isHiveTipModalOpen, setIsHiveTipModalOpen] = useState(false)
+    const openBaseTipModal = (token: string) => {
         setToken(token)
         setIsTipModalOpen(true)
         setAuthorETHwallet(JSON.parse(userData.json_metadata).extensions.eth_address)
 
+    }
+
+    const handleHiveTipClick = () => {
+        setIsHiveTipModalOpen(true)
     }
 
     return (
@@ -37,7 +42,7 @@ export default function TipButton() {
                 <MenuItem
                     bg="black"
                     onClick={
-                        () => openTipModal('HIVE')
+                        () => handleHiveTipClick()
                     }
                 >
                     <Image mr={3} boxSize={"20px"} src="https://cryptologos.cc/logos/hive-blockchain-hive-logo.png" />
@@ -46,7 +51,7 @@ export default function TipButton() {
                 <MenuItem
                     bg="black"
                     onClick={
-                        () => openTipModal('SENDIT')
+                        () => openBaseTipModal('SENDIT')
                     }
                 >
                     <Image mr={3} boxSize={"20px"} src="https://sendit.city/assets/images/image03.jpg?v=c141f3fc" />
@@ -55,7 +60,7 @@ export default function TipButton() {
                 <MenuItem
                     bg="black"
                     onClick={
-                        () => openTipModal('NOGS')
+                        () => openBaseTipModal('NOGS')
                     }
                 >
                     <Image mr={3} boxSize={"20px"} src="https://app.noggles.com/svg/moon-logo.svg" />
@@ -64,7 +69,7 @@ export default function TipButton() {
                 <MenuItem
                     bg="black"
                     onClick={
-                        () => openTipModal('MEMBER')
+                        () => openBaseTipModal('MEMBER')
                     }
                 ><Image mr={3} boxSize={"20px"} src="https://member.clinic/images/01-1.jpg" />
                     Tip $MEMBER</MenuItem>
@@ -76,6 +81,11 @@ export default function TipButton() {
                 token={token}
                 author={author}
                 authorETHwallet={authorETHwallet}
+            />
+            <HiveTipModal
+                isOpen={isHiveTipModalOpen}
+                onClose={() => setIsHiveTipModalOpen(false)}
+                author={author}
             />
         </Menu>
 
