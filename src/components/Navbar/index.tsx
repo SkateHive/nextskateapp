@@ -12,7 +12,7 @@ import {
   Drawer,
   DrawerBody,
   DrawerContent,
-  DrawerHeader,
+  DrawerFooter,
   DrawerOverlay,
   Flex,
   HStack,
@@ -23,12 +23,13 @@ import {
   Tooltip,
   keyframes,
   useDisclosure,
+  useMediaQuery,
 } from "@chakra-ui/react"
 import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit"
-import { Bell, Home, HomeIcon, User } from "lucide-react"
+import { Home } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
-import { FaHive, FaSpeakap, FaWallet } from "react-icons/fa"
+import { FaHive, FaHome, FaSpeakap, FaUser, FaWallet } from "react-icons/fa"
 import { FaEthereum } from "react-icons/fa6"
 import { useAccount } from "wagmi"
 import LoginModal from "../Hive/Login/LoginModal"
@@ -59,6 +60,8 @@ export default function Navbar() {
   const { openConnectModal } = useConnectModal()
   const { openAccountModal } = useAccountModal()
 
+  const [isSmallerThan400] = useMediaQuery("(max-width: 400px)")
+
   console.log({
     hiveUser,
     ethAccount,
@@ -78,106 +81,98 @@ export default function Navbar() {
 
   return (
     <Box>
-      <Drawer placement={"left"} onClose={onClose} isOpen={isOpen}>
+      <Drawer
+        placement={isSmallerThan400 ? "bottom" : "left"}
+        onClose={onClose}
+        isOpen={isOpen}
+      >
         <DrawerOverlay />
-        <DrawerContent bg={"black"} color={"white"}>
-          <DrawerHeader>
-            {/* <DrawerHeader borderBottomWidth="1px" borderColor={"limegreen"}> */}
-            <CommunityTotalPayout />
-          </DrawerHeader>
-          <DrawerBody display={"flex"} flexDir={"column"} gap={1}>
-            <Button
-              width={"100%"}
-              leftIcon={<HomeIcon size={"16px"} />}
-              as={Link}
-              href={"/"}
-              bg="black"
-            >
-              Home
-            </Button>
-            <Button
-              width={"100%"}
-              bg="black"
-              leftIcon={<FaSpeakap size={"16px"} />}
-              as={Link}
-              href={`/plaza`}
-            >
-              Plaza
-            </Button>
-            <Button
-              width={"100%"}
-              bg="black"
-              leftIcon={<FaEthereum size={"16px"} />}
-              as={Link}
-              href={`/dao`}
-            >
-              Dao
-            </Button>
-
+        <DrawerContent
+          bg={"black"}
+          color={"white"}
+          borderRight={"1px solid limegreen"}
+        >
+          <DrawerBody
+            marginTop={"8px"}
+            display={"flex"}
+            flexDir={"column"}
+            gap={2}
+          >
+            <HStack padding={0} gap={3} fontSize={"22px"}>
+              <FaHome size={"22px"} />
+              <Link href={"/"}>Home</Link>
+            </HStack>
+            <HStack padding={0} gap={3} fontSize={"22px"}>
+              <FaSpeakap size={"22px"} />
+              <Link href={"/plaza"}>Plaza</Link>
+            </HStack>
+            <HStack padding={0} gap={3} fontSize={"22px"}>
+              <FaEthereum size={"22px"} />
+              <Link href={"/dao"}>Dao</Link>
+            </HStack>
             {hiveUser ? (
               <>
-                <Button
-                  width={"100%"}
-                  bg="black"
-                  leftIcon={<User size={"16px"} />}
-                  as={Link}
-                  href={`/profile/${hiveUser.name}`}
-                >
-                  Profile
-                </Button>
-                <Button
-                  width={"100%"}
-                  bg="black"
-                  leftIcon={<FaWallet size={"16px"} />}
-                  as={Link}
-                  href={`/wallet`}
-                >
-                  Wallet
-                </Button>
-                <Button
-                  width={"100%"}
-                  leftIcon={<Bell size={"16px"} />}
-                  as={Link}
-                  href={"/notifications"}
-                  bg="black"
-                >
-                  Notifications
-                </Button>
+                <HStack padding={0} gap={3} fontSize={"22px"}>
+                  <FaUser size={"22px"} />
+                  <Link href={`/profile/${hiveUser.name}`}>Profile</Link>
+                </HStack>
+                <HStack padding={0} gap={3} fontSize={"22px"}>
+                  <FaWallet size={"22px"} />
+                  <Link href={`/wallet`}>Wallet</Link>
+                </HStack>
               </>
             ) : null}
-            <Button
-              width={"100%"}
-              bg="black"
-              leftIcon={
-                <Icon color={hiveUser ? "red.400" : "white"} as={FaHive} />
-              }
-              onClick={() => (hiveUser ? null : onLoginOpen())}
-            >
-              {hiveUser ? <p>{hiveUser.name}</p> : <span>Login</span>}
-            </Button>
-            <LoginModal onClose={onLoginClose} isOpen={isLoginOpen} />
-            <Button
-              width={"100%"}
-              bg="black"
-              leftIcon={
-                <Icon
-                  color={ethAccount.address ? "blue.400" : "white"}
-                  as={FaEthereum}
-                />
-              }
-              onClick={() =>
-                !ethAccount.address && openConnectModal
-                  ? openConnectModal()
-                  : openAccountModal && openAccountModal()
-              }
-            >
-              {ethAccount.address ? (
-                formatEthereumAddress(ethAccount.address)
-              ) : (
-                <span>Connect</span>
-              )}
-            </Button>
           </DrawerBody>
+          <DrawerFooter
+            display={"flex"}
+            flexDirection={"column"}
+            alignItems={"stretch"}
+            gap={2}
+          >
+            <LoginModal onClose={onLoginClose} isOpen={isLoginOpen} />
+            <HStack>
+              <Button
+                justifyContent={"center"}
+                fontSize={"14px"}
+                variant={"outline"}
+                borderColor={"red.400"}
+                width={"100%"}
+                bg="black"
+                leftIcon={
+                  <Icon color={hiveUser ? "red.400" : "white"} as={FaHive} />
+                }
+                onClick={() => (hiveUser ? null : onLoginOpen())}
+              >
+                {hiveUser ? <p>{hiveUser.name}</p> : <span>Login</span>}
+              </Button>
+              <Button
+                justifyContent={"center"}
+                fontSize={"14px"}
+                variant={"outline"}
+                borderColor={"blue.400"}
+                width={"100%"}
+                bg="black"
+                leftIcon={
+                  <Icon
+                    color={ethAccount.address ? "blue.400" : "white"}
+                    as={FaEthereum}
+                  />
+                }
+                onClick={() =>
+                  !ethAccount.address && openConnectModal
+                    ? openConnectModal()
+                    : openAccountModal && openAccountModal()
+                }
+              >
+                {ethAccount.address ? (
+                  formatEthereumAddress(ethAccount.address)
+                ) : (
+                  <span>Connect</span>
+                )}
+              </Button>
+            </HStack>
+            <CommunityTotalPayout />
+          </DrawerFooter>
         </DrawerContent>
       </Drawer>
       <Flex m={3} align="center" justify="space-between">
@@ -214,6 +209,8 @@ export default function Navbar() {
         <HStack>
           {hasRewards && (
             <Button
+              gap={1}
+              justifyContent={"left"}
               colorScheme="yellow"
               variant="outline"
               animation={`${blink} 1s linear infinite`}

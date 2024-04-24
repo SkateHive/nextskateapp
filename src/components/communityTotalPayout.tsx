@@ -51,10 +51,8 @@ function CommunityTotalPayout() {
       <Box
         margin="0px"
         padding="4px"
-        width={"full"}
+        width={"100%"}
         borderRadius="md"
-        boxShadow="0 0 10px rgba(0, 0, 0, 0.1)"
-        background="linear-gradient(0deg, black, darkgreen, black)"
         color="chartreuse"
         border={"1px solid limegreen"}
       >
@@ -81,16 +79,11 @@ function CommunityTotalPayout() {
               color={"lightgreen"}
               fontSize="25px"
               fontWeight="bold"
-              marginBottom="5px"
-              fontFamily={"mono"}
               textShadow={"1px 1px 15px black"}
               gap={1}
               display={"flex"}
             >
-              <span style={{ fontFamily: "serif", color: "chartreuse" }}>
-                $
-              </span>
-              {formattedNumber}
+              ${formattedNumber}
             </Text>
             <Text
               color={"limegreen"}
