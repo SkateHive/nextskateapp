@@ -36,43 +36,52 @@ export default function TipButton() {
     return (
         <Menu >
             <MenuButton leftIcon={<FaDonate />} w={"auto"} as={Button} color="limegreen" variant={"outline"} size="sm">
-                Support
+                Tip
             </MenuButton>
             <MenuList bg="black" >
                 <MenuItem
                     bg="black"
+                    _hover={{ bg: "red.500", color: "black" }}
+
                     onClick={
                         () => handleHiveTipClick()
                     }
                 >
                     <Image mr={3} boxSize={"20px"} src="https://cryptologos.cc/logos/hive-blockchain-hive-logo.png" />
-                    Tip $HIVE
+                    $HIVE
                 </MenuItem>
                 <MenuItem
                     bg="black"
+                    _hover={{ bg: "green.500", color: "black" }}
+
                     onClick={
                         () => openBaseTipModal('SENDIT')
                     }
                 >
                     <Image mr={3} boxSize={"20px"} src="https://sendit.city/assets/images/image03.jpg?v=c141f3fc" />
-                    Tip $SENDIT
+                    $SENDIT
                 </MenuItem>
                 <MenuItem
                     bg="black"
+                    _hover={{ bg: "yellow.500" }}
+
                     onClick={
                         () => openBaseTipModal('NOGS')
                     }
+
                 >
                     <Image mr={3} boxSize={"20px"} src="https://app.noggles.com/svg/moon-logo.svg" />
-                    Tip $NOGS
+                    $NOGS
                 </MenuItem>
                 <MenuItem
                     bg="black"
+                    _hover={{ bg: "blue.500" }}
+
                     onClick={
                         () => openBaseTipModal('MEMBER')
                     }
                 ><Image mr={3} boxSize={"20px"} src="https://member.clinic/images/01-1.jpg" />
-                    Tip $MEMBER</MenuItem>
+                    $MEMBER</MenuItem>
 
             </MenuList>
             <TipModal
