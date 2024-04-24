@@ -15,6 +15,7 @@ import {
   ModalOverlay,
   Spinner,
   VStack,
+  Switch
 } from "@chakra-ui/react"
 import { useState } from "react"
 
@@ -32,6 +33,8 @@ function LoginModal({
   const [username, setUsername] = useState("")
   const [privateKey, setPrivateKey] = useState("")
   const { loginWithHive } = useAuthHiveUser()
+  const [showPrivateKeyInput, setShowPrivateKeyInput] = useState(false)
+
 
   async function doLogin(useLoginAs: boolean = false) {
     try {
@@ -44,6 +47,11 @@ function LoginModal({
       setIsLogginIn(false)
     }
   }
+
+  const handleSwitch = () => {
+    setShowPrivateKeyInput(!showPrivateKeyInput)
+  }
+
 
   return (
     <Modal isOpen={isOpen} isCentered onClose={onClose}>
@@ -69,7 +77,15 @@ function LoginModal({
                   setUsername(event.target.value.toLowerCase())
                 }
               />
-              {
+              <Switch
+                colorScheme="green"
+                size="lg"
+                onChange={handleSwitch}
+              >
+                Use Password (optional)
+              </Switch>
+              {showPrivateKeyInput && (
+
                 <Input
                   borderColor={"green.600"}
                   color={"limegreen"}
@@ -78,7 +94,8 @@ function LoginModal({
                   placeholder="Private Key"
                   onChange={(event1) => setPrivateKey(event1.target.value)}
                 />
-              }
+              )}
+
             </VStack>
             {Boolean(errorMessage) && (
               <FormErrorMessage>{errorMessage}</FormErrorMessage>
