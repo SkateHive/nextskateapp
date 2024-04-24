@@ -4,20 +4,16 @@ import usePosts from "@/hooks/usePosts"
 import PostModel from "@/lib/models/post"
 import { Link } from "@chakra-ui/next-js"
 import { Box, Button, ButtonGroup, Flex, Grid, HStack } from "@chakra-ui/react"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import InfiniteScroll from "react-infinite-scroll-component"
 import { BeatLoader } from "react-spinners"
 import Post from "../PostCard"
 import PostSkeleton from "../PostCard/Skeleton"
 import { useHiveUser } from "@/contexts/UserContext"
-const postTypeName = {
-  created: "🆕 Latest",
-  trending: "🔥 Trending",
-}
 
 export default function Feed() {
   const SKATEHIVE_TAG = "hive-173115"
-  const { posts, error, isLoading, queryCategory, setQueryCategory, setDiscussionQuery } = usePosts("trending", {tag: SKATEHIVE_TAG, limit: 100})
+  const { posts, error, isLoading, queryCategory, setQueryCategory, setDiscussionQuery } = usePosts("trending", { tag: SKATEHIVE_TAG, limit: 100 })
   const [visiblePosts, setVisiblePosts] = useState(20)
   const hiveUser = useHiveUser()
   if (error) return "Error"
@@ -61,7 +57,6 @@ export default function Feed() {
           </Button>
           {/* Following Section */}
           {hiveUser.hiveUser !== null && (
-
             <Button
               onClick={() => setQueryCategory("created")}
               isActive={queryCategory === "created"}
@@ -69,8 +64,6 @@ export default function Feed() {
               My Crew
             </Button>
           )}
-
-
         </ButtonGroup>
 
         <Button

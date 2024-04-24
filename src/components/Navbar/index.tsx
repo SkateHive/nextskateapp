@@ -1,69 +1,191 @@
 "use client"
 
+import AuthorSearchBar from "@/app/upload/components/searchBar"
+import { useHiveUser } from "@/contexts/UserContext"
+import { claimRewards } from "@/lib/hive/client-functions"
+import { formatEthereumAddress } from "@/lib/web3"
 import { Link } from "@chakra-ui/next-js"
 import {
   Box,
+  Button,
   Divider,
+  Drawer,
+  DrawerBody,
+  DrawerContent,
+  DrawerFooter,
+  DrawerOverlay,
   Flex,
   HStack,
   Heading,
+  Icon,
   IconButton,
   Image,
   Tooltip,
-  Button,
+  keyframes,
+  useDisclosure,
+  useMediaQuery,
 } from "@chakra-ui/react"
-import { ConnectButton } from "@rainbow-me/rainbowkit"
+import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit"
 import { Home } from "lucide-react"
 import { usePathname } from "next/navigation"
+import { useEffect, useState } from "react"
+import { FaHive, FaHome, FaSpeakap, FaUser, FaWallet } from "react-icons/fa"
+import { FaEthereum } from "react-icons/fa6"
+import { useAccount } from "wagmi"
+import LoginModal from "../Hive/Login/LoginModal"
+import CommunityTotalPayout from "../communityTotalPayout"
 import AvatarLogin from "./AvatarLogin"
-import AuthorSearchBar from "@/app/upload/components/searchBar"
-import { FaGift } from "react-icons/fa"
-import { useHiveUser, HiveUserContextProps } from "@/contexts/UserContext"
-import { claimRewards } from "@/lib/hive/client-functions"
-import { use, useEffect, useState } from "react"
-import { has } from "lodash"
-import { AuthUser, HiveAccount } from "@/lib/useHiveAuth"
-import { keyframes } from "@chakra-ui/react";
 import checkRewards from "./utils/checkReward"
-
 
 const blink = keyframes`
   0% { opacity: 1; }
   50% { opacity: 0.1; }
   100% { opacity: 1; }
-`;
+`
 
 export default function Navbar() {
   const pathname = usePathname()
-  const user = useHiveUser()
-  const [hasRewards, setHasRewards] = useState(false);
+  const { hiveUser } = useHiveUser()
+  const [hasRewards, setHasRewards] = useState(false)
+  const { isOpen, onOpen, onClose } = useDisclosure()
+
+  const ethAccount = useAccount()
+
+  const {
+    isOpen: isLoginOpen,
+    onOpen: onLoginOpen,
+    onClose: onLoginClose,
+  } = useDisclosure()
+
+  const { openConnectModal } = useConnectModal()
+  const { openAccountModal } = useAccountModal()
+
+  const [isSmallerThan400] = useMediaQuery("(max-width: 400px)")
+
+  console.log({
+    hiveUser,
+    ethAccount,
+  })
 
   useEffect(() => {
-    if (user.hiveUser !== null) {
-      checkRewards(setHasRewards, user.hiveUser)
+    if (hiveUser !== null) {
+      checkRewards(setHasRewards, hiveUser)
     }
-  }, [user.hiveUser])
+  }, [hiveUser])
 
   const handleClaimRewards = () => {
-    if (user.hiveUser) {
-      claimRewards(user.hiveUser)
+    if (hiveUser) {
+      claimRewards(hiveUser)
     }
   }
 
   return (
     <Box>
+      <Drawer
+        placement={isSmallerThan400 ? "bottom" : "left"}
+        onClose={onClose}
+        isOpen={isOpen}
+      >
+        <DrawerOverlay />
+        <DrawerContent
+          bg={"black"}
+          color={"white"}
+          borderRight={"1px solid limegreen"}
+        >
+          <DrawerBody
+            marginTop={"8px"}
+            display={"flex"}
+            flexDir={"column"}
+            gap={2}
+          >
+            <HStack padding={0} gap={3} fontSize={"22px"}>
+              <FaHome size={"22px"} />
+              <Link href={"/"}>Home</Link>
+            </HStack>
+            <HStack padding={0} gap={3} fontSize={"22px"}>
+              <FaSpeakap size={"22px"} />
+              <Link href={"/plaza"}>Plaza</Link>
+            </HStack>
+            <HStack padding={0} gap={3} fontSize={"22px"}>
+              <FaEthereum size={"22px"} />
+              <Link href={"/dao"}>Dao</Link>
+            </HStack>
+            {hiveUser ? (
+              <>
+                <HStack padding={0} gap={3} fontSize={"22px"}>
+                  <FaUser size={"22px"} />
+                  <Link href={`/profile/${hiveUser.name}`}>Profile</Link>
+                </HStack>
+                <HStack padding={0} gap={3} fontSize={"22px"}>
+                  <FaWallet size={"22px"} />
+                  <Link href={`/wallet`}>Wallet</Link>
+                </HStack>
+              </>
+            ) : null}
+          </DrawerBody>
+          <DrawerFooter
+            display={"flex"}
+            flexDirection={"column"}
+            alignItems={"stretch"}
+            gap={2}
+          >
+            <LoginModal onClose={onLoginClose} isOpen={isLoginOpen} />
+            <HStack>
+              <Button
+                justifyContent={"center"}
+                fontSize={"14px"}
+                variant={"outline"}
+                borderColor={"red.400"}
+                width={"100%"}
+                bg="black"
+                leftIcon={
+                  <Icon color={hiveUser ? "red.400" : "white"} as={FaHive} />
+                }
+                onClick={() => (hiveUser ? null : onLoginOpen())}
+              >
+                {hiveUser ? <p>{hiveUser.name}</p> : <span>Login</span>}
+              </Button>
+              <Button
+                justifyContent={"center"}
+                fontSize={"14px"}
+                variant={"outline"}
+                borderColor={"blue.400"}
+                width={"100%"}
+                bg="black"
+                leftIcon={
+                  <Icon
+                    color={ethAccount.address ? "blue.400" : "white"}
+                    as={FaEthereum}
+                  />
+                }
+                onClick={() =>
+                  !ethAccount.address && openConnectModal
+                    ? openConnectModal()
+                    : openAccountModal && openAccountModal()
+                }
+              >
+                {ethAccount.address ? (
+                  formatEthereumAddress(ethAccount.address)
+                ) : (
+                  <span>Connect</span>
+                )}
+              </Button>
+            </HStack>
+            <CommunityTotalPayout />
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
       <Flex m={3} align="center" justify="space-between">
         <Heading ml={3} size="2xl">
           <HStack>
-            <Link href="/" scroll={false}>
-              <Image
-                boxSize={"48px"}
-                src="https://www.skatehive.app/assets/skatehive.jpeg"
-                alt="SkateHive"
-                borderRadius={"5px"}
-                _hover={{ cursor: "pointer" }}
-              />
-            </Link>
+            <Image
+              onClick={onOpen}
+              boxSize={"48px"}
+              src="https://www.skatehive.app/assets/skatehive.jpeg"
+              alt="SkateHive"
+              borderRadius={"5px"}
+              _hover={{ cursor: "pointer" }}
+            />
             {pathname === "/" ? null : (
               <Tooltip label="Return Home">
                 <Link href="/" scroll={false}>
@@ -79,10 +201,16 @@ export default function Navbar() {
             )}
           </HStack>
         </Heading>
-        <AuthorSearchBar onSearch={(selectedUsername: string) => { window.location.href = `/profile/${selectedUsername}` }} />
+        <AuthorSearchBar
+          onSearch={(selectedUsername: string) => {
+            window.location.href = `/profile/${selectedUsername}`
+          }}
+        />
         <HStack>
-          {hasRewards &&
+          {hasRewards && (
             <Button
+              gap={1}
+              justifyContent={"left"}
               colorScheme="yellow"
               variant="outline"
               animation={`${blink} 1s linear infinite`}
@@ -90,7 +218,7 @@ export default function Navbar() {
             >
               Claim Rewards !
             </Button>
-          }
+          )}
           <AvatarLogin />
         </HStack>
       </Flex>
@@ -98,4 +226,3 @@ export default function Navbar() {
     </Box>
   )
 }
-
