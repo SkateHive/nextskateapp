@@ -15,7 +15,8 @@ import {
   ModalOverlay,
   Spinner,
   VStack,
-  Switch
+  Switch,
+  Image
 } from "@chakra-ui/react"
 import { useState } from "react"
 
@@ -65,6 +66,7 @@ function LoginModal({
         <ModalHeader>Hive Log In</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
+          <Image mb={2} src="https://www.skatehive.app/assets/pepe_login.png" alt="Hive Logo" />
           <FormControl isInvalid={Boolean(errorMessage)}>
             <VStack align={"normal"}>
               <Input
