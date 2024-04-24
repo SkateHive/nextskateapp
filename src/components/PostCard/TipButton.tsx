@@ -7,7 +7,7 @@ import {
     MenuList,
     Image
 } from "@chakra-ui/react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import usePosts from "@/hooks/usePosts"
 import TipModal from "./TipModal"
 import { usePostContext } from "@/contexts/PostContext";
@@ -22,10 +22,28 @@ export default function TipButton() {
     const userData = useUserData(author)
     const [authorETHwallet, setAuthorETHwallet] = useState("")
     const [isHiveTipModalOpen, setIsHiveTipModalOpen] = useState(false)
+    const [isUserEthWalletSet, setIsUserEthWalletSet] = useState(false)
+
+    // we need to check to see if the user has an eth wallet set in their metadata to condionally show the eth buttons 
+    useEffect(() => {
+        if (userData?.json_metadata) {
+            const eth_address = JSON.parse(userData.json_metadata).extensions?.eth_address;
+            setIsUserEthWalletSet(!!eth_address);
+        }
+    }, [userData]);
+
+
+
     const openBaseTipModal = (token: string) => {
         setToken(token)
         setIsTipModalOpen(true)
-        setAuthorETHwallet(JSON.parse(userData.json_metadata).extensions.eth_address)
+        if (isUserEthWalletSet) {
+            setAuthorETHwallet(JSON.parse(userData.json_metadata).extensions.eth_address)
+        }
+        else {
+            setAuthorETHwallet("")
+        }
+
 
     }
 
@@ -50,40 +68,36 @@ export default function TipButton() {
                     <Image mr={3} boxSize={"20px"} src="https://cryptologos.cc/logos/hive-blockchain-hive-logo.png" />
                     $HIVE
                 </MenuItem>
-                <MenuItem
-                    bg="black"
-                    _hover={{ bg: "green.500", color: "black" }}
-
-                    onClick={
-                        () => openBaseTipModal('SENDIT')
-                    }
-                >
-                    <Image mr={3} boxSize={"20px"} src="https://sendit.city/assets/images/image03.jpg?v=c141f3fc" />
-                    $SENDIT
-                </MenuItem>
-                <MenuItem
-                    bg="black"
-                    _hover={{ bg: "yellow.500" }}
-
-                    onClick={
-                        () => openBaseTipModal('NOGS')
-                    }
-
-                >
-                    <Image mr={3} boxSize={"20px"} src="https://app.noggles.com/svg/moon-logo.svg" />
-                    $NOGS
-                </MenuItem>
-                <MenuItem
-                    bg="black"
-                    _hover={{ bg: "blue.500" }}
-
-                    onClick={
-                        () => openBaseTipModal('MEMBER')
-                    }
-                ><Image mr={3} boxSize={"20px"} src="https://member.clinic/images/01-1.jpg" />
-                    $MEMBER</MenuItem>
-
+                {isUserEthWalletSet && (
+                    <>
+                        <MenuItem
+                            bg="black"
+                            _hover={{ bg: "green.500", color: "black" }}
+                            onClick={() => openBaseTipModal('SENDIT')}
+                        >
+                            <Image mr={3} boxSize={"20px"} src="https://sendit.city/assets/images/image03.jpg?v=c141f3fc" />
+                            $SENDIT
+                        </MenuItem>
+                        <MenuItem
+                            bg="black"
+                            _hover={{ bg: "yellow.500" }}
+                            onClick={() => openBaseTipModal('NOGS')}
+                        >
+                            <Image mr={3} boxSize={"20px"} src="https://app.noggles.com/svg/moon-logo.svg" />
+                            $NOGS
+                        </MenuItem>
+                        <MenuItem
+                            bg="black"
+                            _hover={{ bg: "blue.500" }}
+                            onClick={() => openBaseTipModal('MEMBER')}
+                        >
+                            <Image mr={3} boxSize={"20px"} src="https://member.clinic/images/01-1.jpg" />
+                            $MEMBER
+                        </MenuItem>
+                    </>
+                )}
             </MenuList>
+
             <TipModal
                 isOpen={isTipModalOpen}
                 onClose={() => setIsTipModalOpen(false)}

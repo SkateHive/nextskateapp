@@ -21,7 +21,6 @@ export default function Footer() {
   return (
     <CardFooter pt={0} flexDirection={"column"} gap={2} key={hiveUser?.name}>
       <Flex w={"100%"} justify={"space-between"} align={"center"}>
-        <Vote />
         {/* <PostVoters
           activeVoters={post.active_votes}
           modalIsOpen={isVotersOpen}
@@ -29,6 +28,8 @@ export default function Footer() {
           modalOnClose={onVotersClose}
         /> */}
         <TipButton />
+        <Vote />
+
       </Flex>
     </CardFooter>
   )

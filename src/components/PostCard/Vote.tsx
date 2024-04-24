@@ -58,7 +58,7 @@ export default function Vote() {
   }
 
   return (
-    <Tooltip label="Earnings">
+    <Tooltip label="Post Earnings">
       <Button
         variant={"link"}
         disabled={isAnimating}
@@ -82,7 +82,7 @@ export default function Vote() {
         >
           ${post.getEarnings().toFixed(2)}
         </Text>
-        <RiArrowRightUpLine size={25} style={{ marginLeft: "-4px" }} />
+        {/* <RiArrowRightUpLine size={25} style={{ marginLeft: "-4px" }} /> */}
       </Button>
     </Tooltip>
   )
