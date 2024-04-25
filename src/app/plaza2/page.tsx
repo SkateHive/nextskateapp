@@ -1,6 +1,6 @@
 'use client'
 import React from "react";
-import { Box, Text, Image, Center, Tooltip, Spinner } from "@chakra-ui/react";
+import { Flex, Box, Text, Image, Center, Tooltip, Spinner, Button } from "@chakra-ui/react";
 import CommentsSection from "@/components/PostModal/commentSection";
 import { Comment } from '@/hooks/comments';
 import { useComments } from '@/hooks/comments';
@@ -12,6 +12,7 @@ import { FaImage, FaSave } from "react-icons/fa";
 
 import { commands } from "@uiw/react-md-editor";
 import rehypeSanitize from "rehype-sanitize";
+
 
 
 
@@ -82,14 +83,14 @@ const PlazaCommentSection = () => {
                     Plaza
                 </Text>
             </Center>
-            <Box  {...getRootProps()} m={5} >
+            <Box  {...getRootProps()} ml={['3%', '21%']} mr={['3%', '21%']} >
                 {isUploading && <Center><Spinner /></Center>}
 
                 <MDEditor
                     value={value}
                     onChange={(value) => setValue(value || "")}
                     commands={[
-                        commands.bold, commands.italic, commands.strikethrough, commands.hr, commands.code, commands.table, commands.link, commands.quote, commands.unorderedListCommand, commands.orderedListCommand, commands.codeBlock, commands.fullscreen
+                        commands.bold, commands.italic, commands.strikethrough, commands.hr, commands.code, commands.table, commands.link, commands.quote, commands.unorderedListCommand, commands.orderedListCommand, commands.codeBlock,
                     ]}
                     extraCommands={extraCommands}
                     previewOptions={{ rehypePlugins: [[rehypeSanitize]] }}
@@ -103,10 +104,19 @@ const PlazaCommentSection = () => {
                         margin: "3px",
                     }}
                 />
+                <Flex justifyContent={"flex-end"} >
+                    <Button
+                        colorScheme="green"
+                        variant={"outline"}
+                    >
+                        Send it
+                    </Button>
+                </Flex>
             </Box>
+
             <Center>
                 <Box
-                    maxW={["100%", "50%"]} // This will make the width 100% on mobile and 50% on larger screens
+                    maxW={["100%", "60%"]} // This will make the width 100% on mobile and 60% on larger screens
                 >
                     <CommentsSection comments={comments} />
                 </Box>
