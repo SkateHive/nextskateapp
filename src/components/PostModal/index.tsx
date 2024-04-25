@@ -28,7 +28,7 @@ import HiveClient from "@/lib/hiveclient"
 import Post from "../PostCard"
 import { PostProps } from "@/lib/models/post"
 import { use, useState, useEffect } from "react"
-
+import { transformIPFSContent } from "@/lib/utils"
 interface PostModalInterface {
   isOpen: boolean
   onClose(): void
@@ -121,7 +121,7 @@ export function PostModal({ isOpen, onClose }: PostModalInterface) {
               rehypePlugins={[rehypeRaw]}
               remarkPlugins={[remarkGfm]}
             >
-              {postBody}
+              {transformIPFSContent(postBody)}
             </ReactMarkdown>
           </Box>
           <Box minW={"50%"}>

@@ -85,14 +85,23 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
                     }}
                     borderColor="green.600"
                     color="limegreen"
-                    minW={"400px"}
+                    minW={{ base: "100%", md: "40%" }} // Responsive width
                     _placeholder={{ color: "limegreen", opacity: 0.4 }}
                     focusBorderColor="limegreen"
                 />
             </InputGroup>
 
             {isListVisible && (
-                <List position="absolute" top="100%" left="0" right="0" bg="white" boxShadow="md" zIndex="999">
+                <List
+                    position="absolute"
+                    top="100%"
+                    left={{ base: "0", md: "0" }} // Responsive left
+                    right={{ base: "0", md: "0" }} // Responsive right
+                    bg="white"
+                    boxShadow="md"
+                    zIndex="999"
+                    width={{ base: "100%", md: "auto" }} // Responsive width
+                >
                     {authors.map((author) => (
                         <ListItem
                             key={author}

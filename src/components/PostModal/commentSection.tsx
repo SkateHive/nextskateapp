@@ -28,7 +28,7 @@ const CommentsSection = ({ comments, isCommentReply = false }: CommentsSectionPr
                 const ipfsData = await uploadFileToIPFS(file);
                 if (ipfsData !== undefined) {
                     const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}?pinataGatewayToken=${PINATA_GATEWAY_TOKEN}`;
-                    const markdownLink = file.type.startsWith("video/") ? `<iframe src="${ipfsUrl}" allowfullscreen></iframe>` : `![Image](${ipfsUrl})`;
+                    const markdownLink = file.type.startsWith("video/") ? `<iframe src="${ipfsUrl}" allowfullscreen autoplay={false}></iframe>` : `![Image](${ipfsUrl})`;
                     setValue(prevMarkdown => `${prevMarkdown}\n${markdownLink}\n`);
                 }
             }

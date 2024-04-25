@@ -105,7 +105,7 @@ export default function Navbar() {
             {hasRewards && (
               <Button
                 gap={1}
-                justifyContent={"left"}
+                justifyContent={"center"}
                 colorScheme="yellow"
                 variant="outline"
                 animation={`${blink} 1s linear infinite`}

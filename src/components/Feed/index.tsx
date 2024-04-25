@@ -73,7 +73,7 @@ export default function Feed() {
           colorScheme="green"
           variant={"outline"}
         >
-          + Upload 🛹
+          + Create 🛹
         </Button>
       </HStack>
       <InfiniteScroll
