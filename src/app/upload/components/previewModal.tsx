@@ -193,7 +193,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
                 'comment',
                 {
                     parent_author: '',
-                    parent_permlink: generatePermlink(title),
+                    parent_permlink: 'hive-173115',
                     author: user.name,
                     permlink: permlink,
                     title: title,

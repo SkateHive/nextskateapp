@@ -29,6 +29,7 @@ import Post from "../PostCard"
 import { PostProps } from "@/lib/models/post"
 import { use, useState, useEffect } from "react"
 import { transformIPFSContent } from "@/lib/utils"
+import CommandPrompt from "./commentPrompt"
 interface PostModalInterface {
   isOpen: boolean
   onClose(): void
@@ -39,6 +40,9 @@ export function PostModal({ isOpen, onClose }: PostModalInterface) {
   const { comments } = useComments(post.author, post.permlink)
   const postBody = transform3SpeakContent(post.body)
   const [postData, setPostData] = useState<PostProps[]>([])
+  const [localComments, setLocalComments] = useState([]);
+
+
 
   const fetchPosts = async (username: string) => {
     try {
@@ -125,6 +129,7 @@ export function PostModal({ isOpen, onClose }: PostModalInterface) {
             </ReactMarkdown>
           </Box>
           <Box minW={"50%"}>
+            <CommandPrompt />
             <Center>
               <Text
                 fontSize={"2xl"}
@@ -133,19 +138,19 @@ export function PostModal({ isOpen, onClose }: PostModalInterface) {
               </Text>
             </Center>
             <CommentsSection comments={comments} />
-            <Center>
+            {/* <Center>
               <Text
                 fontSize={"2xl"}
               >
                 More from {post.author}
               </Text>
-              {/* <VStack>
+              <VStack>
 
                 {postData.map((post: PostProps, index: number) => (
                   <Post key={index} postData={post} />
                 ))}
-              </VStack> */}
-            </Center>
+              </VStack>
+            </Center> */}
           </Box>
         </ModalBody>
         <ModalFooter></ModalFooter>
