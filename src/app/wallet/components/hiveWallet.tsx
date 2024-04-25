@@ -84,7 +84,6 @@ function HiveBox() {
             setDelegatedHPUsdValue(delegatedHPUsd);
             setHBDUsdValue(HBDUsd);
             setSavingsUSDvalue(savingsValue);
-            console.log(hiveUsd, HPUsd, HBDUsd, savingsValue)
             const total = hiveUsd + HPUsd + HBDUsd + savingsValue;
             setTotalValue(total);
 

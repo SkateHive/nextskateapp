@@ -62,10 +62,7 @@ export default function Navbar() {
 
   const [isSmallerThan400] = useMediaQuery("(max-width: 400px)")
 
-  console.log({
-    hiveUser,
-    ethAccount,
-  })
+
 
   useEffect(() => {
     if (hiveUser !== null) {

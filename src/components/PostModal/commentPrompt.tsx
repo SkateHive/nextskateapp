@@ -9,6 +9,7 @@ import { Box, Button, Center, Spinner, Tooltip, Flex } from '@chakra-ui/react';
 import MDEditor from '@uiw/react-md-editor';
 import { usePostContext } from '@/contexts/PostContext';
 import { useHiveUser } from '@/contexts/UserContext';
+import { useComments } from '@/hooks/comments';
 
 const CommandPrompt = () => {
 

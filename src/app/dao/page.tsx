@@ -60,7 +60,6 @@ const DaoPage = () => {
 
   useEffect(() => {
     setMainProposal(proposals[0])
-    console.log(proposals)
   }, [proposals])
 
   const getConnectedUserAvatar = async (address: string) => {
@@ -126,10 +125,8 @@ const DaoPage = () => {
     if (proposal) {
       // const body = proposal["body"]
       // const permlink = body.split(" ")[body.split(" ").length - 1]
-      console.log(proposal.body)
       const body = proposal.body
       const permlink = body.split(" ")[body.split(" ").length - 1]
-      console.log(permlink)
     }
   }
   return (

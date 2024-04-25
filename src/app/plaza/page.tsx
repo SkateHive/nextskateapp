@@ -300,11 +300,9 @@ export default function Plaza() {
 
   const didUserVoted = async () => {
     const userVoted = comments.some((comment) => {
-      // console.log(comment.active_votes)
       return comment.active_votes.some((vote) => vote.voter === username);
     });
     setUserVoted(userVoted);
-    console.log("User voted:", userVoted);
   }
 
   useEffect(() => {
@@ -320,7 +318,6 @@ export default function Plaza() {
     }
 
     try {
-      console.log("Voting on comment:", comment.permlink, username, comment.author)
       await voteOnContent(username, comment.permlink, comment.author, 10000)
     } catch (error: any) {
       console.error("Error voting:", error)
@@ -377,7 +374,6 @@ export default function Plaza() {
         // Set the file URL in the state
         setUploadedVideoUrl(ipfsUrl)
 
-        console.log(`Uploaded ${file.type} file to Pinata IPFS:`, ipfsUrl)
       } else {
         const errorData = await response.json()
         console.error(

@@ -30,7 +30,6 @@ const Comment: React.FC<CommentProps> = ({ author, body, created, net_votes, per
         try {
             // Perform the vote operation
             await voteOnContent(hiveUser.name, permlink, author, 10000);
-            console.log("Voted successfully!");
             if (author) {
                 const author_alert = author;
                 alert("You just voted on " + author_alert + "'s comment! 🛹");
