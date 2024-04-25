@@ -1,19 +1,21 @@
-import React, { useState, useEffect } from 'react'; // Corrected imports
-import ReactMarkdown from "react-markdown";
 import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
 import { usePostContext } from "@/contexts/PostContext";
-import {
-  Box, Modal, ModalBody, ModalCloseButton, ModalContent,
-  ModalFooter, ModalHeader, ModalOverlay, Text, Center
-} from "@chakra-ui/react";
-import Header from "../PostCard/Header";
 import { useComments } from "@/hooks/comments";
+import HiveClient from "@/lib/hiveclient";
 import { transform3SpeakContent, transformIPFSContent } from "@/lib/utils";
+import {
+  Box,
+  Center,
+  Modal, ModalBody, ModalCloseButton, ModalContent,
+  ModalFooter, ModalHeader, ModalOverlay, Text
+} from "@chakra-ui/react";
+import { useEffect } from 'react'; // Corrected imports
+import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
-import CommentsSection from "./commentSection";
-import HiveClient from "@/lib/hiveclient";
+import Header from "../PostCard/Header";
 import CommandPrompt from "./commentPrompt";
+import CommentsSection from "./commentSection";
 
 interface PostModalInterface {
   isOpen: boolean;
@@ -22,9 +24,8 @@ interface PostModalInterface {
 
 export function PostModal({ isOpen, onClose }: PostModalInterface) {
   const { post } = usePostContext();
-  const { comments } = useComments(post.author, post.permlink);
+  const { comments, addComment } = useComments(post.author, post.permlink);
   const postBody = transform3SpeakContent(post.body);
-  const [localComments, setLocalComments] = useState([]);
 
   useEffect(() => {
     const fetchPosts = async (username: string) => {
@@ -54,7 +55,7 @@ export function PostModal({ isOpen, onClose }: PostModalInterface) {
             </ReactMarkdown>
           </Box>
           <Box minW="50%">
-            <CommandPrompt />
+            <CommandPrompt addComment={addComment} />
             <Center><Text fontSize="2xl">Comments</Text></Center>
             <CommentsSection comments={comments} />
           </Box>
