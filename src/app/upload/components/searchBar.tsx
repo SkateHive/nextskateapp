@@ -85,6 +85,7 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
                     }}
                     borderColor="green.600"
                     color="limegreen"
+                    minW={"400px"}
                     _placeholder={{ color: "limegreen", opacity: 0.4 }}
                     focusBorderColor="limegreen"
                 />

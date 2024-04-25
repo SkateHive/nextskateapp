@@ -98,6 +98,22 @@ export default function Navbar() {
             flexDir={"column"}
             gap={2}
           >
+            <Image
+              src="/skatehive-banner.png" w={"100%"} h={"auto"} alt="SkateHive" />
+            <Divider mb={3} mt={3} style={{ color: 'limegreen', borderColor: 'limegreen' }} />
+            <CommunityTotalPayout />
+            {hasRewards && (
+              <Button
+                gap={1}
+                justifyContent={"left"}
+                colorScheme="yellow"
+                variant="outline"
+                animation={`${blink} 1s linear infinite`}
+                onClick={handleClaimRewards}
+              >
+                Claim Rewards !
+              </Button>
+            )}
             <HStack padding={0} gap={3} fontSize={"22px"}>
               <FaHome size={"22px"} />
               <Link href={"/"}>Home</Link>
@@ -120,6 +136,7 @@ export default function Navbar() {
                   <FaWallet size={"22px"} />
                   <Link href={`/wallet`}>Wallet</Link>
                 </HStack>
+
               </>
             ) : null}
           </DrawerBody>
@@ -171,7 +188,6 @@ export default function Navbar() {
                 )}
               </Button>
             </HStack>
-            <CommunityTotalPayout />
           </DrawerFooter>
         </DrawerContent>
       </Drawer>
@@ -207,18 +223,7 @@ export default function Navbar() {
           }}
         />
         <HStack>
-          {hasRewards && (
-            <Button
-              gap={1}
-              justifyContent={"left"}
-              colorScheme="yellow"
-              variant="outline"
-              animation={`${blink} 1s linear infinite`}
-              onClick={handleClaimRewards}
-            >
-              Claim Rewards !
-            </Button>
-          )}
+
           <AvatarLogin />
         </HStack>
       </Flex>
