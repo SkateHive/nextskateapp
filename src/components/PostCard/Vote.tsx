@@ -1,18 +1,37 @@
+'use client'
 import { usePostContext } from "@/contexts/PostContext"
 import { useHiveUser } from "@/contexts/UserContext"
-//import { SWR_POSTS_TAG } from "@/hooks/usePosts"
 import { vote } from "@/lib/hive/client-functions"
 import { voteWithPrivateKey } from "@/lib/hive/server-functions"
 import { Button, Text, Tooltip } from "@chakra-ui/react"
 import { VoteOperation } from "@hiveio/dhive"
 import { useState } from "react"
-import { RiArrowRightUpLine } from "react-icons/ri"
 import { useReward } from "react-rewards"
-import { useSWRConfig } from "swr"
+import { useEffect } from "react"
+import { voting_value2 } from "./calculateHiveVotingValueForHiveUser"
 export default function Vote() {
   const { post } = usePostContext()
-  const { mutate } = useSWRConfig()
   const { hiveUser } = useHiveUser()
+  const [postEarnings, setPostEarnings] = useState(Number(post.getEarnings().toFixed(2)))
+  const [userVotingValue, setUserVotingValue] = useState(0)
+  const getVotingValue = async () => {
+    try {
+      if (!hiveUser) return;
+      const vote_value = await voting_value2(hiveUser);
+      setUserVotingValue(Number(vote_value.toFixed(2)));
+      console.log("Voting value: ", vote_value.toFixed(2));
+    } catch (error) {
+      console.error("Failed to calculate voting value:", error);
+    }
+  }
+
+  useEffect(() => {
+    if (hiveUser) {
+      getVotingValue();
+    }
+  }, [hiveUser]);
+
+
 
   const rewardId = post.post_id ? "postReward" + post.post_id : ""
   const { reward, isAnimating } = useReward(rewardId, "emoji", {
@@ -37,6 +56,7 @@ export default function Vote() {
         author: post.author,
         weight: voteWeight,
       })
+      setPostEarnings(Number(postEarnings.toFixed(2)) + userVotingValue)
     } else if (loginMethod === "privateKey") {
       const vote: VoteOperation = [
         "vote",
@@ -80,7 +100,7 @@ export default function Vote() {
           fontSize={"18px"}
           fontWeight={"bold"}
         >
-          ${post.getEarnings().toFixed(2)}
+          ${postEarnings.toFixed(2)}
         </Text>
         {/* <RiArrowRightUpLine size={25} style={{ marginLeft: "-4px" }} /> */}
       </Button>

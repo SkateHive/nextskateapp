@@ -33,6 +33,8 @@ import { getENSnamefromAddress } from "./utils/getENSfromAddress"
 import voteOnProposal from "./utils/voteOnProposal"
 import ProposalListItem from "./components/proposalListItem"
 import VoteConfirmationModal from "./components/voteWithReasonModal"
+import DaoTreasure from "./components/daoTreasure"
+
 
 const DaoPage = () => {
   const [proposals, setProposals] = useState<Proposal[]>([])
@@ -87,9 +89,6 @@ const DaoPage = () => {
       const formattedAddress = ethAccount.address.toString()
       setFormattedAddress(formattedAddress)
       getConnectedUserAvatar(ethAccount.address)
-        .then((avatar) => {
-          console.log("Avatar loaded:")
-        })
         .catch((error) => {
           console.error("Error fetching avatar:", error)
         })
@@ -100,9 +99,6 @@ const DaoPage = () => {
   useEffect(() => {
     fetchProposals({ setProposals, setLoadingProposals, setLoadingSummaries })
   }, [])
-  useEffect(() => {
-    console.log(proposals)
-  }, [proposals])
 
   const checkProposalOutcome = (proposal: Proposal) => {
     const totalVotes = proposal.scores.reduce((acc, score) => acc + score, 0)
@@ -136,6 +132,7 @@ const DaoPage = () => {
           DAO
         </Text>
       </Center>
+      <DaoTreasure />
       <Box
         bg="black"
         p={4}

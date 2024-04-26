@@ -168,7 +168,7 @@ export default function AvatarLogin() {
           bg="black"
           icon={<FaSpeakap size={"16px"} />}
           as={Link}
-          href={`/plaza`}
+          href={`/plaza2`}
         >
           Plaza
         </MenuItem>

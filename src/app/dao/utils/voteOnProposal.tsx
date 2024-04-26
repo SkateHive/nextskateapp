@@ -22,7 +22,6 @@ const voteOnProposal = async (ethAccount: any, proposalId: string, choiceId: num
         reason: reason,
         app: 'Skatehive App'
     });
-    console.log('Voting receipt:', receipt);
     if (receipt) {
         alert('Vote submitted!');
     }
