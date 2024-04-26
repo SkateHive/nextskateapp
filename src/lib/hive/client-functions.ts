@@ -1,9 +1,10 @@
 'use client';
 import { KeychainRequestResponse, KeychainSDK, Post, Vote, KeychainKeyTypes, Broadcast, Login } from "keychain-sdk"
-import { Client, Operation, PrivateKey } from "@hiveio/dhive"
+import { Operation, PrivateKey } from "@hiveio/dhive"
 import CryptoJS from 'crypto-js';
 import { KeychainTransactionResult } from "keychain-sdk";
 import { HiveAccount } from "../useHiveAuth";
+import HiveClient from "../hiveclient";
 
 
 interface HiveKeychainResponse {
@@ -100,4 +101,10 @@ export async function loginWithKeychain(username: string) {
   } catch (error) {
     console.log({ error });
   }
+}
+
+export function getReputation(rep: number) {
+  let out = ((Math.log10(Math.abs(rep))-9)*9)+25;
+  out = Math.round(out);
+  return out;
 }

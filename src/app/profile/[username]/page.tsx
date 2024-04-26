@@ -1,6 +1,6 @@
 'use client'
 import Post, { PostComponentProps } from "@/components/PostCard"
-import ProfileHeader from "@/components/ProfileHeader"
+import ProfileHeader from "@/components/Profile/ProfileHeader"
 import HiveClient from "@/lib/hiveclient"
 import PostModel from "@/lib/models/post"
 // import { getUserFromUsername } from "@/lib/services/userService"

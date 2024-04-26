@@ -107,16 +107,6 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
     }
   }
 
-  /*
-  useEffect(() => {
-    const fetchAuthor = async () => {
-      const author = await UserModel.getNewFromUsername(post.author)
-      setAuthorData(author)
-    }
-    fetchAuthor()
-  }, [post.author])
-  */
-
   const { hiveAccount, isLoading } = useHiveAccount(post.author)
   if (isLoading || !hiveAccount) return <div>Loading...</div>
 
