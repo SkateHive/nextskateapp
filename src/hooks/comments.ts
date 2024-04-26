@@ -113,13 +113,7 @@ export function useComments(author: string, permlink: string) {
   useEffect(() => {
     updateComments()
   }, [])
-
-  // const {
-  //   data: comments,
-  //   error,
-  //   isLoading,
-  // } = useSWR(`comments/${author}/${permlink}`, () => fetchComments(author, permlink));
-
+  
   return {
     comments,
     error,
