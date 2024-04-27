@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import { Box, Text, Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
 import ProfileDashboard from "./profileDashboard";
-import hiveClient from "@/lib/hiveclient";
+import hiveClient from "@/lib/hive/hiveclient";
 import { set } from "lodash";
 interface ProfilePageProps {
     params: {

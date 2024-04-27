@@ -1,5 +1,5 @@
 import { HiveAccount } from "@/lib/useHiveAuth";
-import HiveClient from "@/lib/hiveclient";
+import HiveClient from "@/lib/hive/hiveclient";
 
 export default async function checkRewards(setHasRewards: any, user: HiveAccount) {
     const hiveUser = user;

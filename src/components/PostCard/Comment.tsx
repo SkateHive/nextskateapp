@@ -8,7 +8,7 @@ import CommentsSection from "@/components/PostModal/commentSection"
 import useHiveAccount from "@/hooks/useHiveAccount";
 import { FaFire } from "react-icons/fa";
 import { useHiveUser } from "@/contexts/UserContext";
-import voteOnContent from "@/app/plaza/voting";
+import voteOnContent from "@/app/plaza/voting"
 import React, { useState, useEffect } from 'react';
 import { voting_value } from "./calculateHiveVotingValue"
 

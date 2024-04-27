@@ -1,5 +1,5 @@
 // Assuming HiveClient is a wrapper around fetch or another HTTP client library.
-import HiveClient from "@/lib/hiveclient";
+import HiveClient from "@/lib/hive/hiveclient";
 
 /**
  * Fetches user notifications from the Hive blockchain using the bridge API.

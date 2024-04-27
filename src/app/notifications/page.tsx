@@ -7,7 +7,7 @@ import { Button, Flex, Spinner, Stack, StackDivider } from "@chakra-ui/react"
 import { useCallback, useEffect, useState } from "react"
 
 import { NotificationContent } from "./components/NotificationContent"
-import { getUserNotifications } from "./lib/useData"
+import { getUserNotifications } from "./lib/getAccountNotification"
 import { get } from "lodash"
 
 export interface Notification {

@@ -124,7 +124,7 @@ export default function Navbar() {
             </HStack>
             <HStack padding={0} gap={3} fontSize={"22px"}>
               <FaSpeakap size={"22px"} />
-              <Link href={"/plaza2"}>Plaza</Link>
+              <Link href={"/plaza"}>Plaza</Link>
             </HStack>
             <HStack padding={0} gap={3} fontSize={"22px"}>
               <FaEthereum size={"22px"} />

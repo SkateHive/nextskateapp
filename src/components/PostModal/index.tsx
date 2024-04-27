@@ -1,7 +1,7 @@
 import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
 import { usePostContext } from "@/contexts/PostContext";
 import { useComments } from "@/hooks/comments";
-import HiveClient from "@/lib/hiveclient";
+import HiveClient from "@/lib/hive/hiveclient";
 import { transform3SpeakContent, transformIPFSContent } from "@/lib/utils";
 import {
   Box,

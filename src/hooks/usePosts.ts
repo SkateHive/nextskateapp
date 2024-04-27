@@ -1,30 +1,30 @@
-import HiveClient from "@/lib/hiveclient"
+import HiveClient from "@/lib/hive/hiveclient"
 import { Discussion, DiscussionQueryCategory, DisqussionQuery } from "@hiveio/dhive"
 import { useState, useEffect } from "react"
 
 export default function usePosts(query: DiscussionQueryCategory, params: DisqussionQuery) {
-    const [posts, setPosts] = useState<Discussion[]>()
-    const [queryCategory, setQueryCategory] = useState<DiscussionQueryCategory>(query)
-    const [discussionQuery, setDiscussionQuery] = useState<DisqussionQuery>(params)
-    const [isLoading, setIsLoading] = useState(false)
-    const [error, setError] = useState<string | null>(null)
+  const [posts, setPosts] = useState<Discussion[]>()
+  const [queryCategory, setQueryCategory] = useState<DiscussionQueryCategory>(query)
+  const [discussionQuery, setDiscussionQuery] = useState<DisqussionQuery>(params)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-    useEffect(() => {
-        const handleGetPosts = async () => {
-            setIsLoading(true)
-            setError(null)
-            try {
-                const posts = await HiveClient.database.getDiscussions(queryCategory, discussionQuery)
-                setPosts(posts)
-            } catch {
-                setError("Loading account error!")
-            } finally {
-                setIsLoading(false)
-            }
-        }
-        handleGetPosts()
-    }, [queryCategory,discussionQuery]);
-    return { posts, isLoading, error, queryCategory, setQueryCategory, setDiscussionQuery }
+  useEffect(() => {
+    const handleGetPosts = async () => {
+      setIsLoading(true)
+      setError(null)
+      try {
+        const posts = await HiveClient.database.getDiscussions(queryCategory, discussionQuery)
+        setPosts(posts)
+      } catch {
+        setError("Loading account error!")
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    handleGetPosts()
+  }, [queryCategory, discussionQuery]);
+  return { posts, isLoading, error, queryCategory, setQueryCategory, setDiscussionQuery }
 }
 
 /*

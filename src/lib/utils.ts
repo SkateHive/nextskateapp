@@ -1,11 +1,9 @@
 export function getWebsiteURL() {
   return process.env.NEXT_PUBLIC_WEBSITE_URL || ""
 }
-
 export function getCommunityTag() {
   return process.env.NEXT_PUBLIC_HIVE_COMMUNITY_TAG
 }
-
 export function calculateTimeAgo(date: string): string {
   const currentUTCDate = new Date()
   const seconds = Math.floor(
@@ -34,13 +32,11 @@ export function calculateTimeAgo(date: string): string {
   }
   return Math.floor(seconds) + "s"
 }
-
 export function extractFirstLink(markdownText: string): string | null {
   const regex = /!\[.*?\]\((.*?)\)/
   const match = markdownText.match(regex)
   return match ? match[1] : null
 }
-
 export function calculateHumanReadableReputation(rep: number) {
   if (rep === 0) {
     return 25
@@ -73,11 +69,9 @@ export function transform3SpeakContent(content: string): string {
   }
   return content;
 }
-
 export function formatETHaddress(address: string) {
   return `${address.slice(0, 6)}...${address.slice(-4)}`
 }
-
 export function transformIPFSContent(content: string): string {
   const regex = /<iframe src="https:\/\/ipfs\.skatehive\.app\/ipfs\/([a-zA-Z0-9-?=&]+)"(?:(?!<\/iframe>).)*\sallowfullscreen><\/iframe>/g;
 

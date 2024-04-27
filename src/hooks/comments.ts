@@ -1,4 +1,4 @@
-import HiveClient from "@/lib/hiveclient"
+import HiveClient from "@/lib/hive/hiveclient"
 import { useEffect, useState } from "react"
 
 export interface Comment {

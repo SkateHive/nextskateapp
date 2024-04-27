@@ -2,11 +2,9 @@
 
 import "@rainbow-me/rainbowkit/styles.css"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-
 import { PostsProvider } from "@/contexts/PostsContext"
 import { UserProvider } from "@/contexts/UserContext"
 import { ChakraProvider, extendTheme } from "@chakra-ui/react"
-
 import {
   RainbowKitProvider,
   darkTheme,

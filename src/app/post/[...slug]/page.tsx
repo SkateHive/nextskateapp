@@ -1,4 +1,4 @@
-import HiveClient from "@/lib/hiveclient"
+import HiveClient from "@/lib/hive/hiveclient"
 import { Table, Thead, Tr, Th, Tbody, Td, Center, Container, Flex, HStack, Heading, Text, Box, Modal, ModalBody, Avatar, Badge, VStack, Divider } from "@chakra-ui/react"
 import type { Metadata } from "next"
 import React from "react"

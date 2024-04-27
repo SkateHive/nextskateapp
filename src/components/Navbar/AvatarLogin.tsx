@@ -37,9 +37,9 @@ export default function AvatarLogin() {
         </Tooltip>
       </MenuButton>
 
-      <MenuList bg="black">
-
-        <Box minW="100%" p={2} bg="black" color="white">
+      <MenuList bg="black" >
+        <MenuItem
+          bg="black" color="white" _hover={{ bg: "limegreen", color: "black" }}>
           <ConnectButton.Custom>
             {({
               account,
@@ -104,6 +104,7 @@ export default function AvatarLogin() {
                                 borderRadius: 999,
                                 overflow: 'hidden',
                                 marginRight: 4,
+                                marginLeft: 5,
                               }}
                             >
                               {chain.iconUrl && (
@@ -115,7 +116,7 @@ export default function AvatarLogin() {
                               )}
                             </div>
                           )}
-                          {chain.name}
+
                         </button>
 
                         <button onClick={openAccountModal} type="button">
@@ -131,17 +132,10 @@ export default function AvatarLogin() {
               );
             }}
           </ConnectButton.Custom>
-        </Box>
-        <MenuItem
-          icon={<Bell size={"16px"} />}
-          as={Link}
-          href={"/notifications"}
-          bg="black"
-        >
-          Notifications
         </MenuItem>
         <MenuItem
           bg="black"
+          _hover={{ bg: "limegreen", color: "black" }}
           icon={<User size={"16px"} />}
           as={Link}
           href={`/profile/${hiveUser.name}`}
@@ -149,6 +143,7 @@ export default function AvatarLogin() {
           Profile
         </MenuItem>
         <MenuItem
+          _hover={{ bg: "limegreen", color: "black" }}
           bg="black"
           icon={<FaEthereum size={"16px"} />}
           as={Link}
@@ -157,6 +152,7 @@ export default function AvatarLogin() {
           Dao
         </MenuItem>
         <MenuItem
+          _hover={{ bg: "limegreen", color: "black" }}
           bg="black"
           icon={<FaWallet size={"16px"} />}
           as={Link}
@@ -165,14 +161,16 @@ export default function AvatarLogin() {
           Wallet
         </MenuItem>
         <MenuItem
+          _hover={{ bg: "limegreen", color: "black" }}
           bg="black"
           icon={<FaSpeakap size={"16px"} />}
           as={Link}
-          href={`/plaza2`}
+          href={`/plaza`}
         >
           Plaza
         </MenuItem>
-        <MenuItem bg="black" icon={<LogOut size={"16px"} />} onClick={logout}>
+        <MenuItem
+          _hover={{ bg: "red", color: "black" }} bg="black" icon={<LogOut size={"16px"} />} onClick={logout}>
           Logout
         </MenuItem>
       </MenuList>

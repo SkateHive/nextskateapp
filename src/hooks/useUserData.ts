@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import * as dhive from "@hiveio/dhive";
-import HiveClient from "@/lib/hiveclient";
+import HiveClient from "@/lib/hive/hiveclient";
 
 export const useUserData = (username: string) => {
     const [userData, setUserData] = useState<any | null>(null);
