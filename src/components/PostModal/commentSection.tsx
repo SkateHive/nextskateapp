@@ -24,7 +24,7 @@ const CommentsSection = ({ comments, isCommentReply = false }: CommentsSectionPr
             bg="black"
             p={4}
             border={isCommentReply ? "" : "0px solid limegreen"}
-            borderLeft={isCommentReply ? "1.4px solid limegreen" : ""}
+            borderLeft={isCommentReply ? "1.4px dashed green" : ""}
             pl={isCommentReply ? 8 : 4}
             borderRadius={0}
             height="fit-content"

@@ -46,7 +46,7 @@ export default function PostComment({ comment }: PostCommentProps) {
   if (isLoading || !hiveAccount) return <div>Loading...</div>
   return (
     <Flex gap={2} direction={"column"}>
-      <Flex gap={1} alignItems="center" border={"1px solid white"} mb={-2}>
+      <Flex gap={1} alignItems="center" border={"1px solid grey"} mb={-2}>
         <UserAvatar hiveAccount={hiveAccount} />
         <Text fontSize="14px" as="b">
           {comment.author}
@@ -59,7 +59,7 @@ export default function PostComment({ comment }: PostCommentProps) {
         </Text>
 
       </Flex>
-      <Flex direction={"column"} border={"1px solid"} p={5} bg={"#201d21"}>
+      <Flex direction={"column"} border={"1px solid grey"} p={5} bg={"#201d21"}>
         <Markdown content={comment.body} />
         <br />
         <Flex justifyContent="flex-end"> {/* Adjust this Flex component */}

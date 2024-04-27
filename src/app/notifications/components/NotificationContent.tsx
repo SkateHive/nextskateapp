@@ -31,11 +31,12 @@ export function NotificationContent({
       align={"center"}
       px={2}
       py={4}
-      _hover={{ bg: "gray.50", textDecor: "none" }}
+      _hover={{ bg: "limegreen", color: "black" }}
       gap={4}
     >
       <Link href={`/profile/${notification.user}`}>
         <Avatar
+          boxSize={"30px"}
           name={notification.user}
           src={`https://images.ecency.com/webp/u/${notification.user}/avatar/small`}
           borderRadius={"100%"}
@@ -43,17 +44,17 @@ export function NotificationContent({
       </Link>
       <Stack flexGrow={1} gap={1}>
         <HStack>
-          <Badge colorScheme={getTypeColor(notification.type)} fontSize="0.8em">
+          <Badge colorScheme={getTypeColor(notification.type)} fontSize="0.6em">
             {notification.type.replace("_", " ")}
           </Badge>
           <Text fontSize="14px" color="darkgray">
             ·
           </Text>
-          <Text fontSize="14px" color="darkgray" fontWeight="400">
+          <Text fontSize="8px" color="darkgray" fontWeight="400">
             {calculateTimeAgo(notification.date)}
           </Text>
         </HStack>
-        <Text>
+        <Text fontSize={"12px"}>
           <Link fontWeight={"bold"} href={`/profile/${notification.user}`}>
             @{notification.user}
           </Link>{" "}
@@ -62,6 +63,7 @@ export function NotificationContent({
       </Stack>
       <Tooltip label="View post">
         <IconButton
+          size={"xxs"}
           aria-label="Notification post url"
           icon={<ExternalLink color={"gray"} />}
           variant={"ghost"}

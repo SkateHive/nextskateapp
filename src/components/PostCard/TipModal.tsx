@@ -69,7 +69,6 @@ const TipModal: React.FC<TipModalProps> = ({ isOpen, onClose, token, author, aut
 
         if (tokenKey in tokenDictionary) {
             const { address, abi } = tokenDictionary[tokenKey];
-            console.log(`${tokenKey} transfer initiated`);
             try {
                 await writeContract({
                     address, // contract address of the token

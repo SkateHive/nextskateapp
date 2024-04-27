@@ -30,9 +30,15 @@ function CommunityTotalPayout() {
         )
         const resJson = await hiveHubResponse.json()
         const hiveInfo = resJson[SKATEHIVE_TAG]
-        const totalPayoutNumber = parseFloat(
-          hiveInfo.total_payouts_hbd.replace("$", "")
-        )
+        let totalPayoutNumber = 65666; // default value
+        if (hiveInfo && hiveInfo.total_payouts_hbd) {
+          try {
+            totalPayoutNumber = parseFloat(hiveInfo.total_payouts_hbd.replace("$", ""));
+          } catch (error) {
+            console.error("Error reading 'total_payouts_hbd': ", error);
+            totalPayoutNumber = 65666; // hardcoded value in case of error
+          }
+        }
 
         setTotalHBDPayout(totalPayoutNumber)
         setLoading(false)

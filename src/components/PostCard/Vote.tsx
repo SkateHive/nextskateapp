@@ -19,7 +19,6 @@ export default function Vote() {
       if (!hiveUser) return;
       const vote_value = await voting_value2(hiveUser);
       setUserVotingValue(Number(vote_value.toFixed(2)));
-      console.log("Voting value: ", vote_value.toFixed(2));
     } catch (error) {
       console.error("Failed to calculate voting value:", error);
     }
@@ -69,7 +68,6 @@ export default function Vote() {
       ]
       const encryptedPrivateKey = localStorage.getItem("EncPrivateKey");
       voteWithPrivateKey(encryptedPrivateKey, vote)
-      console.log("Voting with private key")
     }
 
     if (!isVoted) reward()

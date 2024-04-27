@@ -64,7 +64,6 @@ const CommandPrompt = ({ addComment }: CommandPromptProps) => {
       operations,
       "posting",
       async (response: any) => {
-        console.log({response})
         if (response.success) {
           setValue("")
           addComment(postData)

@@ -46,7 +46,6 @@ export async function hiveServerLoginWithPassword(
   username: string,
   privateKey: string
 ): Promise<ServerLoginResponse> {
-  console.log("hiveServerLoginWithPassword")
   if (!username)
     return { validation: { success: false, message: "Empty username" } }
   if (!privateKey)

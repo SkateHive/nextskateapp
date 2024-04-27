@@ -72,7 +72,6 @@ const CreateProposalConfirmationModal: React.FC<CreateProposalConfirmationModalP
                 plugins: JSON.stringify({}),
                 app: 'Skatehive App'
             };
-            console.log(proposalData);
 
             const hivePostMetadata = {
                 "data": {

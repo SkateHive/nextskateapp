@@ -17,7 +17,6 @@ export const useHivePrice = () => {
                 console.error("Error fetching Hive price: ", error);
             });
 
-        console.log(hivePrice);
     }, []);
 
     return hivePrice;
