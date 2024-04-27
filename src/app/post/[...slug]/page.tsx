@@ -21,6 +21,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   let [tag, user, postId] = params.slug
   const post = await getData(user, postId)
+
   const banner = JSON.parse(post.json_metadata).image
   return {
     title: post.title,
@@ -35,7 +36,7 @@ export async function generateMetadata({
 
 async function getData(user: string, postId: string) {
   const postContent = await hiveClient.database.call("get_content", [
-    user.substring(3),
+    user,
     postId,
   ])
 
