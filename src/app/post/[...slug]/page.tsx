@@ -8,9 +8,7 @@ import rehypeRaw from "rehype-raw"
 import remarkGfm from "remark-gfm"
 import { transform3SpeakContent } from "@/lib/utils"
 import CommentsComponent from "@/app/dao/components/comments"
-import { usePostContext } from "@/contexts/PostContext"
-import Vote from "@/components/PostCard/Vote"
-import MDEditor from "@uiw/react-md-editor"
+
 // Revalidate requests in 10 minutes
 export const revalidate = 600
 
@@ -49,10 +47,10 @@ async function getData(user: string, postId: string) {
 
 
 export default async function Page({ params }: { params: { slug: string } }) {
+  console.log(params.slug)
   if (!Array.isArray(params.slug)) return;
   let [tag, user, postId] = params.slug;
   const post = await getData(user, postId);
-  console.log(post);
   if (!post) return <Text>404 - Post not found</Text>;
 
   // lets format user to be a normal string without unicode 
