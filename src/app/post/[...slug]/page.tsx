@@ -37,8 +37,6 @@ export async function generateMetadata({
 async function getData(user: string, postId: string) {
   console.log("Received User:", user);
 
-  // Remove "@" or "%40" from the user string
-  user = user.replace(/^@|%40/, '');
 
   console.log("API Call User:", user);
   const postContent = await hiveClient.database.call("get_content", [user, postId]);
