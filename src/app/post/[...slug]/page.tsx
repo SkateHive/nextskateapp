@@ -39,15 +39,19 @@ async function getData(user: string, postId: string) {
 
 
   console.log("API Call User:", user);
-  const postContent = await hiveClient.database.call("get_content", [user, postId]);
-
-  if (!postContent) {
+  try {
+    const postContent = await hiveClient.database.call("get_content", [user, postId]);
+    return postContent;
+  }
+  catch (error: any) {
     console.error("Failed to fetch post content for User:", user, "Post ID:", postId);
-    throw new Error("Failed to fetch post content");
+    console.error(error)
+    return null;
   }
 
-  return postContent;
 }
+
+
 
 export default async function Page({ params }: { params: { slug: string } }) {
   console.log(params.slug)
