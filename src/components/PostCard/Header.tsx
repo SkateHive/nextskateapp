@@ -39,7 +39,8 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
 
   const [isSmallerThan400] = useMediaQuery("(max-width: 400px)")
 
-  const postFullUrl = `${window.location.origin}/post/hive-173115/${post.author}/${post.permlink}`
+  const postFullUrl = `${window.location.origin}/post/${post.author}.${post.permlink}`
+  console.log("Post Full URL:", postFullUrl)
   const postSummary = `Check out this awesome post on SkateHive by @${post.author} \n\n`
 
   const handleCopyPostLink = () => {

@@ -17,9 +17,11 @@ const hiveClient = HiveClient
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: [tag: string, user: string, postId: string] }
+  params: { slug: string }
 }): Promise<Metadata> {
-  let [tag, user, postId] = params.slug
+  const slug_string = params.slug
+  const user = String(slug_string).split(".")[0]
+  const postId = String(slug_string).split(".")[1]
   const post = await getData(user, postId)
 
   const banner = JSON.parse(post.json_metadata).image
@@ -56,7 +58,12 @@ async function getData(user: string, postId: string) {
 export default async function Page({ params }: { params: { slug: string } }) {
   console.log(params.slug)
   if (!Array.isArray(params.slug)) return;
-  let [tag, user, postId] = params.slug;
+  // lets get the user and the post id from the slug with is {user}---{postid}
+  const slug_string = params.slug
+  const user = String(slug_string).split(".")[0]
+  const postId = String(slug_string).split(".")[1]
+
+  console.log("User:", user, "Post ID:", postId);
   const post = await getData(user, postId);
   if (!post) return <Text>404 - Post not found</Text>;
 
