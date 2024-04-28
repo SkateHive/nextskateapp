@@ -28,7 +28,7 @@ export default function RootLayout({
     <html lang="pt-br">
 
       <head>
-        <link rel="manifest" href="manifest.json">
+        <link rel="manifest" href="/manifest.json">
         </link>
         <Favicon />
       </head>

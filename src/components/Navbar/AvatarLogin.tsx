@@ -18,7 +18,6 @@ import LoginButton from "../Hive/Login/LoginButton"
 import { FaEthereum, FaSpeakap, FaWallet } from "react-icons/fa"
 import { ConnectButton } from "@rainbow-me/rainbowkit"
 
-const env = process.env.NODE_ENV
 
 export default function AvatarLogin() {
   const { hiveUser, logout } = useAuthHiveUser()
