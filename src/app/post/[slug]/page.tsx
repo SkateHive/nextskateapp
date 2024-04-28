@@ -1,40 +1,37 @@
-import HiveClient from "@/lib/hive/hiveclient"
-import { Table, Thead, Tr, Th, Tbody, Td, Center, Container, Flex, HStack, Heading, Text, Box, Modal, ModalBody, Avatar, Badge, VStack, Divider } from "@chakra-ui/react"
-import type { Metadata } from "next"
-import React from "react"
 import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers"
+import HiveClient from "@/lib/hive/hiveclient"
+import { transform3SpeakContent } from "@/lib/utils"
+import { Avatar, Badge, Box, Center, Container, Divider, HStack, Heading, Table, Tbody, Td, Text, Th, Thead, Tr, VStack } from "@chakra-ui/react"
 import ReactMarkdown from "react-markdown"
 import rehypeRaw from "rehype-raw"
 import remarkGfm from "remark-gfm"
-import { transform3SpeakContent } from "@/lib/utils"
-import CommentsComponent from "@/app/dao/components/comments"
 
 // Revalidate requests in 10 minutes
 export const revalidate = 600
 
 const hiveClient = HiveClient
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { slug: string }
-}): Promise<Metadata> {
-  const slug_string = params.slug
-  const user = String(slug_string).split(".")[0]
-  const postId = String(slug_string).split(".")[1]
-  const post = await getData(user, postId)
+// export async function generateMetadata({
+//   params,
+// }: {
+//   params: { slug: string }
+// }): Promise<Metadata> {
+//   const slug_string = params.slug
+//   const user = String(slug_string).split(".")[0]
+//   const postId = String(slug_string).split(".")[1]
+//   const post = await getData(user, postId)
 
-  const banner = JSON.parse(post.json_metadata).image
-  return {
-    title: post.title,
-    description: `${String(post.body).slice(0, 128)}...`,
-    authors: post.author,
-    applicationName: "UnderHive",
-    openGraph: {
-      images: banner,
-    },
-  }
-}
+//   const banner = JSON.parse(post.json_metadata).image
+//   return {
+//     title: post.title,
+//     description: `${String(post.body).slice(0, 128)}...`,
+//     authors: post.author,
+//     applicationName: "UnderHive",
+//     openGraph: {
+//       images: banner,
+//     },
+//   }
+// }
 
 async function getData(user: string, postId: string) {
   console.log("Received User:", user);
@@ -57,7 +54,6 @@ async function getData(user: string, postId: string) {
 
 export default async function Page({ params }: { params: { slug: string } }) {
   console.log(params.slug)
-  if (!Array.isArray(params.slug)) return;
   // lets get the user and the post id from the slug with is {user}---{postid}
   const slug_string = params.slug
   const user = String(slug_string).split(".")[0]
@@ -65,6 +61,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
 
   console.log("User:", user, "Post ID:", postId);
   const post = await getData(user, postId);
+  // console.log(post)
   if (!post) return <Text>404 - Post not found</Text>;
 
   // lets format user to be a normal string without unicode 
@@ -154,7 +151,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
             <Text mt={5} fontSize={"18px"}>Comments</Text>
           </Center>
 
-          <CommentsComponent author={user} permlink={postId} />
+          {/* <CommentsComponent author={user} permlink={postId} /> */}
         </Box>
       </Box>
     </Box >

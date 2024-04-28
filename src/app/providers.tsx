@@ -1,7 +1,5 @@
 "use client"
 
-import "@rainbow-me/rainbowkit/styles.css"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { PostsProvider } from "@/contexts/PostsContext"
 import { UserProvider } from "@/contexts/UserContext"
 import { ChakraProvider, extendTheme } from "@chakra-ui/react"
@@ -10,6 +8,8 @@ import {
   darkTheme,
   getDefaultConfig,
 } from "@rainbow-me/rainbowkit"
+import "@rainbow-me/rainbowkit/styles.css"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { http } from "viem"
 import { WagmiProvider } from "wagmi"
 import { base, mainnet } from "wagmi/chains"
@@ -27,6 +27,7 @@ const chakraTheme = extendTheme({
 export const wagmiConfig = getDefaultConfig({
   appName: "SkateHive",
   projectId: "52f3a9b032f5caf26719af6939715629",
+  ssr: true,
   chains: [base, mainnet],
   transports: {
     [base.id]: http(),
