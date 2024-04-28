@@ -35,15 +35,20 @@ export async function generateMetadata({
 }
 
 async function getData(user: string, postId: string) {
-  const postContent = await hiveClient.database.call("get_content", [
-    user.substring(3),
-    postId,
-  ])
+  console.log("Received User:", user);
 
+  // Remove "@" or "%40" from the user string
+  user = user.replace(/^@|%40/, '');
 
-  if (!postContent) throw new Error("Failed to fetch post content")
+  console.log("API Call User:", user);
+  const postContent = await hiveClient.database.call("get_content", [user, postId]);
 
-  return postContent
+  if (!postContent) {
+    console.error("Failed to fetch post content for User:", user, "Post ID:", postId);
+    throw new Error("Failed to fetch post content");
+  }
+
+  return postContent;
 }
 
 export default async function Page({ params }: { params: { slug: string } }) {
