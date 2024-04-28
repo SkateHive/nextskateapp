@@ -2,6 +2,7 @@ import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers"
 import HiveClient from "@/lib/hive/hiveclient"
 import { transform3SpeakContent } from "@/lib/utils"
 import { Avatar, Badge, Box, Center, Container, Divider, HStack, Heading, Table, Tbody, Td, Text, Th, Thead, Tr, VStack } from "@chakra-ui/react"
+import { Metadata } from "next"
 import ReactMarkdown from "react-markdown"
 import rehypeRaw from "rehype-raw"
 import remarkGfm from "remark-gfm"
@@ -11,27 +12,27 @@ export const revalidate = 600
 
 const hiveClient = HiveClient
 
-// export async function generateMetadata({
-//   params,
-// }: {
-//   params: { slug: string }
-// }): Promise<Metadata> {
-//   const slug_string = params.slug
-//   const user = String(slug_string).split(".")[0]
-//   const postId = String(slug_string).split(".")[1]
-//   const post = await getData(user, postId)
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string }
+}): Promise<Metadata> {
+  const slug_string = params.slug
+  const user = String(slug_string).split(".")[0]
+  const postId = String(slug_string).split(".")[1]
+  const post = await getData(user, postId)
 
-//   const banner = JSON.parse(post.json_metadata).image
-//   return {
-//     title: post.title,
-//     description: `${String(post.body).slice(0, 128)}...`,
-//     authors: post.author,
-//     applicationName: "UnderHive",
-//     openGraph: {
-//       images: banner,
-//     },
-//   }
-// }
+  const banner = JSON.parse(post.json_metadata).image
+  return {
+    title: post.title,
+    description: `${String(post.body).slice(0, 128)}...`,
+    authors: post.author,
+    applicationName: "UnderHive",
+    openGraph: {
+      images: banner,
+    },
+  }
+}
 
 async function getData(user: string, postId: string) {
   console.log("Received User:", user);
