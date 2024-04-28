@@ -57,7 +57,6 @@ export default async function Page({ params }: { params: { slug: string } }) {
   if (!post) return <Text>404 - Post not found</Text>;
 
   // lets format user to be a normal string without unicode 
-  user = user.substring(3);
 
   const transformDate = (date: string) => {
     const dateObj = new Date(date);
