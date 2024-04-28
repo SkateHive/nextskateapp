@@ -1,3 +1,4 @@
+import CommentsComponent from "@/app/dao/components/comments"
 import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers"
 import HiveClient from "@/lib/hive/hiveclient"
 import { transform3SpeakContent } from "@/lib/utils"
@@ -152,7 +153,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
             <Text mt={5} fontSize={"18px"}>Comments</Text>
           </Center>
 
-          {/* <CommentsComponent author={user} permlink={postId} /> */}
+          <CommentsComponent author={user} permlink={postId} />
         </Box>
       </Box>
     </Box >
