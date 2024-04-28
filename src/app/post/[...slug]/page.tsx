@@ -36,16 +36,18 @@ export async function generateMetadata({
 
 async function getData(user: string, postId: string) {
   const postContent = await hiveClient.database.call("get_content", [
-    user,
+    user.substring(3),
     postId,
   ])
 
+  console.log(postContent)
+  console.log(user)
+  console.log(postId)
 
   if (!postContent) throw new Error("Failed to fetch post content")
 
   return postContent
 }
-
 
 export default async function Page({ params }: { params: { slug: string } }) {
   console.log(params.slug)
@@ -55,8 +57,9 @@ export default async function Page({ params }: { params: { slug: string } }) {
   if (!post) return <Text>404 - Post not found</Text>;
 
   // lets format user to be a normal string without unicode 
-  user = user.substring(3);
-
+  console.log(post);
+  console.log(user);
+  console.log(postId);
   const transformDate = (date: string) => {
     const dateObj = new Date(date);
     return dateObj.toLocaleDateString();
