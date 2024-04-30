@@ -65,6 +65,7 @@ function CommunityTotalPayout() {
         {loading ? (
           <VStack>
             <Image
+              alt="Loading..."
               boxSize={"24px"}
               src="https://64.media.tumblr.com/12da5f52c1491f392676d1d6edb9b055/870d8bca33241f31-7b/s400x600/fda9322a446d8d833f53467be19fca3811830c26.gif"
             />

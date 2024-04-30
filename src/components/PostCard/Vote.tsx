@@ -28,7 +28,7 @@ export default function Vote() {
     if (hiveUser) {
       getVotingValue();
     }
-  }, [hiveUser]);
+  }, [hiveUser, getVotingValue]);
 
 
 

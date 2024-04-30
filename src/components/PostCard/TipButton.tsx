@@ -65,7 +65,7 @@ export default function TipButton() {
                         () => handleHiveTipClick()
                     }
                 >
-                    <Image mr={3} boxSize={"20px"} src="https://cryptologos.cc/logos/hive-blockchain-hive-logo.png" />
+                    <Image alt="hive-logo" mr={3} boxSize={"20px"} src="https://cryptologos.cc/logos/hive-blockchain-hive-logo.png" />
                     $HIVE
                 </MenuItem>
                 {isUserEthWalletSet && (
@@ -75,7 +75,7 @@ export default function TipButton() {
                             _hover={{ bg: "green.500", color: "black" }}
                             onClick={() => openBaseTipModal('SENDIT')}
                         >
-                            <Image mr={3} boxSize={"20px"} src="https://sendit.city/assets/images/image03.jpg?v=c141f3fc" />
+                            <Image alt="sendit" mr={3} boxSize={"20px"} src="https://sendit.city/assets/images/image03.jpg?v=c141f3fc" />
                             $SENDIT
                         </MenuItem>
                         <MenuItem
@@ -83,7 +83,7 @@ export default function TipButton() {
                             _hover={{ bg: "yellow.500" }}
                             onClick={() => openBaseTipModal('NOGS')}
                         >
-                            <Image mr={3} boxSize={"20px"} src="https://app.noggles.com/svg/moon-logo.svg" />
+                            <Image alt="nogs" mr={3} boxSize={"20px"} src="https://app.noggles.com/svg/moon-logo.svg" />
                             $NOGS
                         </MenuItem>
                         <MenuItem
@@ -91,7 +91,7 @@ export default function TipButton() {
                             _hover={{ bg: "blue.500" }}
                             onClick={() => openBaseTipModal('MEMBER')}
                         >
-                            <Image mr={3} boxSize={"20px"} src="https://member.clinic/images/01-1.jpg" />
+                            <Image alt="member" mr={3} boxSize={"20px"} src="https://member.clinic/images/01-1.jpg" />
                             $MEMBER
                         </MenuItem>
                     </>

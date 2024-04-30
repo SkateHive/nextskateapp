@@ -50,7 +50,7 @@ function EthBox() {
         if (account.address) {
             getPortfolio();
         }
-    }, [account.address]);
+    }, [getPortfolio, account.address]);
 
     useEffect(() => {
         if (portfolio?.tokens) {

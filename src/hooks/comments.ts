@@ -110,7 +110,7 @@ export function useComments(author: string, permlink: string) {
   }
   useEffect(() => {
     updateComments()
-  }, [])
+  }, [updateComments])
 
   return {
     comments,

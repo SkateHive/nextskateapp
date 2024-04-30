@@ -31,7 +31,7 @@ export default function NotificationsPage() {
 
   useEffect(() => {
     getNotifications()
-  }, [hiveUser])
+  }, [hiveUser, getNotifications])
 
   const show_load_button =
     notifications?.length > 1 && notifications?.length < 100
