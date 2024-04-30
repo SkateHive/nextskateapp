@@ -17,6 +17,7 @@ import { extractImageUrls } from "./utils/extractImages";
 import PreviewModal from "./components/previewModal";
 import tutorialPost from "./utils/tutorialPost";
 import { Divide } from "lucide-react";
+import { transformIPFSContent } from "@/lib/utils";
 
 const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN;
 
@@ -254,7 +255,7 @@ export default function Upload() {
                     </HStack>
 
                     <Box marginTop="3" {...getRootProps()} >
-                        {isUploading && <Center><Spinner /></Center>}
+                        {isUploading && <Center m={3}><Spinner color="limegreen" /></Center>}
 
                         <MDEditor
                             value={value}
@@ -449,7 +450,7 @@ export default function Upload() {
                     <Divider />
                     <Box overflowY="auto" p="5px" borderRadius="4px" >
                         <ReactMarkdown components={MarkdownRenderers} rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
-                            {value}
+                            {transformIPFSContent(value)}
                         </ReactMarkdown>
                     </Box>
                 </Box>

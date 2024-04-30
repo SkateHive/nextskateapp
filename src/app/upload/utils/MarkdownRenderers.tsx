@@ -11,111 +11,30 @@ type MarkdownProps = {
 type RendererProps = MarkdownProps & {
   children?: React.ReactNode;
   ordered?: any;
-  href?: any; // Add this line to include href in RendererProps
-};
-type FetchedDetailsObject = {
-  [key: string]: PostDetails;
-};
-type PostDetails = {
-  post_id: number;
-  author: string;
-  permlink: string;
-  category: string;
-  title: string;
-  body: string;
-  json_metadata: {
-    tags: string[];
-    users: string[];
-    image: string[];
-    links: string[];
-    app: string;
-    format: string;
-    description: string;
-  };
-  created: string;
-  updated: string;
-  depth: number;
-  children: number;
-  net_rshares: number;
-  is_paidout: boolean;
-  payout_at: string;
-  payout: number;
-  pending_payout_value: string;
-  author_payout_value: string;
-  curator_payout_value: string;
-  promoted: string;
-  replies: any[];
-  author_reputation: number;
-  stats: {
-    hide: boolean;
-    gray: boolean;
-    total_votes: number;
-    flag_weight: number;
-  };
-  url: string;
-  beneficiaries: any[];
-  max_accepted_payout: string;
-  percent_hbd: number;
-  active_votes: any[];
-  newProperty: string;
+  href?: any;
 };
 
-// const getPost = async (author: string, permlink: string): Promise<PostDetails | null> => {
-//   try {
-//     const response: AxiosResponse = await axios.post('https://api.hive.blog/', {
-//       jsonrpc: '2.0',
-//       id: 1,
-//       method: 'bridge.get_discussion',
-//       params: [author, permlink],
-//     });
-//     if (response.status === 200 && response.data.result) {
-//       return response.data.result as PostDetails;
-//     } else {
-//       console.error('Failed to fetch post details:', response.status, response.data.error);
-//       return null;
-//     }
-//   } catch (error: any) {
-//     console.error('Error fetching post details:', error.message);
-//     return null;
-//   }
-// };
 
 export const MarkdownRenderers = {
   img: ({ alt, src, title, ...props }: RendererProps) => {
-    // if the image is inline, it will have position start column > 1
-    let isInline = false;
-    if (props.node.position.start.column > 1) {
-      isInline = true;
-    }
-
-    let image = (
-      <Image
-        {...props}
-        alt={alt}
-        src={src}
-        title={title}
-        style={{
-          display: 'inline-block',
-          maxWidth: '100%',
-          height: 'auto',
-          borderRadius: '10px',
-          marginTop: '20px',
-          marginBottom: '20px',
-        }}
-      // onError={(e) => {
-      //   // Handle image loading error by replacing the source with a default image
-      //   e.currentTarget.src = 'https://remote-image.decentralized-content.com/image?url=https%3A%2F%2Fipfs.decentralized-content.com%2Fipfs%2Fbafkreidxxr42k6sff4ppctl4l3xvh52rf2m7vzdrjmyqhoijveevwafkau&w=3840&q=75'; // Replace with the URL of your default image
-      // }}
-      />
-    );
-
-    if (isInline) {
-      return image;
-    }
 
     return (
       <span style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', }}>
-        {image}
+        <Image
+          {...props}
+          alt={alt}
+          src={src}
+          title={title}
+          style={{
+            display: 'inline-block',
+            maxWidth: '100%',
+            height: 'auto',
+            borderRadius: '10px',
+            marginTop: '20px',
+            marginBottom: '20px',
+          }}
+
+        />
       </span>
     );
   },
@@ -142,10 +61,7 @@ export const MarkdownRenderers = {
         lineHeight: '1',
       }}
     >
-
       {children}
-
-
     </div>
   ),
   ol: ({ ordered, children, ...props }: RendererProps) => {
