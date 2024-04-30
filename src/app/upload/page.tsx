@@ -447,7 +447,7 @@ export default function Upload() {
                         </Box>
                     </HStack>
                     <Divider />
-                    <Box overflowY="hidden" p="5px" borderRadius="4px" height="80%">
+                    <Box overflowY="auto" p="5px" borderRadius="4px" >
                         <ReactMarkdown components={MarkdownRenderers} rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
                             {value}
                         </ReactMarkdown>
