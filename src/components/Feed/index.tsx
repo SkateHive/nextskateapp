@@ -1,24 +1,26 @@
-"use client"
-
-import usePosts from "@/hooks/usePosts"
-import PostModel from "@/lib/models/post"
-import { Link } from "@chakra-ui/next-js"
-import { Box, Button, ButtonGroup, Flex, Grid, HStack } from "@chakra-ui/react"
-import { useState } from "react"
-import InfiniteScroll from "react-infinite-scroll-component"
-import { BeatLoader } from "react-spinners"
-import Post from "../PostCard"
-import PostSkeleton from "../PostCard/Skeleton"
-import { useHiveUser } from "@/contexts/UserContext"
+'use client'
+import usePosts from "@/hooks/usePosts";
+import PostModel from "@/lib/models/post";
+import { Link } from "@chakra-ui/next-js";
+import { Box, Button, ButtonGroup, Flex, Grid, HStack } from "@chakra-ui/react";
+import { useState } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { BeatLoader } from "react-spinners";
+import Post from "../PostCard";
+import PostSkeleton from "../PostCard/Skeleton";
+import { useHiveUser } from "@/contexts/UserContext";
+import LoginModal from "../Hive/Login/LoginModal";
 
 export default function Feed() {
-  const SKATEHIVE_TAG = "hive-173115"
-  const { posts, error, isLoading, queryCategory, setQueryCategory, setDiscussionQuery } = usePosts("trending", { tag: SKATEHIVE_TAG, limit: 100 })
-  const [visiblePosts, setVisiblePosts] = useState(20)
-  const hiveUser = useHiveUser()
-  if (error) return "Error"
+  const SKATEHIVE_TAG = "hive-173115";
+  const { posts, error, isLoading, queryCategory, setQueryCategory } = usePosts("trending", { tag: SKATEHIVE_TAG, limit: 100 });
+  const [visiblePosts, setVisiblePosts] = useState(20);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const hiveUser = useHiveUser();
 
-  if (isLoading || !posts)
+  if (error) return "Error";
+
+  if (isLoading || !posts) {
     return (
       <Grid
         p={1}
@@ -32,12 +34,20 @@ export default function Feed() {
         minHeight="100vh"
         width={"100%"}
       >
-        {/* Render skeletons to match the initial visiblePosts count or any fixed number that fills the screen */}
         {Array.from({ length: visiblePosts }).map((_, i) => (
-          <PostSkeleton key={i} /> // Add key prop to the PostSkeleton component
+          <PostSkeleton key={i} />
         ))}
       </Grid>
-    )
+    );
+  }
+
+  const handleCreateClick = () => {
+    if (!hiveUser.hiveUser) {
+      setIsLoginModalOpen(true);
+    } else {
+      window.location.href = "/upload";
+    }
+  };
 
   return (
     <Box>
@@ -55,8 +65,7 @@ export default function Feed() {
           >
             Most Recent
           </Button>
-          {/* Following Section */}
-          {hiveUser.hiveUser !== null && (
+          {hiveUser.hiveUser && (
             <Button
               onClick={() => setQueryCategory("created")}
               isActive={queryCategory === "created"}
@@ -65,20 +74,21 @@ export default function Feed() {
             </Button>
           )}
         </ButtonGroup>
-
         <Button
           size={"sm"}
-          as={Link}
-          href={"/upload"}
+          onClick={handleCreateClick}
           colorScheme="green"
           variant={"outline"}
         >
           + Create 🛹
         </Button>
       </HStack>
+      {isLoginModalOpen && (
+        <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
+      )}
       <InfiniteScroll
         dataLength={visiblePosts}
-        next={() => setVisiblePosts((visiblePosts) => visiblePosts + 3)}
+        next={() => setVisiblePosts(visiblePosts + 3)}
         hasMore={visiblePosts < posts.length}
         loader={
           <Flex justify="center">
@@ -97,16 +107,14 @@ export default function Feed() {
           gap={0}
         >
           {posts.length > 0 &&
-            posts.slice(0, visiblePosts).map((post, i) => {
-              return (
-                <Post
-                  key={`${queryCategory}-${post.url}`}
-                  postData={PostModel.newFromDiscussion(post)}
-                />
-              )
-            })}
+            posts.slice(0, visiblePosts).map((post, i) => (
+              <Post
+                key={`${queryCategory}-${post.url}`}
+                postData={PostModel.newFromDiscussion(post)}
+              />
+            ))}
         </Grid>
       </InfiniteScroll>
     </Box>
-  )
+  );
 }
