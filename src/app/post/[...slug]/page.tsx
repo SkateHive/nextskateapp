@@ -16,14 +16,15 @@ const hiveClient = HiveClient
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string }
+  params: { slug: [tag: string, user: string, postId: string] }
 }): Promise<Metadata> {
-  const slug_string = params.slug
-  const user = String(slug_string).split(".")[0]
-  const postId = String(slug_string).split(".")[1]
-  const post = await getData(user, postId)
+  console.log("Received User:", params.slug[1]);
+  let [tag, user, postId] = params.slug
+  console.log("Received User:", user);
 
+  const post = await getData(user, postId)
   const banner = JSON.parse(post.json_metadata).image
+
   return {
     title: post.title,
     description: `${String(post.body).slice(0, 128)}...`,
@@ -36,36 +37,23 @@ export async function generateMetadata({
 }
 
 async function getData(user: string, postId: string) {
-  console.log("Received User:", user);
+  const postContent = await hiveClient.database.call("get_content", [
+    user.substring(3),
+    postId,
+  ])
+  if (!postContent) throw new Error("Failed to fetch post content")
 
-
-  console.log("API Call User:", user);
-  try {
-    const postContent = await hiveClient.database.call("get_content", [user, postId]);
-    return postContent;
-  }
-  catch (error: any) {
-    console.error("Failed to fetch post content for User:", user, "Post ID:", postId);
-    console.error(error)
-    return null;
-  }
-
+  return postContent
 }
 
 
 
 export default async function Page({ params }: { params: { slug: string } }) {
-  console.log(params.slug)
-  // lets get the user and the post id from the slug with is {user}---{postid}
-  const slug_string = params.slug
-  const user = String(slug_string).split(".")[0]
-  const postId = String(slug_string).split(".")[1]
+  if (!Array.isArray(params.slug)) return
+  let [tag, user, postId] = params.slug
 
-  console.log("User:", user, "Post ID:", postId);
-  const post = await getData(user, postId);
-  // console.log(post)
-  if (!post) return <Text>404 - Post not found</Text>;
-
+  const post = await getData(user, postId)
+  if (!post) return <Text>404 - Post not found</Text>
   // lets format user to be a normal string without unicode 
 
   const transformDate = (date: string) => {
