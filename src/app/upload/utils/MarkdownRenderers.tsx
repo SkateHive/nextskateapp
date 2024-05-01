@@ -185,6 +185,6 @@ export const MarkdownRenderers = {
   ),
   code: ({ children, ...props }: RendererProps) => (
     <code {...props} style={{ color: '#A6E22E', backgroundColor: '#001a09', padding: '2px', borderRadius: '4px' }}>{children}</code>
-  ),
+  )
 };
 

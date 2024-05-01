@@ -222,7 +222,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
     useEffect(() => {
         buildPostLink();
     }
-        , [title, user, buildPostLink]);
+        , [title, user]);
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} size="xl">

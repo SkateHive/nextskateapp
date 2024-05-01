@@ -20,7 +20,6 @@ import {
 import { ChevronDownIcon, Copy, ExternalLink, Eye, Twitter } from "lucide-react"
 import moment from "moment-timezone"
 import Link from "next/link"
-import { useEffect, useState } from "react"
 import { FaDiscord } from "react-icons/fa"
 import PostModal from "../PostModal"
 import PostAvatar from "./Avatar"
@@ -38,7 +37,6 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const [isSmallerThan400] = useMediaQuery("(max-width: 400px)")
-  console.log("Post:", post)
 
   const postFullUrl = `${window.location.origin}/post/${post.url}`
   const postSummary = `Check out this awesome post on SkateHive by @${post.author} \n\n`
@@ -109,15 +107,6 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
     }
   }
 
-  /*
-  useEffect(() => {
-    const fetchAuthor = async () => {
-      const author = await UserModel.getNewFromUsername(post.author)
-      setAuthorData(author)
-    }
-    fetchAuthor()
-  }, [post.author])
-  */
 
   const { hiveAccount, isLoading } = useHiveAccount(post.author)
   if (isLoading || !hiveAccount) return <div>Loading...</div>

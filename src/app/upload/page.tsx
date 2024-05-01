@@ -450,7 +450,7 @@ export default function Upload() {
                     <Divider />
                     <Box overflowY="auto" p="5px" borderRadius="4px" >
                         <ReactMarkdown components={MarkdownRenderers} rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
-                            {transformIPFSContent(value)}
+                            {(transformIPFSContent(value))}
                         </ReactMarkdown>
                     </Box>
                 </Box>

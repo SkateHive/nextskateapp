@@ -79,6 +79,7 @@ export function transformIPFSContent(content: string): string {
     return `<video controls muted loop> <source src="https://ipfs.skatehive.app/ipfs/${videoID}" type="video/mp4"></video>`;
   });
 }
+
 export function transformEcencyImages(content: string): string {
   const regex = /https:\/\/images\.ecency\.com\/p\/([\w-?=&.]+)/g;
 
