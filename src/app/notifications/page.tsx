@@ -25,19 +25,19 @@ export default function NotificationsPage() {
   const getNotifications = async () => {
     if (!hiveUser) return
 
-    const data = await getUserNotifications(hiveUser.name, notifications.length + 10)
+    const data = await getUserNotifications(hiveUser?.name, notifications?.length + 10)
     setNotifications(data)
   }
 
   useEffect(() => {
     getNotifications()
-  }, [hiveUser, getNotifications])
+  }, [hiveUser])
 
   const show_load_button =
     notifications?.length > 1 && notifications?.length < 100
 
   return (
-    <Stack gap={0} divider={<StackDivider style={{ margin: 0 }} />}>
+    <Stack overflow={"auto"} gap={0} divider={<StackDivider style={{ margin: 0 }} />}>
       {notifications?.length === 0 && (
         <Flex w={"100%"} justify={"center"} pt={4}>
           <Spinner size={"lg"} />

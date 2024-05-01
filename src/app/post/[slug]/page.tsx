@@ -7,7 +7,7 @@ import { Metadata } from "next"
 import ReactMarkdown from "react-markdown"
 import rehypeRaw from "rehype-raw"
 import remarkGfm from "remark-gfm"
-
+import { transformIPFSContent } from "@/lib/utils"
 // Revalidate requests in 10 minutes
 export const revalidate = 600
 
@@ -110,7 +110,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
               rehypePlugins={[rehypeRaw]}
               remarkPlugins={[remarkGfm]}
             >
-              {transform3SpeakContent(post.body)}
+              {transformIPFSContent(transform3SpeakContent(post.body))}
             </ReactMarkdown>
             <Divider mt={5} />
             <Center>

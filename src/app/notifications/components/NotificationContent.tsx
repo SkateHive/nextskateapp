@@ -23,6 +23,12 @@ function getTypeColor(type: string) {
   if (type === "reply") return "blue"
 }
 
+const tranformNotificationUrl = (url: string) => {
+  // replace /<tag>/<user>/<permlink> with /post/<user>.<permlink>
+  const parts = url.split("/")
+  return `/post/${parts[3].replace("@", "")}.${parts[4]}`
+}
+
 export function NotificationContent({
   notification,
 }: NotificationContentProps) {
@@ -68,7 +74,7 @@ export function NotificationContent({
           icon={<ExternalLink color={"gray"} />}
           variant={"ghost"}
           as={Link}
-          href={notification.url}
+          href={tranformNotificationUrl(notification.url)}
         />
       </Tooltip>
     </Flex>

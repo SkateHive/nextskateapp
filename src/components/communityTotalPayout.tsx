@@ -98,7 +98,7 @@ function CommunityTotalPayout() {
               fontWeight="bold"
               textShadow={"1px 1px 15px black"}
             >
-              Total Generated to Skaters
+              Paid to Skaters
             </Text>
           </Flex>
         )}
