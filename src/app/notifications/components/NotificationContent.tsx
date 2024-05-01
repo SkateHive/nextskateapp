@@ -24,9 +24,9 @@ function getTypeColor(type: string) {
 }
 
 const tranformNotificationUrl = (url: string) => {
-  // replace /<tag>/<user>/<permlink> with /post/<user>.<permlink>
-  const parts = url.split("/")
-  return `/post/${parts[3].replace("@", "")}.${parts[4]}`
+  console.log("URL:", url)
+  return url
+
 }
 
 export function NotificationContent({
