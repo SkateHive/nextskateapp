@@ -215,6 +215,16 @@ export default function Upload() {
     const handleCheckMark = () => {
         setIsChecked(!isChecked);
     }
+    const handleDefaultBeneficiaryPercentageChange = (index: number, newPercentage: number) => {
+        if (index < 0 || index >= defaultBeneficiaries.length) {
+            console.error('Invalid index for default beneficiaries:', index);
+            return; // Early return to prevent error
+        }
+
+        const updatedDefaultBeneficiaries = [...defaultBeneficiaries];
+        updatedDefaultBeneficiaries[index].percentage = newPercentage;
+    }
+
 
     return (
         <Box width="100%">
@@ -356,7 +366,7 @@ export default function Upload() {
                                             min={0}
                                             max={100}
                                             colorScheme="green"
-                                            onChange={(val) => handleBeneficiaryPercentageChange(index, val)}
+                                            onChange={(val) => handleDefaultBeneficiaryPercentageChange(index, val)}
                                             onMouseEnter={() => setShowTooltip(true)}
                                             onMouseLeave={() => setShowTooltip(false)}
                                         >
