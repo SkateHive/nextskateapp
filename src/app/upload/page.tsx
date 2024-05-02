@@ -37,7 +37,7 @@ const defaultBeneficiaries: Beneficiary[] = [
 ];
 
 export default function Upload() {
-    const [title, setTitle] = useState('Example post w/ Tutorial');
+    const [title, setTitle] = useState('');
     const [value, setValue] = useState(tutorialPost);
     const [isUploading, setIsUploading] = useState(false);
     const { hiveUser } = useAuthHiveUser();
@@ -200,10 +200,16 @@ export default function Upload() {
         }));
 
     const handleBeneficiaryPercentageChange = (index: number, newPercentage: number) => {
+        if (index < 0 || index >= beneficiaries.length) {
+            console.error('Invalid index for beneficiaries:', index);
+            return; // Early return to prevent error
+        }
+
         const updatedBeneficiaries = [...beneficiaries];
         updatedBeneficiaries[index].percentage = newPercentage;
         setBeneficiaries(updatedBeneficiaries);
     };
+
     const [showTooltip, setShowTooltip] = React.useState(false);
 
     const handleCheckMark = () => {
@@ -235,12 +241,6 @@ export default function Upload() {
                 <Box width={{ base: '100%', md: '50%' }} p="4">
                     <HStack>
 
-                        <Badge
-                            background={"green.600"}
-                            border={"1px solid limegreen"}
-                        >
-                            <Text fontSize={"22px"} color="black">Title</Text>
-                        </Badge>
 
                         <Input
                             borderColor={"green.600"}
