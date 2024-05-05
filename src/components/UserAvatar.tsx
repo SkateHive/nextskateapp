@@ -5,7 +5,7 @@ import { Avatar } from "@chakra-ui/react"
 //import { useEffect, useState } from "react"
 import { HiveAccount } from "@/lib/models/user"
 
-export default function UserAvatar({ hiveAccount } : { hiveAccount : HiveAccount } ) {
+export default function UserAvatar({ hiveAccount }: { hiveAccount: HiveAccount }) {
 
   /*
   const [authorData, setAuthorData] = useState<UserModel>({} as UserModel)
@@ -20,8 +20,7 @@ export default function UserAvatar({ hiveAccount } : { hiveAccount : HiveAccount
   }, [username])
   */
   const postAvatar = hiveAccount.metadata?.profile?.profile_image
-  console.log(postAvatar, "here")
-  console.log(hiveAccount)
+
 
   return (
     <Link href={`${getWebsiteURL()}/profile/${hiveAccount.name}`}>
@@ -35,7 +34,7 @@ export default function UserAvatar({ hiveAccount } : { hiveAccount : HiveAccount
         width="40px"
         bg="transparent"
         loading="lazy"
-        borderRadius={0}
+        borderRadius={5}
       />
     </Link>
   )

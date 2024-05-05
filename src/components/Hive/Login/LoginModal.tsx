@@ -15,6 +15,8 @@ import {
   ModalOverlay,
   Spinner,
   VStack,
+  Switch,
+  Image
 } from "@chakra-ui/react"
 import { useState } from "react"
 
@@ -32,6 +34,8 @@ function LoginModal({
   const [username, setUsername] = useState("")
   const [privateKey, setPrivateKey] = useState("")
   const { loginWithHive } = useAuthHiveUser()
+  const [showPrivateKeyInput, setShowPrivateKeyInput] = useState(false)
+
 
   async function doLogin(useLoginAs: boolean = false) {
     try {
@@ -45,6 +49,11 @@ function LoginModal({
     }
   }
 
+  const handleSwitch = () => {
+    setShowPrivateKeyInput(!showPrivateKeyInput)
+  }
+
+
   return (
     <Modal isOpen={isOpen} isCentered onClose={onClose}>
       <ModalOverlay />
@@ -57,6 +66,7 @@ function LoginModal({
         <ModalHeader>Hive Log In</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
+          <Image mb={2} src="https://www.skatehive.app/assets/pepe_login.png" alt="Hive Logo" />
           <FormControl isInvalid={Boolean(errorMessage)}>
             <VStack align={"normal"}>
               <Input
@@ -69,7 +79,15 @@ function LoginModal({
                   setUsername(event.target.value.toLowerCase())
                 }
               />
-              {
+              <Switch
+                colorScheme="green"
+                size="lg"
+                onChange={handleSwitch}
+              >
+                Use Password (optional)
+              </Switch>
+              {showPrivateKeyInput && (
+
                 <Input
                   borderColor={"green.600"}
                   color={"limegreen"}
@@ -78,7 +96,8 @@ function LoginModal({
                   placeholder="Private Key"
                   onChange={(event1) => setPrivateKey(event1.target.value)}
                 />
-              }
+              )}
+
             </VStack>
             {Boolean(errorMessage) && (
               <FormErrorMessage>{errorMessage}</FormErrorMessage>

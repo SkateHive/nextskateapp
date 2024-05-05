@@ -3,6 +3,10 @@ import { useHiveUser } from "@/contexts/UserContext"
 import { CardFooter, Flex, useDisclosure } from "@chakra-ui/react"
 import Vote from "./Vote"
 import PostVoters from "./Voters"
+import TipButton from "./TipButton"
+
+
+
 
 export default function Footer() {
   const { post } = usePostContext()
@@ -17,13 +21,15 @@ export default function Footer() {
   return (
     <CardFooter pt={0} flexDirection={"column"} gap={2} key={hiveUser?.name}>
       <Flex w={"100%"} justify={"space-between"} align={"center"}>
-        <PostVoters
+        {/* <PostVoters
           activeVoters={post.active_votes}
           modalIsOpen={isVotersOpen}
           modalOnOpen={onVotersOpen}
           modalOnClose={onVotersClose}
-        />
+        /> */}
+        <TipButton />
         <Vote />
+
       </Flex>
     </CardFooter>
   )

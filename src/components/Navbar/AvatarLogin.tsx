@@ -82,7 +82,7 @@ export default function AvatarLogin() {
 
                     if (chain.unsupported) {
                       return (
-                        <Button color={"red"} leftIcon={<Image boxSize={"28px"} src="/pepenation.gif" />} onClick={openChainModal} >
+                        <Button color={"red"} leftIcon={<Image alt="" boxSize={"28px"} src="/pepenation.gif" />} onClick={openChainModal} >
                           Wrong network
                         </Button>
                       );
@@ -107,7 +107,7 @@ export default function AvatarLogin() {
                               }}
                             >
                               {chain.iconUrl && (
-                                <img
+                                <Image
                                   alt={chain.name ?? 'Chain icon'}
                                   src={chain.iconUrl}
                                   style={{ width: 12, height: 12 }}
@@ -150,6 +150,14 @@ export default function AvatarLogin() {
         </MenuItem>
         <MenuItem
           bg="black"
+          icon={<FaEthereum size={"16px"} />}
+          as={Link}
+          href={`/dao`}
+        >
+          Dao
+        </MenuItem>
+        <MenuItem
+          bg="black"
           icon={<FaWallet size={"16px"} />}
           as={Link}
           href={`/wallet`}
@@ -160,7 +168,7 @@ export default function AvatarLogin() {
           bg="black"
           icon={<FaSpeakap size={"16px"} />}
           as={Link}
-          href={`/plaza`}
+          href={`/plaza2`}
         >
           Plaza
         </MenuItem>

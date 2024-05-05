@@ -2,9 +2,9 @@ import HiveClient from "@/lib/hiveclient"
 import { Discussion, DiscussionQueryCategory, DisqussionQuery } from "@hiveio/dhive"
 import { useState, useEffect } from "react"
 
-export default function usePosts(query: DiscussionQueryCategory, params: DisqussionQuery) {
+export default function usePosts(query: String, params: DisqussionQuery) {
     const [posts, setPosts] = useState<Discussion[]>()
-    const [queryCategory, setQueryCategory] = useState<DiscussionQueryCategory>(query)
+    const [queryCategory, setQueryCategory] = useState<String>(query)
     const [discussionQuery, setDiscussionQuery] = useState<DisqussionQuery>(params)
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -14,9 +14,11 @@ export default function usePosts(query: DiscussionQueryCategory, params: Disquss
             setIsLoading(true)
             setError(null)
             try {
-                const posts = await HiveClient.database.getDiscussions(queryCategory, discussionQuery)
+                const by = 'get_discussions_by_' + queryCategory
+                const posts = await HiveClient.database.call(by, [discussionQuery])
                 setPosts(posts)
-            } catch {
+            } catch (e) {
+                console.log(e)
                 setError("Loading account error!")
             } finally {
                 setIsLoading(false)

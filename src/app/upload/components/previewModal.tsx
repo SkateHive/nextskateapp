@@ -30,7 +30,7 @@ import { useEffect } from 'react';
 import * as dhive from "@hiveio/dhive"
 import { commentWithPrivateKey } from "@/lib/hive/server-functions";
 import { commentWithKeychain } from '@/lib/hive/client-functions';
-import getSummary from '../utils/getSummaryAI';
+import getSummary from '../../../lib/getSummaryAI';
 import slugify from '../utils/slugify';
 import generatePermlink from '../utils/generatePermlink';
 interface PreviewModalProps {
@@ -193,7 +193,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
                 'comment',
                 {
                     parent_author: '',
-                    parent_permlink: generatePermlink(title),
+                    parent_permlink: 'hive-173115',
                     author: user.name,
                     permlink: permlink,
                     title: title,

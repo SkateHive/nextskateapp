@@ -5,7 +5,7 @@ import HiveClient from "@/lib/hiveclient"
 import PostModel from "@/lib/models/post"
 // import { getUserFromUsername } from "@/lib/services/userService"
 import { Box, Grid, Flex } from "@chakra-ui/react" // Import Grid and Box for layout
-import ProfileTabs from "./profileTabs"
+import ProfileTabs from "@/components/Profile/profileTabs"
 import useHiveAccount from "@/hooks/useHiveAccount"
 import usePosts from "@/hooks/usePosts"
 import { HiveAccount } from "@/lib/models/user"
@@ -27,6 +27,7 @@ async function getBlogFromUsername(
     return await Promise.all(
       response.map(async (postData) => {
         const post = PostModel.newFromDiscussion(postData)
+        //@ts-ignore
         const user = await post.authorDetails()
         return { postData: post.simplify(), userData: user.simplify() }
       })
@@ -50,7 +51,8 @@ export default function ProfilePage({ params }: ProfilePageProps) {
   return (
     <Box width="100%" minHeight="100vh">
       <ProfileHeader user={hiveAccount} />
-      <ProfileTabs params={params} />
+      <ProfileTabs user={hiveAccount} />
+{/*
       <InfiniteScroll
         dataLength={visiblePosts}
         next={() => setVisiblePosts((visiblePosts) => visiblePosts + 3)}
@@ -82,6 +84,7 @@ export default function ProfilePage({ params }: ProfilePageProps) {
             })}
         </Grid>
       </InfiniteScroll>
+          */}
     </Box>
   )
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useCallback, useEffect, useRef, RefObject } from "react";
-import { Checkbox, Box, Button, Input, HStack, Flex, Center, Text, Avatar, Spinner, Badge, VStack, Tooltip, Slider, SliderTrack, SliderFilledTrack, SliderThumb, Divider } from "@chakra-ui/react";
+import { Image, Checkbox, Box, Button, Input, HStack, Flex, Center, Text, Avatar, Spinner, Badge, VStack, Tooltip, Slider, SliderTrack, SliderFilledTrack, SliderThumb, Divider } from "@chakra-ui/react";
 import { useDropzone } from "react-dropzone";
 import ReactMarkdown from 'react-markdown';
 import rehypeSanitize from 'rehype-sanitize';
@@ -129,7 +129,7 @@ export default function Upload() {
                     }}
                     style={imageUrl === thumbnailUrl ? selectedThumbnailStyle : {}}
                 >
-                    <img
+                    <Image
                         src={imageUrl}
                         alt={`Thumbnail ${index}`}
                         style={{ maxWidth: "100%", maxHeight: "100%" }}
@@ -232,7 +232,8 @@ export default function Upload() {
             <Flex direction={{ base: 'column', md: 'row' }} width="100%">
                 {/* Content Editing Area */}
                 <Box width={{ base: '100%', md: '50%' }} p="4">
-                    <Center>
+                    <HStack>
+
                         <Badge
                             background={"green.600"}
                             border={"1px solid limegreen"}
@@ -240,18 +241,18 @@ export default function Upload() {
                             <Text fontSize={"22px"} color="black">Title</Text>
                         </Badge>
 
-                    </Center>
-                    <Input
-                        borderColor={"green.600"}
-                        color={"limegreen"}
-                        _placeholder={{ color: "limegreen", opacity: 0.4 }}
-                        focusBorderColor="limegreen"
-                        borderRadius={"0"}
-                        placeholder="Insert title"
-                        style={{ caretColor: "limegreen" }}
-                        type="text"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)} />
+                        <Input
+                            borderColor={"green.600"}
+                            color={"limegreen"}
+                            _placeholder={{ color: "limegreen", opacity: 0.4 }}
+                            focusBorderColor="limegreen"
+                            placeholder="Insert title"
+                            style={{ caretColor: "limegreen" }}
+                            type="text"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)} />
+                    </HStack>
+
                     <Box marginTop="3" {...getRootProps()} >
                         {isUploading && <Center><Spinner /></Center>}
 

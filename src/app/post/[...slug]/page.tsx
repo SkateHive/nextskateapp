@@ -53,7 +53,6 @@ async function formatMarkdownNew(markdown: string) {
     const md = new Remarkable({ html: true, linkify: true, breaks: true })
     const body = transform3SpeakContent(markdown);
     const Sbody = md.render(body)
-    console.log("Formatted markdown:", body)
     return Sbody
   } catch (error) {
     console.error("Error formatting markdown:", error)

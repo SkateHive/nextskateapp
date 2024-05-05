@@ -30,7 +30,6 @@ const Comment: React.FC<CommentProps> = ({ author, body, created, net_votes, per
         try {
             // Perform the vote operation
             await voteOnContent(hiveUser.name, permlink, author, 10000);
-            console.log("Voted successfully!");
             if (author) {
                 const author_alert = author;
                 alert("You just voted on " + author_alert + "'s comment! 🛹");
@@ -66,7 +65,7 @@ const Comment: React.FC<CommentProps> = ({ author, body, created, net_votes, per
                 <Flex justifyContent="space-between" alignItems="">
                     {/* <Link to={`https://skatehive.app/profile/${author}`}> */}
                     <Flex padding="5px" alignItems="center">
-                        <Image src={avatarUrl} borderRadius="full" boxSize="40px" mr="3" />
+                        <Image alt='' src={avatarUrl} borderRadius="full" boxSize="40px" mr="3" />
                         <Text fontWeight="bold">@{author}</Text>
                     </Flex>
                     {/* </Link> */}
@@ -100,14 +99,14 @@ const Comment: React.FC<CommentProps> = ({ author, body, created, net_votes, per
 
                         <Button leftIcon={<span></span>} color={"white"} variant="outline" size="sm" onClick={handleVote}>
 
-                            <img
+                            <Image
                                 src='https://cdn.discordapp.com/emojis/1060351346416554136.gif?size=240&quality=lossless'
                                 alt="Vote"
-                                style={{
-                                    maxWidth: '24px',
-                                    maxHeight: '24px',
-                                    marginRight: '5px',
-                                }}
+
+                                maxWidth='24px'
+                                maxHeight='24px'
+                                marginRight='5px'
+
                             />
                             <p>{localNetVotes}</p>
 

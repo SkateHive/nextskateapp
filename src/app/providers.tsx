@@ -14,7 +14,7 @@ import {
 } from "@rainbow-me/rainbowkit"
 import { http } from "viem"
 import { WagmiProvider } from "wagmi"
-import { base } from "wagmi/chains"
+import { base, mainnet } from "wagmi/chains"
 
 const chakraTheme = extendTheme({
   styles: {
@@ -26,12 +26,13 @@ const chakraTheme = extendTheme({
   },
 })
 
-const wagmiConfig = getDefaultConfig({
+export const wagmiConfig = getDefaultConfig({
   appName: "SkateHive",
   projectId: "52f3a9b032f5caf26719af6939715629",
-  chains: [base],
+  chains: [base, mainnet],
   transports: {
     [base.id]: http(),
+    [mainnet.id]: http(),
   },
 })
 

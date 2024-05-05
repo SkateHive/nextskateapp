@@ -13,7 +13,6 @@ export default async function checkRewards(setHasRewards: any, user: HiveAccount
 
         if (hbdBalance > 0 || hiveBalance > 0 || vestingHive > 0) {
             setHasRewards(true);
-            console.log("all rewards: ", hbdBalance, hiveBalance, vestingHive);
         }
     }
 }

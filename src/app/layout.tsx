@@ -12,7 +12,7 @@ const share_tech_mono = Share_Tech_Mono({ subsets: ["latin"], weight: "400" })
 export const metadata: Metadata = {
   // metadataBase: new URL(getWebsiteURL()),
   title: "Skatehive App",
-  description: "Digital hive for underground bees",
+  description: "The portal of web3 skateboarding",
   manifest: "/manifest.json",
   openGraph: {
     images: `${getWebsiteURL()}/default_banner.png`,
