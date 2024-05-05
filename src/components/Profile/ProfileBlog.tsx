@@ -17,7 +17,7 @@ interface ProfilePageProps {
 export default function ProfileBlog({ user }: ProfilePageProps) {
     const [visiblePosts, setVisiblePosts] = useState(20)
     const { hiveAccount } = useHiveAccount(user.name)
-    const { posts, error, isLoading, queryCategory, setQueryCategory, setDiscussionQuery } = usePosts("blog", {tag: user.name, limit: 100})
+    const { posts, error, isLoading, queryCategory, setQueryCategory, setDiscussionQuery } = usePosts("blog", [{tag: user.name, limit: 100}])
     if (!hiveAccount || !posts) return <div>Loading...</div>
 
     return (

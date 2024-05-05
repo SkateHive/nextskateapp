@@ -2,10 +2,10 @@ import HiveClient from "@/lib/hiveclient"
 import { Discussion, DiscussionQueryCategory, DisqussionQuery } from "@hiveio/dhive"
 import { useState, useEffect } from "react"
 
-export default function usePosts(query: String, params: DisqussionQuery) {
+export default function usePosts(query: String, params: any[]) {
     const [posts, setPosts] = useState<Discussion[]>()
     const [queryCategory, setQueryCategory] = useState<String>(query)
-    const [discussionQuery, setDiscussionQuery] = useState<DisqussionQuery>(params)
+    const [discussionQuery, setDiscussionQuery] = useState(params)
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
 
