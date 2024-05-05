@@ -1,11 +1,15 @@
 import HiveClient from "@/lib/hive/hiveclient";
 import { Discussion, DiscussionQueryCategory, DisqussionQuery } from "@hiveio/dhive";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
-export default function usePosts(query: DiscussionQueryCategory, params: DisqussionQuery) {
+export default function usePosts(queryInput: DiscussionQueryCategory, paramsInput: DisqussionQuery) {
   const [posts, setPosts] = useState<Discussion[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Memoize query and params to avoid re-fetching if the inputs have not changed
+  const query = useMemo(() => queryInput, [queryInput]);
+  const params = useMemo(() => paramsInput, [paramsInput]);
 
   useEffect(() => {
     const handleGetPosts = async () => {
@@ -28,6 +32,7 @@ export default function usePosts(query: DiscussionQueryCategory, params: Disquss
 
   return { posts, isLoading, error };
 }
+
 
 
 /*

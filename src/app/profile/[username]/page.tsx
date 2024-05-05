@@ -12,7 +12,7 @@ import { HiveAccount } from "@/lib/models/user"
 import { useState } from "react"
 import InfiniteScroll from "react-infinite-scroll-component"
 import { BeatLoader } from "react-spinners"
-
+import { useMemo } from "react"
 const hiveClient = HiveClient
 
 /*
@@ -42,11 +42,11 @@ interface ProfilePageProps {
 }
 
 export default function ProfilePage({ params }: ProfilePageProps) {
-  //const user = await getUserFromUsername(params.username)
+  const username = useMemo(() => params.username, [params.username]);
+
   const [visiblePosts, setVisiblePosts] = useState(20)
   const { hiveAccount } = useHiveAccount(params.username)
   const { posts, error, isLoading } = usePosts("blog", { tag: params.username, limit: 100 })
-  // const posts = await getBlogFromUsername(params.username)
   if (!hiveAccount || !posts) return <div>Loading...</div>
   return (
     <Box width="100%" minHeight="100vh">
