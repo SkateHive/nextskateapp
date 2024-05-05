@@ -87,3 +87,12 @@ export function transformEcencyImages(content: string): string {
     return `![Image](https://images.ecency.com/p/${imagePath})`;
   });
 }
+
+export function transformShortYoutubeLinksinIframes(content: string) {
+  // lets create a regex for links like this https://youtu.be/Sh6_hrPZ0P4?si=XO78pFeby_Urc7ce not for Iframes just for short links 
+  const regex = /https:\/\/youtu\.be\/([a-zA-Z0-9-_?=&]+)/g;
+  return content.replace(regex, (match, videoID) => {
+    return `<iframe src="https://www.youtube.com/embed/${videoID}" allowfullscreen></iframe>`;
+  });
+}
+

@@ -18,8 +18,8 @@ const CommandPrompt = ({ addComment }: CommandPromptProps) => {
   const [value, setValue] = useState("")
   const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN
   const { post } = usePostContext()
-  const parent_permlink = post.permlink
-  const parent_author = post.author
+  const parent_permlink = post?.permlink
+  const parent_author = post?.author
   const user = useHiveUser()
 
   const submitComment = async () => {

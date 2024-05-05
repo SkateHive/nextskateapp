@@ -45,7 +45,7 @@ export default function ProfilePage({ params }: ProfilePageProps) {
   //const user = await getUserFromUsername(params.username)
   const [visiblePosts, setVisiblePosts] = useState(20)
   const { hiveAccount } = useHiveAccount(params.username)
-  const { posts, error, isLoading, queryCategory, setQueryCategory, setDiscussionQuery } = usePosts("blog", { tag: params.username, limit: 100 })
+  const { posts, error, isLoading } = usePosts("blog", { tag: params.username, limit: 100 })
   // const posts = await getBlogFromUsername(params.username)
   if (!hiveAccount || !posts) return <div>Loading...</div>
   return (
@@ -76,7 +76,7 @@ export default function ProfilePage({ params }: ProfilePageProps) {
             posts.slice(0, visiblePosts).map((post, i) => {
               return (
                 <Post
-                  key={`${queryCategory}-${post.url}`}
+                  key={`${post.url}`}
                   postData={PostModel.newFromDiscussion(post)}
                 />
               )
