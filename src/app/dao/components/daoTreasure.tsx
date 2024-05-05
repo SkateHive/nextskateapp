@@ -36,8 +36,6 @@ const DaoTreasure = () => {
 
 
     useEffect(() => {
-        console.log('balance', balance);
-        console.log(MULTISIG_ADDRESS);
         if (balance) {
             setMultisigBalance(String(balance.data?.formatted));
         }

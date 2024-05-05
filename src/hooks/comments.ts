@@ -1,4 +1,4 @@
-import HiveClient from "@/lib/hiveclient"
+import HiveClient from "@/lib/hive/hiveclient"
 import { useEffect, useState } from "react"
 
 export interface Comment {
@@ -96,14 +96,12 @@ export function useComments(author: string, permlink: string) {
       comments ? [...comments, newComment] : [newComment]
     )
     const comments = await fetchComments(author, permlink)
-    console.log({comments})
   }
 
   async function updateComments() {
     try {
       const comments = await fetchComments(author, permlink)
       setComments(comments)
-      console.log({comments})
     } catch (err: any) {
       setError(err.message ? err.message : "Error loading comments")
     } finally {
@@ -112,8 +110,8 @@ export function useComments(author: string, permlink: string) {
   }
   useEffect(() => {
     updateComments()
-  }, [])
-  
+  }, [updateComments])
+
   return {
     comments,
     error,

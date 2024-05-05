@@ -39,7 +39,7 @@ export default function ProfileHeader( { user } : ProfileProps) {
         </VStack>
         <VStack align={"flex-start"} gap={0}>
           <Text mt={-12} fontSize={{ base: "sm", lg: "xl" }} fontWeight={"bold"}>
-            @{user.name} {getReputation(user.reputation)}<br/>
+            @{user.name} {getReputation(Number(user.reputation))}<br/>
             {user.metadata?.profile?.name}<br/>
             {user.metadata?.profile?.about}<br/>
             {user.metadata?.profile?.location}

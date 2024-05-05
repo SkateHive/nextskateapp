@@ -91,7 +91,7 @@ dependencies:
     specifier: ^0.5.45
     version: 0.5.45
   next:
-    specifier: ^14.1.4
+    specifier: ^14.0.4
     version: 14.1.4(@babel/core@7.24.3)(react-dom@18.2.0)(react@18.2.0)
   openai:
     specifier: ^4.33.0

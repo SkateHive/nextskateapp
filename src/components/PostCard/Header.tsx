@@ -20,7 +20,6 @@ import {
 import { ChevronDownIcon, Copy, ExternalLink, Eye, Twitter } from "lucide-react"
 import moment from "moment-timezone"
 import Link from "next/link"
-import { useEffect, useState } from "react"
 import { FaDiscord } from "react-icons/fa"
 import PostModal from "../PostModal"
 import PostAvatar from "./Avatar"
@@ -39,11 +38,12 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
 
   const [isSmallerThan400] = useMediaQuery("(max-width: 400px)")
 
-  const postFullUrl = `${getWebsiteURL()}/post${post.url}`
+  const postFullUrl = `${window.location.origin}/post/${post.url}`
   const postSummary = `Check out this awesome post on SkateHive by @${post.author} \n\n`
 
   const handleCopyPostLink = () => {
     try {
+      console.log("Post URL:", post)
       const postPageUrl = postFullUrl
       navigator.clipboard.writeText(postPageUrl)
     } catch (error) {

@@ -7,7 +7,7 @@ import { Button, Flex, Spinner, Stack, StackDivider } from "@chakra-ui/react"
 import { useCallback, useEffect, useState } from "react"
 
 import { NotificationContent } from "./components/NotificationContent"
-import { getData } from "./lib/useData"
+import { getUserNotifications } from "./lib/getAccountNotification"
 import { get } from "lodash"
 
 export interface Notification {
@@ -20,32 +20,30 @@ export interface Notification {
 
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState([])
-  const { hiveUser, isLoading } = useHiveUser()
+  const { hiveUser } = useHiveUser()
 
-  const getNotifications = useCallback(async () => {
+  const getNotifications = async () => {
     if (!hiveUser) return
 
-    const data = await getData(hiveUser.name, notifications.length)
-    if (!data.result) return
-
-    setNotifications(data.result)
-  }, [hiveUser, notifications.length])
+    const data = await getUserNotifications(hiveUser?.name, notifications?.length + 10)
+    setNotifications(data)
+  }
 
   useEffect(() => {
     getNotifications()
-  }, [isLoading, getNotifications])
+  }, [hiveUser])
 
   const show_load_button =
-    notifications.length > 1 && notifications.length < 100
+    notifications?.length > 1 && notifications?.length < 100
 
   return (
-    <Stack gap={0} divider={<StackDivider style={{ margin: 0 }} />}>
-      {notifications.length === 0 && (
+    <Stack overflow={"auto"} gap={0} divider={<StackDivider style={{ margin: 0 }} />}>
+      {notifications?.length === 0 && (
         <Flex w={"100%"} justify={"center"} pt={4}>
           <Spinner size={"lg"} />
         </Flex>
       )}
-      {notifications.map((notification: Notification, i: number) => {
+      {notifications?.map((notification: Notification, i: number) => {
         const [user, ...contentChunk] = notification.msg.split(" ")
 
         const content = contentChunk.join(" ")

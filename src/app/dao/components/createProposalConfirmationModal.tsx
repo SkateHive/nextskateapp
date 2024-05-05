@@ -72,7 +72,6 @@ const CreateProposalConfirmationModal: React.FC<CreateProposalConfirmationModalP
                 plugins: JSON.stringify({}),
                 app: 'Skatehive App'
             };
-            console.log(proposalData);
 
             const hivePostMetadata = {
                 "data": {
@@ -115,7 +114,7 @@ const CreateProposalConfirmationModal: React.FC<CreateProposalConfirmationModalP
             console.error("Failed to create proposal:", error);
             alert("Error creating proposal: " + error.message);
         }
-    }, [web3, proposalBody, connectedUserAddress, title, hiveUser, fetchCurrentBlockNumber]);
+    }, [web3, proposalBody, title, hiveUser, fetchCurrentBlockNumber]);
 
     return (
         <>

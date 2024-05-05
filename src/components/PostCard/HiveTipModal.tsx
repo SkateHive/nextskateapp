@@ -85,9 +85,9 @@ const HiveTipModal: React.FC<HiveTipModalProps> = ({ isOpen, onClose, author }) 
 
                             >
                                 {currency === "HBD" ? (
-                                    <Image mr={3} boxSize={"20px"} src="https://i.ibb.co/C6TPhs3/HBD.png" />
+                                    <Image alt='HBD' mr={3} boxSize={"20px"} src="https://i.ibb.co/C6TPhs3/HBD.png" />
                                 ) : (
-                                    <Image mr={3} boxSize={"20px"} src="https://cryptologos.cc/logos/hive-blockchain-hive-logo.png" />
+                                    <Image alt="HBD" mr={3} boxSize={"20px"} src="https://cryptologos.cc/logos/hive-blockchain-hive-logo.png" />
 
 
                                 )}

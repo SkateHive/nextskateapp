@@ -1,17 +1,16 @@
 'use client'
 import { Flex, Text, Divider, HStack } from "@chakra-ui/react"
 import moment from "moment-timezone"
-import Markdown from "../Markdown"
 import UserAvatar from "../UserAvatar"
 import { Comment } from '@/hooks/comments';
 import CommentsSection from "@/components/PostModal/commentSection"
 import useHiveAccount from "@/hooks/useHiveAccount";
 import { FaFire } from "react-icons/fa";
 import { useHiveUser } from "@/contexts/UserContext";
-import voteOnContent from "@/app/plaza/voting";
+import voteOnContent from "@/app/plaza/voting"
 import React, { useState, useEffect } from 'react';
 import { voting_value } from "./calculateHiveVotingValue"
-
+import ReactMarkdown from "react-markdown";
 
 interface PostCommentProps {
   comment: Comment
@@ -39,14 +38,14 @@ export default function PostComment({ comment }: PostCommentProps) {
   }
   useEffect(() => {
     setHasVoted(comment?.active_votes?.some(vote => vote.voter === user.hiveUser?.name) ?? false);
-  }, []);
+  }, [comment]);
 
 
 
   if (isLoading || !hiveAccount) return <div>Loading...</div>
   return (
     <Flex gap={2} direction={"column"}>
-      <Flex gap={1} alignItems="center" border={"1px solid white"} mb={-2}>
+      <Flex gap={1} alignItems="center" border={"1px solid grey"} mb={-2}>
         <UserAvatar hiveAccount={hiveAccount} />
         <Text fontSize="14px" as="b">
           {comment.author}
@@ -59,8 +58,10 @@ export default function PostComment({ comment }: PostCommentProps) {
         </Text>
 
       </Flex>
-      <Flex direction={"column"} border={"1px solid"} p={5} bg={"#201d21"}>
-        <Markdown content={comment.body} />
+      <Flex direction={"column"} border={"1px solid grey"} p={5} bg={"#201d21"}>
+        <ReactMarkdown>
+          {comment.body}
+        </ReactMarkdown>
         <br />
         <Flex justifyContent="flex-end"> {/* Adjust this Flex component */}
           <Text fontSize="12px" color="darkgray" fontWeight="300">

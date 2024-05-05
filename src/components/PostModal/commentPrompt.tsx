@@ -18,8 +18,8 @@ const CommandPrompt = ({ addComment }: CommandPromptProps) => {
   const [value, setValue] = useState("")
   const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN
   const { post } = usePostContext()
-  const parent_permlink = post.permlink
-  const parent_author = post.author
+  const parent_permlink = post?.permlink
+  const parent_author = post?.author
   const user = useHiveUser()
 
   const submitComment = async () => {
@@ -33,6 +33,7 @@ const CommandPrompt = ({ addComment }: CommandPromptProps) => {
       console.error("Username is missing")
       return
     }
+
 
     const permlink = new Date()
       .toISOString()
@@ -52,6 +53,7 @@ const CommandPrompt = ({ addComment }: CommandPromptProps) => {
       }),
     }
 
+
     const operations = [
       [
         "comment",
@@ -64,10 +66,10 @@ const CommandPrompt = ({ addComment }: CommandPromptProps) => {
       operations,
       "posting",
       async (response: any) => {
-        console.log({response})
         if (response.success) {
           setValue("")
           addComment(postData)
+          console.log("Comment posted successfully")
         } else {
           console.error("Error posting comment:", response.message)
         }

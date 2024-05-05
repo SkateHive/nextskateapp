@@ -17,6 +17,7 @@ import { extractImageUrls } from "./utils/extractImages";
 import PreviewModal from "./components/previewModal";
 import tutorialPost from "./utils/tutorialPost";
 import { Divide } from "lucide-react";
+import { transformIPFSContent } from "@/lib/utils";
 
 const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN;
 
@@ -36,7 +37,7 @@ const defaultBeneficiaries: Beneficiary[] = [
 ];
 
 export default function Upload() {
-    const [title, setTitle] = useState('Example post w/ Tutorial');
+    const [title, setTitle] = useState('');
     const [value, setValue] = useState(tutorialPost);
     const [isUploading, setIsUploading] = useState(false);
     const { hiveUser } = useAuthHiveUser();
@@ -199,15 +200,31 @@ export default function Upload() {
         }));
 
     const handleBeneficiaryPercentageChange = (index: number, newPercentage: number) => {
+        if (index < 0 || index >= beneficiaries.length) {
+            console.error('Invalid index for beneficiaries:', index);
+            return; // Early return to prevent error
+        }
+
         const updatedBeneficiaries = [...beneficiaries];
         updatedBeneficiaries[index].percentage = newPercentage;
         setBeneficiaries(updatedBeneficiaries);
     };
+
     const [showTooltip, setShowTooltip] = React.useState(false);
 
     const handleCheckMark = () => {
         setIsChecked(!isChecked);
     }
+    const handleDefaultBeneficiaryPercentageChange = (index: number, newPercentage: number) => {
+        if (index < 0 || index >= defaultBeneficiaries.length) {
+            console.error('Invalid index for default beneficiaries:', index);
+            return; // Early return to prevent error
+        }
+
+        const updatedDefaultBeneficiaries = [...defaultBeneficiaries];
+        updatedDefaultBeneficiaries[index].percentage = newPercentage;
+    }
+
 
     return (
         <Box width="100%">
@@ -234,12 +251,6 @@ export default function Upload() {
                 <Box width={{ base: '100%', md: '50%' }} p="4">
                     <HStack>
 
-                        <Badge
-                            background={"green.600"}
-                            border={"1px solid limegreen"}
-                        >
-                            <Text fontSize={"22px"} color="black">Title</Text>
-                        </Badge>
 
                         <Input
                             borderColor={"green.600"}
@@ -254,7 +265,7 @@ export default function Upload() {
                     </HStack>
 
                     <Box marginTop="3" {...getRootProps()} >
-                        {isUploading && <Center><Spinner /></Center>}
+                        {isUploading && <Center m={3}><Spinner color="limegreen" /></Center>}
 
                         <MDEditor
                             value={value}
@@ -355,7 +366,7 @@ export default function Upload() {
                                             min={0}
                                             max={100}
                                             colorScheme="green"
-                                            onChange={(val) => handleBeneficiaryPercentageChange(index, val)}
+                                            onChange={(val) => handleDefaultBeneficiaryPercentageChange(index, val)}
                                             onMouseEnter={() => setShowTooltip(true)}
                                             onMouseLeave={() => setShowTooltip(false)}
                                         >
@@ -447,9 +458,9 @@ export default function Upload() {
                         </Box>
                     </HStack>
                     <Divider />
-                    <Box overflowY="hidden" p="5px" borderRadius="4px" height="80%">
+                    <Box overflowY="auto" p="5px" borderRadius="4px" >
                         <ReactMarkdown components={MarkdownRenderers} rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
-                            {value}
+                            {(transformIPFSContent(value))}
                         </ReactMarkdown>
                     </Box>
                 </Box>

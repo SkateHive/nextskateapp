@@ -1,7 +1,7 @@
 import { useHiveUser } from "@/contexts/UserContext"
 import * as dhive from "@hiveio/dhive"
 import { hiveServerLoginWithPassword } from "./hive/server-functions"
-import HiveClient from "./hiveclient"
+import HiveClient from "./hive/hiveclient"
 import CryptoJS from "crypto-js"
 
 interface HiveKeychainResponse {
@@ -181,7 +181,6 @@ function useAuthHiveUser(): AuthUser {
 
       // login with HiveAuth
       if (privateKey) {
-        //console.log(privateKey)
         return
       }
 
@@ -204,7 +203,6 @@ function useAuthHiveUser(): AuthUser {
                   const key = dhive.PublicKey.fromString(publicKey)
 
                   if (key.verify(dhive.cryptoUtils.sha256(memo), sig) === true) {
-                    console.log(publicKey)
                     const val2 = await hiveClient.database.getAccounts([
                       accountName,
                     ])
@@ -213,8 +211,6 @@ function useAuthHiveUser(): AuthUser {
                       ...val2[0],
                     }
 
-                    console.log(userAccount)
-                    console.log(userAccount.json_metadata)
 
                     if (userAccount.json_metadata) {
                       userAccount.metadata = JSON.parse(userAccount.json_metadata)

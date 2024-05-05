@@ -15,9 +15,10 @@ interface ProfilePageProps {
 }
 
 export default function ProfilePosts({ user }: ProfilePageProps) {
+    const startDate = new Date()
     const [visiblePosts, setVisiblePosts] = useState(20)
     const { hiveAccount } = useHiveAccount(user.name)
-    const { posts, error, isLoading, queryCategory, setQueryCategory, setDiscussionQuery } = usePosts("author_before_date", [user.name, 100])
+    const { posts, error, isLoading, queryCategory, setQueryCategory, setDiscussionQuery } = usePosts("author_before_date", [user.name, "", startDate.toISOString(), 100])
     if (!hiveAccount || !posts) return <div>Loading...</div>
 
     return (

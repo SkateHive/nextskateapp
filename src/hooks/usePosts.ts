@@ -1,6 +1,6 @@
-import HiveClient from "@/lib/hiveclient"
-import { Discussion, DiscussionQueryCategory, DisqussionQuery } from "@hiveio/dhive"
-import { useState, useEffect } from "react"
+import HiveClient from "@/lib/hive/hiveclient";
+import { Discussion, DiscussionQueryCategory, DisqussionQuery } from "@hiveio/dhive";
+import { useState, useEffect } from "react";
 
 export default function usePosts(query: String, params: any[]) {
     const [posts, setPosts] = useState<Discussion[]>()
@@ -9,13 +9,16 @@ export default function usePosts(query: String, params: any[]) {
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
 
+
+
     useEffect(() => {
         const handleGetPosts = async () => {
             setIsLoading(true)
             setError(null)
             try {
                 const by = 'get_discussions_by_' + queryCategory
-                const posts = await HiveClient.database.call(by, [discussionQuery])
+                const posts = await HiveClient.database.call(by, discussionQuery)
+                console.log(posts, "posts")
                 setPosts(posts)
             } catch (e) {
                 console.log(e)
@@ -28,6 +31,7 @@ export default function usePosts(query: String, params: any[]) {
     }, [queryCategory,discussionQuery]);
     return { posts, isLoading, error, queryCategory, setQueryCategory, setDiscussionQuery }
 }
+
 
 /*
 import HiveClient from "@/lib/hiveclient"

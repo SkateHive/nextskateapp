@@ -1,11 +1,9 @@
 export function getWebsiteURL() {
   return process.env.NEXT_PUBLIC_WEBSITE_URL || ""
 }
-
 export function getCommunityTag() {
   return process.env.NEXT_PUBLIC_HIVE_COMMUNITY_TAG
 }
-
 export function calculateTimeAgo(date: string): string {
   const currentUTCDate = new Date()
   const seconds = Math.floor(
@@ -34,13 +32,11 @@ export function calculateTimeAgo(date: string): string {
   }
   return Math.floor(seconds) + "s"
 }
-
 export function extractFirstLink(markdownText: string): string | null {
   const regex = /!\[.*?\]\((.*?)\)/
   const match = markdownText.match(regex)
   return match ? match[1] : null
 }
-
 export function calculateHumanReadableReputation(rep: number) {
   if (rep === 0) {
     return 25
@@ -73,11 +69,9 @@ export function transform3SpeakContent(content: string): string {
   }
   return content;
 }
-
 export function formatETHaddress(address: string) {
   return `${address.slice(0, 6)}...${address.slice(-4)}`
 }
-
 export function transformIPFSContent(content: string): string {
   const regex = /<iframe src="https:\/\/ipfs\.skatehive\.app\/ipfs\/([a-zA-Z0-9-?=&]+)"(?:(?!<\/iframe>).)*\sallowfullscreen><\/iframe>/g;
 
@@ -85,3 +79,20 @@ export function transformIPFSContent(content: string): string {
     return `<video controls muted loop> <source src="https://ipfs.skatehive.app/ipfs/${videoID}" type="video/mp4"></video>`;
   });
 }
+
+export function transformEcencyImages(content: string): string {
+  const regex = /https:\/\/images\.ecency\.com\/p\/([\w-?=&.]+)/g;
+
+  return content.replace(regex, (match, imagePath) => {
+    return `![Image](https://images.ecency.com/p/${imagePath})`;
+  });
+}
+
+export function transformShortYoutubeLinksinIframes(content: string) {
+  // lets create a regex for links like this https://youtu.be/Sh6_hrPZ0P4?si=XO78pFeby_Urc7ce not for Iframes just for short links 
+  const regex = /https:\/\/youtu\.be\/([a-zA-Z0-9-_?=&]+)/g;
+  return content.replace(regex, (match, videoID) => {
+    return `<iframe src="https://www.youtube.com/embed/${videoID}" allowfullscreen></iframe>`;
+  });
+}
+

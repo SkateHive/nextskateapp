@@ -1,24 +1,40 @@
-"use client"
-
-import usePosts from "@/hooks/usePosts"
-import PostModel from "@/lib/models/post"
-import { Link } from "@chakra-ui/next-js"
-import { Box, Button, ButtonGroup, Flex, Grid, HStack } from "@chakra-ui/react"
-import { useState } from "react"
-import InfiniteScroll from "react-infinite-scroll-component"
-import { BeatLoader } from "react-spinners"
-import Post from "../PostCard"
-import PostSkeleton from "../PostCard/Skeleton"
-import { useHiveUser } from "@/contexts/UserContext"
-
+'use client'
+import usePosts from "@/hooks/usePosts";
+import PostModel from "@/lib/models/post";
+import { Box, Button, ButtonGroup, Flex, Grid, HStack } from "@chakra-ui/react";
+import { useState } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { BeatLoader } from "react-spinners";
+import Post from "../PostCard";
+import PostSkeleton from "../PostCard/Skeleton";
+import { useHiveUser } from "@/contexts/UserContext";
+import LoginModal from "../Hive/Login/LoginModal";
+import { DiscussionQueryCategory, DisqussionQuery } from "@hiveio/dhive";
+import { useEffect } from "react";
 export default function Feed() {
-  const SKATEHIVE_TAG = "hive-173115"
-  const { posts, error, isLoading, queryCategory, setQueryCategory, setDiscussionQuery } = usePosts("trending", { tag: SKATEHIVE_TAG, limit: 100 })
-  const [visiblePosts, setVisiblePosts] = useState(20)
-  const hiveUser = useHiveUser()
-  if (error) return "Error"
+  const SKATEHIVE_TAG = [{ tag: "hive-173115", limit: 100 }];
+  const [tag, setTag] = useState(SKATEHIVE_TAG);
+  const [query, setQuery] = useState("trending");
+  const [fetchedPosts, setFetchedPosts] = useState();
+  const { posts, error, isLoading, setQueryCategory, setDiscussionQuery } = usePosts(query, tag);
+  const [visiblePosts, setVisiblePosts] = useState(20);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const hiveUser = useHiveUser();
 
-  if (isLoading || !posts)
+
+  //setFetchedPosts(usePosts(queryCategory, tag))
+  function updateFeed(query: string, tagParams: any[]) {
+    setQuery(query)
+    setQueryCategory(query);
+    setDiscussionQuery(tagParams);
+
+  }
+  if (error) {
+    console.log("here")
+  
+    return "Error";
+  }
+  if (isLoading || !posts) {
     return (
       <Grid
         p={1}
@@ -32,59 +48,49 @@ export default function Feed() {
         minHeight="100vh"
         width={"100%"}
       >
-        {/* Render skeletons to match the initial visiblePosts count or any fixed number that fills the screen */}
         {Array.from({ length: visiblePosts }).map((_, i) => (
-          <PostSkeleton key={i} /> // Add key prop to the PostSkeleton component
+          <PostSkeleton key={i} />
         ))}
       </Grid>
-    )
+    );
+  }
+
+  const handleCreateClick = () => {
+    if (!hiveUser.hiveUser) {
+      setIsLoginModalOpen(true);
+    } else {
+      window.location.href = "/upload";
+    }
+  };
 
   return (
     <Box>
       <HStack justifyContent="center" marginBottom={"12px"}>
         <ButtonGroup size="sm" isAttached variant="outline" colorScheme="green">
-          <Button
-            onClick={() => setQueryCategory("trending")}
-            isActive={queryCategory === "trending"}
-          >
+          <Button onClick={() => updateFeed("trending", SKATEHIVE_TAG)} isActive={query === "trending"}>
             Trending
           </Button>
-          <Button
-            onClick={() => setQueryCategory("created")}
-            isActive={queryCategory === "created"}
-          >
+          <Button onClick={() => updateFeed("created", SKATEHIVE_TAG)} isActive={query === "created"}>
             Most Recent
           </Button>
-          {/* Following Section */}
-          {hiveUser.hiveUser !== null && (
-            <Button
-              onClick={() => setQueryCategory("created")}
-              isActive={queryCategory === "created"}
-            >
+          {hiveUser.hiveUser && (
+            <Button onClick={() => updateFeed("feed", [{ tag: hiveUser?.hiveUser?.name, limit: 100 }])} isActive={query === "feed"}>
               My Crew
             </Button>
           )}
         </ButtonGroup>
-
-        <Button
-          size={"sm"}
-          as={Link}
-          href={"/upload"}
-          colorScheme="green"
-          variant={"outline"}
-        >
+        <Button size={"sm"} onClick={handleCreateClick} colorScheme="green" variant={"outline"}>
           + Create 🛹
         </Button>
       </HStack>
+      {isLoginModalOpen && (
+        <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
+      )}
       <InfiniteScroll
         dataLength={visiblePosts}
-        next={() => setVisiblePosts((visiblePosts) => visiblePosts + 3)}
+        next={() => setVisiblePosts(visiblePosts + 3)}
         hasMore={visiblePosts < posts.length}
-        loader={
-          <Flex justify="center">
-            <BeatLoader size={8} color="darkgrey" />
-          </Flex>
-        }
+        loader={<Flex justify="center"><BeatLoader size={8} color="darkgrey" /></Flex>}
         style={{ overflow: "hidden" }}
       >
         <Grid
@@ -97,16 +103,11 @@ export default function Feed() {
           gap={0}
         >
           {posts.length > 0 &&
-            posts.slice(0, visiblePosts).map((post, i) => {
-              return (
-                <Post
-                  key={`${queryCategory}-${post.url}`}
-                  postData={PostModel.newFromDiscussion(post)}
-                />
-              )
-            })}
+            posts.slice(0, visiblePosts).map((post, i) => (
+              <Post key={`${query}-${post.url}`} postData={PostModel.newFromDiscussion(post)} />
+            ))}
         </Grid>
       </InfiniteScroll>
     </Box>
-  )
+  );
 }

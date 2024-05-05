@@ -87,7 +87,7 @@ const SocialModal: React.FC<SocialModalProps> = ({ isOpen, onClose, postUrl, con
                     <VStack spacing={6} align="stretch">
                         <Flex gap={2} marginTop={"5%"} wrap="wrap" justify="center">
                             <Button onClick={handleShareTwitter} border={"1px solid white"} color="white" leftIcon={<FaXTwitter />} size="sm">Twitter</Button>
-                            <Button onClick={handleShareWarpCast} color={"white"} bg={"#7c65c1"} leftIcon={<Image src='/warpcast.png' boxSize="20px" />} size="sm">Warpcast</Button>
+                            <Button onClick={handleShareWarpCast} color={"white"} bg={"#7c65c1"} leftIcon={<Image alt='warpcast' src='/warpcast.png' boxSize="20px" />} size="sm">Warpcast</Button>
                             <Button onClick={handleShareDiscord} color="white" bg={"purple"} leftIcon={<FaDiscord />} size="sm">Discord</Button>
 
                         </Flex>

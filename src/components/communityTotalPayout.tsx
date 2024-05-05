@@ -30,9 +30,15 @@ function CommunityTotalPayout() {
         )
         const resJson = await hiveHubResponse.json()
         const hiveInfo = resJson[SKATEHIVE_TAG]
-        const totalPayoutNumber = parseFloat(
-          hiveInfo.total_payouts_hbd.replace("$", "")
-        )
+        let totalPayoutNumber = 65666; // default value
+        if (hiveInfo && hiveInfo.total_payouts_hbd) {
+          try {
+            totalPayoutNumber = parseFloat(hiveInfo.total_payouts_hbd.replace("$", ""));
+          } catch (error) {
+            console.error("Error reading 'total_payouts_hbd': ", error);
+            totalPayoutNumber = 65666; // hardcoded value in case of error
+          }
+        }
 
         setTotalHBDPayout(totalPayoutNumber)
         setLoading(false)
@@ -59,6 +65,7 @@ function CommunityTotalPayout() {
         {loading ? (
           <VStack>
             <Image
+              alt="Loading..."
               boxSize={"24px"}
               src="https://64.media.tumblr.com/12da5f52c1491f392676d1d6edb9b055/870d8bca33241f31-7b/s400x600/fda9322a446d8d833f53467be19fca3811830c26.gif"
             />
@@ -91,7 +98,7 @@ function CommunityTotalPayout() {
               fontWeight="bold"
               textShadow={"1px 1px 15px black"}
             >
-              Total Generated to Skaters
+              Paid to Skaters
             </Text>
           </Flex>
         )}

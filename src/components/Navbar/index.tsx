@@ -24,6 +24,7 @@ import {
   keyframes,
   useDisclosure,
   useMediaQuery,
+  Text,
 } from "@chakra-ui/react"
 import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit"
 import { Home } from "lucide-react"
@@ -36,7 +37,9 @@ import LoginModal from "../Hive/Login/LoginModal"
 import CommunityTotalPayout from "../communityTotalPayout"
 import AvatarLogin from "./AvatarLogin"
 import checkRewards from "./utils/checkReward"
-
+import NotificationsPage from "@/app/notifications/page"
+import { FaBell } from "react-icons/fa"
+import { set } from "lodash"
 const blink = keyframes`
   0% { opacity: 1; }
   50% { opacity: 0.1; }
@@ -48,7 +51,7 @@ export default function Navbar() {
   const { hiveUser } = useHiveUser()
   const [hasRewards, setHasRewards] = useState(false)
   const { isOpen, onOpen, onClose } = useDisclosure()
-
+  const [notifications, setNotifications] = useState(false)
   const ethAccount = useAccount()
 
   const {
@@ -74,6 +77,10 @@ export default function Navbar() {
     if (hiveUser) {
       claimRewards(hiveUser)
     }
+  }
+
+  const handleNotifications = () => {
+    setNotifications(!notifications)
   }
 
   return (
@@ -117,7 +124,7 @@ export default function Navbar() {
             </HStack>
             <HStack padding={0} gap={3} fontSize={"22px"}>
               <FaSpeakap size={"22px"} />
-              <Link href={"/plaza2"}>Plaza</Link>
+              <Link href={"/plaza"}>Plaza</Link>
             </HStack>
             <HStack padding={0} gap={3} fontSize={"22px"}>
               <FaEthereum size={"22px"} />
@@ -133,6 +140,11 @@ export default function Navbar() {
                   <FaWallet size={"22px"} />
                   <Link href={`/wallet`}>Wallet</Link>
                 </HStack>
+                <HStack cursor={"pointer"} onClick={handleNotifications} padding={0} gap={3} fontSize={"22px"}>
+                  <FaBell size={"22px"} />
+                  <Text> Notifications</Text>
+                </HStack>
+                {notifications ? <NotificationsPage /> : null}
 
               </>
             ) : null}

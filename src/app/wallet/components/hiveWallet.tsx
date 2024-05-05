@@ -93,7 +93,7 @@ function HiveBox() {
     useEffect(() => {
         calculateHP();
         calculateHiveUsdValue();
-    }, [hiveUser, hivePrice]);
+    }, [hiveUser, hivePrice, calculateHP, calculateHiveUsdValue]);
 
     const [isOpened, setIsOpened] = useState(false);
 

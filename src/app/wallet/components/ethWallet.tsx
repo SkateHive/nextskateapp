@@ -50,7 +50,7 @@ function EthBox() {
         if (account.address) {
             getPortfolio();
         }
-    }, [account.address]);
+    }, [getPortfolio, account.address]);
 
     useEffect(() => {
         if (portfolio?.tokens) {
@@ -137,9 +137,8 @@ function EthBox() {
 
                 <Center>
                     <VStack m={5}>
-                        <Text fontWeight={"bold"} fontSize={"34px"}>Net Worth: ${portfolio?.totalNetWorth.toFixed(2)}</Text>
-
-                        <Text fontSize={"18px"} >Tokens Value: ${portfolio?.totalBalanceUsdTokens.toFixed(2)}</Text>
+                        <Text fontWeight={"bold"} fontSize={"34px"}>Net Worth: {portfolio?.totalNetWorth?.toFixed(2) || 0}</Text>
+                        <Text fontSize={"18px"} >Tokens Value: {portfolio?.totalBalanceUsdTokens?.toFixed(2) || 0}</Text>
                     </VStack>
                 </Center>
             </Box>
