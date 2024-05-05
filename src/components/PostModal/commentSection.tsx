@@ -31,8 +31,10 @@ const CommentsSection = ({ comments, isCommentReply = false }: CommentsSectionPr
         >
             <Stack gap={0}>
                 {filteredComments.map((comment, i) => (
-                    <PostComment key={comment.id} comment={comment} />
+                    <PostComment key={`${comment.id}-${i}`} comment={comment} />
                 ))}
+
+
             </Stack>
         </Box>
     );

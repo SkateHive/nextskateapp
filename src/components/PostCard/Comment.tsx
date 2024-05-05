@@ -1,7 +1,6 @@
 'use client'
 import { Flex, Text, Divider, HStack } from "@chakra-ui/react"
 import moment from "moment-timezone"
-import Markdown from "../Markdown"
 import UserAvatar from "../UserAvatar"
 import { Comment } from '@/hooks/comments';
 import CommentsSection from "@/components/PostModal/commentSection"
@@ -11,7 +10,7 @@ import { useHiveUser } from "@/contexts/UserContext";
 import voteOnContent from "@/app/plaza/voting"
 import React, { useState, useEffect } from 'react';
 import { voting_value } from "./calculateHiveVotingValue"
-
+import ReactMarkdown from "react-markdown";
 
 interface PostCommentProps {
   comment: Comment
@@ -60,7 +59,9 @@ export default function PostComment({ comment }: PostCommentProps) {
 
       </Flex>
       <Flex direction={"column"} border={"1px solid grey"} p={5} bg={"#201d21"}>
-        <Markdown content={comment.body} />
+        <ReactMarkdown>
+          {comment.body}
+        </ReactMarkdown>
         <br />
         <Flex justifyContent="flex-end"> {/* Adjust this Flex component */}
           <Text fontSize="12px" color="darkgray" fontWeight="300">

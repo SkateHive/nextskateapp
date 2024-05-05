@@ -25,8 +25,8 @@ import rehypeSanitize from "rehype-sanitize"
 const PlazaCommentSection = () => {
   const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN
   const { comments, addComment } = useComments(
-    "skatehacker",
-    "test-advance-mode-post"
+    "xvlad",
+    "visiting-meier-miniramp-with-the-new-submayor"
   )
 
   const [value, setValue] = React.useState("**Hello world!!!**")

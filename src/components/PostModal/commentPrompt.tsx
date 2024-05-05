@@ -34,6 +34,7 @@ const CommandPrompt = ({ addComment }: CommandPromptProps) => {
       return
     }
 
+
     const permlink = new Date()
       .toISOString()
       .replace(/[^a-zA-Z0-9]/g, "")
@@ -52,6 +53,7 @@ const CommandPrompt = ({ addComment }: CommandPromptProps) => {
       }),
     }
 
+
     const operations = [
       [
         "comment",
@@ -67,6 +69,7 @@ const CommandPrompt = ({ addComment }: CommandPromptProps) => {
         if (response.success) {
           setValue("")
           addComment(postData)
+          console.log("Comment posted successfully")
         } else {
           console.error("Error posting comment:", response.message)
         }
