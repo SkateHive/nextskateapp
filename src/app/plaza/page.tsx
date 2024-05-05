@@ -11,6 +11,7 @@ import {
 } from "@chakra-ui/react"
 import MDEditor from "@uiw/react-md-editor"
 import React from "react"
+
 import { useDropzone } from "react-dropzone"
 import { uploadFileToIPFS } from "../upload/utils/uploadToIPFS"
 
@@ -194,13 +195,16 @@ const PlazaCommentSection = () => {
             margin: "3px",
           }}
         />
-        <Flex justifyContent={"flex-end"}>
+        <Flex justifyContent={"flex-end"} marginTop={2} marginRight={4} marginBottom={6}>
           <Button
             colorScheme="green"
             variant={"outline"}
             onClick={submitComment}
+            cursor={"ne-resize"}
           >
-            Send it
+            Sendit
+            <Box flex="1" />
+    <img src="https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/web-gnar/AJkTj5LEFHyERAZVJc8jYFCwHx3nFAg2fSX7RkdKtWUn5NcgjKs9f2TY6ZW6g2b.png" alt="sendit icon" style={{ width: "20px", height: "20px", margin:"5px", padding:"1px"}} />
           </Button>
         </Flex>
       </Box>

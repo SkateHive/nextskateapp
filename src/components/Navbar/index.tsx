@@ -200,7 +200,9 @@ export default function Navbar() {
           </DrawerFooter>
         </DrawerContent>
       </Drawer>
-      <Flex m={3} align="center" justify="space-between">
+
+      
+      <Flex m={3} align="center" justify="space-between"  zIndex={999}>
         <Heading ml={3} size="2xl">
           <HStack>
             <Image
@@ -226,6 +228,7 @@ export default function Navbar() {
             )}
           </HStack>
         </Heading>
+
         <AuthorSearchBar
           onSearch={(selectedUsername: string) => {
             window.location.href = `/profile/${selectedUsername}`
