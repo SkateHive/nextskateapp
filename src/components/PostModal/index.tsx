@@ -32,10 +32,8 @@ export function PostModal({ isOpen, onClose }: PostModalInterface) {
       try {
         const query = { tag: username, limit: 3 };
         const response = await HiveClient.database.getDiscussions("blog", query);
-        // Process and set your post data here
       } catch (error) {
         console.error("Error fetching posts:", error);
-        // Handle errors (show error messages)
       }
     };
     fetchPosts(post.author);

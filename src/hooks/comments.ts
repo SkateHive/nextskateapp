@@ -65,6 +65,7 @@ export async function fetchComments(
     const comments = (await HiveClient.database.call("get_content_replies", [
       author,
       permlink,
+
     ])) as Comment[]
 
     const commentsWithReplies = await Promise.all(
@@ -96,16 +97,17 @@ export function useComments(author: string, permlink: string) {
       comments ? [...comments, newComment] : [newComment]
     )
     const comments = await fetchComments(author, permlink)
+
   }
 
   async function updateComments() {
     try {
       const comments = await fetchComments(author, permlink)
       setComments(comments)
+      setIsLoading(false)
+
     } catch (err: any) {
       setError(err.message ? err.message : "Error loading comments")
-    } finally {
-      setIsLoading(false)
     }
   }
   useEffect(() => {
