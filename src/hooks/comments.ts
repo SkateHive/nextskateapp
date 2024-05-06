@@ -1,6 +1,6 @@
 import HiveClient from "@/lib/hive/hiveclient"
 import { useEffect, useState } from "react"
-
+import { useCallback } from "react"
 export interface Comment {
   abs_rshares?: number
   active_votes?: ActiveVote[]
@@ -62,57 +62,44 @@ export async function fetchComments(
   permlink: string
 ): Promise<Comment[]> {
   try {
-    const comments = (await HiveClient.database.call("get_content_replies", [
-      author,
-      permlink,
-
-    ])) as Comment[]
-
+    const comments = await HiveClient.database.call("get_content_replies", [author, permlink]) as Comment[];
     const commentsWithReplies = await Promise.all(
       comments.map(async (comment) => {
         if (comment.children && comment.children > 0) {
-          comment.replies = await fetchComments(
-            comment.author,
-            comment.permlink
-          )
+          comment.replies = await fetchComments(comment.author, comment.permlink);
         }
-        return comment
+        return comment;
       })
-    )
-
-    return commentsWithReplies
+    );
+    return commentsWithReplies;
   } catch (error) {
-    console.error("Failed to fetch comments:", error)
-    return []
+    console.error("Failed to fetch comments:", error);
+    return [];
   }
 }
 
 export function useComments(author: string, permlink: string) {
-  const [comments, setComments] = useState<Comment[]>()
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string>()
+  const [comments, setComments] = useState<Comment[]>();
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string>();
+
+  const updateComments = useCallback(async () => {
+    try {
+      const fetchedComments = await fetchComments(author, permlink);
+      setComments(fetchedComments);
+      setIsLoading(false);
+    } catch (err: any) {
+      setError(err.message ? err.message : "Error loading comments");
+    }
+  }, [author, permlink]);
+
+  useEffect(() => {
+    updateComments();
+  }, [updateComments]);
 
   async function addComment(newComment: Comment) {
-    setComments((comments) =>
-      comments ? [...comments, newComment] : [newComment]
-    )
-    const comments = await fetchComments(author, permlink)
-
+    setComments((existingComments) => existingComments ? [...existingComments, newComment] : [newComment]);
   }
-
-  async function updateComments() {
-    try {
-      const comments = await fetchComments(author, permlink)
-      setComments(comments)
-      setIsLoading(false)
-
-    } catch (err: any) {
-      setError(err.message ? err.message : "Error loading comments")
-    }
-  }
-  useEffect(() => {
-    updateComments()
-  }, [updateComments])
 
   return {
     comments,
@@ -120,5 +107,5 @@ export function useComments(author: string, permlink: string) {
     isLoading,
     addComment,
     updateComments
-  }
+  };
 }
