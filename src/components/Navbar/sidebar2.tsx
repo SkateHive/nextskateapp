@@ -1,27 +1,19 @@
 'use client'
-import React from 'react';
+import NotificationsPage from '@/app/notifications/page';
+import { useHiveUser } from '@/contexts/UserContext';
 import {
     Box,
-    Link,
-    Stack,
-    Heading,
-    Flex,
-    Text,
-    Image,
-    useColorModeValue,
     Divider,
+    Flex,
     HStack,
-
+    Heading,
+    Image,
+    Link,
+    Text
 } from '@chakra-ui/react';
-import { FaEthereum } from 'react-icons/fa';
-import { FaHome } from 'react-icons/fa';
-import { FaSpeakap } from 'react-icons/fa';
-import { FaUser } from 'react-icons/fa';
-import { FaWallet } from 'react-icons/fa';
-import { FaBell } from 'react-icons/fa';
-import NotificationsPage from '@/app/notifications/page';
+import React from 'react';
+import { FaBell, FaEthereum, FaHome, FaSpeakap, FaUser, FaWallet } from 'react-icons/fa';
 import CommunityTotalPayout from '../communityTotalPayout';
-import { useHiveUser } from '@/contexts/UserContext';
 
 const Sidebar2 = () => {
     const user = useHiveUser();
@@ -32,21 +24,19 @@ const Sidebar2 = () => {
         setNotifications(!notifications)
     }
 
-
     return (
         <Box
             bg='Black'
             w={{ base: "full", md: 250 }}
             px={4}
-            py={6}
+            py={8}
         >
-
-            <Heading size="md" mb={6}>
+            <Heading size="md">
                 <Image mb={1} src="/skatehive-banner.png" w={"100%"} h={"auto"} alt="SkateHive" />
             </Heading>
-            <Divider mb={3} mt={3} style={{ color: 'limegreen', borderColor: 'limegreen' }} />
+            <Divider my={4} style={{ color: 'limegreen', borderColor: 'limegreen' }} />
             <CommunityTotalPayout />
-            <HStack padding={0} gap={3} fontSize={"22px"}>
+            <HStack padding={0} mt={8} gap={3} fontSize={"22px"}>
                 <FaHome size={"22px"} />
                 <Link href={"/"}>Home</Link>
             </HStack>

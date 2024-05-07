@@ -1,14 +1,14 @@
-import type { Metadata } from "next";
-import { Share_Tech_Mono } from "next/font/google";
+import type { Metadata } from "next"
+import { Share_Tech_Mono } from "next/font/google"
 
-import Favicon from "@/components/FaviconLinks";
-import Navbar from "@/components/Navbar";
-import Sidebar2 from "@/components/Navbar/sidebar2";
-import { getWebsiteURL } from "@/lib/utils";
-import { ColorModeScript, Flex, Box } from "@chakra-ui/react";
-import { Providers } from "./providers";
+import Favicon from "@/components/FaviconLinks"
+import Feed from "@/components/Feed"
+import Sidebar2 from "@/components/Navbar/sidebar2"
+import { getWebsiteURL } from "@/lib/utils"
+import { Box, ColorModeScript, Flex } from "@chakra-ui/react"
+import { Providers } from "./providers"
 
-const share_tech_mono = Share_Tech_Mono({ subsets: ["latin"], weight: "400" });
+const share_tech_mono = Share_Tech_Mono({ subsets: ["latin"], weight: "400" })
 
 export const metadata: Metadata = {
   title: "Skatehive App",
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   openGraph: {
     images: `${getWebsiteURL()}/default_banner.png`,
   },
-};
+}
 
 export default function RootLayout({
   children,
@@ -34,18 +34,17 @@ export default function RootLayout({
         <ColorModeScript initialColorMode="dark" />
         <Providers>
           {/* <Navbar /> */}
-          <Flex>
+          <Flex id="layout" justify={"center"} height={"100vh"} gap="40px">
             {/* Sidebar on the left */}
-            <Box>
-              <Sidebar2 />
-            </Box>
+            <Sidebar2 />
             {/* Main content area */}
-            <Flex px={[1, 3]} pt={0} overflow="visible" color={"white"} flex="1">
-              {children}
-            </Flex>
+            {children}
+            <Box maxW={"400px"} width={"100%"}>
+              <Feed/>
+            </Box>
           </Flex>
         </Providers>
       </body>
     </html>
-  );
+  )
 }
