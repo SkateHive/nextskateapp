@@ -100,7 +100,7 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
     useEffect(() => {
         fetchSpaceInfo();
         fetchCurrentBlockNumber();
-    }, [web3, fetchCurrentBlockNumber]);
+    }, []);
 
 
 

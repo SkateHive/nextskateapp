@@ -13,10 +13,6 @@ const ProfileDashboard = () => {
 
     return (
         <div>
-            <p>Welcome, {String(user?.hiveUser?.name)}</p>
-            <p> Hive Power: {String(user?.hiveUser?.vesting_shares)}</p>
-            
-           
         </div>
     )
 }

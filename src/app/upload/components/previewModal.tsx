@@ -211,18 +211,17 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
         }
     }
 
-    const buildPostLink = () => {
-        const username = user?.name;
-        if (username) {
-            const permlink = generatePermlink(title);
-            const link = `https://skatehive.app/post/hive-173115/@${username}/${permlink}`;
-            setPostLink(link);
-        }
-    }
     useEffect(() => {
+        const buildPostLink = () => {
+            const username = user?.name;
+            if (username) {
+                const permlink = generatePermlink(title);
+                const link = `https://skatehive.app/post/hive-173115/@${username}/${permlink}`;
+                setPostLink(link);
+            }
+        }
         buildPostLink();
-    }
-        , [title, user]);
+    }, [title, user]);
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} size="xl">

@@ -41,16 +41,16 @@ function EthBox() {
     const [userENSname, SetUserENSName] = useState<string | null>(null);
     const [groupedTokens, setGroupedTokens] = useState<{ [key: string]: Types.TokenDetail[] }>({});
 
-    const getPortfolio = async () => {
-        const Portfolio = await axios.get(`https://pioneers.dev/api/v1/portfolio/${account.address}`);
-        setPortfolio(Portfolio.data);
-    };
-
     useEffect(() => {
+        const getPortfolio = async () => {
+            const Portfolio = await axios.get(`https://pioneers.dev/api/v1/portfolio/${account.address}`);
+            setPortfolio(Portfolio.data);
+        };
+
         if (account.address) {
             getPortfolio();
         }
-    }, [getPortfolio, account.address]);
+    }, [account.address]);
 
     useEffect(() => {
         if (portfolio?.tokens) {

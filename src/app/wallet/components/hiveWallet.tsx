@@ -61,39 +61,39 @@ function HiveBox() {
     // Total 
     const [totalValue, setTotalValue] = useState(0)
 
-    const calculateHP = async () => {
-        const HP = await convertVestingSharesToHivePower(String(vestingShares), String(delegatedVestingShares), String(receivedVestingShares)).then((res) => {
-            setHivePower(res.hivePower)
-            setDelegatedToUserInUSD(res.delegatedToUserInUSD)
-            setHPthatUserDelegated(Number(res.DelegatedToSomeoneHivePower))
-            const sum = Number(res.DelegatedToSomeoneHivePower) + Number(res.hivePower)
-            setTotalHP(sum)
-        })
-    }
-    const calculateHiveUsdValue = () => {
-        if (hivePrice && hiveUser) {
-            const hiveUsd = hivePrice * Number(String(hiveUser.balance).split(" ")[0]);
-            const HPUsd = hivePrice * Number(hivePower);
-
-            const delegatedHPUsd = hivePrice * HPthatUserDelegated;
-            const savingsValue = 1 * Number(String(hiveUser.savings_hbd_balance).split(" ")[0]);
-            //replace for useHBDprice hook 
-            const HBDUsd = 1 * Number(String(hiveUser.hbd_balance).split(" ")[0]);
-            setHiveUsdValue(hiveUsd);
-            setHPUsdValue(HPUsd);
-            setDelegatedHPUsdValue(delegatedHPUsd);
-            setHBDUsdValue(HBDUsd);
-            setSavingsUSDvalue(savingsValue);
-            const total = hiveUsd + HPUsd + HBDUsd + savingsValue;
-            setTotalValue(total);
-
-        }
-    };
-
     useEffect(() => {
+        const calculateHP = async () => {
+            const HP = await convertVestingSharesToHivePower(String(vestingShares), String(delegatedVestingShares), String(receivedVestingShares)).then((res) => {
+                setHivePower(res.hivePower)
+                setDelegatedToUserInUSD(res.delegatedToUserInUSD)
+                setHPthatUserDelegated(Number(res.DelegatedToSomeoneHivePower))
+                const sum = Number(res.DelegatedToSomeoneHivePower) + Number(res.hivePower)
+                setTotalHP(sum)
+            })
+        }
+        const calculateHiveUsdValue = () => {
+            if (hivePrice && hiveUser) {
+                const hiveUsd = hivePrice * Number(String(hiveUser.balance).split(" ")[0]);
+                const HPUsd = hivePrice * Number(hivePower);
+
+                const delegatedHPUsd = hivePrice * HPthatUserDelegated;
+                const savingsValue = 1 * Number(String(hiveUser.savings_hbd_balance).split(" ")[0]);
+                //replace for useHBDprice hook 
+                const HBDUsd = 1 * Number(String(hiveUser.hbd_balance).split(" ")[0]);
+                setHiveUsdValue(hiveUsd);
+                setHPUsdValue(HPUsd);
+                setDelegatedHPUsdValue(delegatedHPUsd);
+                setHBDUsdValue(HBDUsd);
+                setSavingsUSDvalue(savingsValue);
+                const total = hiveUsd + HPUsd + HBDUsd + savingsValue;
+                setTotalValue(total);
+
+            }
+        };
+
         calculateHP();
         calculateHiveUsdValue();
-    }, [hiveUser, hivePrice, calculateHP, calculateHiveUsdValue]);
+    }, [hiveUser, hivePrice, vestingShares, delegatedVestingShares, receivedVestingShares, hivePower, HPthatUserDelegated]);
 
     const [isOpened, setIsOpened] = useState(false);
 

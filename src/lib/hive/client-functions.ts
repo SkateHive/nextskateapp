@@ -1,9 +1,7 @@
 'use client';
 import { KeychainRequestResponse, KeychainSDK, Post, Vote, KeychainKeyTypes, Broadcast, Login, Transfer } from "keychain-sdk"
-import { Client, Operation, PrivateKey } from "@hiveio/dhive"
-import CryptoJS from 'crypto-js';
-import { KeychainTransactionResult } from "keychain-sdk";
-import { HiveAccount } from "../useHiveAuth";
+import { Operation } from "@hiveio/dhive"
+import { HiveAccount } from "../models/user";
 
 
 interface HiveKeychainResponse {
@@ -101,6 +99,12 @@ export async function loginWithKeychain(username: string) {
   }
 }
 
+export function getReputation(rep: number) {
+  let out = ((Math.log10(Math.abs(rep)) - 9) * 9) + 25;
+  out = Math.round(out);
+  return out;
+}
+
 export async function transferWithKeychain(username: string, destination: string, amount: string, memo: string, currency: string) {
   try {
     const keychain = new KeychainSDK(window);
@@ -122,5 +126,51 @@ export async function transferWithKeychain(username: string, destination: string
     console.log({ transfer });
   } catch (error) {
     console.log({ error });
+  }
+}
+
+export async function updateProfile(username: String, name: String, about: String, coverImageUrl: String, avatarUrl: String, website: String, ethAddress: String) {
+  try {
+    const keychain = new KeychainSDK(window);
+
+    const formParamsAsObject = {
+      data: {
+        username: username,
+        operations: [
+          [
+            'account_update2',
+            {
+              account: username,
+              json_metadata: JSON.stringify({
+                profile: {
+                  name: name,
+                  about: about,
+                  cover_image: coverImageUrl,
+                  profile_image: avatarUrl,
+                  website: website,
+                },
+                extensions: {
+                  //add ethAddress to json_metadata
+                  eth_address: ethAddress,
+                },
+              }),
+              posting_json_metadata: JSON.stringify({
+                profile: {
+                  name: name,
+                  about: about,
+                  cover_image: coverImageUrl,
+                  profile_image: avatarUrl,
+                  website: website,
+                },
+              }),
+              extensions: [],
+            },
+          ],
+        ],
+        method: KeychainKeyTypes.active,
+      }
+    }
+  } catch (error) {
+    console.log({ error })
   }
 }
