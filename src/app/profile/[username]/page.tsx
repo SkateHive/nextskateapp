@@ -1,11 +1,11 @@
 'use client'
 import Post, { PostComponentProps } from "@/components/PostCard"
-import ProfileHeader from "@/components/ProfileHeader"
+import ProfileHeader from "@/components/Profile/ProfileHeader"
 import HiveClient from "@/lib/hive/hiveclient"
 import PostModel from "@/lib/models/post"
 // import { getUserFromUsername } from "@/lib/services/userService"
 import { Box, Grid, Flex } from "@chakra-ui/react" // Import Grid and Box for layout
-import ProfileTabs from "./profileTabs"
+import ProfileTabs from "@/components/Profile/profileTabs"
 import useHiveAccount from "@/hooks/useHiveAccount"
 import usePosts from "@/hooks/usePosts"
 import { HiveAccount } from "@/lib/models/user"
@@ -45,13 +45,14 @@ export default function ProfilePage({ params }: ProfilePageProps) {
   //const user = await getUserFromUsername(params.username)
   const [visiblePosts, setVisiblePosts] = useState(20)
   const { hiveAccount } = useHiveAccount(params.username)
-  const { posts, error, isLoading } = usePosts("blog", { tag: params.username, limit: 100 })
+  //const { posts, error, isLoading } = usePosts("blog", { tag: params.username, limit: 100 })
   // const posts = await getBlogFromUsername(params.username)
-  if (!hiveAccount || !posts) return <div>Loading...</div>
+  if (!hiveAccount) return <div>Loading...</div>
   return (
     <Box width="100%" minHeight="100vh">
       <ProfileHeader user={hiveAccount} />
-      <ProfileTabs params={params} />
+      <ProfileTabs user={hiveAccount} />
+{/*
       <InfiniteScroll
         dataLength={visiblePosts}
         next={() => setVisiblePosts((visiblePosts) => visiblePosts + 3)}
@@ -83,6 +84,7 @@ export default function ProfilePage({ params }: ProfilePageProps) {
             })}
         </Grid>
       </InfiniteScroll>
+          */}
     </Box>
   )
 }

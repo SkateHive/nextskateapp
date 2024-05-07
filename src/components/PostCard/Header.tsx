@@ -107,7 +107,6 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
     }
   }
 
-
   const { hiveAccount, isLoading } = useHiveAccount(post.author)
   if (isLoading || !hiveAccount) return <div>Loading...</div>
 

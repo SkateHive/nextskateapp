@@ -6,6 +6,8 @@ interface HiveAccountMetadataProps {
   [key: string]: any
 }
 export interface HiveAccount extends Account {
+
+  reputation?: number | string
   metadata?: HiveAccountMetadataProps
 }
 

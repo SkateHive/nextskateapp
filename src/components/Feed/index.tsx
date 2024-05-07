@@ -12,22 +12,28 @@ import LoginModal from "../Hive/Login/LoginModal";
 import { DiscussionQueryCategory, DisqussionQuery } from "@hiveio/dhive";
 import { useEffect } from "react";
 export default function Feed() {
-  const SKATEHIVE_TAG = { tag: "hive-173115", limit: 100 };
-  const [tag, setTag] = useState<DisqussionQuery>(SKATEHIVE_TAG);
-  const [queryCategory, setQueryCategory] = useState<DiscussionQueryCategory>("trending");
-  const { posts, error, isLoading } = usePosts(queryCategory, tag);
+  const SKATEHIVE_TAG = [{ tag: "hive-173115", limit: 100 }];
+  const [tag, setTag] = useState(SKATEHIVE_TAG);
+  const [query, setQuery] = useState("trending");
+  const [fetchedPosts, setFetchedPosts] = useState();
+  const { posts, error, isLoading, setQueryCategory, setDiscussionQuery } = usePosts(query, tag);
   const [visiblePosts, setVisiblePosts] = useState(20);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const hiveUser = useHiveUser();
 
 
-  function updateFeed(query: DiscussionQueryCategory, tagParams: DisqussionQuery) {
+  //setFetchedPosts(usePosts(queryCategory, tag))
+  function updateFeed(query: string, tagParams: any[]) {
+    setQuery(query)
     setQueryCategory(query);
-    setTag(tagParams);
+    setDiscussionQuery(tagParams);
 
   }
-
-  if (error) return "Error";
+  if (error) {
+    console.log("here")
+  
+    return "Error";
+  }
   if (isLoading || !posts) {
     return (
       <Grid
@@ -61,14 +67,14 @@ export default function Feed() {
     <Box>
       <HStack justifyContent="center" marginBottom={"12px"}>
         <ButtonGroup size="sm" isAttached variant="outline" colorScheme="green">
-          <Button onClick={() => updateFeed("trending", SKATEHIVE_TAG)} isActive={queryCategory === "trending"}>
+          <Button onClick={() => updateFeed("trending", SKATEHIVE_TAG)} isActive={query === "trending"}>
             Trending
           </Button>
-          <Button onClick={() => updateFeed("created", SKATEHIVE_TAG)} isActive={queryCategory === "created"}>
+          <Button onClick={() => updateFeed("created", SKATEHIVE_TAG)} isActive={query === "created"}>
             Most Recent
           </Button>
           {hiveUser.hiveUser && (
-            <Button onClick={() => updateFeed("feed", { tag: hiveUser?.hiveUser?.name, limit: 100 })} isActive={queryCategory === "feed"}>
+            <Button onClick={() => updateFeed("feed", [{ tag: hiveUser?.hiveUser?.name, limit: 100 }])} isActive={query === "feed"}>
               My Crew
             </Button>
           )}
@@ -98,7 +104,7 @@ export default function Feed() {
         >
           {posts.length > 0 &&
             posts.slice(0, visiblePosts).map((post, i) => (
-              <Post key={`${queryCategory}-${post.url}`} postData={PostModel.newFromDiscussion(post)} />
+              <Post key={`${query}-${post.url}`} postData={PostModel.newFromDiscussion(post)} />
             ))}
         </Grid>
       </InfiniteScroll>

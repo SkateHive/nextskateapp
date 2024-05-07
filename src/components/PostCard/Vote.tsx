@@ -14,21 +14,22 @@ export default function Vote() {
   const { hiveUser } = useHiveUser()
   const [postEarnings, setPostEarnings] = useState(Number(post.getEarnings().toFixed(2)))
   const [userVotingValue, setUserVotingValue] = useState(0)
-  const getVotingValue = async () => {
-    try {
-      if (!hiveUser) return;
-      const vote_value = await voting_value2(hiveUser);
-      setUserVotingValue(Number(vote_value.toFixed(2)));
-    } catch (error) {
-      console.error("Failed to calculate voting value:", error);
-    }
-  }
+
 
   useEffect(() => {
+    const getVotingValue = async () => {
+      try {
+        if (!hiveUser) return;
+        const vote_value = await voting_value2(hiveUser);
+        setUserVotingValue(Number(vote_value.toFixed(2)));
+      } catch (error) {
+        console.error("Failed to calculate voting value:", error);
+      }
+    }
     if (hiveUser) {
       getVotingValue();
     }
-  }, [hiveUser, getVotingValue]);
+  }, [hiveUser]);
 
 
 
