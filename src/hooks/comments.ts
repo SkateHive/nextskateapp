@@ -83,19 +83,30 @@ export function useComments(author: string, permlink: string) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string>();
 
-  const updateComments = useCallback(async () => {
+  // Define the async function outside useEffect but within useComments
+  const fetchAndUpdateComments = async () => {
+    let isMounted = true; // Initialize isMounted to true
     try {
       const fetchedComments = await fetchComments(author, permlink);
-      setComments(fetchedComments);
-      setIsLoading(false);
+      if (isMounted) {
+        setComments(fetchedComments);
+        setIsLoading(false);
+      }
     } catch (err: any) {
-      setError(err.message ? err.message : "Error loading comments");
+      if (isMounted) {
+        setError(err.message ? err.message : "Error loading comments");
+      }
     }
-  }, [author, permlink]);
+    return () => isMounted = false; // Return cleanup function
+  };
 
   useEffect(() => {
-    updateComments();
-  }, [updateComments]);
+    const cleanup = fetchAndUpdateComments(); // Call the async function
+
+    return () => {
+      cleanup.then(resolve => resolve()); // Ensure cleanup is called when the component unmounts
+    };
+  }, [author, permlink, fetchAndUpdateComments]); // Include fetchAndUpdateComments in dependencies
 
   async function addComment(newComment: Comment) {
     setComments((existingComments) => existingComments ? [...existingComments, newComment] : [newComment]);
@@ -106,6 +117,7 @@ export function useComments(author: string, permlink: string) {
     error,
     isLoading,
     addComment,
-    updateComments
+    updateComments: fetchAndUpdateComments // Expose the method for manual updates
   };
 }
+

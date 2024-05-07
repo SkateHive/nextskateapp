@@ -18,7 +18,7 @@ import { useHiveUser } from '@/contexts/UserContext';
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, useDisclosure } from "@chakra-ui/react"
 
 const PINATA_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN;
-const PINATA_SECRET = process.env.NEXT_PUBLIC_PINATA_SECRET;
+
 interface mediaProps {
     media: string[];
     type: string;
@@ -280,7 +280,6 @@ const SkateCast = () => {
                         </HStack>
                         <Divider mt={4} />
                     </Box>
-
                     <Box overflowX="auto" width={{ base: "100%", md: "60%" }}>
                         <InfiniteScroll
                             dataLength={visiblePosts}
@@ -288,10 +287,8 @@ const SkateCast = () => {
                             hasMore={visiblePosts < (comments?.length ?? 0)}
                             loader={<Flex justify="center"><BeatLoader size={8} color="darkgrey" /></Flex>}
                             style={{ overflow: "hidden" }}
-
-
                         >
-                            {reversedComments?.map((comment) => (
+                            {reversedComments?.slice(0, visiblePosts).map((comment) => (
 
                                 <Box key={comment.id} p={4} width="100%" bg="black" color="white" borderLeft="1px solid gray" borderRight="1px solid gray" >
                                     <Flex>
