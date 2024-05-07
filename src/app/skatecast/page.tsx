@@ -1,6 +1,6 @@
 'use client'
 import React from 'react';
-import { Badge, Box, Image, Text, Flex, Button, Avatar, Divider, Center, HStack, Textarea, border } from '@chakra-ui/react';
+import { Badge, Box, Image, Text, Flex, Button, Avatar, Divider, Center, HStack, Textarea, Heading } from '@chakra-ui/react';
 import { FaImage, FaRegComment, FaRegHeart, FaRegShareSquare } from 'react-icons/fa';
 import { AiOutlineRetweet } from 'react-icons/ai';
 import { useComments } from '@/hooks/comments';
@@ -16,7 +16,7 @@ import { useMemo } from 'react';
 import { vote } from '@/lib/hive/client-functions';
 import { useHiveUser } from '@/contexts/UserContext';
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, useDisclosure } from "@chakra-ui/react"
-
+import SideBar from '@/components/Navbar/sideBar';
 const PINATA_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN;
 
 interface mediaProps {
@@ -75,9 +75,11 @@ let postDataForPreview = {
     ]
 }
 
+// const parent_author = 'skatehive';
+// const parent_permlink = 'the-weekly-stoken-55';
+
 const parent_author = 'skatehacker';
 const parent_permlink = 'test-advance-mode-post';
-
 const SkateCast = () => {
     const { comments, addComment, isLoading } = useComments(parent_author, parent_permlink)
     const [visiblePosts, setVisiblePosts] = useState(20);
@@ -87,7 +89,7 @@ const SkateCast = () => {
     const username = user?.hiveUser?.name;
     const [mediaModalOpen, setMediaModalOpen] = useState(false);
     const [media, setMedia] = useState<string[]>([]);
-
+    const { isOpen, onOpen, onClose } = useDisclosure();
 
 
     const formatDate = (date: string) => {
@@ -229,11 +231,21 @@ const SkateCast = () => {
     return (
         isLoading ? (<Center>Loading...</Center>
         ) : (
-            <>
+            <Box w={"30%"}>
+                {/* <SideBar isOpen={true} onClose={onClose} /> */}
+                {/* <Image
+                    onClick={onOpen}
+                    boxSize={"58px"}
+                    src="skatehive_square_green.png"
+                    alt="SkateHive"
+                    borderRadius={"5px"}
+                    _hover={{ cursor: "pointer" }}
+                    m={3}
+                /> */}
 
                 <AvatarMediaModal isOpen={mediaModalOpen} onClose={() => setMediaModalOpen(false)} media={media} />
-                <Center flexDirection="column" w="100%" minH="100vh" bg="black">
-                    <Box flexWrap={"wrap"} borderLeft="1px solid gray" borderRight="1px solid gray" w={{ base: "100%", md: "60%" }} css={{ "&::-webkit-scrollbar": { display: "none" } }} overflowX="auto">
+                <Box flexDirection="column" w="100%" minH="100vh" bg="black">
+                    <Box flexWrap={"wrap"} borderLeft="1px solid gray" borderRight="1px solid gray" w={{ base: "100%", md: "80%" }} css={{ "&::-webkit-scrollbar": { display: "none" } }} overflowX="auto">
                         <Flex p={5} >
                             {sortedComments?.map((comment, index, commentsArray) => {
                                 const isDuplicate = commentsArray.findIndex((c) => c.author === comment.author) !== index;
@@ -256,7 +268,7 @@ const SkateCast = () => {
                         </Flex>
                         <Divider />
                     </Box>
-                    <Box p={4} width={{ base: "100%", md: "60%" }} bg="black" color="white" borderLeft="1px solid gray" borderRight="1px solid gray">
+                    <Box p={4} width={{ base: "100%", md: "80%" }} bg="black" color="white" borderLeft="1px solid gray" borderRight="1px solid gray">
                         <Flex >
                             <Avatar
                                 borderRadius={10}
@@ -280,7 +292,7 @@ const SkateCast = () => {
                         </HStack>
                         <Divider mt={4} />
                     </Box>
-                    <Box overflowX="auto" width={{ base: "100%", md: "60%" }}>
+                    <Box overflowY="auto" width={{ base: "100%", md: "80%" }}>
                         <InfiniteScroll
                             dataLength={visiblePosts}
                             next={() => setVisiblePosts(visiblePosts + 3)}
@@ -335,8 +347,8 @@ const SkateCast = () => {
                         </InfiniteScroll>
                     </Box>
 
-                </Center>
-            </>
+                </Box>
+            </Box>
         )
     );
 };
