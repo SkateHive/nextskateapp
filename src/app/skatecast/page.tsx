@@ -264,7 +264,6 @@ const SkateCast = () => {
                                 src={`https://images.ecency.com/webp/u/${username}/avatar/small`}
                             />
                             <Textarea
-                                width={{ base: "100%", md: "60%" }}
                                 border="none"
                                 _focus={{
                                     border: "none",
@@ -289,6 +288,7 @@ const SkateCast = () => {
                             hasMore={visiblePosts < (comments?.length ?? 0)}
                             loader={<Flex justify="center"><BeatLoader size={8} color="darkgrey" /></Flex>}
                             style={{ overflow: "hidden" }}
+
 
                         >
                             {reversedComments?.map((comment) => (

@@ -38,7 +38,7 @@ export default function PostComment({ comment }: PostCommentProps) {
   }
   useEffect(() => {
     setHasVoted(comment?.active_votes?.some(vote => vote.voter === user.hiveUser?.name) ?? false);
-  }, [comment]);
+  }, [comment, user.hiveUser?.name]);
 
 
 
