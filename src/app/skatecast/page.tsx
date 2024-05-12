@@ -70,49 +70,13 @@ const AvatarMediaModal = ({
 
 let thumbnailUrl = "https://www.skatehive.app/assets/skatehive.jpeg"
 
-let postDataForPreview = {
-  post_id: Number(1),
-  author: "skatehive",
-  permlink: "permlink",
-  title: "title",
-  body: "body",
-  json_metadata: JSON.stringify({ images: [thumbnailUrl] }),
-  created: String(Date.now()),
-  url: "url",
-  root_title: "root_title",
-  total_payout_value: "4.20",
-  curator_payout_value: "0.0",
-  pending_payout_value: "0.0",
-  active_votes: [
-    {
-      voter: "BamMargera",
-      weight: 10000,
-      percent: "0",
-      reputation: 78,
-      rshares: 0,
-    },
-    {
-      voter: "SpiderMan",
-      weight: 5000,
-      percent: "0",
-      reputation: 69,
-      rshares: 0,
-    },
-    {
-      voter: "Magnolia",
-      weight: 20000,
-      percent: "0",
-      reputation: 100,
-      rshares: 0,
-    },
-  ],
-}
 
-const parent_author = "skatehive"
-const parent_permlink = "the-weekly-stoken-55"
 
-// const parent_author = 'skatehacker';
-// const parent_permlink = 'test-advance-mode-post';
+// const parent_author = "skatehive"
+// const parent_permlink = "the-weekly-stoken-55"
+
+const parent_author = 'skatehacker';
+const parent_permlink = 'test-advance-mode-post';
 
 const SkateCast = () => {
   const { comments, addComment, isLoading } = useComments(
@@ -385,7 +349,7 @@ const SkateCast = () => {
                 {transformShortYoutubeLinksinIframes(comment.body)}
               </ReactMarkdown>
             </Box>
-            <Flex justifyContent={"flex-start"} mt={4}>
+            <Flex justifyContent={"space-between"} mt={4}>
               <Button
                 colorScheme="green"
                 variant="ghost"

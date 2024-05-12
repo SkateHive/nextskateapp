@@ -29,18 +29,27 @@ export default function RootLayout({
       <head>
         <link rel="manifest" href="/manifest.json"></link>
         <Favicon />
+        <style>
+          {`
+            @media (max-width: 768px) {
+              .hide-on-mobile {
+                display: none;
+              }
+            }
+          `}
+        </style>
       </head>
       <body className={share_tech_mono.className}>
         <ColorModeScript initialColorMode="dark" />
         <Providers>
-          {/* <Navbar /> */}
           <Flex id="layout" justify={"center"} height={"100vh"} gap="40px">
-            {/* Sidebar on the left */}
-            <Sidebar2 />
-            {/* Main content area */}
+            <Box className="hide-on-mobile">
+
+              <Sidebar2 />
+            </Box>
             {children}
-            <Box maxW={"400px"} width={"100%"}>
-              <Feed/>
+            <Box className="hide-on-mobile" maxW={"400px"} width={"100%"}>
+              <Feed />
             </Box>
           </Flex>
         </Providers>

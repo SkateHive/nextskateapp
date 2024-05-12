@@ -32,6 +32,7 @@ import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit"
 import { claimRewards } from "@/lib/hive/client-functions";
 import LoginModal from "../Hive/Login/LoginModal";
 import { FaHive } from "react-icons/fa";
+
 const blink = keyframes`
   0% { opacity: 1; }
   50% { opacity: 0.1; }
@@ -52,6 +53,7 @@ const SideBar = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) 
     const { openConnectModal } = useConnectModal()
     const { openAccountModal } = useAccountModal()
     const [isSmallerThan400] = useMediaQuery("(max-width: 400px)")
+
 
     useEffect(() => {
         if (hiveUser !== null) {

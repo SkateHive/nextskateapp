@@ -139,7 +139,7 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
                 ·
               </Text>
               <Text fontSize="12px" color="darkgray" fontWeight="300">
-                {moment.utc(post.created).fromNow()}
+                {moment.utc(post.created).fromNow().replace("minutes", "m").replace("hours", "h")}
               </Text>
             </Flex>
             <HStack justify={"space-between"} display={"flex"}>
