@@ -44,7 +44,6 @@ export default function RootLayout({
         <Providers>
           <Flex id="layout" justify={"center"} height={"100vh"} gap="40px">
             <Box className="hide-on-mobile">
-
               <Sidebar2 />
             </Box>
             {children}

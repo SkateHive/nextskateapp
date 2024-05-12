@@ -39,6 +39,7 @@ export function NotificationContent({
       py={4}
       _hover={{ bg: "limegreen", color: "black" }}
       gap={4}
+
     >
       <Link href={`/profile/${notification.user}`}>
         <Avatar
