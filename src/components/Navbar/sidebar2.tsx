@@ -1,6 +1,8 @@
 'use client'
 import NotificationsPage from '@/app/notifications/page';
 import { useHiveUser } from '@/contexts/UserContext';
+import { useState, useEffect } from 'react';
+
 import {
     Box,
     Divider,
@@ -18,7 +20,7 @@ import {
 import React from 'react';
 import { FaBell, FaEthereum, FaHome, FaSpeakap, FaUser, FaWallet } from 'react-icons/fa';
 import CommunityTotalPayout from '../communityTotalPayout';
-import { FaHive, FaDiscord } from 'react-icons/fa';
+import { FaHive, FaDiscord, FaBook } from 'react-icons/fa';
 import { useAccount } from 'wagmi';
 import { formatETHaddress } from '@/lib/utils';
 import { useConnectModal, useAccountModal } from '@rainbow-me/rainbowkit';
@@ -26,7 +28,6 @@ import LoginModal from '../Hive/Login/LoginModal';
 import { useDisclosure, useMediaQuery } from '@chakra-ui/react';
 import { claimRewards } from '@/lib/hive/client-functions';
 import checkRewards from './utils/checkReward';
-import { useState, useEffect } from 'react';
 
 
 const blink = keyframes`
@@ -73,14 +74,23 @@ const Sidebar2 = () => {
             <Box
                 bg='Black'
                 w={{ base: "full", md: 250 }}
-                px={4}
+                px={2}
                 py={8}
                 h="100vh"
                 display="flex"
                 flexDirection="column"
             >
                 <Heading size="md">
-                    <Image mb={1} src="/skatehive-banner.png" w={"100%"} h={"auto"} alt="SkateHive" />
+                    <Image
+                        boxSize={"58px"}
+                        src="skatehive_square_green.png"
+                        alt="SkateHive"
+                        borderRadius={"5px"}
+                        _hover={{ cursor: "pointer" }}
+                        minW={"100%"}
+                        h={"auto"}
+                    />
+                    {/* <Image mb={1} src="/skatehive-banner.png" w={"100%"} h={"auto"} alt="SkateHive" /> */}
                 </Heading>
                 <Divider my={4} style={{ color: 'limegreen', borderColor: 'limegreen' }} />
                 <CommunityTotalPayout />
@@ -97,11 +107,11 @@ const Sidebar2 = () => {
                     </Button>
                 )}
                 <HStack padding={0} mt={8} gap={3} fontSize={"22px"}>
-                    <FaHome size={"22px"} />
-                    <Link href={"/skatecast"}>Home</Link>
+                    <FaSpeakap size={"22px"} />
+                    <Link href={"/skatecast"}>Cast</Link>
                 </HStack>
                 <HStack padding={0} gap={3} fontSize={"22px"}>
-                    <FaSpeakap size={"22px"} />
+                    <FaBook size={"22px"} />
                     <Link href={"/"}>Mag</Link>
                 </HStack>
                 <HStack padding={0} gap={3} fontSize={"22px"}>

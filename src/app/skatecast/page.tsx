@@ -24,6 +24,7 @@ import {
   Textarea,
   VStack,
   useDisclosure,
+  Image
 } from "@chakra-ui/react"
 import { useEffect, useMemo, useState } from "react"
 import { AiOutlineRetweet } from "react-icons/ai"
@@ -52,7 +53,7 @@ const AvatarMediaModal = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="full">
       <ModalOverlay filter="blur(8px)" />
-      <ModalContent>
+      <ModalContent bg={"black"}>
         <ModalHeader>Media</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -112,9 +113,9 @@ const SkateCast = () => {
       return `${days} day${days > 1 ? "s" : ""} ago`
     }
   }
-
   const [mediaComments, setMediaComments] = useState(new Set())
   const [mediaDictionary, setMediaDictionary] = useState(new Map())
+
   useEffect(() => {
     const mediaSet = new Set()
     const mediaDict = new Map()
@@ -223,7 +224,13 @@ const SkateCast = () => {
 
   return isLoading ? (
     <VStack maxW={"800px"} width={"100%"}>
-      <Center>Loading...</Center>
+      <VStack>
+        <Image minW={"100%"} src="https://i.ibb.co/Br0SMjz/Crop-animated.gif" alt="Loading..." />
+        <Image mt={-2} minW={"100%"} src="https://i.ibb.co/L8mj1CV/Crop-animated-1.gif" alt="Loading..." />
+
+        Loading...
+
+      </VStack>
     </VStack>
   ) : (
     <VStack
@@ -235,16 +242,7 @@ const SkateCast = () => {
       overflow={"auto"}
       borderInline={"1px solid rgb(255,255,255,0.2)"}
     >
-      {/* <SideBar isOpen={true} onClose={onClose} /> */}
-      {/* <Image
-            onClick={onOpen}
-            boxSize={"58px"}
-            src="skatehive_square_green.png"
-            alt="SkateHive"
-            borderRadius={"5px"}
-            _hover={{ cursor: "pointer" }}
-            m={3}
-        /> */}
+
 
       <AvatarMediaModal
         isOpen={mediaModalOpen}

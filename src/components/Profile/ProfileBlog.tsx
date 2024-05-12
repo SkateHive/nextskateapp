@@ -11,16 +11,16 @@ import { HiveAccount } from "@/lib/models/user"
 
 
 interface ProfilePageProps {
-    user: HiveAccount
+  user: HiveAccount
 }
 
 export default function ProfileBlog({ user }: ProfilePageProps) {
-    const [visiblePosts, setVisiblePosts] = useState(20)
-    const { hiveAccount } = useHiveAccount(user.name)
-    const { posts, error, isLoading, queryCategory, setQueryCategory, setDiscussionQuery } = usePosts("blog", [{tag: user.name, limit: 100}])
-    if (!hiveAccount || !posts) return <div>Loading...</div>
+  const [visiblePosts, setVisiblePosts] = useState(20)
+  const { hiveAccount } = useHiveAccount(user.name)
+  const { posts, error, isLoading, queryCategory, setQueryCategory, setDiscussionQuery } = usePosts("blog", [{ tag: user.name, limit: 100 }])
+  if (!hiveAccount || !posts) return <div>Loading...</div>
 
-    return (
+  return (
     <Box width="100%" minHeight="100vh">
       <InfiniteScroll
         dataLength={visiblePosts}
@@ -38,7 +38,7 @@ export default function ProfileBlog({ user }: ProfilePageProps) {
             base: "repeat(1, 1fr)",
             md: "repeat(2, 1fr)",
             lg: "repeat(3, 1fr)",
-            xl: "repeat(4, 1fr)",
+            xl: "repeat(3, 1fr)",
           }}
           gap={0}
         >
@@ -54,5 +54,5 @@ export default function ProfileBlog({ user }: ProfilePageProps) {
         </Grid>
       </InfiniteScroll>
     </Box>
-    )
+  )
 }
