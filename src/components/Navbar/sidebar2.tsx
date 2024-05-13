@@ -15,7 +15,6 @@ import {
     Button,
     Icon,
     keyframes
-
 } from '@chakra-ui/react';
 import React from 'react';
 import { FaBell, FaEthereum, FaHome, FaSpeakap, FaUser, FaWallet } from 'react-icons/fa';
@@ -108,11 +107,11 @@ const Sidebar2 = () => {
                 )}
                 <HStack padding={0} mt={8} gap={3} fontSize={"22px"}>
                     <FaSpeakap size={"22px"} />
-                    <Link href={"/skatecast"}>Cast</Link>
+                    <Link href={"/"}>Cast</Link>
                 </HStack>
                 <HStack padding={0} gap={3} fontSize={"22px"}>
                     <FaBook size={"22px"} />
-                    <Link href={"/"}>Mag</Link>
+                    <Link href={"/mag"}>Mag</Link>
                 </HStack>
                 <HStack padding={0} gap={3} fontSize={"22px"}>
                     <FaEthereum size={"22px"} />

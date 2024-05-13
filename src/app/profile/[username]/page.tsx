@@ -49,10 +49,10 @@ export default function ProfilePage({ params }: ProfilePageProps) {
   // const posts = await getBlogFromUsername(params.username)
   if (!hiveAccount) return <div>Loading...</div>
   return (
-    <Box width="100%" minHeight="100vh">
+    <Box width="100%" minW={'80%'} minHeight="100vh">
       <ProfileHeader user={hiveAccount} />
       <ProfileTabs user={hiveAccount} />
-{/*
+      {/*
       <InfiniteScroll
         dataLength={visiblePosts}
         next={() => setVisiblePosts((visiblePosts) => visiblePosts + 3)}

@@ -244,6 +244,9 @@ const SkateCast = () => {
       <VStack>
         <Image minW={"100%"} src="https://i.ibb.co/Br0SMjz/Crop-animated.gif" alt="Loading..." />
         <Image mt={-2} minW={"100%"} src="https://i.ibb.co/L8mj1CV/Crop-animated-1.gif" alt="Loading..." />
+        <Image mt={-2} minW={"100%"} src="https://i.ibb.co/L8mj1CV/Crop-animated-1.gif" alt="Loading..." />
+        <Image mt={-2} minW={"100%"} src="https://i.ibb.co/L8mj1CV/Crop-animated-1.gif" alt="Loading..." />
+        <Image mt={-2} minW={"100%"} src="https://i.ibb.co/L8mj1CV/Crop-animated-1.gif" alt="Loading..." />
 
         Loading...
 
@@ -376,11 +379,10 @@ const SkateCast = () => {
                   {comment.active_votes?.length}
                 </Button>
                 <Button
-                  colorScheme="green"
+                  colorScheme="white"
                   variant="ghost"
-                  leftIcon={<AiOutlineRetweet />}
+                  leftIcon={<Text>⌐◨-◨</Text>}
                 >
-                  {comment.net_votes}
                 </Button>
                 <Button
                   colorScheme="green"
