@@ -37,7 +37,12 @@ export default function NotificationsPage() {
     notifications?.length > 1 && notifications?.length < 100
 
   return (
-    <Stack overflow={"auto"} gap={0} divider={<StackDivider style={{ margin: 0 }} />}>
+    <Stack overflow={"auto"} sx={{
+      "::-webkit-scrollbar": {
+        display: "none",
+      }
+    }}
+      gap={0} divider={<StackDivider style={{ margin: 0 }} />}>
       {notifications?.length === 0 && (
         <Flex w={"100%"} justify={"center"} pt={4}>
           <Spinner size={"lg"} />

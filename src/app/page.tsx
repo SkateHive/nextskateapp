@@ -1,5 +1,5 @@
-import Feed from "@/components/Feed"
+import SkateCast from "./skatecast/page"
 
 export default function Home() {
-  return <Feed />
+  return <SkateCast />
 }

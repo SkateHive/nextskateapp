@@ -11,7 +11,9 @@ import voteOnContent from "@/app/plaza/voting"
 import React, { useState, useEffect } from 'react';
 import { voting_value } from "./calculateHiveVotingValue"
 import ReactMarkdown from "react-markdown";
-
+import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
+import rehypeRaw from "rehype-raw";
+import remarkGfm from "remark-gfm";
 interface PostCommentProps {
   comment: Comment
 }
@@ -59,7 +61,11 @@ export default function PostComment({ comment }: PostCommentProps) {
 
       </Flex>
       <Flex direction={"column"} border={"1px solid grey"} p={5} bg={"#201d21"}>
-        <ReactMarkdown>
+        <ReactMarkdown
+          components={MarkdownRenderers}
+          rehypePlugins={[rehypeRaw]}
+          remarkPlugins={[remarkGfm]}
+        >
           {comment.body}
         </ReactMarkdown>
         <br />

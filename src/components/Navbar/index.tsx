@@ -207,8 +207,8 @@ export default function Navbar() {
           <HStack>
             <Image
               onClick={onOpen}
-              boxSize={"48px"}
-              src="https://www.skatehive.app/assets/skatehive.jpeg"
+              boxSize={"58px"}
+              src="skatehive_square_green.png"
               alt="SkateHive"
               borderRadius={"5px"}
               _hover={{ cursor: "pointer" }}
