@@ -10,7 +10,7 @@ import { FaImage, FaSave } from "react-icons/fa"
 import rehypeSanitize from "rehype-sanitize"
 
 interface CommandPromptProps {
-  addComment: (comment: Comment) => Promise<void>
+  addComment: (comment: Comment) => void;
 }
 
 const CommandPrompt = ({ addComment }: CommandPromptProps) => {
