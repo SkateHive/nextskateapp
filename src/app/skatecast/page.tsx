@@ -28,50 +28,17 @@ import {
   calc
 } from "@chakra-ui/react"
 import { useEffect, useMemo, useState } from "react"
-import { AiOutlineRetweet } from "react-icons/ai"
-import { FaDollarSign, FaImage, FaMoneyBill, FaRegComment, FaRegHeart } from "react-icons/fa"
+import { FaDollarSign, FaImage, FaRegComment, FaRegHeart } from "react-icons/fa"
 import ReactMarkdown from "react-markdown"
 import rehypeRaw from "rehype-raw"
 import remarkGfm from "remark-gfm"
 import InfiniteScroll from "react-infinite-scroll-component"
 import { BeatLoader } from "react-spinners"
-const PINATA_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN
-
-interface mediaProps {
-  media: string[]
-  type: string
-}
-
-const AvatarMediaModal = ({
-  isOpen,
-  onClose,
-  media,
-}: {
-  isOpen: boolean
-  onClose: () => void
-  media: string[]
-}) => {
-  const pinataToken = PINATA_TOKEN
-  return (
-    <Modal isOpen={isOpen} onClose={onClose} size="full">
-      <ModalOverlay filter="blur(8px)" />
-      <ModalContent bg={"black"}>
-        <ModalHeader>Media</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          <Flex></Flex>
-        </ModalBody>
-        <ModalFooter>
-          <Button colorScheme="blue" mr={3} onClick={onClose}>
-            Close
-          </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
-  )
-}
-
-let thumbnailUrl = "https://www.skatehive.app/assets/skatehive.jpeg"
+import AvatarMediaModal from "./mediaModal"
+import { formatDate } from "@/lib/utils"
+import LoadingComponent from "./loadingComponent"
+import { useDropzone } from "react-dropzone"
+import { uploadFileToIPFS } from "../upload/utils/uploadToIPFS"
 
 const parent_author = "skatehacker"
 const parent_permlink = "test-advance-mode-post"
@@ -80,13 +47,7 @@ const parent_permlink = "test-advance-mode-post"
 // const parent_permlink = 'how-to-backside-180-heelflip-or-full-backside-180-heelflip-tutorial';
 
 const SkateCast = () => {
-  const { comments, addComment, isLoading } = useComments(
-    parent_author,
-    parent_permlink
-  )
-
-  const [newTotalPayout, setNewTotalPayout] = useState(0);
-
+  const { comments, addComment, isLoading } = useComments(parent_author, parent_permlink)
   const [visiblePosts, setVisiblePosts] = useState(20)
   const [postBody, setPostBody] = useState("")
   const reversedComments = comments?.slice().reverse()
@@ -94,30 +55,33 @@ const SkateCast = () => {
   const username = user?.hiveUser?.name
   const [mediaModalOpen, setMediaModalOpen] = useState(false)
   const [media, setMedia] = useState<string[]>([])
-  const { isOpen, onOpen, onClose } = useDisclosure()
-
-  const formatDate = (date: string) => {
-    const now = new Date()
-    const postDate = new Date(date)
-    const diffInSeconds = Math.floor(
-      (now.getTime() - postDate.getTime()) / 1000
-    )
-
-    if (diffInSeconds < 60) {
-      return "Just now"
-    } else if (diffInSeconds < 3600) {
-      const minutes = Math.floor(diffInSeconds / 60)
-      return `${minutes} minute${minutes > 1 ? "s" : ""} ago`
-    } else if (diffInSeconds < 86400) {
-      const hours = Math.floor(diffInSeconds / 3600)
-      return `${hours} hour${hours > 1 ? "s" : ""} ago`
-    } else {
-      const days = Math.floor(diffInSeconds / 86400)
-      return `${days} day${days > 1 ? "s" : ""} ago`
-    }
-  }
   const [mediaComments, setMediaComments] = useState(new Set())
   const [mediaDictionary, setMediaDictionary] = useState(new Map())
+  const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN;
+  const [isUploading, setIsUploading] = useState(false);
+  console.log(user)
+  const { getRootProps, getInputProps } = useDropzone({
+    noClick: true,
+    noKeyboard: true,
+    onDrop: async (acceptedFiles) => {
+      setIsUploading(true);
+      for (const file of acceptedFiles) {
+        const ipfsData = await uploadFileToIPFS(file); // Use the returned data directly
+        if (ipfsData !== undefined) { // Ensure ipfsData is not undefined
+          const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}?pinataGatewayToken=${PINATA_GATEWAY_TOKEN}`;
+          const markdownLink = file.type.startsWith("video/") ? `<iframe src="${ipfsUrl}" allowfullscreen></iframe>` : `![Image](${ipfsUrl})`;
+          setPostBody(prevMarkdown => `${prevMarkdown}\n${markdownLink}\n`);
+        }
+      }
+      setIsUploading(false);
+    },
+    accept: {
+      'image/*': ['.png', '.gif', '.jpeg', '.jpg'],
+      'video/*': ['.mp4']
+    },
+    multiple: false
+  }
+  );
 
   useEffect(() => {
     if (comments) {
@@ -230,28 +194,14 @@ const SkateCast = () => {
   const getTotalPayout = (comment: any) => {
     const totalPayout = parseFloat(comment.total_payout_value.split(" ")[0]);
     const pendingPayout = parseFloat(comment.pending_payout_value.split(" ")[0]);
-    return (totalPayout + pendingPayout).toFixed(2); // Sum and format to 2 decimal places
+    return (totalPayout + pendingPayout).toFixed(2);
   };
 
 
+
   return isLoading ? (
-    <VStack overflowY="auto"
-      css={{ "&::-webkit-scrollbar": { display: "none" } }}
-      maxW={"740px"}
-      width={"100%"}
-      height={"100%"}
-      overflow={"auto"}>
-      <VStack>
-        <Image minW={"100%"} src="https://i.ibb.co/Br0SMjz/Crop-animated.gif" alt="Loading..." />
-        <Image mt={-2} minW={"100%"} src="https://i.ibb.co/L8mj1CV/Crop-animated-1.gif" alt="Loading..." />
-        <Image mt={-2} minW={"100%"} src="https://i.ibb.co/L8mj1CV/Crop-animated-1.gif" alt="Loading..." />
-        <Image mt={-2} minW={"100%"} src="https://i.ibb.co/L8mj1CV/Crop-animated-1.gif" alt="Loading..." />
-        <Image mt={-2} minW={"100%"} src="https://i.ibb.co/L8mj1CV/Crop-animated-1.gif" alt="Loading..." />
 
-        Loading...
-
-      </VStack>
-    </VStack>
+    <LoadingComponent />
   ) : (
     <VStack
       overflowY="auto"
@@ -262,8 +212,6 @@ const SkateCast = () => {
       overflow={"auto"}
       borderInline={"1px solid rgb(255,255,255,0.2)"}
     >
-
-
       <AvatarMediaModal
         isOpen={mediaModalOpen}
         onClose={() => setMediaModalOpen(false)}
@@ -299,36 +247,44 @@ const SkateCast = () => {
         })}
         <Divider />
       </HStack>
-      <Box p={4} width={"100%"} bg="black" color="white">
-        <Flex>
-          <Avatar
-            borderRadius={10}
-            boxSize={12}
-            src={`https://images.ecency.com/webp/u/${username}/avatar/small`}
-          />
-          <Textarea
-            border="none"
-            _focus={{
-              border: "none",
-              boxShadow: "none",
-            }}
-            placeholder="What's happening?"
-            onChange={(e) => setPostBody(e.target.value)}
-          />
-        </Flex>
-        <HStack justifyContent="space-between" m={4}>
-          <FaImage color="#ABE4B8" cursor="pointer" />
-          <Button
-            colorScheme="green"
-            variant="outline"
-            ml="auto"
-            onClick={handlePost}
-          >
-            Post
-          </Button>
-        </HStack>
-        <Divider mt={4} />
-      </Box>
+
+      {user.hiveUser !== null &&
+        <Box p={4} width={"100%"} bg="black" color="white"  {...getRootProps()} >
+          <Flex>
+            <Avatar
+              borderRadius={10}
+              boxSize={12}
+              src={`https://images.ecency.com/webp/u/${username}/avatar/small`}
+            />
+
+
+            <Textarea
+              border="none"
+              _focus={{
+                border: "none",
+                boxShadow: "none",
+              }}
+              placeholder="What's happening?"
+              onChange={(e) => setPostBody(e.target.value)}
+            />
+
+
+          </Flex>
+          <HStack justifyContent="space-between" m={4}>
+            <FaImage color="#ABE4B8" cursor="pointer" />
+            <Button
+              colorScheme="green"
+              variant="outline"
+              ml="auto"
+              onClick={handlePost}
+            >
+              Post
+            </Button>
+          </HStack>
+          <Divider mt={4} />
+        </Box>
+      }
+
       <Box width={"full"}>
         <InfiniteScroll
           dataLength={visiblePosts}
@@ -337,7 +293,6 @@ const SkateCast = () => {
           loader={<Flex justify="center"><BeatLoader size={8} color="darkgrey" /></Flex>}
           style={{ overflow: "hidden" }}>
           {reversedComments?.slice(0, visiblePosts).map((comment) => (
-            console.log("comment", comment),
             <Box key={comment.id} p={4} width="100%" bg="black" color="white">
               <Flex >
                 <Avatar
@@ -398,8 +353,6 @@ const SkateCast = () => {
           ))}
         </InfiniteScroll>
       </Box>
-
-      {/* </Box> */}
     </VStack>
   )
 }
