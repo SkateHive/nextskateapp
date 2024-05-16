@@ -14,8 +14,7 @@ export default function Feed() {
   const [tag, setTag] = useState(SKATEHIVE_TAG)
   const [query, setQuery] = useState("trending")
   const [fetchedPosts, setFetchedPosts] = useState()
-  const { posts, error, isLoading, setQueryCategory, setDiscussionQuery } =
-    usePosts(query, tag)
+  const { posts, error, isLoading, setQueryCategory, setDiscussionQuery } = usePosts(query, tag)
   const [visiblePosts, setVisiblePosts] = useState(20)
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
   const hiveUser = useHiveUser()

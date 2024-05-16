@@ -1,6 +1,6 @@
 import HiveClient from "@/lib/hive/hiveclient"
 import { useEffect, useState } from "react"
-import { useCallback } from "react"
+
 export interface Comment {
   abs_rshares?: number
   active_votes?: ActiveVote[]
@@ -83,41 +83,39 @@ export function useComments(author: string, permlink: string) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string>();
 
-  // Define the async function outside useEffect but within useComments
-  const fetchAndUpdateComments = async () => {
-    let isMounted = true; // Initialize isMounted to true
-    try {
-      const fetchedComments = await fetchComments(author, permlink);
-      if (isMounted) {
-        setComments(fetchedComments);
-        setIsLoading(false);
-      }
-    } catch (err: any) {
-      if (isMounted) {
-        setError(err.message ? err.message : "Error loading comments");
-      }
-    }
-    return () => isMounted = false; // Return cleanup function
-  };
-
   useEffect(() => {
-    const cleanup = fetchAndUpdateComments(); // Call the async function
+    let isMounted = true; // Initialize isMounted to true
+
+    const fetchAndUpdateComments = async () => {
+      try {
+        const fetchedComments = await fetchComments(author, permlink);
+        if (isMounted) {
+          setComments(fetchedComments);
+          setIsLoading(false);
+        }
+      } catch (err: any) {
+        if (isMounted) {
+          setError(err.message ? err.message : "Error loading comments");
+        }
+      }
+    };
+
+    fetchAndUpdateComments(); // Call the async function
 
     return () => {
-      cleanup.then(resolve => resolve()); // Ensure cleanup is called when the component unmounts
+      isMounted = false; // Ensure cleanup is called when the component unmounts
     };
-  }, [author, permlink, fetchAndUpdateComments]); // Include fetchAndUpdateComments in dependencies
+  }, [author, permlink]); // Depend only on author and permlink
 
-  async function addComment(newComment: Comment) {
+  const addComment = (newComment: Comment) => {
     setComments((existingComments) => existingComments ? [...existingComments, newComment] : [newComment]);
-  }
+  };
 
   return {
     comments,
     error,
     isLoading,
     addComment,
-    updateComments: fetchAndUpdateComments // Expose the method for manual updates
+    updateComments: fetchComments // Expose the method for manual updates
   };
 }
-

@@ -79,7 +79,6 @@ export function transformIPFSContent(content: string): string {
     return `<video controls muted loop> <source src="https://ipfs.skatehive.app/ipfs/${videoID}" type="video/mp4"></video>`;
   });
 }
-
 export function transformEcencyImages(content: string): string {
   const regex = /https:\/\/images\.ecency\.com\/p\/([\w-?=&.]+)/g;
 
@@ -87,12 +86,31 @@ export function transformEcencyImages(content: string): string {
     return `![Image](https://images.ecency.com/p/${imagePath})`;
   });
 }
-
 export function transformShortYoutubeLinksinIframes(content: string) {
-  // lets create a regex for links like this https://youtu.be/Sh6_hrPZ0P4?si=XO78pFeby_Urc7ce not for Iframes just for short links 
   const regex = /https:\/\/youtu\.be\/([a-zA-Z0-9-_?=&]+)/g;
   return content.replace(regex, (match, videoID) => {
     return `<iframe src="https://www.youtube.com/embed/${videoID}" allowfullscreen></iframe>`;
   });
+}
+
+export function formatDate(date: string) {
+  const now = new Date()
+  const postDate = new Date(date)
+  const diffInSeconds = Math.floor(
+    (now.getTime() - postDate.getTime()) / 1000
+  )
+
+  if (diffInSeconds < 60) {
+    return "Just now"
+  } else if (diffInSeconds < 3600) {
+    const minutes = Math.floor(diffInSeconds / 60)
+    return `${minutes} minute${minutes > 1 ? "s" : ""} ago`
+  } else if (diffInSeconds < 86400) {
+    const hours = Math.floor(diffInSeconds / 3600)
+    return `${hours} hour${hours > 1 ? "s" : ""} ago`
+  } else {
+    const days = Math.floor(diffInSeconds / 86400)
+    return `${days} day${days > 1 ? "s" : ""} ago`
+  }
 }
 

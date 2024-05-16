@@ -17,7 +17,7 @@ import {
     keyframes
 } from '@chakra-ui/react';
 import React from 'react';
-import { FaBell, FaEthereum, FaHome, FaSpeakap, FaUser, FaWallet } from 'react-icons/fa';
+import { FaBell, FaEthereum, FaGift, FaHome, FaSpeakap, FaUser, FaWallet } from 'react-icons/fa';
 import CommunityTotalPayout from '../communityTotalPayout';
 import { FaHive, FaDiscord, FaBook } from 'react-icons/fa';
 import { useAccount } from 'wagmi';
@@ -82,29 +82,19 @@ const Sidebar2 = () => {
                 <Heading size="md">
                     <Image
                         boxSize={"58px"}
-                        src="skatehive_square_green.png"
+                        src="/skatehive_square_green.png"
                         alt="SkateHive"
                         borderRadius={"5px"}
                         _hover={{ cursor: "pointer" }}
                         minW={"100%"}
                         h={"auto"}
+                        onClick={() => { window.location.href = "/" }}
                     />
                     {/* <Image mb={1} src="/skatehive-banner.png" w={"100%"} h={"auto"} alt="SkateHive" /> */}
                 </Heading>
                 <Divider my={4} style={{ color: 'limegreen', borderColor: 'limegreen' }} />
                 <CommunityTotalPayout />
-                {hasRewards && (
-                    <Button
-                        gap={1}
-                        justifyContent={"center"}
-                        colorScheme="yellow"
-                        variant="outline"
-                        animation={`${blink} 1s linear infinite`}
-                        onClick={handleClaimRewards}
-                    >
-                        Claim Rewards !
-                    </Button>
-                )}
+
                 <HStack padding={0} mt={8} gap={3} fontSize={"22px"}>
                     <FaSpeakap size={"22px"} />
                     <Link href={"/"}>Cast</Link>
@@ -126,6 +116,22 @@ const Sidebar2 = () => {
                         <HStack padding={0} gap={3} fontSize={"22px"}>
                             <FaWallet size={"22px"} />
                             <Link href={`/wallet`}>Wallet</Link>
+                            {hasRewards && (
+                                <Button
+                                    gap={0}
+                                    leftIcon={<Icon as={FaHive} />}
+                                    ml={-2}
+                                    p={2}
+                                    justifyContent={"center"}
+                                    colorScheme="yellow"
+                                    variant="outline"
+                                    border={"none"}
+                                    animation={`${blink} 1s linear infinite`}
+                                    onClick={handleClaimRewards}
+                                >
+                                    Rewards
+                                </Button>
+                            )}
                         </HStack>
                         <HStack cursor={"pointer"} onClick={handleNotifications} padding={0} gap={3} fontSize={"22px"}>
                             <FaBell size={"22px"} />

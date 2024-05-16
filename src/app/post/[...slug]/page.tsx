@@ -8,6 +8,10 @@ import ReactMarkdown from "react-markdown"
 import rehypeRaw from "rehype-raw"
 import remarkGfm from "remark-gfm"
 import { transformIPFSContent } from "@/lib/utils"
+import CommandPrompt from "@/components/PostModal/commentPrompt"
+import { useHiveUser } from "@/contexts/UserContext"
+import { useComments } from "@/hooks/comments"
+
 // Revalidate requests in 10 minutes
 export const revalidate = 600
 
@@ -46,8 +50,6 @@ async function getData(user: string, postId: string) {
   return postContent
 }
 
-
-
 export default async function Page({ params }: { params: { slug: string } }) {
   if (!Array.isArray(params.slug)) return
   let [tag, user, postId] = params.slug
@@ -61,18 +63,38 @@ export default async function Page({ params }: { params: { slug: string } }) {
     return dateObj.toLocaleDateString();
   }
 
+  const getTotalPayout = (post: any) => {
+    console.log("comment", post)
+    console.log(typeof post.total_payout_value)
+    // undefined 
+    if (post.total_payout_value === undefined) {
+      return 0
+    }
+    if (post.pending_payout_value === undefined) {
+      return 0
+    }
+    if (post.curator_payout_value === undefined) {
+      return 0
+    }
+    const payout = parseFloat(post.total_payout_value.split(" ")[0])
+    const pendingPayout = parseFloat(post.pending_payout_value.split(" ")[0])
+    const curatorPayout = parseFloat(post.curator_payout_value.split(" ")[0])
+    return payout + pendingPayout + curatorPayout
+  };
+
+
   return (
     <Box>
       <Box display="flex" flexDir={{ base: "column", lg: "row" }} minH="60vh" gap={6} >
         <Box width={{ base: "100%", md: "60%" }}>
-          <Heading m={6} size="md" border={"1px solid grey"} borderRadius={5}>
+          <Heading mt={8} size="md" border={"1px solid grey"} borderRadius={5}>
             <Box bg="#201d21" borderRadius={5}>
               <HStack >
                 <Box minW={"20%"}>
                   <Center>
                     <Avatar
                       name={user}
-                      src={`https://images.ecency.com/webp/u/${user}/avatar/small`}
+                      src={`https://images.ecency.com/webp/u/${user.substring(3)}/avatar/small`}
                       height="40px"
                       width="40px"
                       bg="transparent"
@@ -80,8 +102,6 @@ export default async function Page({ params }: { params: { slug: string } }) {
                       borderRadius={5}
                       m={2}
                     />
-                    <Text m={1}>{post?.author}</Text>
-                    :
                   </Center>
                 </Box>
                 <Text fontSize={"18px"}>{post?.title}</Text>
@@ -111,33 +131,37 @@ export default async function Page({ params }: { params: { slug: string } }) {
           <Center>
             <VStack width={"90%"}>
 
-              <Badge border={"1px solid grey"} width={"100%"} m={"10px"} fontSize={'48px'} color="#f0f0f0">
+              <Badge border={"1px solid grey"} width={"100%"} m={"10px"} fontSize={'38px'} bg="#201d21" color="white">
                 <Center>
 
-                  <Text> $4.20</Text>
+                  <Text> {getTotalPayout(post).toFixed(2)} USD</Text>
                 </Center>
               </Badge>
-              <Table border={"1px solid grey"} width={"100%"} borderRadius={"10px"}>
-                <Thead borderRadius={"10px"}>
-                  <Tr borderRadius={"10px"}>
-                    <Th>Beneficiaries</Th>
-                    <Th>Weight</Th>
-                  </Tr>
-                </Thead>
-                <Tbody maxW={"85%"} borderRadius={"10px"}>
-                  {post.beneficiaries.map((beneficiary: any) => (
-                    <Tr key={beneficiary.account}>
-                      <Td>{beneficiary.account}</Td>
-                      <Td>{beneficiary.weight / 100}%</Td>
+              {
+
+                post.beneficiaries.length > 0 &&
+                <Table border={"1px solid grey"} width={"100%"} borderRadius={"10px"}>
+                  <Thead borderRadius={"10px"}>
+                    <Tr borderRadius={"10px"}>
+                      <Th>Beneficiaries</Th>
+                      <Th>Weight</Th>
                     </Tr>
-                  ))}
-                </Tbody>
-              </Table>
+                  </Thead>
+                  <Tbody maxW={"85%"} borderRadius={"10px"}>
+                    {post.beneficiaries.map((beneficiary: any) => (
+                      <Tr key={beneficiary.account}>
+                        <Td>{beneficiary.account}</Td>
+                        <Td>{beneficiary.weight / 100}%</Td>
+                      </Tr>
+                    ))}
+                  </Tbody>
+                </Table>
+
+              }
             </VStack>
 
           </Center>
           <Center>
-
             <Text mt={5} fontSize={"18px"}>Comments</Text>
           </Center>
 
