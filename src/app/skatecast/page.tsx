@@ -51,7 +51,6 @@ const SkateCast = () => {
   const [mediaDictionary, setMediaDictionary] = useState(new Map())
   const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN;
   const [isUploading, setIsUploading] = useState(false);
-  console.log(user)
   const { getRootProps, getInputProps } = useDropzone({
     noClick: true,
     noKeyboard: true,
@@ -184,9 +183,22 @@ const SkateCast = () => {
   }
 
   const getTotalPayout = (comment: any) => {
-    const totalPayout = parseFloat(comment.total_payout_value.split(" ")[0]);
-    const pendingPayout = parseFloat(comment.pending_payout_value.split(" ")[0]);
-    return (totalPayout + pendingPayout).toFixed(2);
+    console.log("comment", comment)
+    console.log(typeof comment.total_payout_value)
+    // undefined 
+    if (comment.total_payout_value === undefined) {
+      return 0
+    }
+    if (comment.pending_payout_value === undefined) {
+      return 0
+    }
+    if (comment.curator_payout_value === undefined) {
+      return 0
+    }
+    const payout = parseFloat(comment.total_payout_value.split(" ")[0])
+    const pendingPayout = parseFloat(comment.pending_payout_value.split(" ")[0])
+    const curatorPayout = parseFloat(comment.curator_payout_value.split(" ")[0])
+    return payout + pendingPayout + curatorPayout
   };
 
   const handleCommentIconClick = (comment: any) => {
