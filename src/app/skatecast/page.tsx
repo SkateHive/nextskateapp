@@ -13,19 +13,11 @@ import {
   Divider,
   Flex,
   HStack,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
   Text,
   Textarea,
   VStack,
-  useDisclosure,
-  Image,
-  calc
+  Link,
+
 } from "@chakra-ui/react"
 import { useEffect, useMemo, useState } from "react"
 import { FaDollarSign, FaImage, FaRegComment, FaRegHeart } from "react-icons/fa"
@@ -144,7 +136,7 @@ const SkateCast = () => {
       parent_permlink: parent_permlink,
       author: username,
       permlink: permlink,
-      title: "",
+      title: "Cast",
       body: postBody,
       json_metadata: JSON.stringify({
         tags: ["skateboard"],
@@ -197,6 +189,10 @@ const SkateCast = () => {
     return (totalPayout + pendingPayout).toFixed(2);
   };
 
+  const handleCommentIconClick = (comment: any) => {
+    console.log("Comment icon clicked")
+    window.location.href = `post/hive-173115/@${comment.author}/${comment.permlink}`
+  }
 
 
   return isLoading ? (
@@ -322,6 +318,7 @@ const SkateCast = () => {
                   colorScheme="green"
                   variant="ghost"
                   leftIcon={<FaRegComment />}
+                  onClick={() => handleCommentIconClick(comment)}
                 >
                   {comment.children}
                 </Button>

@@ -82,12 +82,13 @@ const Sidebar2 = () => {
                 <Heading size="md">
                     <Image
                         boxSize={"58px"}
-                        src="skatehive_square_green.png"
+                        src="/skatehive_square_green.png"
                         alt="SkateHive"
                         borderRadius={"5px"}
                         _hover={{ cursor: "pointer" }}
                         minW={"100%"}
                         h={"auto"}
+                        onClick={() => { window.location.href = "/" }}
                     />
                     {/* <Image mb={1} src="/skatehive-banner.png" w={"100%"} h={"auto"} alt="SkateHive" /> */}
                 </Heading>
