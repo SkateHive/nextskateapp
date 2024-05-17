@@ -28,6 +28,7 @@ import { formatDate } from "@/lib/utils"
 import LoadingComponent from "./loadingComponent"
 import { useDropzone } from "react-dropzone"
 import { uploadFileToIPFS } from "../upload/utils/uploadToIPFS"
+import { set } from "lodash"
 
 const parent_author = "skatehacker"
 const parent_permlink = "test-advance-mode-post"
@@ -45,9 +46,7 @@ const SkateCast = () => {
   const [mediaDictionary, setMediaDictionary] = useState(new Map())
   const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN;
   const [isUploading, setIsUploading] = useState(false);
-
   const inputRef = useRef<HTMLInputElement>(null);
-
   const { getRootProps, getInputProps } = useDropzone({
     noClick: true,
     noKeyboard: true,
@@ -173,6 +172,7 @@ const SkateCast = () => {
     const media = mediaDictionary.get(commentId)
     console.log("media", media)
     setMedia(media ?? [])
+    console.log("media", media)
     setMediaModalOpen(true)
   }
 
@@ -202,6 +202,11 @@ const SkateCast = () => {
       inputRef.current.click();
     }
   };
+
+  function textAreaAdjust(element: any) {
+    element.style.height = "1px";
+    element.style.height = (25 + element.scrollHeight) + "px";
+  }
 
   return isLoading ? (
     <LoadingComponent />
@@ -261,8 +266,6 @@ const SkateCast = () => {
             />
 
             <Textarea
-              // set initial height bigger 
-              h="100px"
               border="none"
               _focus={{
                 border: "none",
@@ -271,8 +274,34 @@ const SkateCast = () => {
               placeholder="What's happening?"
               onChange={(e) => setPostBody(e.target.value)}
               value={postBody}
+              overflow={"hidden"}
+              resize={"vertical"}
+              onKeyUp={(e) => textAreaAdjust(e.target)}
             />
           </Flex>
+          <HStack>
+            {postBody.includes("![Image](") && (
+              <Box>
+                <img
+                  src={postBody.match(/!\[Image\]\((.*?)\)/)?.[1]}
+                  alt="markdown-image"
+                  width="100%"
+                />
+              </Box>
+            )}
+            {postBody.includes("<iframe") && (
+              <Box>
+                <video
+                  src={postBody.match(/<iframe src="(.*?)" allowfullscreen><\/iframe>/)?.[1]}
+                  controls
+                  muted
+                  width="100%"
+                />
+              </Box>
+
+            )}
+
+          </HStack>
           <HStack justifyContent="space-between" m={4}>
             <Input
               id="md-image-upload"

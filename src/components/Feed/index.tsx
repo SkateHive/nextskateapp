@@ -9,6 +9,7 @@ import { BeatLoader } from "react-spinners"
 import LoginModal from "../Hive/Login/LoginModal"
 import Post from "../PostCard"
 import PostSkeleton from "../PostCard/Skeleton"
+import AuthorSearchBar from "@/app/upload/components/searchBar"
 export default function Feed() {
   const SKATEHIVE_TAG = [{ tag: "hive-173115", limit: 100 }]
   const [tag, setTag] = useState(SKATEHIVE_TAG)
@@ -59,6 +60,10 @@ export default function Feed() {
     }
   }
 
+  const handleAuthorSearch = (author: string) => {
+    updateFeed("blog", [{ tag: author, limit: 10 }])
+  }
+
   return (
     <Box
       height={"100vh"}
@@ -69,6 +74,11 @@ export default function Feed() {
         },
       }}
     >
+      <Box m={1.5}>
+
+        <AuthorSearchBar onSearch={handleAuthorSearch} />
+      </Box>
+
       <HStack justifyContent="center" marginBottom={"12px"}>
         <ButtonGroup size="sm" isAttached variant="outline" colorScheme="green">
           <Button

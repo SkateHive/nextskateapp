@@ -2,7 +2,6 @@
 import NotificationsPage from '@/app/notifications/page';
 import { useHiveUser } from '@/contexts/UserContext';
 import { useState, useEffect } from 'react';
-
 import {
     Box,
     Divider,
@@ -67,6 +66,7 @@ const Sidebar2 = () => {
         }
     };
 
+
     return (
         <>
             <LoginModal isOpen={isLoginOpen} onClose={onLoginClose} />
@@ -90,7 +90,6 @@ const Sidebar2 = () => {
                         h={"auto"}
                         onClick={() => { window.location.href = "/" }}
                     />
-                    {/* <Image mb={1} src="/skatehive-banner.png" w={"100%"} h={"auto"} alt="SkateHive" /> */}
                 </Heading>
                 <Divider my={4} style={{ color: 'limegreen', borderColor: 'limegreen' }} />
                 <CommunityTotalPayout />
