@@ -3,23 +3,20 @@ import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers"
 import { useHiveUser } from "@/contexts/UserContext"
 import { useComments } from "@/hooks/comments"
 import { vote } from "@/lib/hive/client-functions"
-import { transformShortYoutubeLinksinIframes } from "@/lib/utils"
+import { transformIPFSContent, transformShortYoutubeLinksinIframes } from "@/lib/utils"
 import {
   Avatar,
-  Badge,
   Box,
   Button,
-  Center,
   Divider,
   Flex,
   HStack,
   Text,
   Textarea,
   VStack,
-  Link,
-
+  Input,
 } from "@chakra-ui/react"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState, useRef } from "react"
 import { FaDollarSign, FaImage, FaRegComment, FaRegHeart } from "react-icons/fa"
 import ReactMarkdown from "react-markdown"
 import rehypeRaw from "rehype-raw"
@@ -35,9 +32,6 @@ import { uploadFileToIPFS } from "../upload/utils/uploadToIPFS"
 const parent_author = "skatehacker"
 const parent_permlink = "test-advance-mode-post"
 
-// const parent_author = 'tomrohrer';
-// const parent_permlink = 'how-to-backside-180-heelflip-or-full-backside-180-heelflip-tutorial';
-
 const SkateCast = () => {
   const { comments, addComment, isLoading } = useComments(parent_author, parent_permlink)
   const [visiblePosts, setVisiblePosts] = useState(20)
@@ -51,6 +45,9 @@ const SkateCast = () => {
   const [mediaDictionary, setMediaDictionary] = useState(new Map())
   const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN;
   const [isUploading, setIsUploading] = useState(false);
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const { getRootProps, getInputProps } = useDropzone({
     noClick: true,
     noKeyboard: true,
@@ -71,8 +68,7 @@ const SkateCast = () => {
       'video/*': ['.mp4']
     },
     multiple: false
-  }
-  );
+  });
 
   useEffect(() => {
     if (comments) {
@@ -94,7 +90,7 @@ const SkateCast = () => {
       setMediaComments(mediaSet)
       setMediaDictionary(mediaDict)
     }
-  }, [])
+  }, [comments])
 
   const sortedComments = useMemo(() => {
     return comments?.slice().sort((a: any, b: any) => {
@@ -161,7 +157,6 @@ const SkateCast = () => {
   }
 
   const handleVote = async (author: string, permlink: string) => {
-    console.log("Vote")
     if (!username) {
       console.error("Username is missing")
       return
@@ -175,7 +170,6 @@ const SkateCast = () => {
   }
 
   const handleMediaAvatarClick = (commentId: number) => {
-    console.log("commentId", commentId)
     const media = mediaDictionary.get(commentId)
     console.log("media", media)
     setMedia(media ?? [])
@@ -183,9 +177,6 @@ const SkateCast = () => {
   }
 
   const getTotalPayout = (comment: any) => {
-    console.log("comment", comment)
-    console.log(typeof comment.total_payout_value)
-    // undefined 
     if (comment.total_payout_value === undefined) {
       return 0
     }
@@ -202,13 +193,17 @@ const SkateCast = () => {
   };
 
   const handleCommentIconClick = (comment: any) => {
-    console.log("Comment icon clicked")
     window.location.href = `post/hive-173115/@${comment.author}/${comment.permlink}`
   }
 
+  const handleImageUploadClick = () => {
+    console.log("inputRef", inputRef)
+    if (inputRef.current) {
+      inputRef.current.click();
+    }
+  };
 
   return isLoading ? (
-
     <LoadingComponent />
   ) : (
     <VStack
@@ -256,8 +251,8 @@ const SkateCast = () => {
         <Divider />
       </HStack>
 
-      {user.hiveUser !== null &&
-        <Box p={4} width={"100%"} bg="black" color="white"  {...getRootProps()} >
+      {user.hiveUser !== null && (
+        <Box p={4} width={"100%"} bg="black" color="white" {...getRootProps()}>
           <Flex>
             <Avatar
               borderRadius={10}
@@ -265,8 +260,9 @@ const SkateCast = () => {
               src={`https://images.ecency.com/webp/u/${username}/avatar/small`}
             />
 
-
             <Textarea
+              // set initial height bigger 
+              h="100px"
               border="none"
               _focus={{
                 border: "none",
@@ -274,24 +270,31 @@ const SkateCast = () => {
               }}
               placeholder="What's happening?"
               onChange={(e) => setPostBody(e.target.value)}
+              value={postBody}
             />
-
-
           </Flex>
           <HStack justifyContent="space-between" m={4}>
-            <FaImage color="#ABE4B8" cursor="pointer" />
+            <Input
+              id="md-image-upload"
+              type="file"
+              style={{ display: "none" }}
+              {...getInputProps({ refKey: 'ref' })}
+              ref={inputRef}
+            />
+            <FaImage color="#ABE4B8" cursor="pointer" onClick={handleImageUploadClick} />
             <Button
               colorScheme="green"
               variant="outline"
               ml="auto"
               onClick={handlePost}
+              isLoading={isUploading}
             >
               Post
             </Button>
           </HStack>
           <Divider mt={4} />
         </Box>
-      }
+      )}
 
       <Box width={"full"}>
         <InfiniteScroll
@@ -299,10 +302,11 @@ const SkateCast = () => {
           next={() => setVisiblePosts(visiblePosts + 3)}
           hasMore={visiblePosts < (comments?.length ?? 0)}
           loader={<Flex justify="center"><BeatLoader size={8} color="darkgrey" /></Flex>}
-          style={{ overflow: "hidden" }}>
+          style={{ overflow: "hidden" }}
+        >
           {reversedComments?.slice(0, visiblePosts).map((comment) => (
             <Box key={comment.id} p={4} width="100%" bg="black" color="white">
-              <Flex >
+              <Flex>
                 <Avatar
                   borderRadius={10}
                   boxSize={12}
@@ -313,7 +317,6 @@ const SkateCast = () => {
                   <Text ml={2} color="gray.400">
                     {formatDate(String(comment.created))}
                   </Text>
-
                 </HStack>
               </Flex>
               <Box ml={"64px"} mt={4}>
@@ -322,7 +325,7 @@ const SkateCast = () => {
                   rehypePlugins={[rehypeRaw]}
                   remarkPlugins={[remarkGfm]}
                 >
-                  {transformShortYoutubeLinksinIframes(comment.body)}
+                  {transformIPFSContent(transformShortYoutubeLinksinIframes(comment.body))}
                 </ReactMarkdown>
               </Box>
               <Flex justifyContent={"space-between"} mt={4}>
@@ -346,8 +349,7 @@ const SkateCast = () => {
                   colorScheme="white"
                   variant="ghost"
                   leftIcon={<Text>⌐◨-◨</Text>}
-                >
-                </Button>
+                ></Button>
                 <Button
                   colorScheme="green"
                   variant="ghost"
@@ -363,7 +365,7 @@ const SkateCast = () => {
         </InfiniteScroll>
       </Box>
     </VStack>
-  )
+  );
 }
 
 export default SkateCast

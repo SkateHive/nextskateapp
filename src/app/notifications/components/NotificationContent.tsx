@@ -24,7 +24,6 @@ function getTypeColor(type: string) {
 }
 
 const tranformNotificationUrl = (url: string) => {
-  console.log("URL:", url)
   return url
 
 }

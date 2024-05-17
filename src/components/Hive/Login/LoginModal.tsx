@@ -123,6 +123,7 @@ function LoginModal({
                   </Switch>
                   {showPrivateKeyInput && (
                     <Input
+                      type="password"
                       borderColor={"green.600"}
                       color={"limegreen"}
                       _placeholder={{ color: "limegreen", opacity: 0.4 }}
