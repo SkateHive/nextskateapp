@@ -127,11 +127,7 @@ const DaoPage = () => {
   }
   return (
     <Box width={"100%"}>
-      <Center>
-        <Text fontSize="28px" color="limegreen">
-          DAO
-        </Text>
-      </Center>
+      <br />
       <DaoTreasure />
       <Box
         bg="black"

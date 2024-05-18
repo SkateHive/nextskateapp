@@ -47,13 +47,18 @@ export default function RootLayout({
                 display: none;
               }
             }
+            @media (min-width: 769px) {
+              #layout {
+                gap: 40px;
+              }
+            }
           `}
         </style>
       </head>
       <body className={share_tech_mono.className}>
         <ColorModeScript initialColorMode="dark" />
         <Providers>
-          <Flex justifyContent={"center"} id="layout" height={"100vh"} gap="40px">
+          <Flex justifyContent={"center"} id="layout" height={"100vh"}>
             <Box className="hide-on-mobile">
               <Sidebar2 />
             </Box>
