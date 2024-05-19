@@ -28,7 +28,8 @@ import { formatDate } from "@/lib/utils"
 import LoadingComponent from "./loadingComponent"
 import { useDropzone } from "react-dropzone"
 import { uploadFileToIPFS } from "../upload/utils/uploadToIPFS"
-import { set } from "lodash"
+import { commentWithPrivateKey } from "@/lib/hive/server-functions"
+import * as dhive from "@hiveio/dhive"
 
 const parent_author = "skatehacker"
 const parent_permlink = "test-advance-mode-post"
@@ -47,6 +48,7 @@ const SkateCast = () => {
   const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN;
   const [isUploading, setIsUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [hasPosted, setHasPosted] = useState(false);
   const { getRootProps, getInputProps } = useDropzone({
     noClick: true,
     noKeyboard: true,
@@ -110,49 +112,116 @@ const SkateCast = () => {
   }, [comments, mediaComments])
 
   const handlePost = () => {
-    if (!window.hive_keychain) {
-      console.error("Hive Keychain extension not found!")
-      return
-    }
-
-    if (!username) {
-      console.error("Username is missing")
-      return
-    }
-
+    console.log("handlePost")
     const permlink = new Date()
       .toISOString()
       .replace(/[^a-zA-Z0-9]/g, "")
       .toLowerCase()
+    console.log("permlink", permlink)
+    const loginMethod = localStorage.getItem("LoginMethod")
+    console.log("loginMethod", loginMethod)
+    if (loginMethod === 'keychain') {
 
-    const postData = {
-      parent_author: parent_author,
-      parent_permlink: parent_permlink,
-      author: username,
-      permlink: permlink,
-      title: "Cast",
-      body: postBody,
-      json_metadata: JSON.stringify({
-        tags: ["skateboard"],
-        app: "skatehive",
-      }),
-    }
-
-    const operations = [["comment", postData]]
-    window.hive_keychain.requestBroadcast(
-      username,
-      operations,
-      "posting",
-      async (response: any) => {
-        if (response.success) {
-          setPostBody("")
-          addComment(postData)
-          console.log("Comment posted successfully")
-        } else {
-          console.error("Error posting comment:", response.message)
-        }
+      if (!window.hive_keychain) {
+        console.error("Hive Keychain extension not found!")
+        return
       }
-    )
+
+      if (!username) {
+        console.error("Username is missing")
+        return
+      }
+
+
+      const postData = {
+        parent_author: parent_author,
+        parent_permlink: parent_permlink,
+        author: username,
+        permlink: permlink,
+        title: "Cast",
+        body: postBody,
+        json_metadata: JSON.stringify({
+          tags: ["skateboard"],
+          app: "skatehive",
+        }),
+      }
+
+      const operations = [["comment", postData]]
+      window.hive_keychain.requestBroadcast(
+        username,
+        operations,
+        "posting",
+        async (response: any) => {
+          if (response.success) {
+            setPostBody("")
+            addComment(postData)
+            console.log("Comment posted successfully")
+          } else {
+            console.error("Error posting comment:", response.message)
+          }
+        }
+      )
+    }
+    else if (loginMethod === 'privateKey') {
+      const commentOptions: dhive.CommentOptionsOperation = [
+        'comment_options',
+        {
+          author: String(username),
+          permlink: permlink,
+          max_accepted_payout: '10000.000 HBD',
+          percent_hbd: 10000,
+          allow_votes: true,
+          allow_curation_rewards: true,
+          extensions: [
+            [0, {
+              beneficiaries: [{
+                account: 'skatehacker',
+                weight: 1000
+              }
+              ]
+            }]
+          ]
+        }
+      ];
+      console.log("commentOptions", commentOptions)
+      const postOperation: dhive.CommentOperation = [
+        'comment',
+        {
+          parent_author: parent_author,
+          parent_permlink: parent_permlink,
+          author: String(username),
+          permlink: permlink,
+          title: 'Cast',
+          body: postBody,
+          json_metadata: JSON.stringify({
+            tags: ['skateboard'],
+            app: 'Skatehive App',
+            image: '/skatehive_square_green.png',
+          }),
+        },
+      ];
+      const postData = {
+        parent_author: parent_author,
+        parent_permlink: parent_permlink,
+        author: String(username),
+        permlink: permlink,
+        title: "Cast",
+        body: postBody,
+        json_metadata: JSON.stringify({
+          tags: ["skateboard"],
+          app: "skatehive",
+        }),
+      }
+
+      console.log("postOperation", postOperation)
+
+
+
+      commentWithPrivateKey(localStorage.getItem("EncPrivateKey"), postOperation, commentOptions);
+      addComment(postData)
+      setPostBody("");
+      setHasPosted(true);
+    }
   }
 
   const handleVote = async (author: string, permlink: string) => {
