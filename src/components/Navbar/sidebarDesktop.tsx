@@ -34,7 +34,7 @@ const blink = keyframes`
   100% { opacity: 1; }
 `
 
-const Sidebar2 = () => {
+const SidebarDesktop = () => {
     const user = useHiveUser();
     const hiveUser = user.hiveUser;
     const ethAccount = useAccount();
@@ -173,4 +173,4 @@ const Sidebar2 = () => {
 
 };
 
-export default Sidebar2;
+export default SidebarDesktop;
