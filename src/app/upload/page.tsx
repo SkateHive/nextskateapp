@@ -225,7 +225,6 @@ export default function Upload() {
         updatedDefaultBeneficiaries[index].percentage = newPercentage;
     }
 
-
     return (
         <Box width="100%">
             {showPreview &&

@@ -34,7 +34,7 @@ import voteOnProposal from "./utils/voteOnProposal"
 import ProposalListItem from "./components/proposalListItem"
 import VoteConfirmationModal from "./components/voteWithReasonModal"
 import DaoTreasure from "./components/daoTreasure"
-
+import { checkProposalOutcome } from "./utils/checkProposalOutcome"
 
 const DaoPage = () => {
   const [proposals, setProposals] = useState<Proposal[]>([])
@@ -100,18 +100,7 @@ const DaoPage = () => {
     fetchProposals({ setProposals, setLoadingProposals, setLoadingSummaries })
   }, [])
 
-  const checkProposalOutcome = (proposal: Proposal) => {
-    const totalVotes = proposal.scores.reduce((acc, score) => acc + score, 0)
-    const votesFor = proposal.scores[0] // Assuming "FOR" votes are stored in the first index
-    const quorumReached = totalVotes >= 400
-    const majorityFor = votesFor > totalVotes / 2
 
-    return {
-      hasWon: quorumReached && majorityFor,
-      quorumReached,
-      totalVotes,
-    }
-  }
   const handleCreateProposalButton = () => {
     setIsCreateProposalModalOpen(!isCreateProposalModalOpen)
   }
@@ -127,11 +116,7 @@ const DaoPage = () => {
   }
   return (
     <Box width={"100%"}>
-      <Center>
-        <Text fontSize="28px" color="limegreen">
-          DAO
-        </Text>
-      </Center>
+      <br />
       <DaoTreasure />
       <Box
         bg="black"
@@ -187,25 +172,23 @@ const DaoPage = () => {
                 proposals.map((proposal, i) => (
                   <ProposalListItem
                     key={i}
-                    setMainProposal={setMainProposal}
-                    setProposerName={setProposerName}
                     proposal={proposal}
+                    isSelected={proposal === mainProposal}
+                    onSelect={() => setMainProposal(proposal)}
                   />
                 ))
               )}
             </Stack>
           </Box>
           <Box
-            bg="black"
             p={4}
-            border="0.6px solid limegreen"
+            bg={"#201d21"}
             borderRadius="10px"
             width={"50%"}
             minHeight={"100%"}
           >
             {mainProposal?.author && (
               <>
-
                 <HStack justifyContent="space-between">
                   <Text>
                     Start:{" "}

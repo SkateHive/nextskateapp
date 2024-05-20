@@ -137,9 +137,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
                   <Text> {getTotalPayout(post).toFixed(2)} USD</Text>
                 </Center>
               </Badge>
-              {
-
-                post.beneficiaries.length > 0 &&
+              {post.beneficiaries.length > 0 &&
                 <Table border={"1px solid grey"} width={"100%"} borderRadius={"10px"}>
                   <Thead borderRadius={"10px"}>
                     <Tr borderRadius={"10px"}>
@@ -158,7 +156,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
                 </Table>
 
               }
-            </VStack>
+            </VStack>@
 
           </Center>
           <Center>

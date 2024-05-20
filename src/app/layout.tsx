@@ -2,11 +2,12 @@
 import type { ReactNode } from "react";
 import { Share_Tech_Mono } from "next/font/google";
 import Favicon from "@/components/FaviconLinks";
-import Sidebar2 from "@/components/Navbar/sidebar2";
+import SidebarDesktop from "@/components/Navbar/sidebarDesktop";
 import { Box, ColorModeScript, Flex } from "@chakra-ui/react";
 import { Providers } from "./providers";
 import FeedLayout from "./feedLayout";
 import { getWebsiteURL } from "@/lib/utils";
+import MobileMenuButton from "@/components/mobileMenuButton";
 
 const share_tech_mono = Share_Tech_Mono({ subsets: ["latin"], weight: "400" });
 
@@ -46,6 +47,20 @@ export default function RootLayout({
               .hide-on-mobile {
                 display: none;
               }
+              .mobile-menu-button {   
+                z-index: 1000;
+                position: fixed;
+                left: 16px;
+                bottom: 16px;
+              }
+            }
+            @media (min-width: 769px) {
+              #layout {
+                gap: 40px;
+              }
+              .mobile-menu-button {
+                display: none;
+              }
             }
           `}
         </style>
@@ -53,10 +68,13 @@ export default function RootLayout({
       <body className={share_tech_mono.className}>
         <ColorModeScript initialColorMode="dark" />
         <Providers>
-          <Flex justifyContent={"center"} id="layout" height={"100vh"} gap="40px">
+          <Flex justifyContent={"center"} id="layout" height={"100vh"}>
             <Box className="hide-on-mobile">
-              <Sidebar2 />
+              <SidebarDesktop />
             </Box>
+            <div className="mobile-menu-button">
+              <MobileMenuButton />
+            </div>
             {children}
             <FeedLayout />
           </Flex>
