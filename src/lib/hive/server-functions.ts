@@ -2,11 +2,9 @@
 
 import { Validation } from "@/types"
 import * as dhive from "@hiveio/dhive"
+import CryptoJS from "crypto-js"
 import { HiveAccount } from "../useHiveAuth"
 import HiveClient from "./hiveclient"
-import CryptoJS from "crypto-js"
-
-
 
 interface ServerLoginResponse {
   validation: Validation
@@ -23,14 +21,13 @@ async function getAccountByPassword(username: string, password: string) {
     accountName,
     hivePrivateKey,
   }
-
 }
 
 function decryptPrivateKey(encryptedPrivateKey: string) {
   const secret = process.env.NEXT_PUBLIC_CRYPTO_SECRET || ""
-  const bytes = CryptoJS.AES.decrypt(encryptedPrivateKey, secret) || "";
-  const privateKey = bytes.toString(CryptoJS.enc.Utf8);
-  return privateKey;
+  const bytes = CryptoJS.AES.decrypt(encryptedPrivateKey, secret) || ""
+  const privateKey = bytes.toString(CryptoJS.enc.Utf8)
+  return privateKey
 }
 
 function encryptPrivateKey(privateKey: dhive.PrivateKey) {
@@ -39,7 +36,7 @@ function encryptPrivateKey(privateKey: dhive.PrivateKey) {
     privateKey.toString(),
     cryptoKey
   ).toString()
-  return encryptedKey;
+  return encryptedKey
 }
 
 export async function hiveServerLoginWithPassword(
@@ -123,34 +120,42 @@ export async function hiveServerLoginWithPassword(
   }
 }
 
-export async function voteWithPrivateKey(encryptedPrivateKey: string | null, vote: dhive.VoteOperation) {
-
+export async function voteWithPrivateKey(
+  encryptedPrivateKey: string | null,
+  vote: dhive.VoteOperation
+) {
   if (encryptedPrivateKey === null) throw new Error("Private key not found")
-  const privateKey = decryptPrivateKey(encryptedPrivateKey);
+  const privateKey = decryptPrivateKey(encryptedPrivateKey)
 
   const client = new dhive.Client("https://api.hive.blog")
-  client.broadcast.vote(vote[1], dhive.PrivateKey.from(privateKey)).then((result) => {
-    console.log(result)
-  }
-  ).catch((error) => {
-    console.error(error)
-  }
-  )
+  client.broadcast
+    .vote(vote[1], dhive.PrivateKey.from(privateKey))
+    .then((result) => {
+      console.log(result)
+    })
+    .catch((error) => {
+      console.error(error)
+    })
 }
 
-export async function commentWithPrivateKey(encryptedPrivateKey: string | null, commentOperation: dhive.CommentOperation, commentOptionsOperation: dhive.CommentOptionsOperation) {
+export async function commentWithPrivateKey(
+  encryptedPrivateKey: string | null,
+  commentOperation: dhive.CommentOperation,
+  commentOptionsOperation: dhive.CommentOptionsOperation
+) {
   //export async function commentWithPrivateKey(encryptedPrivateKey: string | null, account: string, title: string, body: string, json_metadata: string, tags: string) {
   if (encryptedPrivateKey === null) throw new Error("Private key not found")
-  console.log(encryptedPrivateKey)
-  const privateKey = dhive.PrivateKey.fromString(decryptPrivateKey(encryptedPrivateKey))
-  const client = HiveClient
-  client.broadcast.commentWithOptions(
-    commentOperation[1], commentOptionsOperation[1], privateKey
-  ).catch((error) => {
-    console.error(error)
-  }
+  const privateKey = dhive.PrivateKey.fromString(
+    decryptPrivateKey(encryptedPrivateKey)
   )
+  HiveClient.broadcast
+    .commentWithOptions(
+      commentOperation[1],
+      commentOptionsOperation[1],
+      privateKey
+    )
+    .then(res => console.log({res}))
+    .catch((error) => {
+      console.error(error)
+    })
 }
-
-
-
