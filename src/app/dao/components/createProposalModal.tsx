@@ -141,7 +141,7 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
 
                             <MDEditor
                                 value={value}
-                                onChange={(value) => setValue(value || "")}
+                                onChange={(value: any) => setValue(value || "")}
                                 commands={[
                                     commands.bold, commands.italic, commands.strikethrough, commands.hr, commands.code, commands.table, commands.link, commands.quote, commands.unorderedListCommand, commands.orderedListCommand, commands.codeBlock, commands.fullscreen
                                 ]}
@@ -180,7 +180,7 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
 
                             <MDEditor
                                 value={value}
-                                onChange={(value) => setValue(value || "")}
+                                onChange={(value: any) => setValue(value || "")}
                                 commands={[
                                     commands.bold, commands.italic, commands.strikethrough, commands.hr, commands.code, commands.table, commands.link, commands.quote, commands.unorderedListCommand, commands.orderedListCommand, commands.codeBlock, commands.fullscreen
                                 ]}

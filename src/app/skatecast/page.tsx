@@ -30,6 +30,9 @@ import { useDropzone } from "react-dropzone"
 import { uploadFileToIPFS } from "../upload/utils/uploadToIPFS"
 import { commentWithPrivateKey } from "@/lib/hive/server-functions"
 import * as dhive from "@hiveio/dhive"
+import dynamic from 'next/dynamic';
+
+const PullToRefresh = dynamic(() => import('react-pull-to-refresh'), { ssr: false });
 
 const parent_author = "skatehacker"
 const parent_permlink = "test-advance-mode-post"
@@ -49,6 +52,7 @@ const SkateCast = () => {
   const [isUploading, setIsUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const [hasPosted, setHasPosted] = useState(false);
+
   const { getRootProps, getInputProps } = useDropzone({
     noClick: true,
     noKeyboard: true,
@@ -111,7 +115,7 @@ const SkateCast = () => {
     })
   }, [comments, mediaComments])
 
-  const handlePost = () => {
+  const handlePost = async () => {
     console.log("handlePost")
     const permlink = new Date()
       .toISOString()
@@ -120,47 +124,54 @@ const SkateCast = () => {
     console.log("permlink", permlink)
     const loginMethod = localStorage.getItem("LoginMethod")
     console.log("loginMethod", loginMethod)
+
+    if (!username) {
+      console.error("Username is missing")
+      return
+    }
+
+    const postData = {
+      parent_author: parent_author,
+      parent_permlink: parent_permlink,
+      author: username,
+      permlink: permlink,
+      title: "Cast",
+      body: postBody,
+      json_metadata: JSON.stringify({
+        tags: ["skateboard"],
+        app: "skatehive",
+      }),
+    }
+
+    const operations = [["comment", postData]]
+
     if (loginMethod === 'keychain') {
+      if (typeof window !== "undefined") {
+        try {
+          const response = await new Promise<{ success: boolean; message?: string }>((resolve, reject) => {
+            window.hive_keychain.requestBroadcast(
+              username,
+              operations,
+              "posting",
+              (response: any) => {
+                if (response.success) {
+                  resolve(response);
+                } else {
+                  reject(new Error(response.message));
+                }
+              }
+            );
+          });
 
-      if (!window.hive_keychain) {
-        console.error("Hive Keychain extension not found!")
-        return
-      }
-
-      if (!username) {
-        console.error("Username is missing")
-        return
-      }
-
-
-      const postData = {
-        parent_author: parent_author,
-        parent_permlink: parent_permlink,
-        author: username,
-        permlink: permlink,
-        title: "Cast",
-        body: postBody,
-        json_metadata: JSON.stringify({
-          tags: ["skateboard"],
-          app: "skatehive",
-        }),
-      }
-
-      const operations = [["comment", postData]]
-      window.hive_keychain.requestBroadcast(
-        username,
-        operations,
-        "posting",
-        async (response: any) => {
           if (response.success) {
-            setPostBody("")
-            addComment(postData)
-            console.log("Comment posted successfully")
-          } else {
-            console.error("Error posting comment:", response.message)
+            setPostBody("");
+            console.log("Comment posted successfully");
+            addComment(postData);
           }
+        } catch (error) {
+          console.error("Error posting comment:", (error as Error).message);
         }
-      )
+      }
     }
     else if (loginMethod === 'privateKey') {
       const commentOptions: dhive.CommentOptionsOperation = [
@@ -177,13 +188,12 @@ const SkateCast = () => {
               beneficiaries: [{
                 account: 'skatehacker',
                 weight: 1000
-              }
-              ]
+              }]
             }]
           ]
         }
       ];
-      console.log("commentOptions", commentOptions)
+
       const postOperation: dhive.CommentOperation = [
         'comment',
         {
@@ -200,29 +210,17 @@ const SkateCast = () => {
           }),
         },
       ];
-      const postData = {
-        parent_author: parent_author,
-        parent_permlink: parent_permlink,
-        author: String(username),
-        permlink: permlink,
-        title: "Cast",
-        body: postBody,
-        json_metadata: JSON.stringify({
-          tags: ["skateboard"],
-          app: "skatehive",
-        }),
+
+      try {
+        await commentWithPrivateKey(localStorage.getItem("EncPrivateKey"), postOperation, commentOptions);
+        addComment(postData);
+        setPostBody("");
+        setHasPosted(true);
+      } catch (error) {
+        console.error("Error posting comment:", (error as Error).message);
       }
-
-      console.log("postOperation", postOperation)
-
-
-
-      commentWithPrivateKey(localStorage.getItem("EncPrivateKey"), postOperation, commentOptions);
-      addComment(postData)
-      setPostBody("");
-      setHasPosted(true);
     }
-  }
+  };
 
   const handleVote = async (author: string, permlink: string) => {
     if (!username) {
@@ -262,7 +260,9 @@ const SkateCast = () => {
   };
 
   const handleCommentIconClick = (comment: any) => {
-    window.location.href = `post/hive-173115/@${comment.author}/${comment.permlink}`
+    if (typeof window !== "undefined") {
+      window.location.href = `post/hive-173115/@${comment.author}/${comment.permlink}`
+    }
   }
 
   const handleImageUploadClick = () => {
@@ -395,72 +395,76 @@ const SkateCast = () => {
       )}
 
       <Box width={"full"}>
-        <InfiniteScroll
-          dataLength={visiblePosts}
-          next={() => setVisiblePosts(visiblePosts + 3)}
-          hasMore={visiblePosts < (comments?.length ?? 0)}
-          loader={<Flex justify="center"><BeatLoader size={8} color="darkgrey" /></Flex>}
-          style={{ overflow: "hidden" }}
-        >
-          {reversedComments?.slice(0, visiblePosts).map((comment) => (
-            <Box key={comment.id} p={4} width="100%" bg="black" color="white">
-              <Flex>
-                <Avatar
-                  borderRadius={10}
-                  boxSize={12}
-                  src={`https://images.ecency.com/webp/u/${comment.author}/avatar/small`}
-                />
-                <HStack ml={4}>
-                  <Text fontWeight="bold">{comment.author}</Text>
-                  <Text ml={2} color="gray.400">
-                    {formatDate(String(comment.created))}
-                  </Text>
-                </HStack>
-              </Flex>
-              <Box ml={"64px"} mt={4}>
-                <ReactMarkdown
-                  components={MarkdownRenderers}
-                  rehypePlugins={[rehypeRaw]}
-                  remarkPlugins={[remarkGfm]}
-                >
-                  {transformIPFSContent(transformShortYoutubeLinksinIframes(comment.body))}
-                </ReactMarkdown>
-              </Box>
-              <Flex justifyContent={"space-between"} mt={4}>
-                <Button
-                  colorScheme="green"
-                  variant="ghost"
-                  leftIcon={<FaRegComment />}
-                  onClick={() => handleCommentIconClick(comment)}
-                >
-                  {comment.children}
-                </Button>
-                <Button
-                  onClick={() => handleVote(comment.author, comment.permlink)}
-                  colorScheme="green"
-                  variant="ghost"
-                  leftIcon={<FaRegHeart />}
-                >
-                  {comment.active_votes?.length}
-                </Button>
-                <Button
-                  colorScheme="white"
-                  variant="ghost"
-                  leftIcon={<Text>⌐◨-◨</Text>}
-                ></Button>
-                <Button
-                  colorScheme="green"
-                  variant="ghost"
-                  leftIcon={<FaDollarSign />}
-                >
-                  {getTotalPayout(comment)} USD
-                </Button>
-              </Flex>
+        <PullToRefresh onRefresh={() => { setVisiblePosts(20); return Promise.resolve() }}>
 
-              <Divider mt={4} />
-            </Box>
-          ))}
-        </InfiniteScroll>
+          <InfiniteScroll
+            dataLength={visiblePosts}
+            next={() => setVisiblePosts(visiblePosts + 3)}
+            hasMore={visiblePosts < (comments?.length ?? 0)}
+            loader={<Flex justify="center"><BeatLoader size={8} color="darkgrey" /></Flex>}
+            style={{ overflow: "hidden" }}
+          >
+            {reversedComments?.slice(0, visiblePosts).map((comment) => (
+              <Box key={comment.id} p={4} width="100%" bg="black" color="white">
+                <Flex>
+                  <Avatar
+                    borderRadius={10}
+                    boxSize={12}
+                    src={`https://images.ecency.com/webp/u/${comment.author}/avatar/small`}
+                  />
+                  <HStack ml={4}>
+                    <Text fontWeight="bold">{comment.author}</Text>
+                    <Text ml={2} color="gray.400">
+                      {formatDate(String(comment.created))}
+                    </Text>
+                  </HStack>
+                </Flex>
+                <Box ml={"64px"} mt={4}>
+                  <ReactMarkdown
+                    components={MarkdownRenderers}
+                    rehypePlugins={[rehypeRaw]}
+                    remarkPlugins={[remarkGfm]}
+                  >
+                    {transformIPFSContent(transformShortYoutubeLinksinIframes(comment.body))}
+                  </ReactMarkdown>
+                </Box>
+                <Flex justifyContent={"space-between"} mt={4}>
+                  <Button
+                    colorScheme="green"
+                    variant="ghost"
+                    leftIcon={<FaRegComment />}
+                    onClick={() => handleCommentIconClick(comment)}
+                  >
+                    {comment.children}
+                  </Button>
+                  <Button
+                    onClick={() => handleVote(comment.author, comment.permlink)}
+                    colorScheme="green"
+                    variant="ghost"
+                    leftIcon={<FaRegHeart />}
+                  >
+                    {comment.active_votes?.length}
+                  </Button>
+                  <Button
+                    colorScheme="white"
+                    variant="ghost"
+                    leftIcon={<Text>⌐◨-◨</Text>}
+                  ></Button>
+                  <Button
+                    colorScheme="green"
+                    variant="ghost"
+                    leftIcon={<FaDollarSign />}
+                  >
+                    {getTotalPayout(comment)} USD
+                  </Button>
+                </Flex>
+
+                <Divider mt={4} />
+              </Box>
+            ))}
+          </InfiniteScroll>
+        </PullToRefresh>
+
       </Box>
     </VStack>
   );

@@ -143,19 +143,25 @@ export async function commentWithPrivateKey(
   commentOperation: dhive.CommentOperation,
   commentOptionsOperation: dhive.CommentOptionsOperation
 ) {
-  //export async function commentWithPrivateKey(encryptedPrivateKey: string | null, account: string, title: string, body: string, json_metadata: string, tags: string) {
-  if (encryptedPrivateKey === null) throw new Error("Private key not found")
+  if (encryptedPrivateKey === null) throw new Error("Private key not found");
+
   const privateKey = dhive.PrivateKey.fromString(
     decryptPrivateKey(encryptedPrivateKey)
-  )
-  HiveClient.broadcast
+  );
+
+  return HiveClient.broadcast
     .commentWithOptions(
       commentOperation[1],
       commentOptionsOperation[1],
       privateKey
     )
-    .then(res => console.log({res}))
-    .catch((error) => {
-      console.error(error)
+    .then(res => {
+      console.log({ res, commentOperation, commentOptionsOperation });
+      return res;
     })
+    .catch((error) => {
+      console.error(error);
+      throw error;
+    });
 }
+
