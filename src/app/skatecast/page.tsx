@@ -31,14 +31,14 @@ import { uploadFileToIPFS } from "../upload/utils/uploadToIPFS"
 import { commentWithPrivateKey } from "@/lib/hive/server-functions"
 import * as dhive from "@hiveio/dhive"
 import dynamic from 'next/dynamic';
-
+import { useCasts } from "@/hooks/casts"
 const PullToRefresh = dynamic(() => import('react-pull-to-refresh'), { ssr: false });
 
 const parent_author = "skatehacker"
 const parent_permlink = "test-advance-mode-post"
 
 const SkateCast = () => {
-  const { comments, addComment, isLoading } = useComments(parent_author, parent_permlink)
+  const { comments, addComment, isLoading } = useCasts(parent_author, parent_permlink)
   const [visiblePosts, setVisiblePosts] = useState(20)
   const [postBody, setPostBody] = useState("")
   const reversedComments = comments?.slice().reverse()
@@ -280,123 +280,121 @@ const SkateCast = () => {
   return isLoading ? (
     <LoadingComponent />
   ) : (
-    <VStack
-      overflowY="auto"
-      css={{ "&::-webkit-scrollbar": { display: "none" } }}
-      maxW={"740px"}
-      width={"100%"}
-      height={"100%"}
-      overflow={"auto"}
-      borderInline={"1px solid rgb(255,255,255,0.2)"}
-    >
-      <AvatarMediaModal
-        isOpen={mediaModalOpen}
-        onClose={() => setMediaModalOpen(false)}
-        media={media}
-      />
-      <HStack
-        flexWrap={"nowrap"}
-        w={"100%"}
+    <PullToRefresh id="cueca" style={{ "width": "100%" }} onRefresh={() => { setVisiblePosts(20); return Promise.resolve() }}>
+      <VStack
+        overflowY="auto"
         css={{ "&::-webkit-scrollbar": { display: "none" } }}
-        overflowX="auto"
-        minHeight={"60px"}
-        px={4}
+        maxW={"740px"}
+        width={"100%"}
+        height={"100%"}
+        overflow={"auto"}
+        borderInline={"1px solid rgb(255,255,255,0.2)"}
       >
-        {sortedComments?.map((comment, index, commentsArray) => {
-          const isDuplicate =
-            commentsArray.findIndex((c) => c.author === comment.author) !==
-            index
-          if (isDuplicate) {
-            return null
-          }
-          return (
-            <Avatar
-              key={comment.id}
-              size='md'
-              src={`https://images.ecency.com/webp/u/${comment.author}/avatar/small`}
-              border={
-                mediaComments.has(comment.id) ? "2px solid limegreen" : "none"
-              }
-              cursor={"pointer"}
-              onClick={() => handleMediaAvatarClick(Number(comment.id))}
-            />
-          )
-        })}
-        <Divider />
-      </HStack>
+        <AvatarMediaModal
+          isOpen={mediaModalOpen}
+          onClose={() => setMediaModalOpen(false)}
+          media={media}
+        />
+        <HStack
+          flexWrap={"nowrap"}
+          w={"100%"}
+          css={{ "&::-webkit-scrollbar": { display: "none" } }}
+          overflowX="auto"
+          minHeight={"60px"}
+          px={4}
+        >
+          {sortedComments?.map((comment, index, commentsArray) => {
+            const isDuplicate =
+              commentsArray.findIndex((c) => c.author === comment.author) !==
+              index
+            if (isDuplicate) {
+              return null
+            }
+            return (
+              <Avatar
+                key={comment.id}
+                size='md'
+                src={`https://images.ecency.com/webp/u/${comment.author}/avatar/small`}
+                border={
+                  mediaComments.has(comment.id) ? "2px solid limegreen" : "none"
+                }
+                cursor={"pointer"}
+                onClick={() => handleMediaAvatarClick(Number(comment.id))}
+              />
+            )
+          })}
+          <Divider />
+        </HStack>
 
-      {user.hiveUser !== null && (
-        <Box p={4} width={"100%"} bg="black" color="white" {...getRootProps()}>
-          <Flex>
-            <Avatar
-              borderRadius={10}
-              boxSize={12}
-              src={`https://images.ecency.com/webp/u/${username}/avatar/small`}
-            />
+        {user.hiveUser !== null && (
+          <Box p={4} width={"100%"} bg="black" color="white" {...getRootProps()}>
+            <Flex>
+              <Avatar
+                borderRadius={10}
+                boxSize={12}
+                src={`https://images.ecency.com/webp/u/${username}/avatar/small`}
+              />
 
-            <Textarea
-              border="none"
-              _focus={{
-                border: "none",
-                boxShadow: "none",
-              }}
-              placeholder="What's happening?"
-              onChange={(e) => setPostBody(e.target.value)}
-              value={postBody}
-              overflow={"hidden"}
-              resize={"vertical"}
-              onKeyUp={(e) => textAreaAdjust(e.target)}
-            />
-          </Flex>
-          <HStack>
-            {postBody.includes("![Image](") && (
-              <Box>
-                <img
-                  src={postBody.match(/!\[Image\]\((.*?)\)/)?.[1]}
-                  alt="markdown-image"
-                  width="100%"
-                />
-              </Box>
-            )}
-            {postBody.includes("<iframe") && (
-              <Box>
-                <video
-                  src={postBody.match(/<iframe src="(.*?)" allowfullscreen><\/iframe>/)?.[1]}
-                  controls
-                  muted
-                  width="100%"
-                />
-              </Box>
+              <Textarea
+                border="none"
+                _focus={{
+                  border: "none",
+                  boxShadow: "none",
+                }}
+                placeholder="What's happening?"
+                onChange={(e) => setPostBody(e.target.value)}
+                value={postBody}
+                overflow={"hidden"}
+                resize={"vertical"}
+                onKeyUp={(e) => textAreaAdjust(e.target)}
+              />
+            </Flex>
+            <HStack>
+              {postBody.includes("![Image](") && (
+                <Box>
+                  <img
+                    src={postBody.match(/!\[Image\]\((.*?)\)/)?.[1]}
+                    alt="markdown-image"
+                    width="100%"
+                  />
+                </Box>
+              )}
+              {postBody.includes("<iframe") && (
+                <Box>
+                  <video
+                    src={postBody.match(/<iframe src="(.*?)" allowfullscreen><\/iframe>/)?.[1]}
+                    controls
+                    muted
+                    width="100%"
+                  />
+                </Box>
 
-            )}
+              )}
+            </HStack>
+            <HStack justifyContent="space-between" m={4}>
+              <Input
+                id="md-image-upload"
+                type="file"
+                style={{ display: "none" }}
+                {...getInputProps({ refKey: 'ref' })}
+                ref={inputRef}
+              />
+              <FaImage color="#ABE4B8" cursor="pointer" onClick={handleImageUploadClick} />
+              <Button
+                colorScheme="green"
+                variant="outline"
+                ml="auto"
+                onClick={handlePost}
+                isLoading={isUploading}
+              >
+                Post
+              </Button>
+            </HStack>
+            <Divider mt={4} />
+          </Box>
+        )}
 
-          </HStack>
-          <HStack justifyContent="space-between" m={4}>
-            <Input
-              id="md-image-upload"
-              type="file"
-              style={{ display: "none" }}
-              {...getInputProps({ refKey: 'ref' })}
-              ref={inputRef}
-            />
-            <FaImage color="#ABE4B8" cursor="pointer" onClick={handleImageUploadClick} />
-            <Button
-              colorScheme="green"
-              variant="outline"
-              ml="auto"
-              onClick={handlePost}
-              isLoading={isUploading}
-            >
-              Post
-            </Button>
-          </HStack>
-          <Divider mt={4} />
-        </Box>
-      )}
-
-      <Box width={"full"}>
-        <PullToRefresh onRefresh={() => { setVisiblePosts(20); return Promise.resolve() }}>
-
+        <Box width={"full"}>
           <InfiniteScroll
             dataLength={visiblePosts}
             next={() => setVisiblePosts(visiblePosts + 3)}
@@ -463,10 +461,10 @@ const SkateCast = () => {
               </Box>
             ))}
           </InfiniteScroll>
-        </PullToRefresh>
+        </Box>
+      </VStack>
+    </PullToRefresh>
 
-      </Box>
-    </VStack>
   );
 }
 
