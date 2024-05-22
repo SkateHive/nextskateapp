@@ -70,7 +70,7 @@ const SkateCast = () => {
     },
     accept: {
       'image/*': ['.png', '.gif', '.jpeg', '.jpg'],
-      'video/*': ['.mp4']
+      'video/*': [".mp4", ".mov"],
     },
     multiple: false
   });
