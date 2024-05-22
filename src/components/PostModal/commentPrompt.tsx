@@ -1,7 +1,7 @@
 import { uploadFileToIPFS } from "@/app/upload/utils/uploadToIPFS"
-import { usePostContext } from "@/contexts/PostContext"
 import { useHiveUser } from "@/contexts/UserContext"
 import { Comment } from "@/hooks/comments"
+import PostModel from "@/lib/models/post"
 import { Box, Button, Center, Flex, Spinner, Tooltip } from "@chakra-ui/react"
 import MDEditor, { commands } from "@uiw/react-md-editor"
 import { useState } from "react"
@@ -10,14 +10,14 @@ import { FaImage, FaSave } from "react-icons/fa"
 import rehypeSanitize from "rehype-sanitize"
 
 interface CommandPromptProps {
+  post: PostModel | Comment,
   addComment: (comment: Comment) => void;
 }
 
-const CommandPrompt = ({ addComment }: CommandPromptProps) => {
+const CommandPrompt = ({ post, addComment }: CommandPromptProps) => {
   const [isUploading, setIsUploading] = useState(false)
   const [value, setValue] = useState("")
   const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN
-  const { post } = usePostContext()
   const parent_permlink = post?.permlink
   const parent_author = post?.author
   const user = useHiveUser()

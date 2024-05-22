@@ -52,7 +52,7 @@ export function PostModal({ isOpen, onClose }: PostModalInterface) {
             </ReactMarkdown>
           </Box>
           <Box minW="50%">
-            <CommandPrompt addComment={addComment} />
+            <CommandPrompt post={post} addComment={addComment} />
             <Center><Text fontSize="2xl">Comments</Text></Center>
             <CommentsSection comments={comments} />
           </Box>
