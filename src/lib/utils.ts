@@ -76,7 +76,7 @@ export function transformIPFSContent(content: string): string {
   const regex = /<iframe src="https:\/\/ipfs\.skatehive\.app\/ipfs\/([a-zA-Z0-9-?=&]+)"(?:(?!<\/iframe>).)*\sallowfullscreen><\/iframe>/g;
 
   return content.replace(regex, (match, videoID) => {
-      return `<video controls muted loop> 
+    return `<video controls muted loop> 
                 <source src="https://ipfs.skatehive.app/ipfs/${videoID}" type="video/mp4">
                 <source src="https://ipfs.skatehive.app/ipfs/${videoID}" type="video/quicktime">
             </video>`;
