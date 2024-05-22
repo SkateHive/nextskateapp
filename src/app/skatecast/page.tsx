@@ -3,7 +3,11 @@ import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers"
 import { useHiveUser } from "@/contexts/UserContext"
 import { useComments } from "@/hooks/comments"
 import { vote } from "@/lib/hive/client-functions"
-import { transformIPFSContent, transformShortYoutubeLinksinIframes } from "@/lib/utils"
+import {
+  formatDate,
+  transformIPFSContent,
+  transformShortYoutubeLinksinIframes,
+} from "@/lib/utils"
 import {
   Avatar,
   Box,
@@ -17,28 +21,30 @@ import {
   Input,
   Badge,
 } from "@chakra-ui/react"
-import { useEffect, useMemo, useState, useRef } from "react"
+import * as dhive from "@hiveio/dhive"
+import { useEffect, useMemo, useRef, useState } from "react"
+import { useDropzone } from "react-dropzone"
 import { FaDollarSign, FaImage, FaRegComment, FaRegHeart } from "react-icons/fa"
+import InfiniteScroll from "react-infinite-scroll-component"
 import ReactMarkdown from "react-markdown"
+import { BeatLoader } from "react-spinners"
 import rehypeRaw from "rehype-raw"
 import remarkGfm from "remark-gfm"
-import InfiniteScroll from "react-infinite-scroll-component"
-import { BeatLoader } from "react-spinners"
-import AvatarMediaModal from "./mediaModal"
-import { formatDate } from "@/lib/utils"
-import LoadingComponent from "./loadingComponent"
-import { useDropzone } from "react-dropzone"
 import { uploadFileToIPFS } from "../upload/utils/uploadToIPFS"
 import { commentWithPrivateKey } from "@/lib/hive/server-functions"
-import * as dhive from "@hiveio/dhive"
-import dynamic from 'next/dynamic';
 import { useCasts } from "@/hooks/casts"
 import TipButton from "@/components/PostCard/TipButton"
+import LoadingComponent from "./loadingComponent"
+import AvatarMediaModal from "./mediaModal"
+
 const parent_author = "skatehacker"
 const parent_permlink = "test-advance-mode-post"
 
 const SkateCast = () => {
-  const { comments, addComment, isLoading } = useCasts(parent_author, parent_permlink)
+  const { comments, addComment, isLoading } = useComments(
+    parent_author,
+    parent_permlink
+  )
   const [visiblePosts, setVisiblePosts] = useState(20)
   const [postBody, setPostBody] = useState("")
   const reversedComments = comments?.slice().reverse()
@@ -48,32 +54,35 @@ const SkateCast = () => {
   const [media, setMedia] = useState<string[]>([])
   const [mediaComments, setMediaComments] = useState(new Set())
   const [mediaDictionary, setMediaDictionary] = useState(new Map())
-  const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN;
-  const [isUploading, setIsUploading] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [hasPosted, setHasPosted] = useState(false);
+  const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN
+  const [isUploading, setIsUploading] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [hasPosted, setHasPosted] = useState(false)
 
   const { getRootProps, getInputProps } = useDropzone({
     noClick: true,
     noKeyboard: true,
     onDrop: async (acceptedFiles) => {
-      setIsUploading(true);
+      setIsUploading(true)
       for (const file of acceptedFiles) {
-        const ipfsData = await uploadFileToIPFS(file); // Use the returned data directly
-        if (ipfsData !== undefined) { // Ensure ipfsData is not undefined
-          const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}?pinataGatewayToken=${PINATA_GATEWAY_TOKEN}`;
-          const markdownLink = file.type.startsWith("video/") ? `<iframe src="${ipfsUrl}" allowfullscreen></iframe>` : `![Image](${ipfsUrl})`;
-          setPostBody(prevMarkdown => `${prevMarkdown}\n${markdownLink}\n`);
+        const ipfsData = await uploadFileToIPFS(file) // Use the returned data directly
+        if (ipfsData !== undefined) {
+          // Ensure ipfsData is not undefined
+          const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}?pinataGatewayToken=${PINATA_GATEWAY_TOKEN}`
+          const markdownLink = file.type.startsWith("video/")
+            ? `<iframe src="${ipfsUrl}" allowfullscreen></iframe>`
+            : `![Image](${ipfsUrl})`
+          setPostBody((prevMarkdown) => `${prevMarkdown}\n${markdownLink}\n`)
         }
       }
-      setIsUploading(false);
+      setIsUploading(false)
     },
     accept: {
-      'image/*': ['.png', '.gif', '.jpeg', '.jpg'],
-      'video/*': [".mp4", ".mov"],
+      "image/*": [".png", ".gif", ".jpeg", ".jpg"],
+      "video/*": [".mp4", ".mov"],
     },
-    multiple: false
-  });
+    multiple: false,
+  })
 
   useEffect(() => {
     if (comments) {
@@ -145,82 +154,93 @@ const SkateCast = () => {
 
     const operations = [["comment", postData]]
 
-    if (loginMethod === 'keychain') {
+    if (loginMethod === "keychain") {
       if (typeof window !== "undefined") {
         try {
-          const response = await new Promise<{ success: boolean; message?: string }>((resolve, reject) => {
+          const response = await new Promise<{
+            success: boolean
+            message?: string
+          }>((resolve, reject) => {
             window.hive_keychain.requestBroadcast(
               username,
               operations,
               "posting",
               (response: any) => {
                 if (response.success) {
-                  resolve(response);
+                  resolve(response)
                 } else {
-                  reject(new Error(response.message));
+                  reject(new Error(response.message))
                 }
               }
-            );
-          });
+            )
+          })
 
           if (response.success) {
-            setPostBody("");
-            console.log("Comment posted successfully");
-            addComment(postData);
+            setPostBody("")
+            console.log("Comment posted successfully")
+            addComment(postData)
           }
         } catch (error) {
-          console.error("Error posting comment:", (error as Error).message);
+          console.error("Error posting comment:", (error as Error).message)
         }
       }
-    }
-    else if (loginMethod === 'privateKey') {
+    } else if (loginMethod === "privateKey") {
       const commentOptions: dhive.CommentOptionsOperation = [
-        'comment_options',
+        "comment_options",
         {
           author: String(username),
           permlink: permlink,
-          max_accepted_payout: '10000.000 HBD',
+          max_accepted_payout: "10000.000 HBD",
           percent_hbd: 10000,
           allow_votes: true,
           allow_curation_rewards: true,
           extensions: [
-            [0, {
-              beneficiaries: [{
-                account: 'skatehacker',
-                weight: 1000
-              }]
-            }]
-          ]
-        }
-      ];
+            [
+              0,
+              {
+                beneficiaries: [
+                  {
+                    account: "skatehacker",
+                    weight: 1000,
+                  },
+                ],
+              },
+            ],
+          ],
+        },
+      ]
 
       const postOperation: dhive.CommentOperation = [
-        'comment',
+        "comment",
         {
           parent_author: parent_author,
           parent_permlink: parent_permlink,
           author: String(username),
           permlink: permlink,
-          title: 'Cast',
+          title: "Cast",
           body: postBody,
           json_metadata: JSON.stringify({
-            tags: ['skateboard'],
-            app: 'Skatehive App',
-            image: '/skatehive_square_green.png',
+            tags: ["skateboard"],
+            app: "Skatehive App",
+            image: "/skatehive_square_green.png",
           }),
         },
-      ];
+      ]
 
       try {
-        await commentWithPrivateKey(localStorage.getItem("EncPrivateKey"), postOperation, commentOptions);
-        addComment(postData);
-        setPostBody("");
-        setHasPosted(true);
+        await commentWithPrivateKey(
+          localStorage.getItem("EncPrivateKey"),
+          postOperation,
+          commentOptions
+        )
+        addComment(postData)
+        setPostBody("")
+        setHasPosted(true)
       } catch (error) {
-        console.error("Error posting comment:", (error as Error).message);
+        console.error("Error posting comment:", (error as Error).message)
       }
     }
-  };
+  }
 
   const handleVote = async (author: string, permlink: string) => {
     if (!username) {
@@ -257,7 +277,7 @@ const SkateCast = () => {
     const pendingPayout = parseFloat(comment.pending_payout_value.split(" ")[0])
     const curatorPayout = parseFloat(comment.curator_payout_value.split(" ")[0])
     return payout + pendingPayout + curatorPayout
-  };
+  }
 
   const handleCommentIconClick = (comment: any) => {
     if (typeof window !== "undefined") {
@@ -268,13 +288,13 @@ const SkateCast = () => {
   const handleImageUploadClick = () => {
     console.log("inputRef", inputRef)
     if (inputRef.current) {
-      inputRef.current.click();
+      inputRef.current.click()
     }
-  };
+  }
 
   function textAreaAdjust(element: any) {
-    element.style.height = "1px";
-    element.style.height = (25 + element.scrollHeight) + "px";
+    element.style.height = "1px"
+    element.style.height = 25 + element.scrollHeight + "px"
   }
 
   return isLoading ? (
@@ -310,7 +330,7 @@ const SkateCast = () => {
           return (
             <Avatar
               key={comment.id}
-              size='md'
+              size="md"
               src={`https://images.ecency.com/webp/u/${comment.author}/avatar/small`}
               border={
                 mediaComments.has(comment.id) ? "2px solid limegreen" : "none"
@@ -359,13 +379,16 @@ const SkateCast = () => {
             {postBody.includes("<iframe") && (
               <Box>
                 <video
-                  src={postBody.match(/<iframe src="(.*?)" allowfullscreen><\/iframe>/)?.[1]}
+                  src={
+                    postBody.match(
+                      /<iframe src="(.*?)" allowfullscreen><\/iframe>/
+                    )?.[1]
+                  }
                   controls
                   muted
                   width="100%"
                 />
               </Box>
-
             )}
           </HStack>
           <HStack justifyContent="space-between" m={4}>
@@ -373,10 +396,14 @@ const SkateCast = () => {
               id="md-image-upload"
               type="file"
               style={{ display: "none" }}
-              {...getInputProps({ refKey: 'ref' })}
+              {...getInputProps({ refKey: "ref" })}
               ref={inputRef}
             />
-            <FaImage color="#ABE4B8" cursor="pointer" onClick={handleImageUploadClick} />
+            <FaImage
+              color="#ABE4B8"
+              cursor="pointer"
+              onClick={handleImageUploadClick}
+            />
             <Button
               colorScheme="green"
               variant="outline"
@@ -396,7 +423,11 @@ const SkateCast = () => {
           dataLength={visiblePosts}
           next={() => setVisiblePosts(visiblePosts + 3)}
           hasMore={visiblePosts < (comments?.length ?? 0)}
-          loader={<Flex justify="center"><BeatLoader size={8} color="darkgrey" /></Flex>}
+          loader={
+            <Flex justify="center">
+              <BeatLoader size={8} color="darkgrey" />
+            </Flex>
+          }
           style={{ overflow: "hidden" }}
         >
           {reversedComments?.slice(0, visiblePosts).map((comment) => (
@@ -433,7 +464,9 @@ const SkateCast = () => {
                   rehypePlugins={[rehypeRaw]}
                   remarkPlugins={[remarkGfm]}
                 >
-                  {transformIPFSContent(transformShortYoutubeLinksinIframes(comment.body))}
+                  {transformIPFSContent(
+                    transformShortYoutubeLinksinIframes(comment.body)
+                  )}
                 </ReactMarkdown>
               </Box>
               <Flex ml={12} justifyContent={"space-between"} mt={4}>
@@ -468,8 +501,7 @@ const SkateCast = () => {
         </InfiniteScroll>
       </Box>
     </VStack>
-
-  );
+  )
 }
 
 export default SkateCast

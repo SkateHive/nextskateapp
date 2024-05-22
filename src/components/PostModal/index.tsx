@@ -2,7 +2,7 @@ import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
 import { usePostContext } from "@/contexts/PostContext";
 import { useComments } from "@/hooks/comments";
 import HiveClient from "@/lib/hive/hiveclient";
-import { transform3SpeakContent, transformIPFSContent, transformEcencyImages } from "@/lib/utils";
+import { transform3SpeakContent, transformEcencyImages, transformIPFSContent } from "@/lib/utils";
 import {
   Box,
   Center,
@@ -24,7 +24,7 @@ interface PostModalInterface {
 
 export function PostModal({ isOpen, onClose }: PostModalInterface) {
   const { post } = usePostContext();
-  const { comments, addComment } = useComments(post.author, post.permlink);
+  const { comments, addComment } = useComments(post.author, post.permlink, true);
   const postBody = transform3SpeakContent(post.body);
   const transformedPostBody = transformEcencyImages(postBody);
   useEffect(() => {

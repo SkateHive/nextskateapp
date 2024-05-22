@@ -1,16 +1,12 @@
 import CommentsComponent from "@/app/dao/components/comments"
 import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers"
 import HiveClient from "@/lib/hive/hiveclient"
-import { transform3SpeakContent } from "@/lib/utils"
+import { transform3SpeakContent, transformIPFSContent } from "@/lib/utils"
 import { Avatar, Badge, Box, Center, Container, Divider, HStack, Heading, Table, Tbody, Td, Text, Th, Thead, Tr, VStack } from "@chakra-ui/react"
 import { Metadata } from "next"
 import ReactMarkdown from "react-markdown"
 import rehypeRaw from "rehype-raw"
 import remarkGfm from "remark-gfm"
-import { transformIPFSContent } from "@/lib/utils"
-import CommandPrompt from "@/components/PostModal/commentPrompt"
-import { useHiveUser } from "@/contexts/UserContext"
-import { useComments } from "@/hooks/comments"
 
 // Revalidate requests in 10 minutes
 export const revalidate = 600
@@ -163,7 +159,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
             <Text mt={5} fontSize={"18px"}>Comments</Text>
           </Center>
 
-          <CommentsComponent author={user} permlink={postId} />
+          <CommentsComponent author={user.substring(3)} permlink={postId} />
         </Box>
       </Box>
     </Box >
