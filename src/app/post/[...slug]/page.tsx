@@ -156,7 +156,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
                 </Table>
 
               }
-            </VStack>@
+            </VStack>
 
           </Center>
           <Center>

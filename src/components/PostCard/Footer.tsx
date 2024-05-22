@@ -27,7 +27,7 @@ export default function Footer() {
           modalOnOpen={onVotersOpen}
           modalOnClose={onVotersClose}
         /> */}
-        <TipButton />
+        <TipButton author={post.author} />
         <Vote />
 
       </Flex>

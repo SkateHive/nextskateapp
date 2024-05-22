@@ -15,6 +15,7 @@ import {
   Textarea,
   VStack,
   Input,
+  Badge,
 } from "@chakra-ui/react"
 import { useEffect, useMemo, useState, useRef } from "react"
 import { FaDollarSign, FaImage, FaRegComment, FaRegHeart } from "react-icons/fa"
@@ -32,7 +33,7 @@ import { commentWithPrivateKey } from "@/lib/hive/server-functions"
 import * as dhive from "@hiveio/dhive"
 import dynamic from 'next/dynamic';
 import { useCasts } from "@/hooks/casts"
-
+import TipButton from "@/components/PostCard/TipButton"
 const parent_author = "skatehacker"
 const parent_permlink = "test-advance-mode-post"
 
@@ -284,8 +285,6 @@ const SkateCast = () => {
       css={{ "&::-webkit-scrollbar": { display: "none" } }}
       maxW={"740px"}
       width={"100%"}
-      height={"100%"}
-      overflow={"auto"}
       borderInline={"1px solid rgb(255,255,255,0.2)"}
     >
       <AvatarMediaModal
@@ -392,7 +391,7 @@ const SkateCast = () => {
         </Box>
       )}
 
-      <Box width={"full"}>
+      <Box width={"full"} >
         <InfiniteScroll
           dataLength={visiblePosts}
           next={() => setVisiblePosts(visiblePosts + 3)}
@@ -413,6 +412,19 @@ const SkateCast = () => {
                   <Text ml={2} color="gray.400">
                     {formatDate(String(comment.created))}
                   </Text>
+                  <Badge
+                    variant="ghost"
+                    color={"green.400"}
+                  >
+                    <HStack>
+
+                      <FaDollarSign />
+                      <Text>
+
+                        {getTotalPayout(comment)} USD
+                      </Text>
+                    </HStack>
+                  </Badge>
                 </HStack>
               </Flex>
               <Box ml={"64px"} mt={4}>
@@ -424,7 +436,7 @@ const SkateCast = () => {
                   {transformIPFSContent(transformShortYoutubeLinksinIframes(comment.body))}
                 </ReactMarkdown>
               </Box>
-              <Flex justifyContent={"space-between"} mt={4}>
+              <Flex ml={12} justifyContent={"space-between"} mt={4}>
                 <Button
                   colorScheme="green"
                   variant="ghost"
@@ -441,18 +453,13 @@ const SkateCast = () => {
                 >
                   {comment.active_votes?.length}
                 </Button>
-                <Button
+                {/* <Button
                   colorScheme="white"
                   variant="ghost"
                   leftIcon={<Text>⌐◨-◨</Text>}
-                ></Button>
-                <Button
-                  colorScheme="green"
-                  variant="ghost"
-                  leftIcon={<FaDollarSign />}
-                >
-                  {getTotalPayout(comment)} USD
-                </Button>
+                ></Button> */}
+                <TipButton author={comment.author} />
+
               </Flex>
 
               <Divider mt={4} />
