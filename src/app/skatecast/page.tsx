@@ -20,6 +20,7 @@ import {
   VStack,
   Input,
   Badge,
+  Link,
 } from "@chakra-ui/react"
 import * as dhive from "@hiveio/dhive"
 import { useEffect, useMemo, useRef, useState } from "react"
@@ -433,13 +434,20 @@ const SkateCast = () => {
           {reversedComments?.slice(0, visiblePosts).map((comment) => (
             <Box key={comment.id} p={4} width="100%" bg="black" color="white">
               <Flex>
-                <Avatar
-                  borderRadius={10}
-                  boxSize={12}
-                  src={`https://images.ecency.com/webp/u/${comment.author}/avatar/small`}
-                />
+                <Link cursor={'pointer'} href={`/profile/${comment.author}`} key={comment.id}>
+
+                  <Avatar
+                    borderRadius={10}
+                    boxSize={12}
+                    src={`https://images.ecency.com/webp/u/${comment.author}/avatar/small`}
+                  />
+                </Link>
+
                 <HStack ml={4}>
-                  <Text fontWeight="bold">{comment.author}</Text>
+                  <Link cursor={'pointer'} href={`/profile/${comment.author}`} key={comment.id}>
+
+                    <Text fontWeight="bold">{comment.author}</Text>
+                  </Link>
                   <Text ml={2} color="gray.400">
                     {formatDate(String(comment.created))}
                   </Text>

@@ -85,7 +85,7 @@ const SidebarDesktop = () => {
                         src="/skatehive_square_green.png"
                         alt="SkateHive"
                         borderRadius={"5px"}
-                        _hover={{ cursor: "pointer" }}
+                        _hover={{ cursor: "pointer", transform: "scale(1.03)", border: '1px solid limegreen' }}
                         minW={"100%"}
                         h={"auto"}
                         onClick={() => { window.location.href = "/" }}
