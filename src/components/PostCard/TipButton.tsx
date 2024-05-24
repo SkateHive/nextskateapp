@@ -56,7 +56,7 @@ export default function TipButton({ author }: TipButtonProps) {
 
     return (
         <Menu >
-            <MenuButton w={"auto"} as={Button} color="limegreen" variant={"outline"} size="sm">
+            <MenuButton w={"auto"} as={Button} color="green.200" variant={"ghost"} size="sm">
                 ⌐◨-◨
             </MenuButton>
             <MenuList bg="black" >

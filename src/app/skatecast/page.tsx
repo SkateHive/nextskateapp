@@ -25,7 +25,7 @@ import {
 import * as dhive from "@hiveio/dhive"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { useDropzone } from "react-dropzone"
-import { FaDollarSign, FaImage, FaRegComment, FaRegHeart } from "react-icons/fa"
+import { FaDollarSign, FaImage, FaRegComment, FaRegHeart, FaHeart } from "react-icons/fa"
 import InfiniteScroll from "react-infinite-scroll-component"
 import ReactMarkdown from "react-markdown"
 import { BeatLoader } from "react-spinners"
@@ -37,6 +37,7 @@ import { useCasts } from "@/hooks/casts"
 import TipButton from "@/components/PostCard/TipButton"
 import LoadingComponent from "./loadingComponent"
 import AvatarMediaModal from "./mediaModal"
+import { handleVote } from "./utils/handleFeedVote"
 
 const parent_author = "skatehacker"
 const parent_permlink = "test-advance-mode-post"
@@ -243,18 +244,7 @@ const SkateCast = () => {
     }
   }
 
-  const handleVote = async (author: string, permlink: string) => {
-    if (!username) {
-      console.error("Username is missing")
-      return
-    }
-    vote({
-      username: username,
-      permlink: permlink,
-      author: author,
-      weight: 10000,
-    })
-  }
+
 
   const handleMediaAvatarClick = (commentId: number) => {
     const media = mediaDictionary.get(commentId)
@@ -343,7 +333,6 @@ const SkateCast = () => {
         })}
         <Divider />
       </HStack>
-
       {user.hiveUser !== null && (
         <Box p={4} width={"100%"} bg="black" color="white" {...getRootProps()}>
           <Flex>
@@ -352,7 +341,6 @@ const SkateCast = () => {
               boxSize={12}
               src={`https://images.ecency.com/webp/u/${username}/avatar/small`}
             />
-
             <Textarea
               border="none"
               _focus={{
@@ -418,7 +406,6 @@ const SkateCast = () => {
           <Divider mt={4} />
         </Box>
       )}
-
       <Box width={"full"} >
         <InfiniteScroll
           dataLength={visiblePosts}
@@ -435,17 +422,14 @@ const SkateCast = () => {
             <Box key={comment.id} p={4} width="100%" bg="black" color="white">
               <Flex>
                 <Link cursor={'pointer'} href={`/profile/${comment.author}`} key={comment.id}>
-
                   <Avatar
                     borderRadius={10}
                     boxSize={12}
                     src={`https://images.ecency.com/webp/u/${comment.author}/avatar/small`}
                   />
                 </Link>
-
                 <HStack ml={4}>
                   <Link cursor={'pointer'} href={`/profile/${comment.author}`} key={comment.id}>
-
                     <Text fontWeight="bold">{comment.author}</Text>
                   </Link>
                   <Text ml={2} color="gray.400">
@@ -453,13 +437,10 @@ const SkateCast = () => {
                   </Text>
                   <Badge
                     variant="ghost"
-                    color={"green.400"}
-                  >
+                    color={"green.400"}>
                     <HStack>
-
                       <FaDollarSign />
                       <Text>
-
                         {getTotalPayout(comment)} USD
                       </Text>
                     </HStack>
@@ -470,8 +451,7 @@ const SkateCast = () => {
                 <ReactMarkdown
                   components={MarkdownRenderers}
                   rehypePlugins={[rehypeRaw]}
-                  remarkPlugins={[remarkGfm]}
-                >
+                  remarkPlugins={[remarkGfm]}>
                   {transformIPFSContent(
                     transformShortYoutubeLinksinIframes(comment.body)
                   )}
@@ -487,22 +467,15 @@ const SkateCast = () => {
                   {comment.children}
                 </Button>
                 <Button
-                  onClick={() => handleVote(comment.author, comment.permlink)}
+                  onClick={() => handleVote(comment.author, comment.permlink, username ?? "")}
                   colorScheme="green"
                   variant="ghost"
-                  leftIcon={<FaRegHeart />}
+                  leftIcon={comment.active_votes?.some((vote) => vote.voter === username) ? <FaHeart /> : <FaRegHeart />}
                 >
                   {comment.active_votes?.length}
                 </Button>
-                {/* <Button
-                  colorScheme="white"
-                  variant="ghost"
-                  leftIcon={<Text>⌐◨-◨</Text>}
-                ></Button> */}
                 <TipButton author={comment.author} />
-
               </Flex>
-
               <Divider mt={4} />
             </Box>
           ))}
