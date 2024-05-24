@@ -45,7 +45,7 @@ function HiveBox() {
     const vestingShares = hiveUser?.vesting_shares
     const delegatedVestingShares = hiveUser?.delegated_vesting_shares
     const receivedVestingShares = hiveUser?.received_vesting_shares
-    const [hivePower, setHivePower] = useState('')
+    const [hivePower, setHivePower] = useState(0)
     const [delegatedToUserInUSD, setDelegatedToUserInUSD] = useState('')
     const [HPthatUserDelegated, setHPthatUserDelegated] = useState(0)
     const [totalHP, setTotalHP] = useState(0)
@@ -64,11 +64,12 @@ function HiveBox() {
     useEffect(() => {
         const calculateHP = async () => {
             const HP = await convertVestingSharesToHivePower(String(vestingShares), String(delegatedVestingShares), String(receivedVestingShares)).then((res) => {
-                setHivePower(res.hivePower)
                 setDelegatedToUserInUSD(res.delegatedToUserInUSD)
                 setHPthatUserDelegated(Number(res.DelegatedToSomeoneHivePower))
                 const sum = Number(res.DelegatedToSomeoneHivePower) + Number(res.hivePower)
                 setTotalHP(sum)
+                setHivePower(sum)
+
             })
         }
         const calculateHiveUsdValue = () => {
@@ -156,7 +157,7 @@ function HiveBox() {
                             <VStack m={5}>
                                 <Text fontWeight={"bold"} fontSize={"34px"}>Available: ${hiveUsdValue.toFixed(2)} </Text>
 
-                                <Text fontSize={"18px"} >Tokens Value:  </Text>
+                                <Text fontSize={"18px"} >Tokens Value: {totalValue.toFixed(2)}  </Text>
                             </VStack>
                         </Center>
                     </Box>
@@ -229,7 +230,7 @@ function HiveBox() {
                                         <MenuButton p={8} border={"1px solid red"} width={"full"} as={Button} leftIcon={<Avatar boxSize={"30px"} src={HIVE_POWER_LOGO_URL} />} variant="outline">
                                             <Center>
                                                 <VStack>
-                                                    <Text fontSize={24}>HP: {hivePower}</Text>
+                                                    <Text fontSize={24}>{hivePower.toFixed(2)} HP</Text>
                                                     <Text fontSize={12}> (~${HPUsdValue.toFixed(2)})</Text>
                                                 </VStack>
                                             </Center>

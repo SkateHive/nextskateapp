@@ -31,6 +31,10 @@ export const convertVestingSharesToHivePower = async (
         parseFloat(result.result.total_vesting_shares);
     const HPdelegatedToUser = (parseFloat(result.result.total_vesting_fund_hive) * receivedVestingSharesFloat) /
         parseFloat(result.result.total_vesting_shares);
+
+
+
+
     return {
         hivePower: vestHive.toFixed(3),
         DelegatedToSomeoneHivePower: DelegatedToSomeoneHivePower.toFixed(3),
