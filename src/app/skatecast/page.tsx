@@ -468,6 +468,11 @@ const SkateCast = () => {
                 </Button>
                 <Button
                   onClick={() => handleVote(comment.author, comment.permlink, username ?? "")}
+                  // if user clicks with right click console.log the comment, prevent browser context mennu, use this to the vote weight modal in the future
+                  onContextMenu={(e) => {
+                    e.preventDefault()
+                    console.log(comment)
+                  }}
                   colorScheme="green"
                   variant="ghost"
                   leftIcon={comment.active_votes?.some((vote) => vote.voter === username) ? <FaHeart /> : <FaRegHeart />}
