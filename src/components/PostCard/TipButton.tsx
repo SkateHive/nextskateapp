@@ -14,11 +14,14 @@ import { usePostContext } from "@/contexts/PostContext";
 import { useUserData } from "@/hooks/useUserData"
 import HiveTipModal from "./HiveTipModal"
 
-export default function TipButton() {
+interface TipButtonProps {
+    author: string
+}
+
+export default function TipButton({ author }: TipButtonProps) {
     const [isTipModalOpen, setIsTipModalOpen] = useState(false)
     const [token, setToken] = useState("")
     const { post } = usePostContext()
-    const [author] = post?.author.split("/") || []
     const userData = useUserData(author)
     const [authorETHwallet, setAuthorETHwallet] = useState("")
     const [isHiveTipModalOpen, setIsHiveTipModalOpen] = useState(false)
@@ -53,8 +56,8 @@ export default function TipButton() {
 
     return (
         <Menu >
-            <MenuButton leftIcon={<FaDonate />} w={"auto"} as={Button} color="limegreen" variant={"outline"} size="sm">
-                Tip
+            <MenuButton w={"auto"} as={Button} color="green.200" variant={"ghost"} size="sm">
+                ⌐◨-◨
             </MenuButton>
             <MenuList bg="black" >
                 <MenuItem

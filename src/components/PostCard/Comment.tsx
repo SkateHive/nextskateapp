@@ -1,37 +1,54 @@
-'use client'
-import { Flex, Text, Divider, HStack } from "@chakra-ui/react"
-import moment from "moment-timezone"
-import UserAvatar from "../UserAvatar"
-import { Comment } from '@/hooks/comments';
-import CommentsSection from "@/components/PostModal/commentSection"
-import useHiveAccount from "@/hooks/useHiveAccount";
-import { FaFire } from "react-icons/fa";
-import { useHiveUser } from "@/contexts/UserContext";
+"use client"
 import voteOnContent from "@/app/plaza/voting"
-import React, { useState, useEffect } from 'react';
+import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers"
+import CommentsSection from "@/components/PostModal/commentSection"
+import { usePostContext } from "@/contexts/PostContext"
+import { useHiveUser } from "@/contexts/UserContext"
+import { Comment, useComments } from "@/hooks/comments"
+import useHiveAccount from "@/hooks/useHiveAccount"
+import { Flex, Text } from "@chakra-ui/react"
+import moment from "moment-timezone"
+import { useEffect, useState } from "react"
+import { FaFire } from "react-icons/fa"
+import ReactMarkdown from "react-markdown"
+import rehypeRaw from "rehype-raw"
+import remarkGfm from "remark-gfm"
+import CommandPrompt from "../PostModal/commentPrompt"
+import UserAvatar from "../UserAvatar"
 import { voting_value } from "./calculateHiveVotingValue"
-import ReactMarkdown from "react-markdown";
-import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
-import rehypeRaw from "rehype-raw";
-import remarkGfm from "remark-gfm";
 interface PostCommentProps {
   comment: Comment
 }
 
 export default function PostComment({ comment }: PostCommentProps) {
-
   const { hiveAccount, isLoading } = useHiveAccount(comment.author)
+  const { addComment } = useComments(comment.author, comment.permlink, true)
   const user = useHiveUser()
-  const [hasVoted, setHasVoted] = useState(false);
+  const [hasVoted, setHasVoted] = useState(false)
+  const [replies, setReplies] = useState<Comment[] | undefined>(comment.replies)
+  const { post } = usePostContext()
+
   const calculateTotalPayout = (comment: Comment) => {
-    return Number(comment.pending_payout_value?.split(' ')[0]) + Number(comment.total_payout_value?.split(' ')[0]) + Number(comment.curator_payout_value?.split(' ')[0])
+    return (
+      Number(comment.pending_payout_value?.split(" ")[0]) +
+      Number(comment.total_payout_value?.split(" ")[0]) +
+      Number(comment.curator_payout_value?.split(" ")[0])
+    )
   }
-  const [newTotalPayout, setNewTotalPayout] = useState(calculateTotalPayout(comment));
+  const [newTotalPayout, setNewTotalPayout] = useState(
+    calculateTotalPayout(comment)
+  )
+  const [commentsOpen, setCommentsOpen] = useState(false)
 
   const handleVote = async () => {
     try {
-      await voteOnContent(String(user.hiveUser?.name), comment.permlink, comment.author, 10000)
-      setHasVoted(true);
+      await voteOnContent(
+        String(user.hiveUser?.name),
+        comment.permlink,
+        comment.author,
+        10000
+      )
+      setHasVoted(true)
       const newPayout = await voting_value(user)
       setNewTotalPayout(calculateTotalPayout(comment) + newPayout)
     } catch (error) {
@@ -39,10 +56,12 @@ export default function PostComment({ comment }: PostCommentProps) {
     }
   }
   useEffect(() => {
-    setHasVoted(comment?.active_votes?.some(vote => vote.voter === user.hiveUser?.name) ?? false);
-  }, [comment, user.hiveUser?.name]);
-
-
+    setHasVoted(
+      comment?.active_votes?.some(
+        (vote) => vote.voter === user.hiveUser?.name
+      ) ?? false
+    )
+  }, [comment, user.hiveUser?.name])
 
   if (isLoading || !hiveAccount) return <div>Loading...</div>
   return (
@@ -58,7 +77,6 @@ export default function PostComment({ comment }: PostCommentProps) {
         <Text fontSize="12px" color="darkgray" fontWeight="300">
           {moment.utc(comment.last_update).fromNow()}
         </Text>
-
       </Flex>
       <Flex direction={"column"} border={"1px solid grey"} p={5} bg={"#201d21"}>
         <ReactMarkdown
@@ -69,21 +87,41 @@ export default function PostComment({ comment }: PostCommentProps) {
           {comment.body}
         </ReactMarkdown>
         <br />
-        <Flex justifyContent="flex-end"> {/* Adjust this Flex component */}
-          <Text fontSize="12px" color="darkgray" fontWeight="300">
+        <Flex justifyContent="flex-end">
+          {" "}
+          {/* Adjust this Flex component */}
+          <Text
+            fontSize="12px"
+            color="darkgray"
+            fontWeight="300"
+            onClick={() => setCommentsOpen((comment) => !comment)}
+          >
             Reply
           </Text>
           <Flex ml={2}>
-            <FaFire cursor={"pointer"} onClick={handleVote} color={hasVoted ? "limegreen" : "grey"} />
+            <FaFire
+              cursor={"pointer"}
+              onClick={handleVote}
+              color={hasVoted ? "limegreen" : "grey"}
+            />
             <Text fontSize="12px" color="darkgray" fontWeight="300">
               {newTotalPayout.toFixed(2)}
             </Text>
           </Flex>
         </Flex>
+        {commentsOpen ? (
+          <CommandPrompt
+            post={comment}
+            addComment={(comment: Comment) => {
+              setReplies((replies) =>
+                replies ? [...replies, comment] : replies
+              )
+              setCommentsOpen(false)
+            }}
+          />
+        ) : null}
       </Flex>
-      <CommentsSection comments={comment.replies} isCommentReply={true} />
+      <CommentsSection comments={replies} isCommentReply={true} />
     </Flex>
-
-
   )
 }

@@ -60,7 +60,7 @@ const HiveTipModal: React.FC<HiveTipModalProps> = ({ isOpen, onClose, author }) 
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
             <ModalContent bg={"black"} border={"1px solid red"}>
-                <ModalHeader>Support @{post.author} with
+                <ModalHeader>Support @{author} with
                     <ButtonGroup ml={2} size="sm" isAttached variant="outline" colorScheme="red">
                         <Button
                             onClick={() => handleCurrencyChange("HIVE")}
@@ -104,7 +104,7 @@ const HiveTipModal: React.FC<HiveTipModalProps> = ({ isOpen, onClose, author }) 
                 </ModalBody>
                 <ModalFooter>
                     <Button colorScheme="red" variant="outline" mr={3} onClick={handleTip}>
-                        Send {amount} of {currency} to @{post.author}
+                        Send {amount} of {currency} to @{author}
                     </Button>
                 </ModalFooter>
             </ModalContent>

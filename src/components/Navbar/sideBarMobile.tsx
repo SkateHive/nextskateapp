@@ -108,10 +108,13 @@ const SideBarMobile = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
                             <FaBook size={"22px"} />
                             <Link href={"/mag"}>Mag</Link>
                         </HStack>
-                        <HStack padding={0} gap={3} fontSize={"22px"}>
-                            <FaEthereum size={"22px"} />
-                            <Link href={"/dao"}>Dao</Link>
-                        </HStack>
+                        {ethAccount.address && (
+
+                            <HStack padding={0} gap={3} fontSize={"22px"}>
+                                <FaEthereum size={"22px"} />
+                                <Link href={"/dao"}>Dao</Link>
+                            </HStack>
+                        )}
                         {hiveUser ? (
                             <>
                                 <HStack padding={0} gap={3} fontSize={"22px"}>

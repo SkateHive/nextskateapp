@@ -56,7 +56,7 @@ export default function RootLayout({
             }
             @media (min-width: 769px) {
               #layout {
-                gap: 40px;
+                gap: 30px;
               }
               .mobile-menu-button {
                 display: none;

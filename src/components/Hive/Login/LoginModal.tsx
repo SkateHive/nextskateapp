@@ -21,8 +21,6 @@ import {
 } from "@chakra-ui/react"
 import { useState } from "react"
 import { useHiveUser } from "@/contexts/UserContext"
-import { log } from "console"
-import { on } from "events"
 const environment = process.env.NODE_ENV
 
 function LoginModal({
@@ -43,7 +41,6 @@ function LoginModal({
   async function doLogin(useLoginAs: boolean = false) {
     try {
       setIsLogginIn(true)
-      console.log(hiveUser)
       await loginWithHive(username, useLoginAs, privateKey)
       onClose()
       console.log(hiveUser)

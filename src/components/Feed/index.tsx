@@ -13,7 +13,7 @@ import AuthorSearchBar from "@/app/upload/components/searchBar"
 export default function Feed() {
   const SKATEHIVE_TAG = [{ tag: "hive-173115", limit: 100 }]
   const [tag, setTag] = useState(SKATEHIVE_TAG)
-  const [query, setQuery] = useState("trending")
+  const [query, setQuery] = useState("created")
   const [fetchedPosts, setFetchedPosts] = useState()
   const { posts, error, isLoading, setQueryCategory, setDiscussionQuery } = usePosts(query, tag)
   const [visiblePosts, setVisiblePosts] = useState(20)
@@ -33,6 +33,7 @@ export default function Feed() {
   }
   if (isLoading || !posts) {
     return (
+
       <Grid
         p={1}
         templateColumns={{
