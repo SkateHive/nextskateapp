@@ -56,7 +56,11 @@ export default function Vote() {
         author: post.author,
         weight: voteWeight,
       })
-      setPostEarnings(Number(postEarnings.toFixed(2)) + userVotingValue)
+      if (!isVoted && voteWeight > 0) {
+        setPostEarnings(Number(postEarnings.toFixed(2)) + userVotingValue)
+      } else if (isVoted && voteWeight === 0) {
+        setPostEarnings(Number(postEarnings.toFixed(2)) - userVotingValue)
+      }
     } else if (loginMethod === "privateKey") {
       const vote: VoteOperation = [
         "vote",

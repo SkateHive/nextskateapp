@@ -1,7 +1,7 @@
 import { vote } from "@/lib/hive/client-functions"
 import { use } from "react"
 import { voteWithPrivateKey } from "@/lib/hive/server-functions"
-
+import { VoteOperation } from "@hiveio/dhive"
 export const handleVote = async (author: string, permlink: string, username: string) => {
   const loginMethod = localStorage.getItem("LoginMethod")
   if (!username) {
@@ -16,21 +16,17 @@ export const handleVote = async (author: string, permlink: string, username: str
       weight: 10000,
     })
   } else if (loginMethod === "privateKey") {
-    console.log("privateKey")
+    const vote: VoteOperation = [
+      "vote",
+      {
+        author: author,
+        permlink: permlink,
+        voter: username,
+        weight: 10000,
+      }
+    ]
+    const encryptedPrivateKey = localStorage.getItem("EncPrivateKey");
+    voteWithPrivateKey(encryptedPrivateKey, vote)
   }
-
-  // } else if (loginMethod === "privateKey") {
-  //   await voteWithPrivateKey({
-  //     encryptedPrivateKey: localStorage.getItem("EncPrivateKey"),
-  //     vote: [
-  //       "vote",
-  //       {
-  //         voter: username,
-  //         author: author,
-  //         permlink: permlink,
-  //         weight: 10000,
-  //       },
-  //     ],
-  //   })å®
-  // }
 }
+

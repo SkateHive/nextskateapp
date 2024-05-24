@@ -38,16 +38,65 @@ import TipButton from "@/components/PostCard/TipButton"
 import LoadingComponent from "./loadingComponent"
 import AvatarMediaModal from "./mediaModal"
 import { handleVote } from "./utils/handleFeedVote"
+import { useReward } from "react-rewards"
+import { comment } from "@uiw/react-md-editor"
+import { voting_value2 } from "@/components/PostCard/calculateHiveVotingValueForHiveUser"
 
 const parent_author = "skatehacker"
 const parent_permlink = "test-advance-mode-post"
+
+const VotingButton = ({ comment, username }: { comment: any, username: any }) => {
+  const initialIsVoted = comment.active_votes?.some((vote: any) => vote.voter === username);
+  const [isVoted, setIsVoted] = useState(initialIsVoted);
+  const [voteCount, setVoteCount] = useState(comment.active_votes?.length || 0);
+  const rewardId = `reward-${comment.id}`;
+  const { reward } = useReward(rewardId, "emoji", {
+    emoji: ["$", "*", "#"],
+    spread: 60,
+  });
+
+  const handleVoteClick = async () => {
+    const newIsVoted = !isVoted;
+    await handleVote(comment.author, comment.permlink, username ?? "");
+    setIsVoted(newIsVoted);
+
+    setVoteCount((prevVoteCount: number) => newIsVoted ? prevVoteCount + 1 : prevVoteCount - 1);
+
+    if (newIsVoted) {
+      reward();
+    }
+
+  };
+
+  return (
+    <Button
+      onClick={handleVoteClick}
+      colorScheme="green"
+      variant="ghost"
+      leftIcon={isVoted ? <FaHeart /> : <FaRegHeart />}
+    >
+      <span
+        id={rewardId}
+        style={{
+          position: "absolute",
+          left: "50%",
+          bottom: "15px",
+          transform: "translateX(-50%)",
+          zIndex: 5,
+        }}
+      />
+      {voteCount}
+    </Button>
+  );
+};
+
 
 const SkateCast = () => {
   const { comments, addComment, isLoading } = useComments(
     parent_author,
     parent_permlink
   )
-  const [visiblePosts, setVisiblePosts] = useState(20)
+  const [visiblePosts, setVisiblePosts] = useState(40)
   const [postBody, setPostBody] = useState("")
   const reversedComments = comments?.slice().reverse()
   const user = useHiveUser()
@@ -60,6 +109,34 @@ const SkateCast = () => {
   const [isUploading, setIsUploading] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const [hasPosted, setHasPosted] = useState(false)
+  const rewardId = comments?.[0]?.id ? "postReward" + comments[0].id : ""
+  const [userVotingValue, setUserVotingValue] = useState(0)
+  const userHasVoted = (username: string) => {
+
+    return comments?.some((comment) =>
+      comment.active_votes?.some((vote) => vote.voter === username)
+    )
+
+  }
+
+  useEffect(() => {
+    const getVotingValue = async () => {
+      try {
+        if (!username) return;
+        const vote_value = await voting_value2(username);
+        setUserVotingValue(Number(vote_value.toFixed(2)));
+      } catch (error) {
+        console.error("Failed to calculate voting value:", error);
+      }
+    }
+    if (username) {
+      getVotingValue();
+    }
+  }, [username]);
+
+
+
+
 
   const { getRootProps, getInputProps } = useDropzone({
     noClick: true,
@@ -243,8 +320,6 @@ const SkateCast = () => {
       }
     }
   }
-
-
 
   const handleMediaAvatarClick = (commentId: number) => {
     const media = mediaDictionary.get(commentId)
@@ -466,19 +541,7 @@ const SkateCast = () => {
                 >
                   {comment.children}
                 </Button>
-                <Button
-                  onClick={() => handleVote(comment.author, comment.permlink, username ?? "")}
-                  // if user clicks with right click console.log the comment, prevent browser context mennu, use this to the vote weight modal in the future
-                  onContextMenu={(e) => {
-                    e.preventDefault()
-                    console.log(comment)
-                  }}
-                  colorScheme="green"
-                  variant="ghost"
-                  leftIcon={comment.active_votes?.some((vote) => vote.voter === username) ? <FaHeart /> : <FaRegHeart />}
-                >
-                  {comment.active_votes?.length}
-                </Button>
+                <VotingButton comment={comment} username={username} />
                 <TipButton author={comment.author} />
               </Flex>
               <Divider mt={4} />
