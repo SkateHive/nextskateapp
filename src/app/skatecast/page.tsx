@@ -254,6 +254,8 @@ const SkateCast = () => {
               onClick={() => handleSortChange('payout')}> Payout</MenuItem>
             <MenuItem bg={"black"}
               onClick={() => handleSortChange('chronological')}>Latest</MenuItem>
+            <MenuItem bg={"black"}
+              onClick={() => handleSortChange('engagement')}>Engagement</MenuItem>
           </MenuList>
         </Menu>
 
