@@ -28,6 +28,7 @@ const AvatarList = ({ sortedComments }: AvatarListProps) => {
         return (
           <AuthorAvatar
             username={comment.author}
+            key={comment.author}
           />
         )
       })}
