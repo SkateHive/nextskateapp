@@ -1,217 +1,76 @@
 "use client"
-import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers"
+import { ButtonGroup, VStack, Button, HStack, MenuButton, MenuList, MenuItem, Menu } from "@chakra-ui/react"
 import { useHiveUser } from "@/contexts/UserContext"
 import { useComments } from "@/hooks/comments"
-import { vote } from "@/lib/hive/client-functions"
-import {
-  formatDate,
-  transformIPFSContent,
-  transformShortYoutubeLinksinIframes,
-} from "@/lib/utils"
-import {
-  Avatar,
-  Box,
-  Button,
-  Divider,
-  Flex,
-  HStack,
-  Text,
-  Textarea,
-  VStack,
-  Input,
-  Badge,
-  Link,
-} from "@chakra-ui/react"
-import * as dhive from "@hiveio/dhive"
-import { useEffect, useMemo, useRef, useState } from "react"
-import { useDropzone } from "react-dropzone"
-import { FaDollarSign, FaImage, FaRegComment, FaRegHeart, FaHeart } from "react-icons/fa"
-import InfiniteScroll from "react-infinite-scroll-component"
-import ReactMarkdown from "react-markdown"
-import { BeatLoader } from "react-spinners"
-import rehypeRaw from "rehype-raw"
-import remarkGfm from "remark-gfm"
-import { uploadFileToIPFS } from "../upload/utils/uploadToIPFS"
-import { commentWithPrivateKey } from "@/lib/hive/server-functions"
-import { useCasts } from "@/hooks/casts"
-import TipButton from "@/components/PostCard/TipButton"
+import AvatarList from "./AvatarList"
+import PostBox from "./PostBox"
 import LoadingComponent from "./loadingComponent"
 import AvatarMediaModal from "./mediaModal"
-import { handleVote } from "./utils/handleFeedVote"
-import { useReward } from "react-rewards"
-import { comment } from "@uiw/react-md-editor"
-import { voting_value2 } from "@/components/PostCard/calculateHiveVotingValueForHiveUser"
+import { vote } from "@/lib/hive/client-functions"
+import * as dhive from "@hiveio/dhive"
+import CommentList from "./CommentsList"
+import { commentWithPrivateKey } from "@/lib/hive/server-functions"
+import { useState, useEffect, useMemo } from "react"
+import { IoFilter } from "react-icons/io5";
 
 const parent_author = "skatehacker"
 const parent_permlink = "test-advance-mode-post"
 
-const VotingButton = ({ comment, username }: { comment: any, username: any }) => {
-  const initialIsVoted = comment.active_votes?.some((vote: any) => vote.voter === username);
-  const [isVoted, setIsVoted] = useState(initialIsVoted);
-  const [voteCount, setVoteCount] = useState(comment.active_votes?.length || 0);
-  const rewardId = `reward-${comment.id}`;
-  const { reward } = useReward(rewardId, "emoji", {
-    emoji: ["$", "*", "#"],
-    spread: 60,
-  });
+interface Comment {
+  id: number
+  author: string
+  permlink: string
+  created: string
+  body: string
+  total_payout_value?: string
+  pending_payout_value?: string
+  curator_payout_value?: string
+}
 
-  const handleVoteClick = async () => {
-    const newIsVoted = !isVoted;
-    await handleVote(comment.author, comment.permlink, username ?? "");
-    setIsVoted(newIsVoted);
-
-    setVoteCount((prevVoteCount: number) => newIsVoted ? prevVoteCount + 1 : prevVoteCount - 1);
-
-    if (newIsVoted) {
-      reward();
-    }
-
-  };
-
-  return (
-    <Button
-      onClick={handleVoteClick}
-      colorScheme="green"
-      variant="ghost"
-      leftIcon={isVoted ? <FaHeart /> : <FaRegHeart />}
-    >
-      <span
-        id={rewardId}
-        style={{
-          position: "absolute",
-          left: "50%",
-          bottom: "15px",
-          transform: "translateX(-50%)",
-          zIndex: 5,
-        }}
-      />
-      {voteCount}
-    </Button>
-  );
-};
-
+const getTotalPayout = (comment: Comment): number => {
+  const payout = parseFloat(comment.total_payout_value?.split(" ")[0] || "0")
+  const pendingPayout = parseFloat(comment.pending_payout_value?.split(" ")[0] || "0")
+  const curatorPayout = parseFloat(comment.curator_payout_value?.split(" ")[0] || "0")
+  return payout + pendingPayout + curatorPayout
+}
 
 const SkateCast = () => {
   const { comments, addComment, isLoading } = useComments(
     parent_author,
     parent_permlink
   )
-  const [visiblePosts, setVisiblePosts] = useState(40)
-  const [postBody, setPostBody] = useState("")
-  const reversedComments = comments?.slice().reverse()
+  const [visiblePosts, setVisiblePosts] = useState<number>(20)
+  const [postBody, setPostBody] = useState<string>("")
   const user = useHiveUser()
   const username = user?.hiveUser?.name
-  const [mediaModalOpen, setMediaModalOpen] = useState(false)
+  const [mediaModalOpen, setMediaModalOpen] = useState<boolean>(false)
   const [media, setMedia] = useState<string[]>([])
-  const [mediaComments, setMediaComments] = useState(new Set())
-  const [mediaDictionary, setMediaDictionary] = useState(new Map())
-  const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN
-  const [isUploading, setIsUploading] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
-  const [hasPosted, setHasPosted] = useState(false)
-  const rewardId = comments?.[0]?.id ? "postReward" + comments[0].id : ""
-  const [userVotingValue, setUserVotingValue] = useState(0)
-  const userHasVoted = (username: string) => {
+  const [mediaDictionary, setMediaDictionary] = useState<Map<number, { media: string[], type: string }>>(new Map())
+  const [hasPosted, setHasPosted] = useState<boolean>(false)
+  const [sortMethod, setSortMethod] = useState<string>('engagement') // State to track sorting method
 
-    return comments?.some((comment) =>
-      comment.active_votes?.some((vote) => vote.voter === username)
-    )
-
-  }
-
-  useEffect(() => {
-    const getVotingValue = async () => {
-      try {
-        if (!username) return;
-        const vote_value = await voting_value2(username);
-        setUserVotingValue(Number(vote_value.toFixed(2)));
-      } catch (error) {
-        console.error("Failed to calculate voting value:", error);
-      }
-    }
-    if (username) {
-      getVotingValue();
-    }
-  }, [username]);
-
-
-
-
-
-  const { getRootProps, getInputProps } = useDropzone({
-    noClick: true,
-    noKeyboard: true,
-    onDrop: async (acceptedFiles) => {
-      setIsUploading(true)
-      for (const file of acceptedFiles) {
-        const ipfsData = await uploadFileToIPFS(file) // Use the returned data directly
-        if (ipfsData !== undefined) {
-          // Ensure ipfsData is not undefined
-          const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}?pinataGatewayToken=${PINATA_GATEWAY_TOKEN}`
-          const markdownLink = file.type.startsWith("video/")
-            ? `<iframe src="${ipfsUrl}" allowfullscreen></iframe>`
-            : `![Image](${ipfsUrl})`
-          setPostBody((prevMarkdown) => `${prevMarkdown}\n${markdownLink}\n`)
-        }
-      }
-      setIsUploading(false)
-    },
-    accept: {
-      "image/*": [".png", ".gif", ".jpeg", ".jpg"],
-      "video/*": [".mp4", ".mov"],
-    },
-    multiple: false,
-  })
-
-  useEffect(() => {
-    if (comments) {
-      const mediaSet = new Set()
-      const mediaDict = new Map()
-      comments?.forEach((comment) => {
-        const media = comment.body.match(
-          /https:\/\/ipfs.skatehive.app\/ipfs\/[a-zA-Z0-9]*/g
-        )
-        const mediaType =
-          comment.body.includes("<video") || comment.body.includes("<iframe")
-            ? "video"
-            : "image"
-        if (media) {
-          mediaSet.add(comment.id)
-          mediaDict.set(comment.id, { media, type: mediaType })
-        }
-      })
-      setMediaComments(mediaSet)
-      setMediaDictionary(mediaDict)
-    }
-  }, [comments])
 
   const sortedComments = useMemo(() => {
-    return comments?.slice().sort((a: any, b: any) => {
-      const aHasMedia = mediaComments.has(a.id)
-      const bHasMedia = mediaComments.has(b.id)
-      if (aHasMedia && !bHasMedia) {
-        return -1
-      } else if (!aHasMedia && bHasMedia) {
-        return 1
-      }
-      const aCreated = new Date(a.created)
-      const bCreated = new Date(b.created)
-      if (aCreated && bCreated) {
-        return bCreated.getTime() - aCreated.getTime()
-      }
-      return 0
-    })
-  }, [comments, mediaComments])
+    if (sortMethod === 'chronological') {
+      return comments?.slice().reverse()
+    } else if (sortMethod === 'engagement') {
+      return comments?.slice().sort((a, b) => {
+        return (b?.children ?? 0) - (a?.children ?? 0)
+      })
+    } else {
+      return comments?.slice().sort((a: any, b: any) => {
+        return getTotalPayout(b) - getTotalPayout(a)
+      })
+    }
+  }, [comments, sortMethod])
 
   const handlePost = async () => {
-    console.log("handlePost")
     const permlink = new Date()
       .toISOString()
       .replace(/[^a-zA-Z0-9]/g, "")
       .toLowerCase()
-    console.log("permlink", permlink)
+
     const loginMethod = localStorage.getItem("LoginMethod")
-    console.log("loginMethod", loginMethod)
 
     if (!username) {
       console.error("Username is missing")
@@ -256,7 +115,6 @@ const SkateCast = () => {
 
           if (response.success) {
             setPostBody("")
-            console.log("Comment posted successfully")
             addComment(postData)
           }
         } catch (error) {
@@ -308,7 +166,7 @@ const SkateCast = () => {
 
       try {
         await commentWithPrivateKey(
-          localStorage.getItem("EncPrivateKey"),
+          localStorage.getItem("EncPrivateKey")!,
           postOperation,
           commentOptions
         )
@@ -321,46 +179,35 @@ const SkateCast = () => {
     }
   }
 
+  const handleVote = async (author: string, permlink: string) => {
+    if (!username) {
+      console.error("Username is missing")
+      return
+    }
+    vote({
+      username: username,
+      permlink: permlink,
+      author: author,
+      weight: 10000,
+    })
+  }
+
   const handleMediaAvatarClick = (commentId: number) => {
     const media = mediaDictionary.get(commentId)
     console.log("media", media)
-    setMedia(media ?? [])
+    setMedia(media?.media ?? [])
     console.log("media", media)
     setMediaModalOpen(true)
   }
 
-  const getTotalPayout = (comment: any) => {
-    if (comment.total_payout_value === undefined) {
-      return 0
-    }
-    if (comment.pending_payout_value === undefined) {
-      return 0
-    }
-    if (comment.curator_payout_value === undefined) {
-      return 0
-    }
-    const payout = parseFloat(comment.total_payout_value.split(" ")[0])
-    const pendingPayout = parseFloat(comment.pending_payout_value.split(" ")[0])
-    const curatorPayout = parseFloat(comment.curator_payout_value.split(" ")[0])
-    return payout + pendingPayout + curatorPayout
-  }
-
-  const handleCommentIconClick = (comment: any) => {
+  const handleCommentIconClick = (comment: Comment) => {
     if (typeof window !== "undefined") {
       window.location.href = `post/hive-173115/@${comment.author}/${comment.permlink}`
     }
   }
 
-  const handleImageUploadClick = () => {
-    console.log("inputRef", inputRef)
-    if (inputRef.current) {
-      inputRef.current.click()
-    }
-  }
-
-  function textAreaAdjust(element: any) {
-    element.style.height = "1px"
-    element.style.height = 25 + element.scrollHeight + "px"
+  const handleSortChange = (method: string) => {
+    setSortMethod(method)
   }
 
   return isLoading ? (
@@ -378,177 +225,50 @@ const SkateCast = () => {
         onClose={() => setMediaModalOpen(false)}
         media={media}
       />
-      <HStack
-        flexWrap={"nowrap"}
-        w={"100%"}
-        css={{ "&::-webkit-scrollbar": { display: "none" } }}
-        overflowX="auto"
-        minHeight={"60px"}
-        px={4}
-      >
-        {sortedComments?.map((comment, index, commentsArray) => {
-          const isDuplicate =
-            commentsArray.findIndex((c) => c.author === comment.author) !==
-            index
-          if (isDuplicate) {
-            return null
-          }
-          return (
-            <Avatar
-              key={comment.id}
-              size="md"
-              src={`https://images.ecency.com/webp/u/${comment.author}/avatar/small`}
-              border={
-                mediaComments.has(comment.id) ? "2px solid limegreen" : "none"
-              }
-              cursor={"pointer"}
-              onClick={() => handleMediaAvatarClick(Number(comment.id))}
-            />
-          )
-        })}
-        <Divider />
-      </HStack>
+      <AvatarList
+        sortedComments={sortedComments}
+      />
       {user.hiveUser !== null && (
-        <Box p={4} width={"100%"} bg="black" color="white" {...getRootProps()}>
-          <Flex>
-            <Avatar
-              borderRadius={10}
-              boxSize={12}
-              src={`https://images.ecency.com/webp/u/${username}/avatar/small`}
-            />
-            <Textarea
-              border="none"
-              _focus={{
-                border: "none",
-                boxShadow: "none",
-              }}
-              placeholder="What's happening?"
-              onChange={(e) => setPostBody(e.target.value)}
-              value={postBody}
-              overflow={"hidden"}
-              resize={"vertical"}
-              onKeyUp={(e) => textAreaAdjust(e.target)}
-            />
-          </Flex>
-          <HStack>
-            {postBody.includes("![Image](") && (
-              <Box>
-                <img
-                  src={postBody.match(/!\[Image\]\((.*?)\)/)?.[1]}
-                  alt="markdown-image"
-                  width="100%"
-                />
-              </Box>
-            )}
-            {postBody.includes("<iframe") && (
-              <Box>
-                <video
-                  src={
-                    postBody.match(
-                      /<iframe src="(.*?)" allowfullscreen><\/iframe>/
-                    )?.[1]
-                  }
-                  controls
-                  muted
-                  width="100%"
-                />
-              </Box>
-            )}
-          </HStack>
-          <HStack justifyContent="space-between" m={4}>
-            <Input
-              id="md-image-upload"
-              type="file"
-              style={{ display: "none" }}
-              {...getInputProps({ refKey: "ref" })}
-              ref={inputRef}
-            />
-            <FaImage
-              color="#ABE4B8"
-              cursor="pointer"
-              onClick={handleImageUploadClick}
-            />
-            <Button
-              colorScheme="green"
-              variant="outline"
-              ml="auto"
-              onClick={handlePost}
-              isLoading={isUploading}
-            >
-              Post
-            </Button>
-          </HStack>
-          <Divider mt={4} />
-        </Box>
+        <PostBox
+          username={username}
+          postBody={postBody}
+          setPostBody={setPostBody}
+          handlePost={handlePost}
+        />
       )}
-      <Box width={"full"} >
-        <InfiniteScroll
-          dataLength={visiblePosts}
-          next={() => setVisiblePosts(visiblePosts + 3)}
-          hasMore={visiblePosts < (comments?.length ?? 0)}
-          loader={
-            <Flex justify="center">
-              <BeatLoader size={8} color="darkgrey" />
-            </Flex>
-          }
-          style={{ overflow: "hidden" }}
-        >
-          {reversedComments?.slice(0, visiblePosts).map((comment) => (
-            <Box key={comment.id} p={4} width="100%" bg="black" color="white">
-              <Flex>
-                <Link cursor={'pointer'} href={`/profile/${comment.author}`} key={comment.id}>
-                  <Avatar
-                    borderRadius={10}
-                    boxSize={12}
-                    src={`https://images.ecency.com/webp/u/${comment.author}/avatar/small`}
-                  />
-                </Link>
-                <HStack ml={4}>
-                  <Link cursor={'pointer'} href={`/profile/${comment.author}`} key={comment.id}>
-                    <Text fontWeight="bold">{comment.author}</Text>
-                  </Link>
-                  <Text ml={2} color="gray.400">
-                    {formatDate(String(comment.created))}
-                  </Text>
-                  <Badge
-                    variant="ghost"
-                    color={"green.400"}>
-                    <HStack>
-                      <FaDollarSign />
-                      <Text>
-                        {getTotalPayout(comment)} USD
-                      </Text>
-                    </HStack>
-                  </Badge>
-                </HStack>
-              </Flex>
-              <Box ml={"64px"} mt={4}>
-                <ReactMarkdown
-                  components={MarkdownRenderers}
-                  rehypePlugins={[rehypeRaw]}
-                  remarkPlugins={[remarkGfm]}>
-                  {transformIPFSContent(
-                    transformShortYoutubeLinksinIframes(comment.body)
-                  )}
-                </ReactMarkdown>
-              </Box>
-              <Flex ml={12} justifyContent={"space-between"} mt={4}>
-                <Button
-                  colorScheme="green"
-                  variant="ghost"
-                  leftIcon={<FaRegComment />}
-                  onClick={() => handleCommentIconClick(comment)}
-                >
-                  {comment.children}
-                </Button>
-                <VotingButton comment={comment} username={username} />
-                <TipButton author={comment.author} />
-              </Flex>
-              <Divider mt={4} />
-            </Box>
-          ))}
-        </InfiniteScroll>
-      </Box>
+      <HStack
+        spacing="1"
+        width="full"
+        justifyContent="flex-end"
+        mr={4}
+      >
+        <Menu>
+          <MenuButton>
+            <IoFilter color="#4BD166" />
+          </MenuButton>
+          <MenuList
+            bg={"black"}
+          >
+            <MenuItem
+              bg={"black"}
+              onClick={() => handleSortChange('payout')}> Payout</MenuItem>
+            <MenuItem bg={"black"}
+              onClick={() => handleSortChange('chronological')}>Latest</MenuItem>
+            <MenuItem bg={"black"}
+              onClick={() => handleSortChange('engagement')}>Engagement</MenuItem>
+          </MenuList>
+        </Menu>
+
+      </HStack>
+      <CommentList
+        comments={sortedComments}
+        visiblePosts={visiblePosts}
+        setVisiblePosts={setVisiblePosts}
+        username={username}
+        handleCommentIconClick={handleCommentIconClick}
+        handleVote={handleVote}
+        getTotalPayout={getTotalPayout}
+      />
     </VStack>
   )
 }

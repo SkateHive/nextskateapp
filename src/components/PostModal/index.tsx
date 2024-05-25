@@ -2,7 +2,7 @@ import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
 import { usePostContext } from "@/contexts/PostContext";
 import { useComments } from "@/hooks/comments";
 import HiveClient from "@/lib/hive/hiveclient";
-import { transform3SpeakContent, transformEcencyImages, transformIPFSContent } from "@/lib/utils";
+import { transform3SpeakContent, transformEcencyImages, transformIPFSContent, transformShortYoutubeLinksinIframes, transformNormalYoutubeLinksinIframes } from "@/lib/utils";
 import {
   Box,
   Center,
@@ -48,7 +48,7 @@ export function PostModal({ isOpen, onClose }: PostModalInterface) {
         <ModalBody display="flex" flexDir={{ base: "column", lg: "row" }} minH="60vh" gap={6}>
           <Box bg="black" flex={0} p={0} border="0px solid limegreen" borderRadius={0} minW="50%">
             <ReactMarkdown components={MarkdownRenderers} rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
-              {transformIPFSContent(transformedPostBody)}
+              {transformNormalYoutubeLinksinIframes(transformShortYoutubeLinksinIframes(transformIPFSContent(transformedPostBody)))}
             </ReactMarkdown>
           </Box>
           <Box minW="50%">

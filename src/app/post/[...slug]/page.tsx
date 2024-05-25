@@ -7,7 +7,7 @@ import { Metadata } from "next"
 import ReactMarkdown from "react-markdown"
 import rehypeRaw from "rehype-raw"
 import remarkGfm from "remark-gfm"
-
+import AuthorAvatar from "@/components/AuthorAvatar"
 // Revalidate requests in 10 minutes
 export const revalidate = 600
 
@@ -87,17 +87,8 @@ export default async function Page({ params }: { params: { slug: string } }) {
             <Box bg="#201d21" borderRadius={5}>
               <HStack >
                 <Box minW={"20%"}>
-                  <Center>
-                    <Avatar
-                      name={user}
-                      src={`https://images.ecency.com/webp/u/${user.substring(3)}/avatar/small`}
-                      height="40px"
-                      width="40px"
-                      bg="transparent"
-                      loading="lazy"
-                      borderRadius={5}
-                      m={2}
-                    />
+                  <Center p={2}>
+                    <AuthorAvatar username={post?.author} />
                   </Center>
                 </Box>
                 <Text fontSize={"18px"}>{post?.title}</Text>

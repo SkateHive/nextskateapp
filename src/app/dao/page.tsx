@@ -159,8 +159,8 @@ const DaoPage = () => {
         <CreateProposalModal connectedUserAddress={formattedAddress} />
 
       ) : (
-        <HStack align={"flex-start"} mt={2}>
-          <Box width={"50%"}>
+        <Flex flexDirection={{ base: 'column', md: 'row' }} >
+          <Box minW={"50%"}>
             <Stack>
               {loadingProposals ? (
                 <Center>
@@ -184,7 +184,7 @@ const DaoPage = () => {
             p={4}
             bg={"#201d21"}
             borderRadius="10px"
-            width={"50%"}
+            minW={"50%"}
             minHeight={"100%"}
           >
             {mainProposal?.author && (
@@ -314,12 +314,9 @@ const DaoPage = () => {
                 )}
               </Flex>
             </Box>
-
-
             <Box
               mt={2}
             >
-
               <ReactMarkdown
                 components={MarkdownRenderers}
                 rehypePlugins={[rehypeRaw, rehypeSanitize]}
@@ -329,7 +326,7 @@ const DaoPage = () => {
               </ReactMarkdown>
             </Box>
           </Box>
-        </HStack>
+        </Flex>
       )}
       {confirmationModalOpen && mainProposal && (
         <VoteConfirmationModal
