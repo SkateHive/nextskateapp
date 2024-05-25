@@ -20,6 +20,7 @@ import { useState } from "react"
 import { useReward } from "react-rewards"
 import { FaHeart } from "react-icons/fa"
 import { handleVote } from "./utils/handleFeedVote"
+import AuthorAvatar from "@/components/AuthorAvatar"
 interface CommentItemProps {
   comment: any
   username: string
@@ -82,15 +83,11 @@ const CommentItem = ({
   getTotalPayout,
 }: CommentItemProps) => {
   const rewardId = comment.id ? "postReward" + comment.id : ""
-
+  console.log(comment.author, typeof comment.author)
   return (
     <Box key={comment.id} p={4} width="100%" bg="black" color="white">
       <Flex>
-        <Avatar
-          borderRadius={10}
-          boxSize={12}
-          src={`https://images.ecency.com/webp/u/${comment.author}/avatar/small`}
-        />
+        <AuthorAvatar username={comment.author} />
         <HStack ml={4}>
           <Text fontWeight="bold">{comment.author}</Text>
           <Text ml={2} color="gray.400">
