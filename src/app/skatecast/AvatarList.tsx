@@ -29,6 +29,12 @@ const AvatarList = ({ sortedComments }: AvatarListProps) => {
           <AuthorAvatar
             username={comment.author}
             key={comment.author}
+            hover={{
+              zIndex: 1,
+              transform: "scale(1.05)",
+              border: "1px solid limegreen",
+            }}
+
           />
         )
       })}

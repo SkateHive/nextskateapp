@@ -8,9 +8,10 @@ import HiveClient from "@/lib/hive/hiveclient";
 interface AuthorAvatarProps {
     username: string;
     borderRadius?: number;
+    hover?: any;
 }
 
-export default function AuthorAvatar({ username, borderRadius }: AuthorAvatarProps) {
+export default function AuthorAvatar({ username, borderRadius, hover }: AuthorAvatarProps) {
     const [profileImage, setProfileImage] = useState("");
 
     useEffect(() => {
@@ -38,7 +39,7 @@ export default function AuthorAvatar({ username, borderRadius }: AuthorAvatarPro
                 bg="transparent"
                 loading="lazy"
                 borderRadius={borderRadius || 5}
-                border={"1px solid limegreen"}
+                _hover={hover || { cursor: "pointer" }}
             />
         </Link>
     );

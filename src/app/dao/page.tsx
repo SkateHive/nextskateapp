@@ -117,12 +117,11 @@ const DaoPage = () => {
   return (
     <Box width={"100%"}>
       <br />
-      <DaoTreasure />
       <Box
         bg="black"
         p={4}
-        border="0.6px solid white"
-        borderRadius="10px"
+        border="1px solid grey"
+        borderTopRadius="10px"
         width={"100%"}
       >
         <Grid templateColumns="1fr 2fr 1fr" gap={6} alignItems="center">
@@ -155,6 +154,8 @@ const DaoPage = () => {
           </GridItem>
         </Grid>
       </Box>
+      <DaoTreasure />
+
       {isCreateProposalModalOpen ? (
         <CreateProposalModal connectedUserAddress={formattedAddress} />
 

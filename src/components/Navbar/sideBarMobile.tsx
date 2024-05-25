@@ -102,11 +102,11 @@ const SideBarMobile = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
 
                         <HStack padding={0} mt={8} gap={3} fontSize={"22px"}>
                             <FaSpeakap size={"22px"} />
-                            <Link href={"/"}>Cast</Link>
+                            <Link href={"/"}>Feed</Link>
                         </HStack>
                         <HStack padding={0} gap={3} fontSize={"22px"}>
                             <FaBook size={"22px"} />
-                            <Link href={"/mag"}>Mag</Link>
+                            <Link href={"/mag"}>Magazine</Link>
                         </HStack>
                         {ethAccount.address && (
 
