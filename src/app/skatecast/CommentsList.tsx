@@ -36,7 +36,7 @@ const CommentList = ({
         }
         style={{ overflow: "hidden" }}
       >
-{comments?.slice(0, visiblePosts).map((comment) => (
+        {comments?.slice(0, visiblePosts).map((comment) => (
           <CommentItem
             key={comment.id}
             comment={comment}

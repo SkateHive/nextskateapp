@@ -1,77 +1,68 @@
 "use client"
-import { VStack } from "@chakra-ui/react"
+import { ButtonGroup, VStack, Button, HStack, MenuButton, MenuList, MenuItem, Menu } from "@chakra-ui/react"
 import { useHiveUser } from "@/contexts/UserContext"
 import { useComments } from "@/hooks/comments"
 import AvatarList from "./AvatarList"
 import PostBox from "./PostBox"
 import LoadingComponent from "./loadingComponent"
 import AvatarMediaModal from "./mediaModal"
-import {  vote } from "@/lib/hive/client-functions"
+import { vote } from "@/lib/hive/client-functions"
 import * as dhive from "@hiveio/dhive"
 import CommentList from "./CommentsList"
 import { commentWithPrivateKey } from "@/lib/hive/server-functions"
 import { useState, useEffect, useMemo } from "react"
+import { IoFilter } from "react-icons/io5";
 
 const parent_author = "skatehacker"
 const parent_permlink = "test-advance-mode-post"
+
+interface Comment {
+  id: number
+  author: string
+  permlink: string
+  created: string
+  body: string
+  total_payout_value?: string
+  pending_payout_value?: string
+  curator_payout_value?: string
+}
+
+const getTotalPayout = (comment: Comment): number => {
+  const payout = parseFloat(comment.total_payout_value?.split(" ")[0] || "0")
+  const pendingPayout = parseFloat(comment.pending_payout_value?.split(" ")[0] || "0")
+  const curatorPayout = parseFloat(comment.curator_payout_value?.split(" ")[0] || "0")
+  return payout + pendingPayout + curatorPayout
+}
 
 const SkateCast = () => {
   const { comments, addComment, isLoading } = useComments(
     parent_author,
     parent_permlink
   )
-  const [visiblePosts, setVisiblePosts] = useState(20)
-  const [postBody, setPostBody] = useState("")
-  const reversedComments = comments?.slice().reverse()
+  const [visiblePosts, setVisiblePosts] = useState<number>(20)
+  const [postBody, setPostBody] = useState<string>("")
   const user = useHiveUser()
   const username = user?.hiveUser?.name
-  const [mediaModalOpen, setMediaModalOpen] = useState(false)
+  const [mediaModalOpen, setMediaModalOpen] = useState<boolean>(false)
   const [media, setMedia] = useState<string[]>([])
-  const [mediaComments, setMediaComments] = useState<Set<number>>(new Set())
-  const [mediaDictionary, setMediaDictionary] = useState(new Map())
-  const [hasPosted, setHasPosted] = useState(false)
+  const [mediaDictionary, setMediaDictionary] = useState<Map<number, { media: string[], type: string }>>(new Map())
+  const [hasPosted, setHasPosted] = useState<boolean>(false)
+  const [sortMethod, setSortMethod] = useState<string>('engagement') // State to track sorting method
 
-  useEffect(() => {
-    if (comments) {
-      const mediaSet = new Set<number>();
-      const mediaDict = new Map()
-      comments?.forEach((comment) => {
-        const media = comment.body.match(
-          /https:\/\/ipfs.skatehive.app\/ipfs\/[a-zA-Z0-9]*/g
-        )
-        const mediaType =
-          comment.body.includes("<video") || comment.body.includes("<iframe")
-            ? "video"
-            : "image"
-        if (media) {
-          if (comment.id !== undefined) {
-            mediaSet.add(comment.id);
-          }
-          mediaDict.set(comment.id, { media, type: mediaType })
-        }
-      })
-      setMediaComments(mediaSet)
-      setMediaDictionary(mediaDict)
-    }
-  }, [comments])
 
   const sortedComments = useMemo(() => {
-    return comments?.slice().sort((a: any, b: any) => {
-      const aHasMedia = mediaComments.has(a.id)
-      const bHasMedia = mediaComments.has(b.id)
-      if (aHasMedia && !bHasMedia) {
-        return -1
-      } else if (!aHasMedia && bHasMedia) {
-        return 1
-      }
-      const aCreated = new Date(a.created)
-      const bCreated = new Date(b.created)
-      if (aCreated && bCreated) {
-        return bCreated.getTime() - aCreated.getTime()
-      }
-      return 0
-    })
-  }, [comments, mediaComments])
+    if (sortMethod === 'chronological') {
+      return comments?.slice().reverse()
+    } else if (sortMethod === 'engagement') {
+      return comments?.slice().sort((a, b) => {
+        return (b?.children ?? 0) - (a?.children ?? 0)
+      })
+    } else {
+      return comments?.slice().sort((a: any, b: any) => {
+        return getTotalPayout(b) - getTotalPayout(a)
+      })
+    }
+  }, [comments, sortMethod])
 
   const handlePost = async () => {
     const permlink = new Date()
@@ -175,7 +166,7 @@ const SkateCast = () => {
 
       try {
         await commentWithPrivateKey(
-          localStorage.getItem("EncPrivateKey"),
+          localStorage.getItem("EncPrivateKey")!,
           postOperation,
           commentOptions
         )
@@ -204,31 +195,19 @@ const SkateCast = () => {
   const handleMediaAvatarClick = (commentId: number) => {
     const media = mediaDictionary.get(commentId)
     console.log("media", media)
-    setMedia(media ?? [])
+    setMedia(media?.media ?? [])
     console.log("media", media)
     setMediaModalOpen(true)
   }
 
-  const getTotalPayout = (comment: any) => {
-    if (comment.total_payout_value === undefined) {
-      return 0
-    }
-    if (comment.pending_payout_value === undefined) {
-      return 0
-    }
-    if (comment.curator_payout_value === undefined) {
-      return 0
-    }
-    const payout = parseFloat(comment.total_payout_value.split(" ")[0])
-    const pendingPayout = parseFloat(comment.pending_payout_value.split(" ")[0])
-    const curatorPayout = parseFloat(comment.curator_payout_value.split(" ")[0])
-    return payout + pendingPayout + curatorPayout
-  }
-
-  const handleCommentIconClick = (comment: any) => {
+  const handleCommentIconClick = (comment: Comment) => {
     if (typeof window !== "undefined") {
       window.location.href = `post/hive-173115/@${comment.author}/${comment.permlink}`
     }
+  }
+
+  const handleSortChange = (method: string) => {
+    setSortMethod(method)
   }
 
   return isLoading ? (
@@ -248,8 +227,6 @@ const SkateCast = () => {
       />
       <AvatarList
         sortedComments={sortedComments}
-        mediaComments={mediaComments}
-        handleMediaAvatarClick={handleMediaAvatarClick}
       />
       {user.hiveUser !== null && (
         <PostBox
@@ -259,8 +236,30 @@ const SkateCast = () => {
           handlePost={handlePost}
         />
       )}
+      <HStack
+        spacing="1"
+        width="full"
+        justifyContent="flex-end"
+        mr={4}
+      >
+        <Menu>
+          <MenuButton>
+            <IoFilter color="#4BD166" />
+          </MenuButton>
+          <MenuList
+            bg={"black"}
+          >
+            <MenuItem
+              bg={"black"}
+              onClick={() => handleSortChange('payout')}> Payout</MenuItem>
+            <MenuItem bg={"black"}
+              onClick={() => handleSortChange('chronological')}>Latest</MenuItem>
+          </MenuList>
+        </Menu>
+
+      </HStack>
       <CommentList
-        comments={reversedComments}
+        comments={sortedComments}
         visiblePosts={visiblePosts}
         setVisiblePosts={setVisiblePosts}
         username={username}

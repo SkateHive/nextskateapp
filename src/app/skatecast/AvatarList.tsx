@@ -1,13 +1,14 @@
 "use client"
-import { Avatar, HStack, Divider } from "@chakra-ui/react"
-
+import { Avatar, HStack, Divider, Box } from "@chakra-ui/react"
+import AuthorAvatar from "@/components/AuthorAvatar"
+import { comment } from "@uiw/react-md-editor"
 interface AvatarListProps {
   sortedComments: any[]
-  mediaComments: Set<number>
-  handleMediaAvatarClick: (commentId: number) => void
 }
 
-const AvatarList = ({ sortedComments, mediaComments, handleMediaAvatarClick }: AvatarListProps) => {
+const AvatarList = ({ sortedComments }: AvatarListProps) => {
+  // lets sort the avatar by the ones with more comments children and store in a variable so we can use this order just to the avatarlist
+
   return (
     <HStack
       flexWrap={"nowrap"}
@@ -25,15 +26,8 @@ const AvatarList = ({ sortedComments, mediaComments, handleMediaAvatarClick }: A
           return null
         }
         return (
-          <Avatar
-            key={comment.id}
-            size="md"
-            src={`https://images.ecency.com/webp/u/${comment.author}/avatar/small`}
-            border={
-              mediaComments.has(comment.id) ? "2px solid limegreen" : "none"
-            }
-            cursor={"pointer"}
-            onClick={() => handleMediaAvatarClick(Number(comment.id))}
+          <AuthorAvatar
+            username={comment.author}
           />
         )
       })}

@@ -83,7 +83,6 @@ const CommentItem = ({
   getTotalPayout,
 }: CommentItemProps) => {
   const rewardId = comment.id ? "postReward" + comment.id : ""
-  console.log(comment.author, typeof comment.author)
   return (
     <Box key={comment.id} p={4} width="100%" bg="black" color="white">
       <Flex>
