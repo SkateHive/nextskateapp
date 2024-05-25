@@ -15,11 +15,10 @@ import {
   ModalOverlay,
   Spinner,
   VStack,
-  Switch,
   Image,
   Center
 } from "@chakra-ui/react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useHiveUser } from "@/contexts/UserContext"
 const environment = process.env.NODE_ENV
 
@@ -35,8 +34,16 @@ function LoginModal({
   const [username, setUsername] = useState("")
   const [privateKey, setPrivateKey] = useState("")
   const { loginWithHive, logout } = useAuthHiveUser()
-  const [showPrivateKeyInput, setShowPrivateKeyInput] = useState(false)
   const { hiveUser } = useHiveUser()
+  const [isKeychainInstalled, setIsKeychainInstalled] = useState(false)
+
+  useEffect(() => {
+    if (window.hive_keychain) {
+      setIsKeychainInstalled(true)
+    } else {
+      setIsKeychainInstalled(false)
+    }
+  }, [])
 
   async function doLogin(useLoginAs: boolean = false) {
     try {
@@ -46,15 +53,10 @@ function LoginModal({
       console.log(hiveUser)
     } catch (error) {
       console.error(error)
-      setErrorMessage(error ? error.toString() : "Unknow error")
+      setErrorMessage(error ? error.toString() : "Unknown error")
       setIsLogginIn(false)
     }
   }
-
-  const handleSwitch = () => {
-    setShowPrivateKeyInput(!showPrivateKeyInput)
-  }
-
 
   return (
     <Modal isOpen={isOpen} isCentered onClose={onClose}>
@@ -72,7 +74,6 @@ function LoginModal({
             <ModalBody>
               <VStack align={"normal"}>
                 <Center>
-
                   <Image border={"1.2px solid limegreen"}
                     boxShadow={"0 0 20px limegreen"} mb={2} borderRadius={"10px"} boxSize={"120px"} src={`https://images.ecency.com/webp/u/${hiveUser.name}/avatar/small`} alt="Hive Logo" />
                 </Center>
@@ -89,9 +90,7 @@ function LoginModal({
                 </Button>
               </VStack>
             </ModalBody>
-            <ModalFooter>
-
-            </ModalFooter>
+            <ModalFooter></ModalFooter>
           </>
         ) : (
           <>
@@ -111,14 +110,7 @@ function LoginModal({
                       setUsername(event.target.value.toLowerCase())
                     }
                   />
-                  <Switch
-                    colorScheme="green"
-                    size="lg"
-                    onChange={handleSwitch}
-                  >
-                    Use Password (optional)
-                  </Switch>
-                  {showPrivateKeyInput && (
+                  {!isKeychainInstalled && (
                     <Input
                       type="password"
                       borderColor={"green.600"}
@@ -160,8 +152,7 @@ function LoginModal({
         )}
       </ModalContent>
     </Modal>
-  );
-
+  )
 }
 
 export default LoginModal
