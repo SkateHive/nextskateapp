@@ -21,6 +21,8 @@ import { useReward } from "react-rewards"
 import { FaHeart } from "react-icons/fa"
 import { handleVote } from "./utils/handleFeedVote"
 import AuthorAvatar from "@/components/AuthorAvatar"
+import LoginModal from "@/components/Hive/Login/LoginModal"
+
 interface CommentItemProps {
   comment: any
   username: string
@@ -30,6 +32,7 @@ interface CommentItemProps {
 }
 
 const VotingButton = ({ comment, username }: { comment: any, username: any }) => {
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const initialIsVoted = comment.active_votes?.some((vote: any) => vote.voter === username);
   const [isVoted, setIsVoted] = useState(initialIsVoted);
   const [voteCount, setVoteCount] = useState(comment.active_votes?.length || 0);
@@ -40,37 +43,45 @@ const VotingButton = ({ comment, username }: { comment: any, username: any }) =>
   });
 
   const handleVoteClick = async () => {
-    const newIsVoted = !isVoted;
-    await handleVote(comment.author, comment.permlink, username ?? "");
-    setIsVoted(newIsVoted);
-
-    setVoteCount((prevVoteCount: number) => newIsVoted ? prevVoteCount + 1 : prevVoteCount - 1);
-
-    if (newIsVoted) {
-      reward();
+    if (username === "") {
+      setIsLoginModalOpen(true);
+      return;
     }
+    else {
+      const newIsVoted = !isVoted;
+      await handleVote(comment.author, comment.permlink, username ?? "");
+      setIsVoted(newIsVoted);
 
+      setVoteCount((prevVoteCount: number) => newIsVoted ? prevVoteCount + 1 : prevVoteCount - 1);
+
+      if (newIsVoted) {
+        reward();
+      }
+    }
   };
 
   return (
-    <Button
-      onClick={handleVoteClick}
-      colorScheme="green"
-      variant="ghost"
-      leftIcon={isVoted ? <FaHeart /> : <FaRegHeart />}
-    >
-      <span
-        id={rewardId}
-        style={{
-          position: "absolute",
-          left: "50%",
-          bottom: "15px",
-          transform: "translateX(-50%)",
-          zIndex: 5,
-        }}
-      />
-      {voteCount}
-    </Button>
+    <>
+      <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
+      <Button
+        onClick={handleVoteClick}
+        colorScheme="green"
+        variant="ghost"
+        leftIcon={isVoted ? <FaHeart /> : <FaRegHeart />}
+      >
+        <span
+          id={rewardId}
+          style={{
+            position: "absolute",
+            left: "50%",
+            bottom: "15px",
+            transform: "translateX(-50%)",
+            zIndex: 5,
+          }}
+        />
+        {voteCount}
+      </Button>
+    </>
   );
 };
 
