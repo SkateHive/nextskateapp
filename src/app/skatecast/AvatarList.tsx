@@ -1,13 +1,46 @@
 "use client"
-import { Avatar, HStack, Divider, Box } from "@chakra-ui/react"
+import { Avatar, HStack, Divider, Box, Link, Tooltip } from "@chakra-ui/react"
 import AuthorAvatar from "@/components/AuthorAvatar"
-import { comment } from "@uiw/react-md-editor"
 interface AvatarListProps {
   sortedComments: any[]
 }
 
 const AvatarList = ({ sortedComments }: AvatarListProps) => {
-  // lets sort the avatar by the ones with more comments children and store in a variable so we can use this order just to the avatarlist
+
+  const FakeAvatar = () => {
+    return (
+      <Box
+        w={"40px"}
+        h={"40px"}
+        borderRadius={"50%"}
+        bg={"gray.200"}
+        display={"flex"}
+        justifyContent={"center"}
+        alignItems={"center"}
+      >
+        <Link href={"/invite"}>
+          <Tooltip
+            label={"Invite someone cool enough"}
+            bg={"black"}
+            color={"limegreen"}
+            border={"1px dashed limegreen"}
+          >
+
+            <Avatar
+              border={"1px solid white"}
+              name="+"
+              boxSize={12}
+              bg="black"
+              src="/loading.gif"
+              loading="lazy"
+              borderRadius={5}
+              _hover={{ cursor: "pointer" }} />
+          </Tooltip>
+        </Link>
+      </Box>
+    )
+  }
+
 
   return (
     <HStack
@@ -18,6 +51,7 @@ const AvatarList = ({ sortedComments }: AvatarListProps) => {
       minHeight={"60px"}
       px={4}
     >
+      <FakeAvatar />
       {sortedComments?.map((comment, index, commentsArray) => {
         const isDuplicate =
           commentsArray.findIndex((c) => c.author === comment.author) !==

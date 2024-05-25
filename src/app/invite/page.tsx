@@ -306,7 +306,7 @@ function AccountCreation() {
                         <Flex>
 
                             <Checkbox marginLeft={"15px"} colorScheme="teal" size="lg" isChecked={areKeysDownloaded} onChange={(e) => setAreKeysDownloaded(e.target.checked)}>
-                                I have downloaded that shit and I won't lose it.
+                                I have downloaded that shit and I wont lose it.
                             </Checkbox>
 
                         </Flex>
