@@ -3,7 +3,6 @@ import { Box, Flex } from "@chakra-ui/react"
 import InfiniteScroll from "react-infinite-scroll-component"
 import { BeatLoader } from "react-spinners"
 import CommentItem from "./CommentItem"
-
 interface CommentListProps {
   comments: any[]
   visiblePosts: number
@@ -46,6 +45,7 @@ const CommentList = ({
             getTotalPayout={getTotalPayout}
           />
         ))}
+
       </InfiniteScroll>
     </Box>
   )

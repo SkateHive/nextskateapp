@@ -19,8 +19,11 @@ import { transformIPFSContent, transformShortYoutubeLinksinIframes, formatDate }
 import { useState } from "react"
 import { useReward } from "react-rewards"
 import { FaHeart } from "react-icons/fa"
-import { handleVote } from "./utils/handleFeedVote"
+import { handleVote } from "../utils/handleFeedVote"
 import AuthorAvatar from "@/components/AuthorAvatar"
+import LoginModal from "@/components/Hive/Login/LoginModal"
+import ReplyModal from "./replyModal"
+
 interface CommentItemProps {
   comment: any
   username: string
@@ -30,6 +33,7 @@ interface CommentItemProps {
 }
 
 const VotingButton = ({ comment, username }: { comment: any, username: any }) => {
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const initialIsVoted = comment.active_votes?.some((vote: any) => vote.voter === username);
   const [isVoted, setIsVoted] = useState(initialIsVoted);
   const [voteCount, setVoteCount] = useState(comment.active_votes?.length || 0);
@@ -40,37 +44,45 @@ const VotingButton = ({ comment, username }: { comment: any, username: any }) =>
   });
 
   const handleVoteClick = async () => {
-    const newIsVoted = !isVoted;
-    await handleVote(comment.author, comment.permlink, username ?? "");
-    setIsVoted(newIsVoted);
-
-    setVoteCount((prevVoteCount: number) => newIsVoted ? prevVoteCount + 1 : prevVoteCount - 1);
-
-    if (newIsVoted) {
-      reward();
+    if (username === "") {
+      setIsLoginModalOpen(true);
+      return;
     }
+    else {
+      const newIsVoted = !isVoted;
+      await handleVote(comment.author, comment.permlink, username ?? "");
+      setIsVoted(newIsVoted);
 
+      setVoteCount((prevVoteCount: number) => newIsVoted ? prevVoteCount + 1 : prevVoteCount - 1);
+
+      if (newIsVoted) {
+        reward();
+      }
+    }
   };
 
   return (
-    <Button
-      onClick={handleVoteClick}
-      colorScheme="green"
-      variant="ghost"
-      leftIcon={isVoted ? <FaHeart /> : <FaRegHeart />}
-    >
-      <span
-        id={rewardId}
-        style={{
-          position: "absolute",
-          left: "50%",
-          bottom: "15px",
-          transform: "translateX(-50%)",
-          zIndex: 5,
-        }}
-      />
-      {voteCount}
-    </Button>
+    <>
+      <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
+      <Button
+        onClick={handleVoteClick}
+        colorScheme="green"
+        variant="ghost"
+        leftIcon={isVoted ? <FaHeart /> : <FaRegHeart />}
+      >
+        <span
+          id={rewardId}
+          style={{
+            position: "absolute",
+            left: "50%",
+            bottom: "15px",
+            transform: "translateX(-50%)",
+            zIndex: 5,
+          }}
+        />
+        {voteCount}
+      </Button>
+    </>
   );
 };
 
@@ -82,9 +94,18 @@ const CommentItem = ({
   handleVote,
   getTotalPayout,
 }: CommentItemProps) => {
+
   const rewardId = comment.id ? "postReward" + comment.id : ""
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const handleModal = () => {
+    setIsModalOpen(!isModalOpen)
+  }
+
+
+
   return (
     <Box key={comment.id} p={4} width="100%" bg="black" color="white">
+      <ReplyModal comment={comment} isOpen={isModalOpen} onClose={handleModal} />
       <Flex>
         <AuthorAvatar username={comment.author} />
         <HStack ml={4}>
@@ -121,7 +142,8 @@ const CommentItem = ({
           colorScheme="green"
           variant="ghost"
           leftIcon={<FaRegComment />}
-          onClick={() => handleCommentIconClick(comment)}
+          // onClick={() => handleCommentIconClick(comment)}
+          onClick={handleModal}
         >
           {comment.children}
         </Button>
