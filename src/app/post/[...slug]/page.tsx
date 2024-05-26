@@ -8,6 +8,7 @@ import ReactMarkdown from "react-markdown"
 import rehypeRaw from "rehype-raw"
 import remarkGfm from "remark-gfm"
 import AuthorAvatar from "@/components/AuthorAvatar"
+import { FaCross, FaTimesCircle } from "react-icons/fa"
 // Revalidate requests in 10 minutes
 export const revalidate = 600
 
@@ -81,25 +82,11 @@ export default async function Page({ params }: { params: { slug: string } }) {
 
   return (
     <Box>
-      <Box display="flex" flexDir={{ base: "column", lg: "row" }} minH="60vh" gap={6} >
-        <Box width={{ base: "100%", md: "60%" }}>
-          <Heading mt={8} size="md" border={"1px solid grey"} borderRadius={5}>
-            <Box bg="#201d21" borderRadius={5}>
-              <HStack >
-                <Box minW={"20%"}>
-                  <Center p={2}>
-                    <AuthorAvatar username={post?.author} />
-                  </Center>
-                </Box>
-                <Text fontSize={"18px"}>{post?.title}</Text>
-
-              </HStack>
-
-            </Box>
-
-          </Heading>
-
-          <Container p={4}>
+      <Box position='absolute' borderRadius={20} background={'rgb(50, 50, 50, 0.7)'} backdropFilter='blur(15px)' left='calc( 50% - 25vw )' top='calc( 50% - 45vh )' width={{md: '90vw', xl: '50vw'}} height={'90vh'} >
+      <FaTimesCircle size={20}  style={{position: 'absolute', cursor: 'pointer', right: 10, top: 10}} />
+        <Box width='inherit' padding={4} height='inherit' display={'grid'} gridAutoRows="15% 5% 80%" >
+ 
+          <Container gridRow={'1/4'} height='100%' overflowY={'scroll'} p={4}>
             <ReactMarkdown
               components={MarkdownRenderers}
               rehypePlugins={[rehypeRaw]}
@@ -112,10 +99,8 @@ export default async function Page({ params }: { params: { slug: string } }) {
               <Text fontSize={"12px"}>{transformDate(post?.created)}</Text>
             </Center>
           </Container>
-        </Box>
 
-        <Box width={{ base: "100%", md: "40%" }} mt={5}>
-          <Center>
+          <Center gridColumn={'2/3'}>
             <VStack width={"90%"}>
 
               <Badge border={"1px solid grey"} width={"100%"} m={"10px"} fontSize={'38px'} bg="#201d21" color="white">
@@ -146,11 +131,15 @@ export default async function Page({ params }: { params: { slug: string } }) {
             </VStack>
 
           </Center>
-          <Center>
+          <Center gridColumn={'2/3'}>
             <Text mt={5} fontSize={"18px"}>Comments</Text>
           </Center>
 
-          <CommentsComponent author={user.substring(3)} permlink={postId} />
+          <CommentsComponent  author={user.substring(3)} permlink={postId} />
+        </Box>
+
+        <Box width={{ base: "100%", md: "40%" }} mt={5}>
+
         </Box>
       </Box>
     </Box >
