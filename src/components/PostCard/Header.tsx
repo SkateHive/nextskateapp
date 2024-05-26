@@ -1,6 +1,6 @@
 import { usePostContext } from "@/contexts/PostContext"
 //import UserModel from "@/lib/models/user"
-import { getWebsiteURL } from "@/lib/utils"
+import useHiveAccount from "@/hooks/useHiveAccount"
 import {
   Button,
   CardHeader,
@@ -23,8 +23,6 @@ import Link from "next/link"
 import { FaDiscord } from "react-icons/fa"
 import PostModal from "../PostModal"
 import PostAvatar from "./Avatar"
-import { HiveAccount } from "@/lib/models/user"
-import useHiveAccount from "@/hooks/useHiveAccount"
 
 type Variant = "preview" | "open"
 interface HeaderInterface {
@@ -143,7 +141,7 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
               </Text>
             </Flex>
             <HStack justify={"space-between"} display={"flex"}>
-              <Text color={"limegreen"} fontSize="16px" noOfLines={1}>
+              <Text cursor={"pointer"} color={"limegreen"} fontSize="16px" noOfLines={1} onClick={onOpen}>
                 {post.title}
               </Text>
             </HStack>
