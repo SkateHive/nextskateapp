@@ -117,7 +117,7 @@ function LoginModal({
                       color={"limegreen"}
                       _placeholder={{ color: "limegreen", opacity: 0.4 }}
                       focusBorderColor="limegreen"
-                      placeholder="Private Key"
+                      placeholder="Password"
                       onChange={(event1) => setPrivateKey(event1.target.value)}
                     />
                   )}

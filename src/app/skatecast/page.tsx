@@ -1,5 +1,5 @@
 "use client"
-import { ButtonGroup, VStack, Button, HStack, MenuButton, MenuList, MenuItem, Menu } from "@chakra-ui/react"
+import { ButtonGroup, VStack, Button, HStack, MenuButton, MenuList, MenuItem, Menu, Text } from "@chakra-ui/react"
 import { useHiveUser } from "@/contexts/UserContext"
 import { useComments } from "@/hooks/comments"
 import AvatarList from "./AvatarList"
@@ -12,6 +12,8 @@ import CommentList from "./CommentsList"
 import { commentWithPrivateKey } from "@/lib/hive/server-functions"
 import { useState, useEffect, useMemo } from "react"
 import { IoFilter } from "react-icons/io5";
+import { FaHistory, FaMoneyBill } from "react-icons/fa"
+import { FaArrowRightArrowLeft } from "react-icons/fa6"
 
 const parent_author = "skatehacker"
 const parent_permlink = "test-advance-mode-post"
@@ -47,7 +49,7 @@ const SkateCast = () => {
   const [media, setMedia] = useState<string[]>([])
   const [mediaDictionary, setMediaDictionary] = useState<Map<number, { media: string[], type: string }>>(new Map())
   const [hasPosted, setHasPosted] = useState<boolean>(false)
-  const [sortMethod, setSortMethod] = useState<string>('engagement') // State to track sorting method
+  const [sortMethod, setSortMethod] = useState<string>('chronological') // State to track sorting method
 
 
   const sortedComments = useMemo(() => {
@@ -242,20 +244,22 @@ const SkateCast = () => {
         justifyContent="flex-end"
         mr={4}
       >
-        <Menu>
+        <Menu
+        >
           <MenuButton>
-            <IoFilter color="#4BD166" />
+            <IoFilter color="#9AE6B4" />
           </MenuButton>
           <MenuList
             bg={"black"}
+            border={"1px solid limegreen"}
           >
+            <MenuItem bg={"black"}
+              onClick={() => handleSortChange('chronological')}> <FaHistory /> <Text ml={2}> Latest</Text></MenuItem>
             <MenuItem
               bg={"black"}
-              onClick={() => handleSortChange('payout')}> Payout</MenuItem>
+              onClick={() => handleSortChange('payout')}> <FaMoneyBill /> <Text ml={2}>Payout</Text> </MenuItem>
             <MenuItem bg={"black"}
-              onClick={() => handleSortChange('chronological')}>Latest</MenuItem>
-            <MenuItem bg={"black"}
-              onClick={() => handleSortChange('engagement')}>Engagement</MenuItem>
+              onClick={() => handleSortChange('engagement')}><FaArrowRightArrowLeft /> <Text ml={2}>Engagement</Text> </MenuItem>
           </MenuList>
         </Menu>
 
