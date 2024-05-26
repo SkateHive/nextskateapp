@@ -138,6 +138,8 @@ const CommentItem = ({
         </ReactMarkdown>
       </Box>
       <Flex ml={12} justifyContent={"space-between"} mt={4}>
+        <TipButton author={comment.author} />
+
         <Button
           colorScheme="green"
           variant="ghost"
@@ -149,7 +151,6 @@ const CommentItem = ({
         </Button>
         <VotingButton comment={comment} username={username} />
 
-        <TipButton author={comment.author} />
       </Flex>
       <Divider mt={4} />
     </Box>

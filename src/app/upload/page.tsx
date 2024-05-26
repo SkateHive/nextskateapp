@@ -37,7 +37,7 @@ const defaultBeneficiaries: Beneficiary[] = [
 
 export default function Upload() {
     const [title, setTitle] = useState('');
-    const [value, setValue] = useState(tutorialPost);
+    const [value, setValue] = useState('');
     const [isUploading, setIsUploading] = useState(false);
     const { hiveUser } = useAuthHiveUser();
     const defaultTags = ["skatehive", "skateboarding", "leofinance", "sportstalk", "hive-engine"];

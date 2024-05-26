@@ -57,7 +57,11 @@ function LoginModal({
       setIsLogginIn(false)
     }
   }
-
+  const handleKeyDown = (event: any) => {
+    if (event.key === 'Enter') {
+      doLogin();
+    }
+  };
   return (
     <Modal isOpen={isOpen} isCentered onClose={onClose}>
       <ModalOverlay />
@@ -109,6 +113,8 @@ function LoginModal({
                     onChange={(event) =>
                       setUsername(event.target.value.toLowerCase())
                     }
+                    onKeyDown={handleKeyDown}
+
                   />
                   {!isKeychainInstalled && (
                     <Input
@@ -134,6 +140,7 @@ function LoginModal({
                 colorScheme="green"
                 variant={"outline"}
                 disabled={isLogginIn}
+
               >
                 {isLogginIn ? <Spinner size={"sm"} /> : "Continue"}
               </Button>

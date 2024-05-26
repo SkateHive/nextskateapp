@@ -10,7 +10,7 @@ interface ProfileProps {
   user: HiveAccount
 }
 
-export default function ProfileHeader( { user } : ProfileProps) {
+export default function ProfileHeader({ user }: ProfileProps) {
   //console.log(user, "here")
   //const user = new UserModel(userData)
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -39,9 +39,9 @@ export default function ProfileHeader( { user } : ProfileProps) {
         </VStack>
         <VStack align={"flex-start"} gap={0}>
           <Text mt={-12} fontSize={{ base: "sm", lg: "xl" }} fontWeight={"bold"}>
-            @{user.name} {getReputation(Number(user.reputation))}<br/>
-            {user.metadata?.profile?.name}<br/>
-            {user.metadata?.profile?.about}<br/>
+            @{user.name} {getReputation(Number(user.reputation))}<br />
+            {user.metadata?.profile?.name}<br />
+            {user.metadata?.profile?.about}<br />
             {user.metadata?.profile?.location}
           </Text>
           {/* <Button onClick={onOpen}>edit</Button>*/}

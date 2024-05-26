@@ -21,6 +21,7 @@ const randomSentences = [
   "One day you will get our /wallet and /dao pages, take your time...",
   "Do you remember your first kickflip? I dont I am a robot",
   "You Skate? Congrats this site is yours and its money is for you.",
+  "WTF are those ⌐◨-◨ ???"
 
 ];
 export default function Loading() {

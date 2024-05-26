@@ -119,7 +119,7 @@ export const MarkdownRenderers = {
         {...props}
         autoPlay={false}
         src={src}
-        style={{ borderRadius: '10px', marginBottom: '20px', border: '2px grey solid', minWidth: '7s0%', minHeight: '50%' }}
+        style={{ background: 'transparent', borderRadius: '10px', marginBottom: '20px', border: '2px grey solid', minWidth: '7s0%', minHeight: '50%' }}
       />
     </div>
   ),

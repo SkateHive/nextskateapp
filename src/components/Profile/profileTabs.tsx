@@ -4,6 +4,8 @@ import ProfileDashboard from "./profileDashboard";
 import { HiveAccount } from "@/lib/models/user";
 import ProfileBlog from "./ProfileBlog";
 import ProfilePosts from "./ProfilePosts";
+import { Video } from "lucide-react";
+import VideoParts from "./profileVideos";
 
 interface ProfilePageProps {
     user: HiveAccount
@@ -17,7 +19,9 @@ export default async function ProfileTabs({ user }: ProfilePageProps) {
                 <TabList mb="1em">
                     <Tab>Blog</Tab>
                     <Tab>Posts</Tab>
+                    <Tab>VideoParts</Tab>
                     <Tab>Comments</Tab>
+
                 </TabList>
                 <TabPanels>
                     <TabPanel>
@@ -27,6 +31,7 @@ export default async function ProfileTabs({ user }: ProfilePageProps) {
                         <ProfilePosts user={user} />
                     </TabPanel>
                     <TabPanel>
+                        <VideoParts skater={user} />
                     </TabPanel>
                 </TabPanels>
             </Tabs>
