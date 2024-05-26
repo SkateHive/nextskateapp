@@ -1,14 +1,14 @@
 'use client'
-import { useState, useEffect } from "react";
+import HiveClient from "@/lib/hive/hiveclient";
 import { getWebsiteURL } from "@/lib/utils";
 import { Link } from "@chakra-ui/next-js";
-import { Avatar } from "@chakra-ui/react";
-import HiveClient from "@/lib/hive/hiveclient";
+import { Avatar, SystemStyleObject } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 
 interface AuthorAvatarProps {
     username: string;
     borderRadius?: number;
-    hover?: any;
+    hover?: SystemStyleObject;
 }
 
 export default function AuthorAvatar({ username, borderRadius, hover }: AuthorAvatarProps) {

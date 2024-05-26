@@ -1,6 +1,5 @@
-import { usePostContext } from "@/contexts/PostContext"
+import { usePostContext } from "@/contexts/PostContext";
 //import UserModel from "@/lib/models/user"
-import useHiveAccount from "@/hooks/useHiveAccount"
 import {
   Button,
   CardHeader,
@@ -16,99 +15,100 @@ import {
   Tooltip,
   useDisclosure,
   useMediaQuery,
-} from "@chakra-ui/react"
-import { ChevronDownIcon, Copy, ExternalLink, Eye, Twitter } from "lucide-react"
-import moment from "moment-timezone"
-import Link from "next/link"
-import { FaDiscord } from "react-icons/fa"
-import PostModal from "../PostModal"
-import PostAvatar from "./Avatar"
+} from "@chakra-ui/react";
+import {
+  ChevronDownIcon,
+  Copy,
+  ExternalLink,
+  Eye,
+  Twitter,
+} from "lucide-react";
+import moment from "moment-timezone";
+import Link from "next/link";
+import { FaDiscord } from "react-icons/fa";
+import AuthorAvatar from "../AuthorAvatar";
+import PostModal from "../PostModal";
 
-type Variant = "preview" | "open"
+type Variant = "preview" | "open";
 interface HeaderInterface {
-  variant?: Variant
+  variant?: Variant;
 }
 
 export default function Header({ variant = "preview" }: HeaderInterface) {
-  const { post } = usePostContext()
+  const { post } = usePostContext();
   //const [authorData, setAuthorData] = useState<HiveAccount>({} as HiveAccount)
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const [isSmallerThan400] = useMediaQuery("(max-width: 400px)")
+  const [isSmallerThan400] = useMediaQuery("(max-width: 400px)");
 
-  const postFullUrl = `${window.location.origin}/post/${post.url}`
-  const postSummary = `Check out this awesome post on SkateHive by @${post.author} \n\n`
+  const postFullUrl = `${window.location.origin}/post/${post.url}`;
+  const postSummary = `Check out this awesome post on SkateHive by @${post.author} \n\n`;
 
   const handleCopyPostLink = () => {
     try {
-      console.log("Post URL:", post)
-      const postPageUrl = postFullUrl
-      navigator.clipboard.writeText(postPageUrl)
+      console.log("Post URL:", post);
+      const postPageUrl = postFullUrl;
+      navigator.clipboard.writeText(postPageUrl);
     } catch (error) {
-      console.error("Failed to copy the link:", error)
+      console.error("Failed to copy the link:", error);
     }
-  }
+  };
 
   const handleOpenPostLink = () => {
     try {
-      window.open(postFullUrl, "_blank")
+      window.open(postFullUrl, "_blank");
     } catch (error) {
-      console.error("Failed to open the link:", error)
+      console.error("Failed to open the link:", error);
     }
-  }
+  };
 
   const handleOpenPostLinkPeakd = () => {
     try {
-      window.open(`https://peakd.com${post.url}`, "_blank")
+      window.open(`https://peakd.com${post.url}`, "_blank");
     } catch (error) {
-      console.error("Failed to open the link:", error)
+      console.error("Failed to open the link:", error);
     }
-  }
+  };
 
   const handleShareWarpCast = async () => {
     try {
-      const warptext = `${postSummary} ${postFullUrl}`
-      const postPageUrl = encodeURI(warptext)
+      const warptext = `${postSummary} ${postFullUrl}`;
+      const postPageUrl = encodeURI(warptext);
       window.open(
         `https://warpcast.com/~/compose?text=${postPageUrl}`,
-        "_blank"
-      )
+        "_blank",
+      );
     } catch (error) {
-      console.error("Failed to share in WarpCast:", error)
+      console.error("Failed to share in WarpCast:", error);
     }
-  }
+  };
 
   const handleShareTwitter = async () => {
     try {
-      const tweetText = `${postSummary} ${postFullUrl}`
-      const postPageUrl = encodeURI(tweetText)
+      const tweetText = `${postSummary} ${postFullUrl}`;
+      const postPageUrl = encodeURI(tweetText);
       window.open(
         `https://twitter.com/intent/tweet?text=${postPageUrl}`,
-        "_blank"
-      )
+        "_blank",
+      );
     } catch (error) {
-      console.error("Failed to share in Twitter:", error)
+      console.error("Failed to share in Twitter:", error);
     }
-  }
+  };
 
   const handleShareDiscord = async () => {
     try {
-      const postPageUrl = encodeURI(postFullUrl)
-      const discordText = `${postSummary} ${postPageUrl}`
-      navigator.clipboard.writeText(discordText)
+      const postPageUrl = encodeURI(postFullUrl);
+      const discordText = `${postSummary} ${postPageUrl}`;
+      navigator.clipboard.writeText(discordText);
       window.open(
         "https://discord.com/channels/631777256234156033/631778823716864011",
-        "_blank"
-      )
+        "_blank",
+      );
     } catch (error) {
-      console.error("Failed to share in Discord:", error)
+      console.error("Failed to share in Discord:", error);
     }
-  }
-
-  const { hiveAccount, isLoading } = useHiveAccount(post.author)
-  if (isLoading || !hiveAccount) return <div>Loading...</div>
-
-  const postAvatar = hiveAccount.metadata?.profile?.profile_image
+  };
 
   return (
     <CardHeader p={2} pb={0}>
@@ -120,13 +120,10 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
       >
         <Flex flex="1" gap="2" alignItems="center">
           <Link href={post.getFullAuthorUrl()}>
-            <PostAvatar
-              name={post.author}
-              src={
-                postAvatar ??
-                `https://images.ecency.com/webp/u/${post.author}/avatar/small`
-              }
-            />
+            <AuthorAvatar username={post.author} />
+            {/* <PostAvatar
+              username={post.author}
+            /> */}
           </Link>
           <Flex flexDir="column" gap={0} w={"100%"}>
             <Flex gap={1} alignItems="center">
@@ -137,11 +134,21 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
                 ·
               </Text>
               <Text fontSize="12px" color="darkgray" fontWeight="300">
-                {moment.utc(post.created).fromNow().replace("minutes", "m").replace("hours", "h")}
+                {moment
+                  .utc(post.created)
+                  .fromNow()
+                  .replace("minutes", "m")
+                  .replace("hours", "h")}
               </Text>
             </Flex>
             <HStack justify={"space-between"} display={"flex"}>
-              <Text cursor={"pointer"} color={"limegreen"} fontSize="16px" noOfLines={1} onClick={onOpen}>
+              <Text
+                cursor={"pointer"}
+                color={"limegreen"}
+                fontSize="16px"
+                noOfLines={1}
+                onClick={onOpen}
+              >
                 {post.title}
               </Text>
             </HStack>
@@ -214,5 +221,5 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
         )}
       </Flex>
     </CardHeader>
-  )
+  );
 }
