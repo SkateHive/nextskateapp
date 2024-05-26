@@ -6,7 +6,6 @@ import { getWebsiteURL } from "@/lib/utils";
 import { Box, ColorModeScript, Flex } from "@chakra-ui/react";
 import { Share_Tech_Mono } from "next/font/google";
 import type { ReactNode } from "react";
-import FeedLayout from "./feedLayout";
 import { Providers } from "./providers";
 
 const share_tech_mono = Share_Tech_Mono({ subsets: ["latin"], weight: "400" });
@@ -76,7 +75,6 @@ export default function RootLayout({
               <MobileMenuButton />
             </div>
             {children}
-            <FeedLayout />
           </Flex>
         </Providers>
       </body>

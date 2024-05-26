@@ -1,5 +1,11 @@
-import SkateCast from "./skatecast/page"
+import FeedLayout from "./feedLayout";
+import SkateCast from "./skatecast/page";
 
 export default function Home() {
-  return <SkateCast />
+  return (
+    <>
+      <SkateCast />
+      <FeedLayout />
+    </>
+  );
 }
