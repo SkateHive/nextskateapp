@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 import { HiveAccount } from "@/lib/models/user"
 import { Avatar, Button, HStack, Image, Text, VStack, useDisclosure } from "@chakra-ui/react"

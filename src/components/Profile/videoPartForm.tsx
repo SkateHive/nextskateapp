@@ -1,11 +1,14 @@
 'use client'
-import { Box, Button, VStack, Input, FormControl, FormLabel } from "@chakra-ui/react";
+import { Center, Box, Button, VStack, Input, FormControl, FormLabel, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, Image } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { HiveAccount } from "@/lib/models/user";
 import { updateProfile } from "@/lib/hive/client-functions";
 
 interface VideoPartsFormProps {
     skater: HiveAccount;
+    onNewVideoPart: (videoPart: VideoPart) => void; // Callback to notify parent of new video part
+    isOpen: boolean; // Modal open state
+    onClose: () => void; // Modal close function
 }
 
 interface VideoPart {
@@ -16,7 +19,7 @@ interface VideoPart {
     url: string;
 }
 
-const VideoPartsForm = ({ skater }: VideoPartsFormProps) => {
+const VideoPartsForm = ({ skater, onNewVideoPart, isOpen, onClose }: VideoPartsFormProps) => {
     const [videoPart, setVideoPart] = useState<VideoPart>({
         name: "",
         filmmaker: [""],
@@ -24,21 +27,6 @@ const VideoPartsForm = ({ skater }: VideoPartsFormProps) => {
         year: new Date().getFullYear(),
         url: ""
     });
-
-    const [extensions, setExtensions] = useState<any>(
-        (() => {
-            try {
-                const parsedExtensions = JSON.parse(skater?.json_metadata)?.extensions || {};
-                if (!parsedExtensions.videoParts) {
-                    parsedExtensions.videoParts = [];
-                }
-                return parsedExtensions;
-            } catch (error) {
-                console.error("Error parsing JSON metadata:", error);
-                return { videoParts: [] }; // Initialize with default value
-            }
-        })()
-    );
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>, field: keyof VideoPart) => {
         setVideoPart({
@@ -48,73 +36,74 @@ const VideoPartsForm = ({ skater }: VideoPartsFormProps) => {
     };
 
     const submitVideoPart = () => {
-        const newExtensions = {
-            ...extensions,
-            videoParts: [...extensions.videoParts, videoPart]
-        };
-        setExtensions(newExtensions);
-        updateProfile(
-            skater.name,
-            skater.metadata?.profile.name,
-            skater.metadata?.profile.about,
-            skater.metadata?.profile.cover_image,
-            skater.metadata?.profile.profile_image,
-            skater.metadata?.profile.website,
-            skater.metadata?.extensions?.eth_address,
-            newExtensions.videoParts
-        );
+        onNewVideoPart(videoPart);
+        onClose(); // Close the modal after submission
     };
 
     return (
-        <Box>
-            <VStack spacing={4}>
-                <FormControl>
-                    <FormLabel>Name</FormLabel>
-                    <Input
-                        value={videoPart.name}
-                        onChange={(e) => handleChange(e, "name")}
-                    />
-                </FormControl>
-                <FormControl>
-                    <FormLabel>Filmmaker</FormLabel>
-                    <Input
-                        value={videoPart.filmmaker.join(",")}
-                        onChange={(e) => handleChange(e, "filmmaker")}
-                    />
-                </FormControl>
-                <FormControl>
-                    <FormLabel>Friends</FormLabel>
-                    <Input
-                        value={videoPart.friends.join(",")}
-                        onChange={(e) => handleChange(e, "friends")}
-                    />
-                </FormControl>
-                <FormControl>
-                    <FormLabel>Year</FormLabel>
-                    <Input
-                        type="number"
-                        value={videoPart.year}
-                        onChange={(e) => handleChange(e, "year")}
-                    />
-                </FormControl>
-                <FormControl>
-                    <FormLabel>URL</FormLabel>
-                    <Input
-                        value={videoPart.url}
-                        onChange={(e) => handleChange(e, "url")}
-                    />
-                </FormControl>
-                <Button
-                    colorScheme="green"
-                    variant="outline"
-                    size="lg"
-                    mt={4}
-                    onClick={submitVideoPart}
-                >
-                    Submit Video Part
-                </Button>
-            </VStack>
-        </Box>
+        <Modal isOpen={isOpen} onClose={onClose}>
+            <ModalOverlay />
+            <ModalContent bg={"black"} border={"0.6px solid grey"}>
+                <ModalHeader>
+                    <Center>
+
+                        Submit Video Part
+                    </Center>
+                </ModalHeader>
+                <ModalCloseButton />
+                <ModalBody>
+                    <VStack spacing={4}>
+                        <Image
+                            src="https://media.giphy.com/media/qTNIlLJNOwdNK/giphy.gif"
+                            alt="skateboard"
+                            boxSize={["100px", "200px"]}
+                        />
+                        <FormControl>
+                            <FormLabel>Video Name</FormLabel>
+                            <Input
+                                value={videoPart.name}
+                                onChange={(e) => handleChange(e, "name")}
+                            />
+                        </FormControl>
+                        <FormControl>
+                            <FormLabel>Filmmaker(s) </FormLabel>
+                            <Input
+                                value={videoPart.filmmaker.join(",")}
+                                onChange={(e) => handleChange(e, "filmmaker")}
+                            />
+                        </FormControl>
+                        <FormControl>
+                            <FormLabel>Friends</FormLabel>
+                            <Input
+                                value={videoPart.friends.join(",")}
+                                onChange={(e) => handleChange(e, "friends")}
+                            />
+                        </FormControl>
+                        <FormControl>
+                            <FormLabel>Year</FormLabel>
+                            <Input
+                                type="number"
+                                value={videoPart.year}
+                                onChange={(e) => handleChange(e, "year")}
+                            />
+                        </FormControl>
+                        <FormControl>
+                            <FormLabel>URL</FormLabel>
+                            <Input
+                                value={videoPart.url}
+                                onChange={(e) => handleChange(e, "url")}
+                            />
+                        </FormControl>
+                    </VStack>
+                </ModalBody>
+
+                <ModalFooter>
+                    <Button w={"100%"} colorScheme="green" mr={3} onClick={submitVideoPart}>
+                        Submit Video Part
+                    </Button>
+                </ModalFooter>
+            </ModalContent>
+        </Modal>
     );
 };
 

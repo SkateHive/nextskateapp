@@ -34,13 +34,12 @@ interface PostModalInterface {
 const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN
 
 export default function EditInfoModal({ isOpen, onClose, user }: PostModalInterface) {
-
+  console.log(user, "here")
   const [name, setName] = useState<string>(user.metadata?.profile.name || '');
   const [about, setAbout] = useState<string>(user.metadata?.profile.about || '');
   const [avatarUrl, setAvatarUrl] = useState<string>(user.metadata?.profile.profile_image || '');
   const [coverImageUrl, setCoverImageUrl] = useState<string>(user.metadata?.profile.cover_image || '');
   const current_extensions = user?.json_metadata;
-
   const [extensions, setExtensions] = useState<any>(
     (() => {
       try {

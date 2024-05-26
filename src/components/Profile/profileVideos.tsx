@@ -1,9 +1,10 @@
 'use client'
-import { Box, Button, VStack, Text } from "@chakra-ui/react";
+import { Box, Button, VStack, Text, SimpleGrid, useDisclosure } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { HiveAccount } from "@/lib/models/user";
-import { updateProfile } from "@/lib/hive/client-functions";
 import VideoPartsForm from "./videoPartForm";
+import VideoCard from "./videoPartCard";
+import { updateProfile } from "@/lib/hive/client-functions";
 
 interface VideoPartsProps {
     skater: HiveAccount;
@@ -21,57 +22,76 @@ const VideoParts = ({ skater }: VideoPartsProps) => {
         (() => {
             try {
                 const parsedExtensions = JSON.parse(skater?.json_metadata)?.extensions || {};
-                if (!parsedExtensions.videoParts) {
-                    parsedExtensions.videoParts = [];
+                if (!parsedExtensions.video_parts) {
+                    parsedExtensions.video_parts = [];
                 }
                 return parsedExtensions;
             } catch (error) {
                 console.error("Error parsing JSON metadata:", error);
-                return { videoParts: [] }; // Initialize with default value
+                return { video_parts: [] }; // Initialize with default value
             }
         })()
     );
 
-    const [showForm, setShowForm] = useState(false);
+    const { isOpen, onOpen, onClose } = useDisclosure(); // For modal control
 
-    console.log(extensions);
+    const handleNewVideoPart = (videoPart: VideoPart) => {
+        const newExtensions = {
+            ...extensions,
+            video_parts: [...extensions.video_parts, videoPart]
+        };
+        setExtensions(newExtensions);
 
-    const newVideoPart: VideoPart = {
-        name: "SkateHacker",
-        filmmaker: ["Spike Jonze", "Renan Carvalho"],
-        friends: ["Willy Wonka", "Mark Gonzales"],
-        year: 2024,
-        url: "https://www.youtube.com/watch?v=RQ9L6V8MI2k"
+        updateProfile(
+            skater.name,
+            JSON.parse(skater?.json_metadata)?.profile?.name,
+            JSON.parse(skater?.json_metadata)?.profile?.about,
+            JSON.parse(skater?.json_metadata)?.profile?.cover_image,
+            JSON.parse(skater?.json_metadata)?.profile?.profile_image,
+            JSON.parse(skater?.json_metadata)?.profile?.website,
+            newExtensions.eth_address,
+            newExtensions.video_parts
+        );
     };
 
-    const submitVideoPart = () => {
-        setShowForm(true);
-    }
+    const handleRemoveVideoPart = (index: number) => {
+        const newVideoParts = extensions.video_parts.filter((_: VideoPart, i: number) => i !== index);
+        const newExtensions = {
+            ...extensions,
+            video_parts: newVideoParts
+        };
+        setExtensions(newExtensions);
+
+        updateProfile(
+            skater.name,
+            JSON.parse(skater?.json_metadata)?.profile?.name,
+            JSON.parse(skater?.json_metadata)?.profile?.about,
+            JSON.parse(skater?.json_metadata)?.profile?.cover_image,
+            JSON.parse(skater?.json_metadata)?.profile?.profile_image,
+            JSON.parse(skater?.json_metadata)?.profile?.website,
+            newExtensions.eth_address,
+            newExtensions.video_parts
+        );
+    };
 
     return (
         <Box>
             <VStack>
-                <Text>
+                <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6} width="100%">
                     {extensions?.video_parts?.length > 0 ? extensions.video_parts.map((videoPart: VideoPart, index: number) => (
-                        <Box key={index}>
-                            <Text>{videoPart.name}</Text>
-                            <Text>{videoPart.filmmaker.join(", ")}</Text>
-                            <Text>{videoPart.friends.join(", ")}</Text>
-                            <Text>{videoPart.year}</Text>
-                            <Text>{videoPart.url}</Text>
-                        </Box>
-                    )) : "No video parts available"}
-                </Text>
+                        <VideoCard key={index} videoPart={videoPart} onRemove={() => handleRemoveVideoPart(index)} />
+                    )) : <Text>No video parts available</Text>}
+                </SimpleGrid>
                 <Button
                     colorScheme="green"
                     variant="outline"
                     size="lg"
                     mt={4}
-                    onClick={submitVideoPart}
+                    onClick={onOpen} // Open the modal
                 >
                     Submit epic video part
                 </Button>
-                {showForm && <VideoPartsForm skater={skater} />}
+                <VideoPartsForm skater={skater} onNewVideoPart={handleNewVideoPart} isOpen={isOpen} onClose={onClose} />
             </VStack>
         </Box>
     );
