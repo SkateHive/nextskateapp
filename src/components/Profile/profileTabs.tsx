@@ -1,18 +1,14 @@
-// path: src/app/profile/[username]/profileTabs.tsx
-import { Box, Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
-import ProfileDashboard from "./profileDashboard";
 import { HiveAccount } from "@/lib/models/user";
+import { Box, Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import ProfileBlog from "./ProfileBlog";
 import ProfilePosts from "./ProfilePosts";
-import { Video } from "lucide-react";
 import VideoParts from "./profileVideos";
 
 interface ProfilePageProps {
     user: HiveAccount
 }
 
-export default async function ProfileTabs({ user }: ProfilePageProps) {
-
+export default function ProfileTabs({ user }: ProfilePageProps) {
     return (
         <Box>
             <Tabs isFitted variant="enclosed">
