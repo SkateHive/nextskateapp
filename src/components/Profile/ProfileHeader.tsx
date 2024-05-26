@@ -19,7 +19,7 @@ export default function ProfileHeader({ user }: ProfileProps) {
       {isOpen && <EditInfoModal isOpen={isOpen} onClose={onClose} user={user} />}
       <Image
         w="100%"
-        src={user.metadata?.profile?.cover_image || "https://storage.googleapis.com/zapper-fi-assets/nfts/medias/07b1116b23c5da3851fee73002dc1b049c90c5f7dfa54d2ba14a562b38023ed0.svg"}
+        src={user.metadata?.cover_image || "https://storage.googleapis.com/zapper-fi-assets/nfts/medias/07b1116b23c5da3851fee73002dc1b049c90c5f7dfa54d2ba14a562b38023ed0.svg"}
         height={"200px"}
         objectFit="cover"
         borderRadius="md"
@@ -30,7 +30,7 @@ export default function ProfileHeader({ user }: ProfileProps) {
         <Avatar
           mt={-14}
           name={user.name}
-          src={user.metadata?.profile?.profile_image}
+          src={user.metadata?.profile_image}
           size={{ base: "xl", lg: "2xl" }}
           showBorder={true}
         />
@@ -38,11 +38,11 @@ export default function ProfileHeader({ user }: ProfileProps) {
           <FaGear onClick={onOpen} color="white" size="2em" />
         </VStack>
         <VStack align={"flex-start"} gap={0}>
-          <Text mt={-12} fontSize={{ base: "sm", lg: "xl" }} fontWeight={"bold"}>
+          <Text mt={-6} fontSize={{ base: "sm", lg: "xl" }} fontWeight={"bold"}>
             @{user.name} {getReputation(Number(user.reputation))}<br />
-            {user.metadata?.profile?.name}<br />
-            {user.metadata?.profile?.about}<br />
-            {user.metadata?.profile?.location}
+            {user.metadata?.name}<br />
+            {/* {user.metadata?.about}<br />
+            {user.metadata?.location} */}
           </Text>
           {/* <Button onClick={onOpen}>edit</Button>*/}
           {/* <Text fontSize={"xs"} w={"100%"} noOfLines={3}>

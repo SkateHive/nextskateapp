@@ -15,7 +15,7 @@ export default function ProfilePage({ params }: ProfilePageProps) {
   const { hiveAccount } = useHiveAccount(params.username)
   if (!hiveAccount) return <div>Loading...</div>
   return (
-    <Box width="100%" minW={'80%'} minHeight="100vh">
+    <Box w={"100%"}>
       <ProfileHeader user={hiveAccount} />
       <ProfileTabs user={hiveAccount} />
     </Box>

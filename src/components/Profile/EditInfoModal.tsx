@@ -18,6 +18,8 @@ import {
   Center,
   VStack,
   HStack,
+  Badge,
+  Image
 } from "@chakra-ui/react"
 import { FaUpload } from 'react-icons/fa';
 import { uploadFileToIPFS } from "@/app/upload/utils/uploadToIPFS";
@@ -25,20 +27,22 @@ import { useAccount } from "wagmi";
 import { HiveAccount } from "@/lib/models/user"
 import { updateProfile } from "@/lib/hive/client-functions";
 
-interface PostModalInterface {
+interface EditModalProps {
   isOpen: boolean
   onClose(): void
   user: HiveAccount
 }
 
-const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN
 
-export default function EditInfoModal({ isOpen, onClose, user }: PostModalInterface) {
-  console.log(user, "here")
-  const [name, setName] = useState<string>(user.metadata?.profile.name || '');
-  const [about, setAbout] = useState<string>(user.metadata?.profile.about || '');
-  const [avatarUrl, setAvatarUrl] = useState<string>(user.metadata?.profile.profile_image || '');
-  const [coverImageUrl, setCoverImageUrl] = useState<string>(user.metadata?.profile.cover_image || '');
+
+const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN
+console.log(PINATA_GATEWAY_TOKEN, "PINATA_GATEWAY_TOKEN")
+export default function EditInfoModal({ isOpen, onClose, user }: EditModalProps) {
+  console.log(user.metadata, "here")
+  const [name, setName] = useState<string>(user.metadata?.name || '');
+  const [about, setAbout] = useState<string>(user.metadata?.about || '');
+  const [avatarUrl, setAvatarUrl] = useState<string>(user.metadata?.profile_image || '');
+  const [coverImageUrl, setCoverImageUrl] = useState<string>(user.metadata?.cover_image || '');
   const current_extensions = user?.json_metadata;
   const [extensions, setExtensions] = useState<any>(
     (() => {
@@ -51,14 +55,13 @@ export default function EditInfoModal({ isOpen, onClose, user }: PostModalInterf
     })()
   );
 
-  const [website, setWebsite] = useState<string>(user.metadata?.profile.website || '');
+  const [website, setWebsite] = useState<string>(user.metadata?.website || '');
   const [selectedProfileFile, setSelectedProfileFile] = useState<File | null>(null);
   const [selectedCoverFile, setSelectedCoverFile] = useState<File | null>(null);
-  const [connectedAddress, setConnectedAddress] = useState<string>('');
-  //const { state } = usePioneer();
-  //const { app, status } = state;
+  const connecteWallet = useAccount().address;
   const [isEthSetupModalOpen, setIsEthSetupModalOpen] = useState(false);
   const [ethAddress, setEthAddress] = useState<string>(extensions?.eth_address || '');
+
 
   async function handleProfileFileInputChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -85,21 +88,27 @@ export default function EditInfoModal({ isOpen, onClose, user }: PostModalInterf
   }
 
   function handleClickaddEthAddress() {
-
+    if (connecteWallet) {
+      setEthAddress(connecteWallet);
+    }
   }
-
   const EthSetupModal = () => {
 
     return (
       <Modal isOpen={isEthSetupModalOpen} onClose={() => setIsEthSetupModalOpen(false)} size="md">
         <ModalOverlay />
-        <ModalContent bg={"black"} border={"1px solid limegreen"}>
-          <ModalHeader>Connect Ethereum Wallet</ModalHeader>
+        <ModalContent bg={"black"} border={"0.6px solid grey"}>
+          <ModalHeader>Is that your wallet? </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Text> Confirm Address </Text>
-            <Text> {connectedAddress} </Text>
-            <Button onClick={handleClickaddEthAddress}> Add Address </Button>
+            <VStack>
+              <Image boxSize={"128px"} src="https://img.gatenft.io/image/85d4d2e56f120f13834792477666294e.gif" alt=" eth" />
+              <Badge fontSize={"14px"} m={5}> {connecteWallet} </Badge>
+            </VStack>
+            <Button colorScheme="green" variant={"outline"} w={'100%'} onClick={() => {
+              handleClickaddEthAddress();
+              setIsEthSetupModalOpen(false);
+            }}> Confirm Address </Button>
           </ModalBody>
         </ModalContent>
       </Modal>
@@ -109,7 +118,7 @@ export default function EditInfoModal({ isOpen, onClose, user }: PostModalInterf
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="md">
       <ModalOverlay />
-      <ModalContent bg={"black"} border={"1px solid limegreen"}>
+      <ModalContent bg={"black"} border={"0.6px solid grey"}>
         <ModalHeader>Edit Profile</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -133,7 +142,7 @@ export default function EditInfoModal({ isOpen, onClose, user }: PostModalInterf
               value={avatarUrl}
               onChange={(e) => setAvatarUrl(e.target.value)}
             />
-            <Button color={"limegreen"} border={"1px dashed limegreen"} variant="ghost" mt={2} mb={2}>
+            <Button colorScheme="green" variant="outline" mt={2} mb={2}>
               <label htmlFor="profileFileInput">
                 <FaUpload />
               </label>
@@ -159,7 +168,7 @@ export default function EditInfoModal({ isOpen, onClose, user }: PostModalInterf
               value={coverImageUrl}
               onChange={(e) => setCoverImageUrl(e.target.value)}
             />
-            <Button color={"limegreen"} border={"1px dashed limegreen"} variant="ghost" mt={2} mb={2}>
+            <Button colorScheme="green" variant="outline" mt={2} mb={2}>
               <label htmlFor="coverFileInput">
                 <FaUpload />
               </label>
@@ -186,15 +195,12 @@ export default function EditInfoModal({ isOpen, onClose, user }: PostModalInterf
 
         </ModalBody>
         <Flex align="center" justify="center" direction="column">
-          <Button onClick={() => setIsEthSetupModalOpen(true)}> Add Ethereum Wallet Address </Button>
+          <Button colorScheme="blue" variant={"outline"} onClick={() => setIsEthSetupModalOpen(true)}> Add Ethereum Wallet Address </Button>
           <Text> {ethAddress} </Text>
         </Flex>
         <ModalFooter>
           <EthSetupModal />
-          <Button colorScheme="red" mr={3} onClick={onClose}>
-            Close
-          </Button>
-          <Button color={"limegreen"} border={"1px dashed limegreen"} onClick={sendEditTransaction} variant="ghost">
+          <Button w={"100%"} colorScheme="green" variant="outline" onClick={sendEditTransaction} >
             Save Changes
           </Button>
         </ModalFooter>
