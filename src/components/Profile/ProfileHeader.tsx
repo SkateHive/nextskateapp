@@ -5,6 +5,7 @@ import { Avatar, Button, HStack, Image, Text, VStack, useDisclosure } from "@cha
 import { getReputation } from "@/lib/hive/client-functions"
 import EditInfoModal from "./EditInfoModal"
 import { FaGear } from "react-icons/fa6"
+import { useHiveUser } from "@/contexts/UserContext"
 
 interface ProfileProps {
   user: HiveAccount
@@ -14,6 +15,7 @@ export default function ProfileHeader({ user }: ProfileProps) {
   //console.log(user, "here")
   //const user = new UserModel(userData)
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const hiveUser = useHiveUser()
   return (
     <VStack align={"start"}>
       {isOpen && <EditInfoModal isOpen={isOpen} onClose={onClose} user={user} />}
@@ -34,9 +36,11 @@ export default function ProfileHeader({ user }: ProfileProps) {
           size={{ base: "xl", lg: "2xl" }}
           showBorder={true}
         />
-        <VStack ml={-10} mt={1} zIndex={1}>
-          <FaGear onClick={onOpen} color="white" size="2em" />
-        </VStack>
+        {user.name === hiveUser.hiveUser?.name && (
+          <VStack ml={-10} mt={1} zIndex={1}>
+            <FaGear onClick={onOpen} color="white" size="2em" />
+          </VStack>
+        )}
         <VStack align={"flex-start"} gap={0}>
           <Text mt={-6} fontSize={{ base: "sm", lg: "xl" }} fontWeight={"bold"}>
             @{user.name} {getReputation(Number(user.reputation))}<br />

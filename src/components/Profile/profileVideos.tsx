@@ -5,6 +5,7 @@ import { HiveAccount } from "@/lib/models/user";
 import VideoPartsForm from "./videoPartForm";
 import VideoCard from "./videoPartCard";
 import { updateProfile } from "@/lib/hive/client-functions";
+import { useHiveUser } from "@/contexts/UserContext";
 
 interface VideoPartsProps {
     skater: HiveAccount;
@@ -34,7 +35,7 @@ const VideoParts = ({ skater }: VideoPartsProps) => {
     );
 
     const { isOpen, onOpen, onClose } = useDisclosure(); // For modal control
-
+    const user = useHiveUser();
     const handleNewVideoPart = (videoPart: VideoPart) => {
         const newExtensions = {
             ...extensions,
@@ -82,15 +83,17 @@ const VideoParts = ({ skater }: VideoPartsProps) => {
                         <VideoCard key={index} videoPart={videoPart} onRemove={() => handleRemoveVideoPart(index)} />
                     )) : <Text>No video parts available</Text>}
                 </SimpleGrid>
-                <Button
-                    colorScheme="green"
-                    variant="outline"
-                    size="lg"
-                    mt={4}
-                    onClick={onOpen} // Open the modal
-                >
-                    Submit epic video part
-                </Button>
+                {skater.name === user.hiveUser?.name && (
+                    <Button
+                        colorScheme="green"
+                        variant="outline"
+                        size="lg"
+                        mt={4}
+                        onClick={onOpen}
+                    >
+                        Submit epic video part
+                    </Button>
+                )}
                 <VideoPartsForm skater={skater} onNewVideoPart={handleNewVideoPart} isOpen={isOpen} onClose={onClose} />
             </VStack>
         </Box>

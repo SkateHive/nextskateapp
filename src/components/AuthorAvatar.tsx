@@ -31,7 +31,7 @@ export default function AuthorAvatar({ username, borderRadius, hover }: AuthorAv
     }, [username]);
 
     return (
-        <Link href={`${getWebsiteURL()}/profile/${username}`}>
+        <Link href={`${getWebsiteURL()}/skater/${username}`}>
             <Avatar
                 name={username}
                 src={profileImage || `https://images.ecency.com/webp/u/${username}/avatar/small`}

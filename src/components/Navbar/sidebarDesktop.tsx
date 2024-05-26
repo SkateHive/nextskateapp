@@ -4,29 +4,29 @@ import { useHiveUser } from "@/contexts/UserContext";
 import { claimRewards } from "@/lib/hive/client-functions";
 import { formatETHaddress } from "@/lib/utils";
 import {
-    Box,
-    Button,
-    Divider,
-    HStack,
-    Heading,
-    Icon,
-    Image,
-    Link,
-    Text,
-    keyframes,
-    useDisclosure
+  Box,
+  Button,
+  Divider,
+  HStack,
+  Heading,
+  Icon,
+  Image,
+  Link,
+  Text,
+  keyframes,
+  useDisclosure
 } from "@chakra-ui/react";
 import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
 import { useEffect, useState } from "react";
 import {
-    FaBell,
-    FaBook,
-    FaDiscord,
-    FaEthereum,
-    FaHive,
-    FaSpeakap,
-    FaUser,
-    FaWallet,
+  FaBell,
+  FaBook,
+  FaDiscord,
+  FaEthereum,
+  FaHive,
+  FaSpeakap,
+  FaUser,
+  FaWallet,
 } from "react-icons/fa";
 import { useAccount } from "wagmi";
 import LoginModal from "../Hive/Login/LoginModal";
