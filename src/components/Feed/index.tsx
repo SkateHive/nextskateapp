@@ -1,4 +1,5 @@
 "use client"
+import AuthorSearchBar from "@/app/upload/components/searchBar"
 import { useHiveUser } from "@/contexts/UserContext"
 import usePosts from "@/hooks/usePosts"
 import PostModel from "@/lib/models/post"
@@ -9,7 +10,6 @@ import { BeatLoader } from "react-spinners"
 import LoginModal from "../Hive/Login/LoginModal"
 import Post from "../PostCard"
 import PostSkeleton from "../PostCard/Skeleton"
-import AuthorSearchBar from "@/app/upload/components/searchBar"
 export default function Feed() {
   const SKATEHIVE_TAG = [{ tag: "hive-173115", limit: 100 }]
   const [tag, setTag] = useState(SKATEHIVE_TAG)
@@ -70,7 +70,7 @@ export default function Feed() {
       height={"100vh"}
       overflow={"auto"}
       sx={{
-        "::-webkit-scrollbar": {
+        "&::-webkit-scrollbar": {
           display: "none",
         },
       }}

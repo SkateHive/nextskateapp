@@ -26,14 +26,17 @@ const CommentList = ({
     <Box width={"full"}>
       <InfiniteScroll
         dataLength={visiblePosts}
-        next={() => setVisiblePosts(visiblePosts + 3)}
+        next={() => {
+          setVisiblePosts(visiblePosts + 1);
+          console.log("Visible", visiblePosts);
+        }}
         hasMore={visiblePosts < (comments?.length ?? 0)}
         loader={
           <Flex justify="center">
             <BeatLoader size={8} color="darkgrey" />
           </Flex>
         }
-        style={{ overflow: "hidden" }}
+        scrollableTarget={"scrollableDiv"}
       >
         {comments?.slice(0, visiblePosts).map((comment) => (
           <CommentItem
