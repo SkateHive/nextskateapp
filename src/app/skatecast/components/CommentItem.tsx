@@ -19,9 +19,10 @@ import { transformIPFSContent, transformShortYoutubeLinksinIframes, formatDate }
 import { useState } from "react"
 import { useReward } from "react-rewards"
 import { FaHeart } from "react-icons/fa"
-import { handleVote } from "./utils/handleFeedVote"
+import { handleVote } from "../utils/handleFeedVote"
 import AuthorAvatar from "@/components/AuthorAvatar"
 import LoginModal from "@/components/Hive/Login/LoginModal"
+import ReplyModal from "./replyModal"
 
 interface CommentItemProps {
   comment: any
@@ -93,9 +94,18 @@ const CommentItem = ({
   handleVote,
   getTotalPayout,
 }: CommentItemProps) => {
+
   const rewardId = comment.id ? "postReward" + comment.id : ""
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const handleModal = () => {
+    setIsModalOpen(!isModalOpen)
+  }
+
+
+
   return (
     <Box key={comment.id} p={4} width="100%" bg="black" color="white">
+      <ReplyModal comment={comment} isOpen={isModalOpen} onClose={handleModal} />
       <Flex>
         <AuthorAvatar username={comment.author} />
         <HStack ml={4}>
@@ -132,7 +142,8 @@ const CommentItem = ({
           colorScheme="green"
           variant="ghost"
           leftIcon={<FaRegComment />}
-          onClick={() => handleCommentIconClick(comment)}
+          // onClick={() => handleCommentIconClick(comment)}
+          onClick={handleModal}
         >
           {comment.children}
         </Button>

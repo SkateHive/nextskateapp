@@ -1,11 +1,11 @@
 //import UserModel from "@/lib/models/user"
 import { getWebsiteURL } from "@/lib/utils"
 import { Link } from "@chakra-ui/next-js"
-import { Avatar } from "@chakra-ui/react"
+import { Avatar, border } from "@chakra-ui/react"
 //import { useEffect, useState } from "react"
 import { HiveAccount } from "@/lib/models/user"
 
-export default function UserAvatar({ hiveAccount }: { hiveAccount: HiveAccount }) {
+export default function UserAvatar({ hiveAccount, borderRadius, boxSize }: { hiveAccount: HiveAccount, borderRadius: number, boxSize: number }) {
 
   /*
   const [authorData, setAuthorData] = useState<UserModel>({} as UserModel)
@@ -30,11 +30,10 @@ export default function UserAvatar({ hiveAccount }: { hiveAccount: HiveAccount }
           postAvatar ??
           `https://images.ecency.com/webp/u/${hiveAccount.name}/avatar/small`
         }
-        height="40px"
-        width="40px"
+        boxSize={boxSize || 12}
         bg="transparent"
         loading="lazy"
-        borderRadius={5}
+        borderRadius={borderRadius || 5}
       />
     </Link>
   )

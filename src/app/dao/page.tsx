@@ -21,7 +21,6 @@ import { normalize } from "path"
 import React, { useEffect, useState } from "react"
 import ReactMarkdown from "react-markdown"
 import rehypeRaw from "rehype-raw"
-import rehypeSanitize from "rehype-sanitize"
 import remarkGfm from "remark-gfm"
 import { mainnet } from "viem/chains"
 import { useAccount, useEnsAvatar, useEnsName } from "wagmi"
@@ -320,7 +319,7 @@ const DaoPage = () => {
             >
               <ReactMarkdown
                 components={MarkdownRenderers}
-                rehypePlugins={[rehypeRaw, rehypeSanitize]}
+                rehypePlugins={[rehypeRaw]}
                 remarkPlugins={[remarkGfm]}
               >
                 {mainProposal?.body ?? ""}

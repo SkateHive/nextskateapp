@@ -13,7 +13,7 @@ import {
 import { useDropzone } from "react-dropzone"
 import { FaImage } from "react-icons/fa"
 import { useState, useRef, useEffect } from "react"
-import { uploadFileToIPFS } from "../upload/utils/uploadToIPFS"
+import { uploadFileToIPFS } from "../../upload/utils/uploadToIPFS"
 
 interface PostBoxProps {
   username?: string

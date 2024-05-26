@@ -4,7 +4,6 @@ import React, { useState, useCallback, useEffect, useRef, RefObject } from "reac
 import { Image, Checkbox, Box, Button, Input, HStack, Flex, Center, Text, Avatar, Spinner, Badge, VStack, Tooltip, Slider, SliderTrack, SliderFilledTrack, SliderThumb, Divider } from "@chakra-ui/react";
 import { useDropzone } from "react-dropzone";
 import ReactMarkdown from 'react-markdown';
-import rehypeSanitize from 'rehype-sanitize';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import useAuthHiveUser from "@/lib/useHiveAuth";
@@ -274,7 +273,6 @@ export default function Upload() {
                             ]
                             }
                             extraCommands={extraCommands}
-                            previewOptions={{ rehypePlugins: [[rehypeSanitize]] }}
                             height="600px"
                             preview="edit"
                             style={{

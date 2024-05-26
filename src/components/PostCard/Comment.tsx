@@ -69,7 +69,7 @@ export default function PostComment({ comment }: PostCommentProps) {
   return (
     <Flex gap={2} direction={"column"}>
       <Flex gap={1} alignItems="center" border={"1px solid grey"} mb={-2}>
-        <UserAvatar hiveAccount={hiveAccount} />
+        <UserAvatar hiveAccount={hiveAccount} borderRadius={5} boxSize={12} />
         <Text fontSize="14px" as="b">
           {comment.author}
         </Text>
