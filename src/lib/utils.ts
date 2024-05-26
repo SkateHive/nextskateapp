@@ -1,4 +1,3 @@
-import exp from "constants"
 
 export function getWebsiteURL() {
   return process.env.NEXT_PUBLIC_WEBSITE_URL || ""
@@ -72,7 +71,7 @@ export function transform3SpeakContent(content: string): string {
   return content;
 }
 export function formatETHaddress(address: string) {
-  return `${address.slice(0, 6)}...${address.slice(-4)}`
+  return `${address.slice(0, 4)}...${address.slice(-4)}`
 }
 export function transformIPFSContent(content: string): string {
   const regex = /<iframe src="https:\/\/ipfs\.skatehive\.app\/ipfs\/([a-zA-Z0-9-?=&]+)"(?:(?!<\/iframe>).)*\sallowfullscreen><\/iframe>/g;
