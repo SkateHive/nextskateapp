@@ -16,12 +16,34 @@ interface VideoCardProps {
 
 const VideoCard = ({ videoPart, onRemove }: VideoCardProps) => {
     const getYoutubeEmbedUrl = (url: string) => {
-        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|watch\?v=&|watch\?vi=|watch\?vi=&|v=|vi=)([^#&?]*).*/;
+        const regExp = /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
         const match = url.match(regExp);
-        return match && match[2].length === 11 ? `https://www.youtube.com/embed/${match[2]}` : null;
+        return match ? `https://www.youtube.com/embed/${match[1]}` : null;
     };
 
-    const embedUrl = getYoutubeEmbedUrl(videoPart.url);
+    const getZoraEmbedUrl = (url: string) => {
+        const urlParts = url.split('?');
+        if (urlParts.length === 2) {
+            const baseUrl = urlParts[0];
+            const queryParams = urlParts[1];
+            const newUrl = baseUrl + '/embed?' + queryParams;
+            return newUrl;
+        } else {
+            return url + '/embed';
+        }
+    };
+
+    const getEmbedUrl = (url: string) => {
+        if (url.includes('youtube.com') || url.includes('youtu.be')) {
+            return getYoutubeEmbedUrl(url);
+        } else if (url.includes('zora.co')) {
+            return getZoraEmbedUrl(url);
+        }
+        return null;
+    };
+
+    const embedUrl = getEmbedUrl(videoPart.url);
+    const isZora = embedUrl && embedUrl.includes('zora.co');
 
     return (
         <Box
@@ -50,14 +72,19 @@ const VideoCard = ({ videoPart, onRemove }: VideoCardProps) => {
                 onClick={onRemove}
             />
             {embedUrl && (
-                <Box mb={4}>
+                <Box mb={4} position="relative" width="100%" paddingTop={isZora ? 'calc(56.25% + 72px)' : '56.25%'}>
                     <iframe
-                        width="100%"
-                        height="315"
                         src={embedUrl}
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        style={{
+                            border: 0,
+                            backgroundColor: 'transparent',
+                            position: 'absolute',
+                            inset: 0,
+                            width: '100%',
+                            height: '100%'
+                        }}
                         allowFullScreen
+                        sandbox="allow-pointer-lock allow-same-origin allow-scripts allow-popups"
                         title={videoPart.name}
                     ></iframe>
                 </Box>
