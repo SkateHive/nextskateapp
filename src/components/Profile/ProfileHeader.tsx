@@ -1,10 +1,10 @@
 'use client'
 
-import { HiveAccount } from "@/lib/models/user"
-import { Avatar, Button, HStack, Image, Text, VStack, useDisclosure } from "@chakra-ui/react"
-import EditInfoModal from "./EditInfoModal"
-import { FaGear } from "react-icons/fa6"
 import { useHiveUser } from "@/contexts/UserContext"
+import { HiveAccount } from "@/lib/models/user"
+import { Avatar, HStack, Image, Text, VStack, useDisclosure } from "@chakra-ui/react"
+import { FaGear } from "react-icons/fa6"
+import EditInfoModal from "./EditInfoModal"
 
 interface ProfileProps {
   user: HiveAccount
@@ -14,8 +14,6 @@ export default function ProfileHeader({ user }: ProfileProps) {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const hiveUser = useHiveUser()
   const metadata = hiveUser.hiveUser?.json_metadata ? JSON.parse(hiveUser.hiveUser?.json_metadata) : (hiveUser.hiveUser?.posting_json_metadata ? JSON.parse(hiveUser.hiveUser?.posting_json_metadata) : {});
-
-
   const coverImageUrl = metadata?.profile?.cover_image || "https://i.pinimg.com/originals/4b/c7/91/4bc7917beb4aac43d2d405b05911e35f.gif"
   const profileImageUrl = metadata?.profile?.profile_image || "/loading.gif"
   const profileName = metadata?.profile?.name || user.name

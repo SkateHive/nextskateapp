@@ -3,7 +3,6 @@ import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
 import AuthorAvatar from "@/components/AuthorAvatar";
 import LoginModal from "@/components/Hive/Login/LoginModal";
 import TipButton from "@/components/PostCard/TipButton";
-import { getWebsiteURL } from "@/lib/utils";
 import {
   formatDate,
   transformIPFSContent,
@@ -16,8 +15,7 @@ import {
   Flex,
   HStack,
   Text,
-  VStack,
-  Link,
+  VStack
 } from "@chakra-ui/react";
 import { useState } from "react";
 import {

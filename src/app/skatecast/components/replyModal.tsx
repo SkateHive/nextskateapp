@@ -1,7 +1,14 @@
-import React, { useState } from "react";
+import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
+import AuthorAvatar from "@/components/AuthorAvatar";
+import UserAvatar from "@/components/UserAvatar";
+import { useHiveUser } from "@/contexts/UserContext";
+import { commentWithPrivateKey } from "@/lib/hive/server-functions";
+import { transformIPFSContent } from "@/lib/utils";
 import {
     Box,
     Button,
+    Center,
+    Flex,
     Modal,
     ModalBody,
     ModalCloseButton,
@@ -9,22 +16,15 @@ import {
     ModalFooter,
     ModalHeader,
     ModalOverlay,
-    Flex,
+    Text,
     Textarea,
     VStack,
-    Center,
-    Text,
 } from "@chakra-ui/react";
+import * as dhive from "@hiveio/dhive";
+import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
-import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
-import { transformIPFSContent } from "@/lib/utils";
-import AuthorAvatar from "@/components/AuthorAvatar";
-import UserAvatar from "@/components/UserAvatar";
-import { useHiveUser } from "@/contexts/UserContext";
-import { commentWithPrivateKey } from "@/lib/hive/server-functions";
-import * as dhive from "@hiveio/dhive";
 
 interface ReplyModalProps {
     isOpen: boolean;
@@ -41,7 +41,50 @@ const ReplyModal = ({ isOpen, onClose, comment }: ReplyModalProps) => {
         const newPermLink = `${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`;
 
         if (loginMethod === "keychain") {
-            alert("KeyChain Login");
+            if (!window.hive_keychain) {
+                console.error("Hive Keychain extension not found!")
+                return
+            }
+            const username = user.hiveUser?.name
+            if (!username) {
+                console.error("Username is missing")
+                return
+            }
+
+            const postData = {
+                parent_author: comment.author,
+                parent_permlink: comment.permlink,
+                author: username,
+                permlink: newPermLink,
+                title: "reply",
+                body: replyBody,
+                json_metadata: JSON.stringify({
+                    tags: ["skateboard"],
+                    app: "skatehive",
+                }),
+            }
+            const operations = [
+                [
+                    "comment",
+                    postData,
+                ],
+            ]
+            console.log(operations)
+
+            window.hive_keychain.requestBroadcast(
+                username,
+                operations,
+                "posting",
+                async (response: any) => {
+                    if (response.success) {
+                        onClose()
+                        console.log("Comment posted successfully")
+                    } else {
+                        console.error("Error posting comment:", response.message)
+                    }
+                }
+            )
+
         } else if (loginMethod === "privateKey") {
             const commentOptions: dhive.CommentOptionsOperation = [
                 "comment_options",

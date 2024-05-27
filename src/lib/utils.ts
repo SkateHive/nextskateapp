@@ -96,18 +96,12 @@ export function transformShortYoutubeLinksinIframes(content: string) {
     return `<iframe src="https://www.youtube.com/embed/${videoID}" allowfullscreen></iframe>`;
   });
 }
-
 export function transformNormalYoutubeLinksinIframes(content: string) {
   const regex = /https:\/\/www\.youtube\.com\/watch\?v=([a-zA-Z0-9-_?=&]+)/g;
   return content.replace(regex, (match, videoID) => {
     return `<iframe src="https://www.youtube.com/embed/${videoID}" allowfullscreen></iframe>`;
   });
 }
-
-
-
-
-
 export function formatDate(date: string) {
   const now = new Date()
   const postDate = new Date(date)

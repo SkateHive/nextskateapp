@@ -76,7 +76,6 @@ export default function Feed() {
       }}
     >
       <Box m={1.5}>
-
         <AuthorSearchBar onSearch={handleAuthorSearch} />
       </Box>
 

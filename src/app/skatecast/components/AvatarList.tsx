@@ -1,6 +1,6 @@
 "use client"
-import { Avatar, HStack, Divider, Box, Link, Tooltip } from "@chakra-ui/react"
 import AuthorAvatar from "@/components/AuthorAvatar"
+import { Avatar, Box, Divider, HStack, Link, Tooltip } from "@chakra-ui/react"
 interface AvatarListProps {
   sortedComments: any[]
 }

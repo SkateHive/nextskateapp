@@ -1,9 +1,8 @@
 import { usePostContext } from "@/contexts/PostContext"
 import { useHiveUser } from "@/contexts/UserContext"
 import { CardFooter, Flex, useDisclosure } from "@chakra-ui/react"
-import Vote from "./Vote"
-import PostVoters from "./Voters"
 import TipButton from "./TipButton"
+import Vote from "./Vote"
 
 
 
