@@ -3,6 +3,7 @@ import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
 import AuthorAvatar from "@/components/AuthorAvatar";
 import LoginModal from "@/components/Hive/Login/LoginModal";
 import TipButton from "@/components/PostCard/TipButton";
+import { getWebsiteURL } from "@/lib/utils";
 import {
   formatDate,
   transformIPFSContent,
@@ -15,7 +16,8 @@ import {
   Flex,
   HStack,
   Text,
-  VStack
+  VStack,
+  Link,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import {
@@ -33,7 +35,6 @@ import ReplyModal from "./replyModal";
 interface CommentItemProps {
   comment: any;
   username: string;
-  handleCommentIconClick: (comment: any) => void;
   handleVote: (author: string, permlink: string) => void;
   getTotalPayout: (comment: any) => number;
 }
@@ -65,7 +66,6 @@ const VotingButton = ({
       const newIsVoted = !isVoted;
       await handleVote(comment.author, comment.permlink, username ?? "");
       setIsVoted(newIsVoted);
-
       setVoteCount((prevVoteCount: number) =>
         newIsVoted ? prevVoteCount + 1 : prevVoteCount - 1,
       );
@@ -107,7 +107,6 @@ const VotingButton = ({
 const CommentItem = ({
   comment,
   username,
-  handleCommentIconClick,
   handleVote,
   getTotalPayout,
 }: CommentItemProps) => {
@@ -118,12 +117,14 @@ const CommentItem = ({
   };
 
   return (
+
     <Box key={comment.id} p={4} width="100%" bg="black" color="white">
       <ReplyModal
         comment={comment}
         isOpen={isModalOpen}
         onClose={handleModal}
       />
+
       <Flex>
         <AuthorAvatar username={comment.author} />
         <VStack ml={4} gap={0} alignItems={"start"}>
@@ -133,10 +134,11 @@ const CommentItem = ({
               · {formatDate(String(comment.created))}
             </Text>
           </HStack>
-          <Text fontWeight={"bold"} color={"green.400"}>${getTotalPayout(comment)}</Text>
+          <Text onClick={() => window.open(`/post/test/@${comment.author}/${comment.permlink}`, "_self")} fontWeight={"bold"} color={"green.400"}>${getTotalPayout(comment)}</Text>
         </VStack>
       </Flex>
-      <Box ml={"64px"} mt={4}>
+
+      <Box cursor={"pointer"} ml={"64px"} mt={4} onClick={() => window.open(`/post/test/@${comment.author}/${comment.permlink}`, "_self")}>
         <ReactMarkdown
           components={MarkdownRenderers}
           rehypePlugins={[rehypeRaw]}
@@ -163,6 +165,7 @@ const CommentItem = ({
       </Flex>
       <Divider mt={4} />
     </Box>
+
   );
 };
 

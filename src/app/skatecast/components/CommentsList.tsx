@@ -8,17 +8,16 @@ interface CommentListProps {
   visiblePosts: number
   setVisiblePosts: (posts: number) => void
   username?: string
-  handleCommentIconClick: (comment: any) => void
   handleVote: (author: string, permlink: string) => void
   getTotalPayout: (comment: any) => number
 }
+
 
 const CommentList = ({
   comments,
   visiblePosts,
   setVisiblePosts,
   username,
-  handleCommentIconClick,
   handleVote,
   getTotalPayout,
 }: CommentListProps) => {
@@ -39,11 +38,12 @@ const CommentList = ({
         scrollableTarget={"scrollableDiv"}
       >
         {comments?.slice(0, visiblePosts).map((comment) => (
+
+
           <CommentItem
             key={comment.id}
             comment={comment}
             username={username || ""}
-            handleCommentIconClick={handleCommentIconClick}
             handleVote={handleVote}
             getTotalPayout={getTotalPayout}
           />
