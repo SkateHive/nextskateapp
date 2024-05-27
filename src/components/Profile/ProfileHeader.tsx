@@ -2,7 +2,6 @@
 
 import { HiveAccount } from "@/lib/models/user"
 import { Avatar, Button, HStack, Image, Text, VStack, useDisclosure } from "@chakra-ui/react"
-import { getReputation } from "@/lib/hive/client-functions"
 import EditInfoModal from "./EditInfoModal"
 import { FaGear } from "react-icons/fa6"
 import { useHiveUser } from "@/contexts/UserContext"
@@ -12,17 +11,22 @@ interface ProfileProps {
 }
 
 export default function ProfileHeader({ user }: ProfileProps) {
-  //console.log(user, "here")
-  //const user = new UserModel(userData)
   const { isOpen, onOpen, onClose } = useDisclosure()
   const hiveUser = useHiveUser()
-  const metadata = JSON.parse(hiveUser.hiveUser?.json_metadata || "{}")
+  const metadata = hiveUser.hiveUser?.json_metadata ? JSON.parse(hiveUser.hiveUser?.json_metadata) : (hiveUser.hiveUser?.posting_json_metadata ? JSON.parse(hiveUser.hiveUser?.posting_json_metadata) : {});
+
+
+  const coverImageUrl = metadata?.profile?.cover_image || "https://i.pinimg.com/originals/4b/c7/91/4bc7917beb4aac43d2d405b05911e35f.gif"
+  const profileImageUrl = metadata?.profile?.profile_image || "/loading.gif"
+  const profileName = metadata?.profile?.name || user.name
+  const profileAbout = metadata?.profile?.about || "No bio available"
+
   return (
     <VStack align={"start"}>
       {isOpen && <EditInfoModal isOpen={isOpen} onClose={onClose} user={user} />}
       <Image
         w="100%"
-        src={metadata?.profile?.cover_image || "https://i.pinimg.com/originals/4b/c7/91/4bc7917beb4aac43d2d405b05911e35f.gif"}
+        src={coverImageUrl}
         height={"200px"}
         objectFit="cover"
         borderRadius="md"
@@ -33,7 +37,7 @@ export default function ProfileHeader({ user }: ProfileProps) {
         <Avatar
           mt={-14}
           name={user.name}
-          src={metadata?.profile?.profile_image || "/loading.gif"}
+          src={profileImageUrl}
           size={{ base: "xl", lg: "2xl" }}
           showBorder={true}
         />
@@ -44,15 +48,10 @@ export default function ProfileHeader({ user }: ProfileProps) {
         )}
         <VStack align={"flex-start"} gap={0}>
           <Text mb={3} fontSize={{ base: "sm", lg: "xl" }} fontWeight={"bold"}>
-            {metadata?.profile?.name}
-            {/* {getReputation(Number(hiveUser.hiveUser?.name))} */}
+            {profileName}
             <br />
-            {metadata?.profile?.about}<br />
+            {profileAbout}
           </Text>
-          {/* <Button onClick={onOpen}>edit</Button>*/}
-          {/* <Text fontSize={"xs"} w={"100%"} noOfLines={3}>
-            {user.metadata?.profile?.about || "No bio available"}
-          </Text> */}
         </VStack>
       </HStack>
     </VStack>

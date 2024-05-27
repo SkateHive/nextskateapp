@@ -36,17 +36,13 @@ interface HeaderInterface {
 
 export default function Header({ variant = "preview" }: HeaderInterface) {
   const { post } = usePostContext();
-  //const [authorData, setAuthorData] = useState<HiveAccount>({} as HiveAccount)
   const { isOpen, onOpen, onClose } = useDisclosure();
-
   const [isSmallerThan400] = useMediaQuery("(max-width: 400px)");
-
   const postFullUrl = `${window.location.origin}/post/${post.url}`;
   const postSummary = `Check out this awesome post on SkateHive by @${post.author} \n\n`;
 
   const handleCopyPostLink = () => {
     try {
-      console.log("Post URL:", post);
       const postPageUrl = postFullUrl;
       navigator.clipboard.writeText(postPageUrl);
     } catch (error) {
@@ -119,7 +115,7 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
         flexDir={variant == "open" && isSmallerThan400 ? "column" : "row"}
       >
         <Flex flex="1" gap="2" alignItems="center">
-          <Link href={post.getFullAuthorUrl()}>
+          <Link href={`/skater/${post.author}`} >
             <AuthorAvatar username={post.author} />
             {/* <PostAvatar
               username={post.author}

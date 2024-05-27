@@ -2,7 +2,6 @@
 
 import { HiveAccount } from "@/lib/models/user"
 import { Avatar, Button, HStack, Image, Text, VStack, useDisclosure } from "@chakra-ui/react"
-import { getReputation } from "@/lib/hive/client-functions"
 import { FaGear } from "react-icons/fa6"
 import { useHiveUser } from "@/contexts/UserContext"
 
@@ -10,15 +9,23 @@ interface ProfileProps {
     user: HiveAccount
 }
 
-export default function ProfileHeader({ user }: ProfileProps) {
+export default function SkateHeader({ user }: ProfileProps) {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const hiveUser = useHiveUser()
-    const metadata = JSON.parse(user.json_metadata)
+    console.log(user)
+    const metadata = user.json_metadata ? JSON.parse(user.json_metadata) : (user.posting_json_metadata ? JSON.parse(user.posting_json_metadata) : {});
+
+    console.log(metadata)
+
+    const coverImageUrl = metadata?.profile?.cover_image || "https://i.pinimg.com/originals/4b/c7/91/4bc7917beb4aac43d2d405b05911e35f.gif";
+    const profileImageUrl = metadata?.profile?.profile_image || "/loading.gif";
+    const profileName = metadata?.profile?.name || user.name;
+
     return (
         <VStack align={"start"}>
             <Image
                 w="100%"
-                src={metadata?.profile.cover_image || "https://i.ibb.co/r20bWsF/You-forgot-to-add-a-cover.gif"}
+                src={coverImageUrl}
                 objectFit="cover"
                 borderRadius="md"
                 alt={"Profile thumbnail"}
@@ -28,7 +35,7 @@ export default function ProfileHeader({ user }: ProfileProps) {
                 <Avatar
                     mt={-14}
                     name={user.name}
-                    src={metadata?.profile.profile_image || "/loading.gif"}
+                    src={profileImageUrl}
                     size={{ base: "xl", lg: "2xl" }}
                     showBorder={true}
                 />
@@ -39,15 +46,8 @@ export default function ProfileHeader({ user }: ProfileProps) {
                 )}
                 <VStack align={"flex-start"} gap={0}>
                     <Text fontSize={{ base: "sm", lg: "xl" }} fontWeight={"bold"}>
-                        {metadata?.profile.name} <br />
-                        <br />
-                        {/* {user.metadata?.about}<br />
-            {user.metadata?.location} */}
+                        {profileName} <br />
                     </Text>
-                    {/* <Button onClick={onOpen}>edit</Button>*/}
-                    {/* <Text fontSize={"xs"} w={"100%"} noOfLines={3}>
-            {user.metadata?.profile?.about || "No bio available"}
-          </Text> */}
                 </VStack>
             </HStack>
         </VStack>
