@@ -202,11 +202,7 @@ const SkateCast = () => {
     setMediaModalOpen(true)
   }
 
-  const handleCommentIconClick = (comment: Comment) => {
-    if (typeof window !== "undefined") {
-      window.location.href = `post/hive-173115/@${comment.author}/${comment.permlink}`
-    }
-  }
+
 
   const handleSortChange = (method: string) => {
     setSortMethod(method)
@@ -271,7 +267,6 @@ const SkateCast = () => {
         visiblePosts={visiblePosts}
         setVisiblePosts={setVisiblePosts}
         username={username}
-        handleCommentIconClick={handleCommentIconClick}
         handleVote={handleVote}
         getTotalPayout={getTotalPayout}
       />
