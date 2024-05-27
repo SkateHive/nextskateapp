@@ -11,17 +11,14 @@ interface ProfileProps {
 }
 
 export default function ProfileHeader({ user }: ProfileProps) {
-    console.log(user, "here")
     const { isOpen, onOpen, onClose } = useDisclosure()
     const hiveUser = useHiveUser()
     const metadata = JSON.parse(user.json_metadata)
-    console.log(metadata, "metadata")
     return (
         <VStack align={"start"}>
             <Image
                 w="100%"
-                src={metadata?.profile.cover_image || "https://storage.googleapis.com/zapper-fi-assets/nfts/medias/07b1116b23c5da3851fee73002dc1b049c90c5f7dfa54d2ba14a562b38023ed0.svg"}
-                height={"200px"}
+                src={metadata?.profile.cover_image || "https://i.ibb.co/r20bWsF/You-forgot-to-add-a-cover.gif"}
                 objectFit="cover"
                 borderRadius="md"
                 alt={"Profile thumbnail"}
@@ -31,7 +28,7 @@ export default function ProfileHeader({ user }: ProfileProps) {
                 <Avatar
                     mt={-14}
                     name={user.name}
-                    src={metadata?.profile.profile_image}
+                    src={metadata?.profile.profile_image || "/loading.gif"}
                     size={{ base: "xl", lg: "2xl" }}
                     showBorder={true}
                 />
@@ -42,7 +39,7 @@ export default function ProfileHeader({ user }: ProfileProps) {
                 )}
                 <VStack align={"flex-start"} gap={0}>
                     <Text fontSize={{ base: "sm", lg: "xl" }} fontWeight={"bold"}>
-                        {metadata?.profile.name} {getReputation(Number(user.reputation))}<br />
+                        {metadata?.profile.name} <br />
                         <br />
                         {/* {user.metadata?.about}<br />
             {user.metadata?.location} */}

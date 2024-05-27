@@ -16,12 +16,13 @@ export default function ProfileHeader({ user }: ProfileProps) {
   //const user = new UserModel(userData)
   const { isOpen, onOpen, onClose } = useDisclosure()
   const hiveUser = useHiveUser()
+  const metadata = JSON.parse(hiveUser.hiveUser?.json_metadata || "{}")
   return (
     <VStack align={"start"}>
       {isOpen && <EditInfoModal isOpen={isOpen} onClose={onClose} user={user} />}
       <Image
         w="100%"
-        src={user.metadata?.cover_image || "https://storage.googleapis.com/zapper-fi-assets/nfts/medias/07b1116b23c5da3851fee73002dc1b049c90c5f7dfa54d2ba14a562b38023ed0.svg"}
+        src={metadata?.profile?.cover_image || "https://i.pinimg.com/originals/4b/c7/91/4bc7917beb4aac43d2d405b05911e35f.gif"}
         height={"200px"}
         objectFit="cover"
         borderRadius="md"
@@ -32,7 +33,7 @@ export default function ProfileHeader({ user }: ProfileProps) {
         <Avatar
           mt={-14}
           name={user.name}
-          src={user.metadata?.profile_image}
+          src={metadata?.profile?.profile_image || "/loading.gif"}
           size={{ base: "xl", lg: "2xl" }}
           showBorder={true}
         />
@@ -42,11 +43,11 @@ export default function ProfileHeader({ user }: ProfileProps) {
           </VStack>
         )}
         <VStack align={"flex-start"} gap={0}>
-          <Text mt={-6} fontSize={{ base: "sm", lg: "xl" }} fontWeight={"bold"}>
-            @{user.name} {getReputation(Number(user.reputation))}<br />
-            {user.metadata?.name}<br />
-            {/* {user.metadata?.about}<br />
-            {user.metadata?.location} */}
+          <Text mb={3} fontSize={{ base: "sm", lg: "xl" }} fontWeight={"bold"}>
+            {metadata?.profile?.name}
+            {/* {getReputation(Number(hiveUser.hiveUser?.name))} */}
+            <br />
+            {metadata?.profile?.about}<br />
           </Text>
           {/* <Button onClick={onOpen}>edit</Button>*/}
           {/* <Text fontSize={"xs"} w={"100%"} noOfLines={3}>

@@ -13,7 +13,7 @@ interface ProfilePageProps {
 
 export default function ProfilePage({ params }: ProfilePageProps) {
   const { hiveAccount } = useHiveAccount(params.username)
-  if (!hiveAccount) return <div>Loading...</div>
+  if (!hiveAccount) return <Box w={"100%"}>Loading...</Box>
   return (
     <Box w={"100%"}>
       <ProfileHeader user={hiveAccount} />

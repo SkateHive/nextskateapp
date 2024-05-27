@@ -23,7 +23,7 @@ export default function UserAvatar({ hiveAccount, borderRadius, boxSize }: { hiv
 
 
   return (
-    <Link href={`${getWebsiteURL()}/profile/${hiveAccount.name}`}>
+    <Link href={`https://beta.skatehive.app/profile/${hiveAccount.name}`}>
       <Avatar
         name={hiveAccount.name}
         src={
