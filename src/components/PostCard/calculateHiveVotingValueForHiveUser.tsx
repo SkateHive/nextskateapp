@@ -1,5 +1,4 @@
 import HiveClient from "@/lib/hive/hiveclient";
-import { HiveAccount } from "@/lib/useHiveAuth";
 
 export const rewardFund = async () => {
     const client = HiveClient;

@@ -1,3 +1,4 @@
+
 export function getWebsiteURL() {
   return process.env.NEXT_PUBLIC_WEBSITE_URL || ""
 }
@@ -70,7 +71,7 @@ export function transform3SpeakContent(content: string): string {
   return content;
 }
 export function formatETHaddress(address: string) {
-  return `${address.slice(0, 6)}...${address.slice(-4)}`
+  return `${address.slice(0, 4)}...${address.slice(-4)}`
 }
 export function transformIPFSContent(content: string): string {
   const regex = /<iframe src="https:\/\/ipfs\.skatehive\.app\/ipfs\/([a-zA-Z0-9-?=&]+)"(?:(?!<\/iframe>).)*\sallowfullscreen><\/iframe>/g;
@@ -95,14 +96,12 @@ export function transformShortYoutubeLinksinIframes(content: string) {
     return `<iframe src="https://www.youtube.com/embed/${videoID}" allowfullscreen></iframe>`;
   });
 }
-
 export function transformNormalYoutubeLinksinIframes(content: string) {
   const regex = /https:\/\/www\.youtube\.com\/watch\?v=([a-zA-Z0-9-_?=&]+)/g;
   return content.replace(regex, (match, videoID) => {
     return `<iframe src="https://www.youtube.com/embed/${videoID}" allowfullscreen></iframe>`;
   });
 }
-
 export function formatDate(date: string) {
   const now = new Date()
   const postDate = new Date(date)
@@ -114,13 +113,13 @@ export function formatDate(date: string) {
     return "Just now"
   } else if (diffInSeconds < 3600) {
     const minutes = Math.floor(diffInSeconds / 60)
-    return `${minutes} minute${minutes > 1 ? "s" : ""} ago`
+    return `${minutes}m`
   } else if (diffInSeconds < 86400) {
     const hours = Math.floor(diffInSeconds / 3600)
-    return `${hours} hour${hours > 1 ? "s" : ""} ago`
+    return `${hours}h`
   } else {
     const days = Math.floor(diffInSeconds / 86400)
-    return `${days} day${days > 1 ? "s" : ""} ago`
+    return `${days}d`
   }
 }
 

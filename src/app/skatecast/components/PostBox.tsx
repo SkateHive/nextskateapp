@@ -6,13 +6,12 @@ import {
   Divider,
   Flex,
   HStack,
-  Textarea,
   Input,
-  Text,
+  Textarea
 } from "@chakra-ui/react"
+import { useEffect, useRef, useState } from "react"
 import { useDropzone } from "react-dropzone"
 import { FaImage } from "react-icons/fa"
-import { useState, useRef, useEffect } from "react"
 import { uploadFileToIPFS } from "../../upload/utils/uploadToIPFS"
 
 interface PostBoxProps {

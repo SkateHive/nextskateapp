@@ -3,6 +3,13 @@ import { KeychainRequestResponse, KeychainSDK, Post, Vote, KeychainKeyTypes, Bro
 import { Operation } from "@hiveio/dhive"
 import { HiveAccount } from "../models/user";
 
+interface VideoPart {
+  name: string;
+  filmmaker: string[];
+  friends: string[];
+  year: number;
+  url: string;
+}
 
 interface HiveKeychainResponse {
   success: boolean
@@ -129,9 +136,23 @@ export async function transferWithKeychain(username: string, destination: string
   }
 }
 
-export async function updateProfile(username: String, name: String, about: String, coverImageUrl: String, avatarUrl: String, website: String, ethAddress: String) {
+export async function updateProfile(username: string, name: string, about: string, coverImageUrl: string, avatarUrl: string, website: string, ethAddress: string, videoParts: VideoPart[]) {
   try {
     const keychain = new KeychainSDK(window);
+
+    const profileMetadata = {
+      profile: {
+        name: name,
+        about: about,
+        cover_image: coverImageUrl,
+        profile_image: avatarUrl,
+        website: website,
+      },
+      extensions: {
+        eth_address: ethAddress,
+        video_parts: videoParts,
+      },
+    };
 
     const formParamsAsObject = {
       data: {
@@ -141,36 +162,19 @@ export async function updateProfile(username: String, name: String, about: Strin
             'account_update2',
             {
               account: username,
-              json_metadata: JSON.stringify({
-                profile: {
-                  name: name,
-                  about: about,
-                  cover_image: coverImageUrl,
-                  profile_image: avatarUrl,
-                  website: website,
-                },
-                extensions: {
-                  //add ethAddress to json_metadata
-                  eth_address: ethAddress,
-                },
-              }),
-              posting_json_metadata: JSON.stringify({
-                profile: {
-                  name: name,
-                  about: about,
-                  cover_image: coverImageUrl,
-                  profile_image: avatarUrl,
-                  website: website,
-                },
-              }),
+              json_metadata: JSON.stringify(profileMetadata),
+              posting_json_metadata: JSON.stringify(profileMetadata.profile),
               extensions: [],
             },
           ],
         ],
         method: KeychainKeyTypes.active,
-      }
-    }
+      },
+    };
+
+    const broadcast = await keychain.broadcast(formParamsAsObject.data as unknown as Broadcast);
+    console.log('Broadcast success:', broadcast);
   } catch (error) {
-    console.log({ error })
+    console.error('Profile update failed:', error);
   }
 }

@@ -1,8 +1,7 @@
 import { useHiveUser } from "@/contexts/UserContext"
 import * as dhive from "@hiveio/dhive"
-import { hiveServerLoginWithPassword } from "./hive/server-functions"
 import HiveClient from "./hive/hiveclient"
-import CryptoJS from "crypto-js"
+import { hiveServerLoginWithPassword } from "./hive/server-functions"
 
 interface HiveKeychainResponse {
   success: boolean

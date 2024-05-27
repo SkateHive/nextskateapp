@@ -1,9 +1,9 @@
 'use client'
 
-import ProfileHeader from "@/components/Profile/ProfileHeader";
+import ProfileHeader from "@/components/Skater/SkaterHeader";
 import ProfileTabs from "@/components/Profile/profileTabs";
 import useHiveAccount from "@/hooks/useHiveAccount";
-import { Box, Center } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 
 interface ProfilePageProps {
   params: {
@@ -13,12 +13,7 @@ interface ProfilePageProps {
 
 export default function ProfilePage({ params }: ProfilePageProps) {
   const { hiveAccount } = useHiveAccount(params.username)
-  if (!hiveAccount) return <Box w={"100%"}>
-    <Center>
-
-      Loading...
-    </Center>
-  </Box>
+  if (!hiveAccount) return <Box w={"100%"}>Loading...</Box>
   return (
     <Box w={"100%"}>
       <ProfileHeader user={hiveAccount} />

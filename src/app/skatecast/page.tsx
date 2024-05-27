@@ -1,19 +1,19 @@
 "use client"
-import { ButtonGroup, VStack, Button, HStack, MenuButton, MenuList, MenuItem, Menu, Text } from "@chakra-ui/react"
 import { useHiveUser } from "@/contexts/UserContext"
 import { useComments } from "@/hooks/comments"
+import { vote } from "@/lib/hive/client-functions"
+import { commentWithPrivateKey } from "@/lib/hive/server-functions"
+import { HStack, Menu, MenuButton, MenuItem, MenuList, Text, VStack } from "@chakra-ui/react"
+import * as dhive from "@hiveio/dhive"
+import { useMemo, useState } from "react"
+import { FaHistory, FaMoneyBill } from "react-icons/fa"
+import { FaArrowRightArrowLeft } from "react-icons/fa6"
+import { IoFilter } from "react-icons/io5"
 import AvatarList from "./components/AvatarList"
+import CommentList from "./components/CommentsList"
 import PostBox from "./components/PostBox"
 import LoadingComponent from "./components/loadingComponent"
 import AvatarMediaModal from "./components/mediaModal"
-import { vote } from "@/lib/hive/client-functions"
-import * as dhive from "@hiveio/dhive"
-import CommentList from "./components/CommentsList"
-import { commentWithPrivateKey } from "@/lib/hive/server-functions"
-import { useState, useEffect, useMemo } from "react"
-import { IoFilter } from "react-icons/io5";
-import { FaHistory, FaMoneyBill } from "react-icons/fa"
-import { FaArrowRightArrowLeft } from "react-icons/fa6"
 
 const parent_author = "skatehacker"
 const parent_permlink = "test-advance-mode-post"
@@ -41,7 +41,7 @@ const SkateCast = () => {
     parent_author,
     parent_permlink
   )
-  const [visiblePosts, setVisiblePosts] = useState<number>(20)
+  const [visiblePosts, setVisiblePosts] = useState<number>(3)
   const [postBody, setPostBody] = useState<string>("")
   const user = useHiveUser()
   const username = user?.hiveUser?.name
@@ -202,11 +202,7 @@ const SkateCast = () => {
     setMediaModalOpen(true)
   }
 
-  const handleCommentIconClick = (comment: Comment) => {
-    if (typeof window !== "undefined") {
-      window.location.href = `post/hive-173115/@${comment.author}/${comment.permlink}`
-    }
-  }
+
 
   const handleSortChange = (method: string) => {
     setSortMethod(method)
@@ -216,11 +212,13 @@ const SkateCast = () => {
     <LoadingComponent />
   ) : (
     <VStack
+      id="scrollableDiv"
       overflowY="auto"
       css={{ "&::-webkit-scrollbar": { display: "none" } }}
       maxW={"740px"}
       width={"100%"}
       borderInline={"1px solid rgb(255,255,255,0.2)"}
+      height={"100vh"}
     >
       <AvatarMediaModal
         isOpen={mediaModalOpen}
@@ -269,7 +267,6 @@ const SkateCast = () => {
         visiblePosts={visiblePosts}
         setVisiblePosts={setVisiblePosts}
         username={username}
-        handleCommentIconClick={handleCommentIconClick}
         handleVote={handleVote}
         getTotalPayout={getTotalPayout}
       />

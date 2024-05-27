@@ -8,17 +8,16 @@ interface CommentListProps {
   visiblePosts: number
   setVisiblePosts: (posts: number) => void
   username?: string
-  handleCommentIconClick: (comment: any) => void
   handleVote: (author: string, permlink: string) => void
   getTotalPayout: (comment: any) => number
 }
+
 
 const CommentList = ({
   comments,
   visiblePosts,
   setVisiblePosts,
   username,
-  handleCommentIconClick,
   handleVote,
   getTotalPayout,
 }: CommentListProps) => {
@@ -26,21 +25,25 @@ const CommentList = ({
     <Box width={"full"}>
       <InfiniteScroll
         dataLength={visiblePosts}
-        next={() => setVisiblePosts(visiblePosts + 3)}
+        next={() => {
+          setVisiblePosts(visiblePosts + 1);
+          console.log("Visible", visiblePosts);
+        }}
         hasMore={visiblePosts < (comments?.length ?? 0)}
         loader={
           <Flex justify="center">
             <BeatLoader size={8} color="darkgrey" />
           </Flex>
         }
-        style={{ overflow: "hidden" }}
+        scrollableTarget={"scrollableDiv"}
       >
         {comments?.slice(0, visiblePosts).map((comment) => (
+
+
           <CommentItem
             key={comment.id}
             comment={comment}
             username={username || ""}
-            handleCommentIconClick={handleCommentIconClick}
             handleVote={handleVote}
             getTotalPayout={getTotalPayout}
           />

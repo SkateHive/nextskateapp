@@ -1,38 +1,38 @@
 // path: src/app/upload/components/previewModal.tsx
 
-import React from 'react';
+import Footer from '@/components/PostCard/Footer';
+import Header from '@/components/PostCard/Header';
+import PostImage from '@/components/PostCard/Image';
+import { PostProvider } from '@/contexts/PostContext';
+import { commentWithKeychain } from '@/lib/hive/client-functions';
+import { commentWithPrivateKey } from "@/lib/hive/server-functions";
+import { HiveAccount } from '@/lib/useHiveAuth';
 import {
-    Divider,
     Badge,
-    Progress,
     Box,
     Button,
+    Card,
+    CardHeader,
     Center,
-    Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay,
-    Text,
-    CardHeader, Card,
+    Divider,
     Flex,
-    VStack,
+    Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay,
+    Progress,
     Table,
-    Thead,
-    Th,
-    Tr,
     Tbody,
     Td,
+    Text,
+    Th,
+    Thead,
+    Tr,
+    VStack,
 } from '@chakra-ui/react';
-import { HiveAccount } from '@/lib/useHiveAuth';
-import { PostProvider } from '@/contexts/PostContext';
-import Header from '@/components/PostCard/Header';
-import Footer from '@/components/PostCard/Footer';
-import PostImage from '@/components/PostCard/Image';
-import SocialsModal from './socialsModal';
-import { useEffect } from 'react';
-import * as dhive from "@hiveio/dhive"
-import { commentWithPrivateKey } from "@/lib/hive/server-functions";
-import { commentWithKeychain } from '@/lib/hive/client-functions';
+import * as dhive from "@hiveio/dhive";
+import React, { useEffect } from 'react';
 import getSummary from '../../../lib/getSummaryAI';
-import slugify from '../utils/slugify';
 import generatePermlink from '../utils/generatePermlink';
+import slugify from '../utils/slugify';
+import SocialsModal from './socialsModal';
 interface PreviewModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -145,7 +145,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
                 username: user.name,
                 title: title,
                 body: body,
-                parent_perm: "blog",
+                parent_perm: "hive-173115",
                 json_metadata: JSON.stringify({ format: "markdown", description: AiSummary, tags: tags }),
                 permlink: permlink,
                 comment_options: JSON.stringify({
