@@ -1,6 +1,6 @@
 import HiveClient from "@/lib/hive/hiveclient"
 import { HiveAccount } from "@/lib/models/user"
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 
 export default function useHiveAccount(username: string) {
     const [hiveAccount, setHiveAccount] = useState<HiveAccount | null>(null)

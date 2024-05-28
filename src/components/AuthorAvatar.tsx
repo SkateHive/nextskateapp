@@ -1,8 +1,7 @@
 'use client'
 import HiveClient from "@/lib/hive/hiveclient";
-import { getWebsiteURL } from "@/lib/utils";
 import { Link } from "@chakra-ui/next-js";
-import { Avatar, SystemStyleObject } from "@chakra-ui/react";
+import { Avatar, SystemStyleObject, Tooltip } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 
 interface AuthorAvatarProps {
@@ -32,15 +31,22 @@ export default function AuthorAvatar({ username, borderRadius, hover }: AuthorAv
 
     return (
         <Link href={`/skater/${username}`}>
-            <Avatar
-                name={username}
-                src={profileImage || `https://images.ecency.com/webp/u/${username}/avatar/small`}
-                boxSize={12}
-                bg="transparent"
-                loading="lazy"
-                borderRadius={borderRadius || 5}
-                _hover={hover || { cursor: "pointer" }}
-            />
+            <Tooltip
+                label={username}
+                bg={"black"}
+                color={"limegreen"}
+                border={"1px dashed limegreen"}
+            >
+                <Avatar
+                    name={username}
+                    src={profileImage || `https://images.ecency.com/webp/u/${username}/avatar/small`}
+                    boxSize={12}
+                    bg="transparent"
+                    loading="lazy"
+                    borderRadius={borderRadius || 5}
+                    _hover={hover || { cursor: "pointer" }}
+                />
+            </Tooltip>
         </Link>
     );
 }
