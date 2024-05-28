@@ -14,7 +14,7 @@ export const revalidate = 600
 
 const hiveClient = HiveClient
 
-export async function generateMetadata({
+ async function generateMetadata({
   params,
 }: {
   params: { slug: [tag: string, user: string, postId: string] }
@@ -47,13 +47,8 @@ async function getData(user: string, postId: string) {
   return postContent
 }
 
-export default async function Page({ params }: { params: { slug: string } }) {
-  if (!Array.isArray(params.slug)) return
-  let [tag, user, postId] = params.slug
-
-  const post = await getData(user, postId)
-  if (!post) return <Text>404 - Post not found</Text>
-  // lets format user to be a normal string without unicode 
+export default  function Page({ post, isOpen, onClose }) {
+  
 
   const transformDate = (date: string) => {
     const dateObj = new Date(date);
@@ -81,67 +76,75 @@ export default async function Page({ params }: { params: { slug: string } }) {
 
 
   return (
-    <Box>
-      <Box position='absolute' borderRadius={20} background={'rgb(50, 50, 50, 0.7)'} backdropFilter='blur(15px)' left='calc( 50% - 25vw )' top='calc( 50% - 45vh )' width={{md: '90vw', xl: '50vw'}} height={'90vh'} >
-      <FaTimesCircle size={20}  style={{position: 'absolute', cursor: 'pointer', right: 10, top: 10}} />
-        <Box width='inherit' padding={4} height='inherit' display={'grid'} gridAutoRows="15% 5% 80%" >
- 
-          <Container gridRow={'1/4'} height='100%' overflowY={'scroll'} p={4}>
-            <ReactMarkdown
-              components={MarkdownRenderers}
-              rehypePlugins={[rehypeRaw]}
-              remarkPlugins={[remarkGfm]}
-            >
-              {transformIPFSContent(transform3SpeakContent(post.body))}
-            </ReactMarkdown>
-            <Divider mt={5} />
-            <Center>
-              <Text fontSize={"12px"}>{transformDate(post?.created)}</Text>
-            </Center>
-          </Container>
+    <>
+    {
+      isOpen ? (
 
-          <Center gridColumn={'2/3'}>
-            <VStack width={"90%"}>
-
-              <Badge border={"1px solid grey"} width={"100%"} m={"10px"} fontSize={'38px'} bg="#201d21" color="white">
-                <Center>
-
-                  <Text> {getTotalPayout(post).toFixed(2)} USD</Text>
-                </Center>
-              </Badge>
-              {post.beneficiaries.length > 0 &&
-                <Table border={"1px solid grey"} width={"100%"} borderRadius={"10px"}>
-                  <Thead borderRadius={"10px"}>
-                    <Tr borderRadius={"10px"}>
-                      <Th>Beneficiaries</Th>
-                      <Th>Weight</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody maxW={"85%"} borderRadius={"10px"}>
-                    {post.beneficiaries.map((beneficiary: any) => (
-                      <Tr key={beneficiary.account}>
-                        <Td>{beneficiary.account}</Td>
-                        <Td>{beneficiary.weight / 100}%</Td>
+        <Box zIndex={1000}>
+        <Box position='absolute' zIndex={100} borderRadius={20} background={'rgb(50, 50, 50, 0.7)'} backdropFilter='blur(15px)' left='calc( 50% - 25vw )' top='calc( 50% - 45vh )' width={{md: '90vw', xl: '50vw'}} height={'90vh'} >
+        <FaTimesCircle size={20} onClick={onClose} style={{position: 'absolute', cursor: 'pointer', right: 10, top: 10}} />
+          <Box width='inherit' padding={4} height='inherit' display={'grid'} gridAutoRows="15% 5% 80%" >
+   
+            <Container gridRow={'1/4'} height='100%' overflowY={'scroll'} p={4}>
+              <ReactMarkdown
+                components={MarkdownRenderers}
+                rehypePlugins={[rehypeRaw]}
+                remarkPlugins={[remarkGfm]}
+              >
+                {transformIPFSContent(transform3SpeakContent(post.body))}
+              </ReactMarkdown>
+              <Divider mt={5} />
+              <Center>
+                <Text fontSize={"12px"}>{transformDate(post?.created)}</Text>
+              </Center>
+            </Container>
+  
+            <Center gridColumn={'2/3'}>
+              <VStack width={"90%"}>
+  
+                <Badge border={"1px solid grey"} width={"100%"} m={"10px"} fontSize={'38px'} bg="#201d21" color="white">
+                  <Center>
+  
+                    <Text> {getTotalPayout(post).toFixed(2)} USD</Text>
+                  </Center>
+                </Badge>
+                {post.beneficiaries.length > 0 &&
+                  <Table border={"1px solid grey"} width={"100%"} borderRadius={"10px"}>
+                    <Thead borderRadius={"10px"}>
+                      <Tr borderRadius={"10px"}>
+                        <Th>Beneficiaries</Th>
+                        <Th>Weight</Th>
                       </Tr>
-                    ))}
-                  </Tbody>
-                </Table>
-
-              }
-            </VStack>
-
-          </Center>
-          <Center gridColumn={'2/3'}>
-            <Text mt={5} fontSize={"18px"}>Comments</Text>
-          </Center>
-
-          <CommentsComponent  author={user.substring(3)} permlink={postId} />
+                    </Thead>
+                    <Tbody maxW={"85%"} borderRadius={"10px"}>
+                      {post.beneficiaries.map((beneficiary: any) => (
+                        <Tr key={beneficiary.account}>
+                          <Td>{beneficiary.account}</Td>
+                          <Td>{beneficiary.weight / 100}%</Td>
+                        </Tr>
+                      ))}
+                    </Tbody>
+                  </Table>
+  
+                }
+              </VStack>
+  
+            </Center>
+            <Center gridColumn={'2/3'}>
+              <Text mt={5} fontSize={"18px"}>Comments</Text>
+            </Center>
+  
+            {/* <CommentsComponent  author={user.substring(3)} permlink={postId} /> */}
+          </Box>
+  
+          <Box width={{ base: "100%", md: "40%" }} mt={5}>
+  
+          </Box>
         </Box>
-
-        <Box width={{ base: "100%", md: "40%" }} mt={5}>
-
-        </Box>
-      </Box>
-    </Box >
+      </Box >
+      ) : ('')
+    }
+    </>
   )
+  
 }
