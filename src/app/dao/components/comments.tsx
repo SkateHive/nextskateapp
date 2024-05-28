@@ -7,14 +7,15 @@ import { Box } from "@chakra-ui/react"
 interface CommentsProps {
   author: string
   permlink: string
+  comments: any
 }
 
 const CommentsComponent = (props: CommentsProps) => {
-  const { author, permlink } = props
+  const { author, permlink, comments } = props
   console.log("CommentsComponent", author, permlink)
   const { post } = usePostContext()
 
-  const { comments, addComment } = useComments(author, permlink, true)
+  const { addComment } = useComments(author, permlink, true)
   return (
     <Box>
       <CommandPrompt addComment={addComment} post={post} />
