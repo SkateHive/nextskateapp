@@ -1,17 +1,18 @@
-"use client"
-import { Box, Flex } from "@chakra-ui/react"
-import InfiniteScroll from "react-infinite-scroll-component"
-import { BeatLoader } from "react-spinners"
-import CommentItem from "./CommentItem"
-interface CommentListProps {
-  comments: any[]
-  visiblePosts: number
-  setVisiblePosts: (posts: number) => void
-  username?: string
-  handleVote: (author: string, permlink: string) => void
-  getTotalPayout: (comment: any) => number
-}
+"use client";
 
+import { Box, Flex } from "@chakra-ui/react";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { BeatLoader } from "react-spinners";
+import CommentItem from "./CommentItem";
+
+interface CommentListProps {
+  comments: any[];
+  visiblePosts: number;
+  setVisiblePosts: (posts: number) => void;
+  username?: string;
+  handleVote: (author: string, permlink: string) => void;
+  getTotalPayout: (comment: any) => number;
+}
 
 const CommentList = ({
   comments,
@@ -37,21 +38,20 @@ const CommentList = ({
         }
         scrollableTarget={"scrollableDiv"}
       >
-        {comments?.slice(0, visiblePosts).map((comment) => (
-
-
-          <CommentItem
-            key={comment.id}
-            comment={comment}
-            username={username || ""}
-            handleVote={handleVote}
-            getTotalPayout={getTotalPayout}
-          />
-        ))}
-
+        {comments
+          ?.slice(0, visiblePosts)
+          .map((comment) => (
+            <CommentItem
+              key={comment.id}
+              comment={comment}
+              username={username || ""}
+              handleVote={handleVote}
+              getTotalPayout={getTotalPayout}
+            />
+          ))}
       </InfiniteScroll>
     </Box>
-  )
-}
+  );
+};
 
-export default CommentList
+export default CommentList;

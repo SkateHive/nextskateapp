@@ -15,14 +15,10 @@ import {
   Flex,
   HStack,
   Text,
-  VStack
+  VStack,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import {
-  FaHeart,
-  FaRegComment,
-  FaRegHeart
-} from "react-icons/fa";
+import { FaHeart, FaRegComment, FaRegHeart } from "react-icons/fa";
 import ReactMarkdown from "react-markdown";
 import { useReward } from "react-rewards";
 import rehypeRaw from "rehype-raw";
@@ -115,7 +111,6 @@ const CommentItem = ({
   };
 
   return (
-
     <Box key={comment.id} p={4} width="100%" bg="black" color="white">
       <ReplyModal
         comment={comment}
@@ -125,36 +120,57 @@ const CommentItem = ({
 
       <Flex>
         <AuthorAvatar username={comment.author} />
-        <VStack ml={4} gap={0} alignItems={"start"}>
-          <HStack gap={"2px"}>
-            <Text fontWeight="bold">{comment.author}</Text>
-            <Text ml={2} color="gray.400" fontSize={"14px"}>
-              · {formatDate(String(comment.created))}
+        <VStack ml={4} gap={0} alignItems={"start"} width={"full"} marginRight={"16px"}>
+          <HStack justify={"space-between"}  width={"full"}>
+            <HStack gap={"2px"}>
+              <Text fontWeight="bold">{comment.author}</Text>
+              <Text ml={2} color="gray.400" fontSize={"14px"}>
+                · {formatDate(String(comment.created))}
+              </Text>
+            </HStack>
+            <Text
+              onClick={() =>
+                window.open(
+                  `/post/test/@${comment.author}/${comment.permlink}`,
+                  "_self",
+                )
+              }
+              fontWeight={"bold"}
+              color={"green.400"}
+            >
+              ${getTotalPayout(comment)}
             </Text>
           </HStack>
-          <Text onClick={() => window.open(`/post/test/@${comment.author}/${comment.permlink}`, "_self")} fontWeight={"bold"} color={"green.400"}>${getTotalPayout(comment)}</Text>
+          {/* Post Content */}
+          <Box
+            cursor={"pointer"}
+            onClick={() =>
+              window.open(
+                `/post/test/@${comment.author}/${comment.permlink}`,
+                "_self",
+              )
+            }
+          >
+            <ReactMarkdown
+              components={MarkdownRenderers}
+              rehypePlugins={[rehypeRaw]}
+              remarkPlugins={[remarkGfm]}
+            >
+              {transformIPFSContent(
+                transformShortYoutubeLinksinIframes(comment.body),
+              )}
+            </ReactMarkdown>
+          </Box>
         </VStack>
       </Flex>
 
-      <Box cursor={"pointer"} ml={"64px"} mt={4} onClick={() => window.open(`/post/test/@${comment.author}/${comment.permlink}`, "_self")}>
-        <ReactMarkdown
-          components={MarkdownRenderers}
-          rehypePlugins={[rehypeRaw]}
-          remarkPlugins={[remarkGfm]}
-        >
-          {transformIPFSContent(
-            transformShortYoutubeLinksinIframes(comment.body),
-          )}
-        </ReactMarkdown>
-      </Box>
-      <Flex ml={14} justifyContent={"space-between"} mt={4}>
+      {/* Buttons */}
+      <Flex ml={14} justifyContent={"space-between"}>
         <TipButton author={comment.author} />
-
         <Button
           colorScheme="green"
           variant="ghost"
           leftIcon={<FaRegComment />}
-          // onClick={() => handleCommentIconClick(comment)}
           onClick={handleModal}
         >
           {comment.children}
@@ -163,7 +179,6 @@ const CommentItem = ({
       </Flex>
       <Divider mt={4} />
     </Box>
-
   );
 };
 
