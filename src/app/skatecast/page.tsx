@@ -15,7 +15,6 @@ import PostBox from "./components/PostBox"
 import LoadingComponent from "./components/loadingComponent"
 import AvatarMediaModal from "./components/mediaModal"
 import Page from "../post/[...slug]/page"
-import { useModal } from "@/hooks/useModal"
 
 const parent_author = "skatehacker"
 const parent_permlink = "test-advance-mode-post"
@@ -53,8 +52,7 @@ const SkateCast = () => {
   const [mediaDictionary, setMediaDictionary] = useState<Map<number, { media: string[], type: string }>>(new Map())
   const [hasPosted, setHasPosted] = useState<boolean>(false)
   const [sortMethod, setSortMethod] = useState<string>('chronological') // State to track sorting method
-  const commentModalOpen = true
-  const postSlug =['sup', '2', '2']
+
 
 
   const sortedComments = useMemo(() => {

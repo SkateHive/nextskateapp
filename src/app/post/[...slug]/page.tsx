@@ -1,3 +1,4 @@
+"use client"
 import CommentsComponent from "@/app/dao/components/comments"
 import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers"
 import { transform3SpeakContent, transformIPFSContent } from "@/lib/utils"
@@ -8,6 +9,7 @@ import rehypeRaw from "rehype-raw"
 import remarkGfm from "remark-gfm"
 import AuthorAvatar from "@/components/AuthorAvatar"
 import { FaCross, FaTimesCircle } from "react-icons/fa"
+import { useHiveUser } from "@/contexts/UserContext"
 // Revalidate requests in 10 minutes
 // export const revalidate = 600
 
@@ -48,6 +50,11 @@ import { FaCross, FaTimesCircle } from "react-icons/fa"
 
 export default  function Page({ post, isOpen, onClose }) {
   
+  const user = useHiveUser()
+  let eligible = false
+  if(user.hiveUser?.can_vote){
+    eligible = user.hiveUser?.username || user.hiveUser.name
+  }
 
   const transformDate = (date: string) => {
     const dateObj = new Date(date);
@@ -133,7 +140,7 @@ export default  function Page({ post, isOpen, onClose }) {
               <Text mt={5} fontSize={"18px"}>Comments</Text>
             </Center>
   
-            {/* <CommentsComponent  author={user.substring(3)} permlink={postId} /> */}
+            <CommentsComponent comments={post.replies} eligible={eligible} permlink={post.permlink} />
           </Box>
   
           <Box width={{ base: "100%", md: "40%" }} mt={5}>
