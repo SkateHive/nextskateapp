@@ -1,6 +1,5 @@
 import CommentsComponent from "@/app/dao/components/comments"
 import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers"
-import HiveClient from "@/lib/hive/hiveclient"
 import { transform3SpeakContent, transformIPFSContent } from "@/lib/utils"
 import { Avatar, Badge, Box, Center, Container, Divider, HStack, Heading, Table, Tbody, Td, Text, Th, Thead, Tr, VStack } from "@chakra-ui/react"
 import { Metadata } from "next"
@@ -10,42 +9,42 @@ import remarkGfm from "remark-gfm"
 import AuthorAvatar from "@/components/AuthorAvatar"
 import { FaCross, FaTimesCircle } from "react-icons/fa"
 // Revalidate requests in 10 minutes
-export const revalidate = 600
+// export const revalidate = 600
 
-const hiveClient = HiveClient
+// const hiveClient = HiveClient
 
- async function generateMetadata({
-  params,
-}: {
-  params: { slug: [tag: string, user: string, postId: string] }
-}): Promise<Metadata> {
-  console.log("Received User:", params.slug[1]);
-  let [tag, user, postId] = params.slug
-  console.log("Received User:", user);
+//  async function generateMetadata({
+//   params,
+// }: {
+//   params: { slug: [tag: string, user: string, postId: string] }
+// }): Promise<Metadata> {
+//   console.log("Received User:", params.slug[1]);
+//   let [tag, user, postId] = params.slug
+//   console.log("Received User:", user);
 
-  const post = await getData(user, postId)
-  const banner = JSON.parse(post.json_metadata).image
+//   const post = await getData(user, postId)
+//   const banner = JSON.parse(post.json_metadata).image
 
-  return {
-    title: post.title,
-    description: `${String(post.body).slice(0, 128)}...`,
-    authors: post.author,
-    applicationName: "UnderHive",
-    openGraph: {
-      images: banner,
-    },
-  }
-}
+//   return {
+//     title: post.title,
+//     description: `${String(post.body).slice(0, 128)}...`,
+//     authors: post.author,
+//     applicationName: "UnderHive",
+//     openGraph: {
+//       images: banner,
+//     },
+//   }
+// }
 
-async function getData(user: string, postId: string) {
-  const postContent = await hiveClient.database.call("get_content", [
-    user.substring(3),
-    postId,
-  ])
-  if (!postContent) throw new Error("Failed to fetch post content")
+// async function getData(user: string, postId: string) {
+//   const postContent = await hiveClient.database.call("get_content", [
+//     user.substring(3),
+//     postId,
+//   ])
+//   if (!postContent) throw new Error("Failed to fetch post content")
 
-  return postContent
-}
+//   return postContent
+// }
 
 export default  function Page({ post, isOpen, onClose }) {
   

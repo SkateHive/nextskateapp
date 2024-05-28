@@ -14,6 +14,8 @@ import CommentList from "./components/CommentsList"
 import PostBox from "./components/PostBox"
 import LoadingComponent from "./components/loadingComponent"
 import AvatarMediaModal from "./components/mediaModal"
+import Page from "../post/[...slug]/page"
+import { useModal } from "@/hooks/useModal"
 
 const parent_author = "skatehacker"
 const parent_permlink = "test-advance-mode-post"
@@ -39,7 +41,8 @@ const getTotalPayout = (comment: Comment): number => {
 const SkateCast = () => {
   const { comments, addComment, isLoading } = useComments(
     parent_author,
-    parent_permlink
+    parent_permlink,
+    true
   )
   const [visiblePosts, setVisiblePosts] = useState<number>(3)
   const [postBody, setPostBody] = useState<string>("")
@@ -50,6 +53,8 @@ const SkateCast = () => {
   const [mediaDictionary, setMediaDictionary] = useState<Map<number, { media: string[], type: string }>>(new Map())
   const [hasPosted, setHasPosted] = useState<boolean>(false)
   const [sortMethod, setSortMethod] = useState<string>('chronological') // State to track sorting method
+  const commentModalOpen = true
+  const postSlug =['sup', '2', '2']
 
 
   const sortedComments = useMemo(() => {
@@ -208,9 +213,17 @@ const SkateCast = () => {
     setSortMethod(method)
   }
 
+  const [isopen, setisopen] = useState(false)
+  const [data, setdata] = useState(null)
+  const closeModal = () => {
+    setisopen(false)
+    setdata(null);
+  }
   return isLoading ? (
     <LoadingComponent />
   ) : (
+    <>
+    <Page post={data} isOpen={isopen} onClose={closeModal} />
     <VStack
       id="scrollableDiv"
       overflowY="auto"
@@ -267,10 +280,13 @@ const SkateCast = () => {
         visiblePosts={visiblePosts}
         setVisiblePosts={setVisiblePosts}
         username={username}
+        setdata={setdata}
+        setisopen={setisopen}
         handleVote={handleVote}
         getTotalPayout={getTotalPayout}
       />
     </VStack>
+    </>
   )
 }
 

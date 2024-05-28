@@ -29,12 +29,16 @@ import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import { handleVote } from "../utils/handleFeedVote";
 import ReplyModal from "./replyModal";
+import Page from "@/app/post/[...slug]/page";
+import { useModal } from "@/hooks/useModal";
 
 interface CommentItemProps {
   comment: any;
   username: string;
   handleVote: (author: string, permlink: string) => void;
   getTotalPayout: (comment: any) => number;
+  setdata : (data: any) => void,
+  setisopen: (open: boolean) => void,
 }
 
 const VotingButton = ({
@@ -104,24 +108,25 @@ const VotingButton = ({
 
 const CommentItem = ({
   comment,
+  setdata,
+  setisopen,
   username,
   handleVote,
   getTotalPayout,
 }: CommentItemProps) => {
   const rewardId = comment.id ? "postReward" + comment.id : "";
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const handleModal = () => {
-    setIsModalOpen(!isModalOpen);
-  };
-
+  const openModal = () => {
+    setdata(comment)
+    setisopen(true)
+  }
+  console.log(comment)
   return (
 
     <Box key={comment.id} p={4} width="100%" bg="black" color="white">
-      <ReplyModal
+      {/* <ReplyModal
         comment={comment}
-        isOpen={isModalOpen}
-        onClose={handleModal}
-      />
+      /> */}
+
 
       <Flex>
         <AuthorAvatar username={comment.author} />
@@ -155,7 +160,7 @@ const CommentItem = ({
           variant="ghost"
           leftIcon={<FaRegComment />}
           // onClick={() => handleCommentIconClick(comment)}
-          onClick={handleModal}
+          onClick={openModal}
         >
           {comment.children}
         </Button>

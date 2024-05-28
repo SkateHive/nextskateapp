@@ -9,7 +9,9 @@ interface CommentListProps {
   setVisiblePosts: (posts: number) => void
   username?: string
   handleVote: (author: string, permlink: string) => void
-  getTotalPayout: (comment: any) => number
+  getTotalPayout: (comment: any) => number,
+  setdata : (data: any) => void,
+  setisopen: (open: boolean) => void,
 }
 
 
@@ -17,6 +19,8 @@ const CommentList = ({
   comments,
   visiblePosts,
   setVisiblePosts,
+  setdata,
+  setisopen,
   username,
   handleVote,
   getTotalPayout,
@@ -44,6 +48,8 @@ const CommentList = ({
             key={comment.id}
             comment={comment}
             username={username || ""}
+            setdata={setdata}
+            setisopen={setisopen}
             handleVote={handleVote}
             getTotalPayout={getTotalPayout}
           />
