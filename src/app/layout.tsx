@@ -1,13 +1,12 @@
 // RootLayout.tsx
-import type { ReactNode } from "react";
-import { Share_Tech_Mono } from "next/font/google";
 import Favicon from "@/components/FaviconLinks";
 import SidebarDesktop from "@/components/Navbar/sidebarDesktop";
-import { Box, ColorModeScript, Flex } from "@chakra-ui/react";
-import { Providers } from "./providers";
-import FeedLayout from "./feedLayout";
-import { getWebsiteURL } from "@/lib/utils";
 import MobileMenuButton from "@/components/mobileMenuButton";
+import { getWebsiteURL } from "@/lib/utils";
+import { Box, ColorModeScript, Flex } from "@chakra-ui/react";
+import { Share_Tech_Mono } from "next/font/google";
+import type { ReactNode } from "react";
+import { Providers } from "./providers";
 
 const share_tech_mono = Share_Tech_Mono({ subsets: ["latin"], weight: "400" });
 
@@ -37,7 +36,7 @@ export default function RootLayout({
   children,
 }: RootLayoutProps) {
   return (
-    <html lang="pt-br">
+    <html lang="en">
       <head>
         <link rel="manifest" href="/manifest.json"></link>
         <Favicon />
@@ -76,7 +75,6 @@ export default function RootLayout({
               <MobileMenuButton />
             </div>
             {children}
-            <FeedLayout />
           </Flex>
         </Providers>
       </body>

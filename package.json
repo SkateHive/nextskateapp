@@ -14,6 +14,7 @@
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
     "@ethersproject/providers": "^5.7.2",
+    "@fontsource/creepster": "^5.0.12",
     "@giphy/js-fetch-api": "^5.4.0",
     "@giphy/js-types": "^5.0.0",
     "@giphy/react-components": "^9.3.0",

@@ -21,7 +21,6 @@ import { normalize } from "path"
 import React, { useEffect, useState } from "react"
 import ReactMarkdown from "react-markdown"
 import rehypeRaw from "rehype-raw"
-import rehypeSanitize from "rehype-sanitize"
 import remarkGfm from "remark-gfm"
 import { mainnet } from "viem/chains"
 import { useAccount, useEnsAvatar, useEnsName } from "wagmi"
@@ -117,12 +116,11 @@ const DaoPage = () => {
   return (
     <Box width={"100%"}>
       <br />
-      <DaoTreasure />
       <Box
         bg="black"
         p={4}
-        border="0.6px solid white"
-        borderRadius="10px"
+        border="1px solid grey"
+        borderTopRadius="10px"
         width={"100%"}
       >
         <Grid templateColumns="1fr 2fr 1fr" gap={6} alignItems="center">
@@ -155,6 +153,8 @@ const DaoPage = () => {
           </GridItem>
         </Grid>
       </Box>
+      <DaoTreasure />
+
       {isCreateProposalModalOpen ? (
         <CreateProposalModal connectedUserAddress={formattedAddress} />
 
@@ -319,7 +319,7 @@ const DaoPage = () => {
             >
               <ReactMarkdown
                 components={MarkdownRenderers}
-                rehypePlugins={[rehypeRaw, rehypeSanitize]}
+                rehypePlugins={[rehypeRaw]}
                 remarkPlugins={[remarkGfm]}
               >
                 {mainProposal?.body ?? ""}

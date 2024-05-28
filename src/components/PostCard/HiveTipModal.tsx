@@ -1,29 +1,27 @@
 // Lets create a HiveTip Modal component that will allow users to tip authors with HIVE tokens.
 
 // Path: src/components/PostCard/HiveTipModal.tsx
-import React, { useState } from 'react';
+import { usePostContext } from '@/contexts/PostContext';
+import { useHiveUser } from '@/contexts/UserContext';
+import { transferWithKeychain } from '@/lib/hive/client-functions';
 import {
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalFooter,
-    ModalBody,
-    ModalCloseButton,
-    Button,
-    useDisclosure,
-    Text,
     Box,
+    Button,
+    ButtonGroup,
     Image,
     Input,
     InputGroup,
     InputLeftElement,
-    ButtonGroup,
+    Modal,
+    ModalBody,
+    ModalCloseButton,
+    ModalContent,
+    ModalFooter,
+    ModalHeader,
+    ModalOverlay,
+    Text
 } from "@chakra-ui/react";
-import { FaDonate } from "react-icons/fa";
-import { transferWithKeychain } from '@/lib/hive/client-functions';
-import { usePostContext } from '@/contexts/PostContext';
-import { useHiveUser } from '@/contexts/UserContext';
+import React, { useState } from 'react';
 
 interface HiveTipModalProps {
     isOpen: boolean;

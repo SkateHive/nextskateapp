@@ -1,17 +1,19 @@
 "use client"
-import { ButtonGroup, VStack, Button, HStack, MenuButton, MenuList, MenuItem, Menu } from "@chakra-ui/react"
 import { useHiveUser } from "@/contexts/UserContext"
 import { useComments } from "@/hooks/comments"
-import AvatarList from "./AvatarList"
-import PostBox from "./PostBox"
-import LoadingComponent from "./loadingComponent"
-import AvatarMediaModal from "./mediaModal"
 import { vote } from "@/lib/hive/client-functions"
-import * as dhive from "@hiveio/dhive"
-import CommentList from "./CommentsList"
 import { commentWithPrivateKey } from "@/lib/hive/server-functions"
-import { useState, useEffect, useMemo } from "react"
-import { IoFilter } from "react-icons/io5";
+import { HStack, Menu, MenuButton, MenuItem, MenuList, Text, VStack } from "@chakra-ui/react"
+import * as dhive from "@hiveio/dhive"
+import { useMemo, useState } from "react"
+import { FaHistory, FaMoneyBill } from "react-icons/fa"
+import { FaArrowRightArrowLeft } from "react-icons/fa6"
+import { IoFilter } from "react-icons/io5"
+import AvatarList from "./components/AvatarList"
+import CommentList from "./components/CommentsList"
+import PostBox from "./components/PostBox"
+import LoadingComponent from "./components/loadingComponent"
+import AvatarMediaModal from "./components/mediaModal"
 
 const parent_author = "skatehacker"
 const parent_permlink = "test-advance-mode-post"
@@ -39,7 +41,7 @@ const SkateCast = () => {
     parent_author,
     parent_permlink
   )
-  const [visiblePosts, setVisiblePosts] = useState<number>(20)
+  const [visiblePosts, setVisiblePosts] = useState<number>(3)
   const [postBody, setPostBody] = useState<string>("")
   const user = useHiveUser()
   const username = user?.hiveUser?.name
@@ -47,7 +49,7 @@ const SkateCast = () => {
   const [media, setMedia] = useState<string[]>([])
   const [mediaDictionary, setMediaDictionary] = useState<Map<number, { media: string[], type: string }>>(new Map())
   const [hasPosted, setHasPosted] = useState<boolean>(false)
-  const [sortMethod, setSortMethod] = useState<string>('engagement') // State to track sorting method
+  const [sortMethod, setSortMethod] = useState<string>('chronological') // State to track sorting method
 
 
   const sortedComments = useMemo(() => {
@@ -200,11 +202,7 @@ const SkateCast = () => {
     setMediaModalOpen(true)
   }
 
-  const handleCommentIconClick = (comment: Comment) => {
-    if (typeof window !== "undefined") {
-      window.location.href = `post/hive-173115/@${comment.author}/${comment.permlink}`
-    }
-  }
+
 
   const handleSortChange = (method: string) => {
     setSortMethod(method)
@@ -214,11 +212,13 @@ const SkateCast = () => {
     <LoadingComponent />
   ) : (
     <VStack
+      id="scrollableDiv"
       overflowY="auto"
       css={{ "&::-webkit-scrollbar": { display: "none" } }}
       maxW={"740px"}
       width={"100%"}
       borderInline={"1px solid rgb(255,255,255,0.2)"}
+      height={"100vh"}
     >
       <AvatarMediaModal
         isOpen={mediaModalOpen}
@@ -242,20 +242,22 @@ const SkateCast = () => {
         justifyContent="flex-end"
         mr={4}
       >
-        <Menu>
+        <Menu
+        >
           <MenuButton>
-            <IoFilter color="#4BD166" />
+            <IoFilter color="#9AE6B4" />
           </MenuButton>
           <MenuList
             bg={"black"}
+            border={"1px solid limegreen"}
           >
+            <MenuItem bg={"black"}
+              onClick={() => handleSortChange('chronological')}> <FaHistory /> <Text ml={2}> Latest</Text></MenuItem>
             <MenuItem
               bg={"black"}
-              onClick={() => handleSortChange('payout')}> Payout</MenuItem>
+              onClick={() => handleSortChange('payout')}> <FaMoneyBill /> <Text ml={2}>Payout</Text> </MenuItem>
             <MenuItem bg={"black"}
-              onClick={() => handleSortChange('chronological')}>Latest</MenuItem>
-            <MenuItem bg={"black"}
-              onClick={() => handleSortChange('engagement')}>Engagement</MenuItem>
+              onClick={() => handleSortChange('engagement')}><FaArrowRightArrowLeft /> <Text ml={2}>Engagement</Text> </MenuItem>
           </MenuList>
         </Menu>
 
@@ -265,7 +267,6 @@ const SkateCast = () => {
         visiblePosts={visiblePosts}
         setVisiblePosts={setVisiblePosts}
         username={username}
-        handleCommentIconClick={handleCommentIconClick}
         handleVote={handleVote}
         getTotalPayout={getTotalPayout}
       />

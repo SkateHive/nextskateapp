@@ -1,16 +1,17 @@
 'use client'
-import { useState, useEffect } from "react";
+import HiveClient from "@/lib/hive/hiveclient";
 import { getWebsiteURL } from "@/lib/utils";
 import { Link } from "@chakra-ui/next-js";
-import { Avatar } from "@chakra-ui/react";
-import HiveClient from "@/lib/hive/hiveclient";
+import { Avatar, SystemStyleObject } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 
 interface AuthorAvatarProps {
     username: string;
     borderRadius?: number;
+    hover?: SystemStyleObject;
 }
 
-export default function AuthorAvatar({ username, borderRadius }: AuthorAvatarProps) {
+export default function AuthorAvatar({ username, borderRadius, hover }: AuthorAvatarProps) {
     const [profileImage, setProfileImage] = useState("");
 
     useEffect(() => {
@@ -30,7 +31,7 @@ export default function AuthorAvatar({ username, borderRadius }: AuthorAvatarPro
     }, [username]);
 
     return (
-        <Link href={`${getWebsiteURL()}/profile/${username}`}>
+        <Link href={`/skater/${username}`}>
             <Avatar
                 name={username}
                 src={profileImage || `https://images.ecency.com/webp/u/${username}/avatar/small`}
@@ -38,7 +39,7 @@ export default function AuthorAvatar({ username, borderRadius }: AuthorAvatarPro
                 bg="transparent"
                 loading="lazy"
                 borderRadius={borderRadius || 5}
-                border={"1px solid limegreen"}
+                _hover={hover || { cursor: "pointer" }}
             />
         </Link>
     );
