@@ -51,10 +51,7 @@ import { useHiveUser } from "@/contexts/UserContext"
 export default  function Page({ post, isOpen, onClose }) {
   
   const user = useHiveUser()
-  let eligible = false
-  if(user.hiveUser?.can_vote){
-    eligible = user.hiveUser?.username || user.hiveUser.name
-  }
+  const username = user.hiveUser.username || 'undefined'
 
   const transformDate = (date: string) => {
     const dateObj = new Date(date);
@@ -140,7 +137,7 @@ export default  function Page({ post, isOpen, onClose }) {
               <Text mt={5} fontSize={"18px"}>Comments</Text>
             </Center>
   
-            <CommentsComponent comments={post.replies} eligible={eligible} permlink={post.permlink} />
+            <CommentsComponent comments={post.replies} author={username} permlink={post.permlink} />
           </Box>
   
           <Box width={{ base: "100%", md: "40%" }} mt={5}>
