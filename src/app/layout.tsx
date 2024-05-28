@@ -6,7 +6,10 @@ import { getWebsiteURL } from "@/lib/utils";
 import { Box, ColorModeScript, Flex } from "@chakra-ui/react";
 import { Share_Tech_Mono } from "next/font/google";
 import type { ReactNode } from "react";
+import '../app/Cursor/global.css';
+import CustomCursor from "./Cursor/Cursor";
 import { Providers } from "./providers";
+
 
 const share_tech_mono = Share_Tech_Mono({ subsets: ["latin"], weight: "400" });
 
@@ -67,6 +70,7 @@ export default function RootLayout({
       <body className={share_tech_mono.className}>
         <ColorModeScript initialColorMode="dark" />
         <Providers>
+          <CustomCursor />
           <Flex justifyContent={"center"} id="layout" height={"100vh"}>
             <Box className="hide-on-mobile">
               <SidebarDesktop />
