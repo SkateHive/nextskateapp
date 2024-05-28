@@ -14,6 +14,7 @@ import {
   Divider,
   Flex,
   HStack,
+  IconButton,
   Text,
   VStack,
 } from "@chakra-ui/react";
@@ -167,14 +168,15 @@ const CommentItem = ({
       {/* Buttons */}
       <Flex ml={14} justifyContent={"space-between"}>
         <TipButton author={comment.author} />
-        <Button
+        <IconButton
           colorScheme="green"
           variant="ghost"
-          leftIcon={<FaRegComment />}
+          icon={<FaRegComment />}
           onClick={handleModal}
+          aria-label="Comments"
         >
           {comment.children}
-        </Button>
+        </IconButton>
         <VotingButton comment={comment} username={username} />
       </Flex>
       <Divider mt={4} />
