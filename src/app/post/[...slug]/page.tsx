@@ -87,6 +87,37 @@ export default function Page({ post, isOpen, onClose }) {
 
 
       <VStack align="start" spacing={4} position="relative">
+             <Center gridColumn={'2/3'}>
+               <VStack width={"90%"}>
+  
+                 <Badge border={"1px solid grey"} width={"100%"} m={"10px"} fontSize={'38px'} bg="#201d21" color="white">
+                   <Center>
+  
+                     <Text> {getTotalPayout(post).toFixed(2)} USD</Text>
+                   </Center>
+                 </Badge>
+                 {post.beneficiaries.length > 0 &&
+                   <Table border={"1px solid grey"} width={"100%"} borderRadius={"10px"}>
+                     <Thead borderRadius={"10px"}>
+                       <Tr borderRadius={"10px"}>
+                         <Th>Beneficiaries</Th>
+                         <Th>Weight</Th>
+                       </Tr>
+                     </Thead>
+                     <Tbody maxW={"85%"} borderRadius={"10px"}>
+                       {post.beneficiaries.map((beneficiary: any) => (
+                         <Tr key={beneficiary.account}>
+                           <Td>{beneficiary.account}</Td>
+                           <Td>{beneficiary.weight / 100}%</Td>
+                         </Tr>
+                       ))}
+                     </Tbody>
+                   </Table>
+  
+                 }
+               </VStack>
+  
+             </Center>
         <Flex align="start" w="full">
           <AuthorAvatar username={post.author} borderRadius={100} />
           <VStack>
@@ -99,7 +130,7 @@ export default function Page({ post, isOpen, onClose }) {
             </Center>
           </VStack>
         </Flex>
-        <Box position="absolute" left="24px" top="60px" bottom="120px" width="2px" bg="gray.600" />
+        <Box style={{zIndex: '-1'}} position="absolute" left="24px" top="60px" bottom="120px" width="2px" bg="gray.600" />
         <Flex align="start" w="full" direction={{ base: "column", md: "row" }}>
           {user.hiveUser && <UserAvatar hiveAccount={user.hiveUser} borderRadius={100} boxSize={12} />}
           <VStack align="start" w="full">
