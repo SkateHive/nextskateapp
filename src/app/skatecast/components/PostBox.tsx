@@ -138,11 +138,18 @@ const PostBox = ({ username, postBody, setPostBody, handlePost }: PostBoxProps) 
           {...getInputProps({ refKey: "ref" })}
           ref={inputRef}
         />
-        <FaImage
-          color="#ABE4B8"
-          cursor="pointer"
+        <Button
+          colorScheme="green"
+          variant="ghost"
           onClick={handleImageUploadClick}
-        />
+        >
+
+          <FaImage
+            color="#ABE4B8"
+            cursor="pointer"
+            onClick={handleImageUploadClick}
+          />
+        </Button>
         <Button
           colorScheme="green"
           variant="outline"
