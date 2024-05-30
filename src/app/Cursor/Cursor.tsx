@@ -12,6 +12,7 @@ interface Position {
 const Cursor = () => {
   const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -26,17 +27,29 @@ const Cursor = () => {
       }
     };
 
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
     document.body.style.cursor = 'none';
 
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseover', handleMouseOver);
+    window.addEventListener('resize', handleResize);
+
+    handleResize();
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseover', handleMouseOver);
+      window.removeEventListener('resize', handleResize);
       document.body.style.cursor = 'auto';
     };
   }, []);
+
+  if (isMobile) {
+    return null;
+  }
 
   return (
     <>
