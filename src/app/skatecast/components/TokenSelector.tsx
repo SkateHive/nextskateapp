@@ -1,5 +1,153 @@
 'use client'
+
+// export const airdropABI = [
+//     {
+//         "inputs": [],
+//         "stateMutability": "nonpayable",
+//         "type": "constructor"
+//     },
+//     {
+//         "anonymous": false,
+//         "inputs": [
+//             {
+//                 "indexed": false,
+//                 "internalType": "address",
+//                 "name": "token",
+//                 "type": "address"
+//             },
+//             {
+//                 "indexed": true,
+//                 "internalType": "address",
+//                 "name": "from",
+//                 "type": "address"
+//             },
+//             {
+//                 "indexed": false,
+//                 "internalType": "address[]",
+//                 "name": "recipients",
+//                 "type": "address[]"
+//             },
+//             {
+//                 "indexed": false,
+//                 "internalType": "uint256[]",
+//                 "name": "amounts",
+//                 "type": "uint256[]"
+//             }
+//         ],
+//         "name": "BulkTransfer",
+//         "type": "event"
+//     },
+//     {
+//         "anonymous": false,
+//         "inputs": [
+//             {
+//                 "indexed": false,
+//                 "internalType": "address",
+//                 "name": "token",
+//                 "type": "address"
+//             }
+//         ],
+//         "name": "TokensApproved",
+//         "type": "event"
+//     },
+//     {
+//         "anonymous": false,
+//         "inputs": [
+//             {
+//                 "indexed": false,
+//                 "internalType": "address",
+//                 "name": "token",
+//                 "type": "address"
+//             }
+//         ],
+//         "name": "TokensDisapproved",
+//         "type": "event"
+//     },
+//     {
+//         "inputs": [
+//             {
+//                 "internalType": "address",
+//                 "name": "token",
+//                 "type": "address"
+//             }
+//         ],
+//         "name": "approveToken",
+//         "outputs": [],
+//         "stateMutability": "nonpayable",
+//         "type": "function"
+//     },
+//     {
+//         "inputs": [
+//             {
+//                 "internalType": "address",
+//                 "name": "",
+//                 "type": "address"
+//             }
+//         ],
+//         "name": "approvedTokens",
+//         "outputs": [
+//             {
+//                 "internalType": "bool",
+//                 "name": "",
+//                 "type": "bool"
+//             }
+//         ],
+//         "stateMutability": "view",
+//         "type": "function"
+//     },
+//     {
+//         "inputs": [
+//             {
+//                 "internalType": "address",
+//                 "name": "token",
+//                 "type": "address"
+//             },
+//             {
+//                 "internalType": "address[]",
+//                 "name": "recipients",
+//                 "type": "address[]"
+//             },
+//             {
+//                 "internalType": "uint256[]",
+//                 "name": "amounts",
+//                 "type": "uint256[]"
+//             }
+//         ],
+//         "name": "bulkTransfer",
+//         "outputs": [],
+//         "stateMutability": "nonpayable",
+//         "type": "function"
+//     },
+//     {
+//         "inputs": [
+//             {
+//                 "internalType": "address",
+//                 "name": "token",
+//                 "type": "address"
+//             }
+//         ],
+//         "name": "disapproveToken",
+//         "outputs": [],
+//         "stateMutability": "nonpayable",
+//         "type": "function"
+//     },
+//     {
+//         "inputs": [],
+//         "name": "owner",
+//         "outputs": [
+//             {
+//                 "internalType": "address",
+//                 "name": "",
+//                 "type": "address"
+//             }
+//         ],
+//         "stateMutability": "view",
+//         "type": "function"
+//     }
+// ] as const;
+
 import { TokenInfo } from "@/components/PostCard/TipModal";
+import { airdropABI } from "@/lib/abi/airdropABI";
 import { memberABI } from "@/lib/abi/memberABI";
 import { nogsABI } from "@/lib/abi/nogsABI";
 import { SenditABI } from "@/lib/abi/senditABI";
@@ -20,7 +168,7 @@ import {
     Text
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { useAccount, useWriteContract } from "wagmi";
+import { useAccount, useConfig, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 
 interface TokenSelectorProps {
     addressDict: any;
@@ -31,15 +179,23 @@ interface AuthorEthAddress {
     ethAddress: string;
 }
 
+const SkateAirdropContract = '0x8bD8F0D46c84feCBFbF270bac4Ad28bFA2c78F05';
+
 const TokenSelector = ({ addressDict }: TokenSelectorProps) => {
     const [token, setToken] = useState("NOGS");
     const [isCustomToken, setIsCustomToken] = useState(false);
     const [customTokenContract, setCustomTokenContract] = useState("");
     const account = useAccount();
-    const { data: hash, writeContract } = useWriteContract();
     const [amount, setAmount] = useState<string>("0");
     const ethAddressList = Object.values<AuthorEthAddress>(addressDict).map((item: AuthorEthAddress) => item.ethAddress);
-    const dividedAmount = (Number(amount) / ethAddressList.length).toString();
+    const dividedAmount = ethAddressList.length > 0 ? (Number(amount) / ethAddressList.length) : 0;
+    const { data: hash, isPending, writeContract } = useWriteContract();
+    const config = useConfig();
+
+    const { isLoading: isConfirming, isSuccess: isConfirmed } =
+        useWaitForTransactionReceipt({
+            hash,
+        })
 
     const tokenDictionary: { [key: string]: TokenInfo } = {
         SENDIT: {
@@ -57,38 +213,27 @@ const TokenSelector = ({ addressDict }: TokenSelectorProps) => {
             abi: memberABI as unknown as any[],
             tokenLogo: "https://member.clinic/images/01-1.jpg"
         },
-        HIVE: {
-            address: '0x',
-            abi: [] as unknown as any[],
-            tokenLogo: "https://cryptologos.cc/logos/hive-blockchain-hive-logo.png"
-        },
-        ShitCoin: {
-            address: '0x',
-            abi: [] as unknown as any[],
-            tokenLogo: "/logos/base_logo.png"
-        }
+        // HIVE: {
+        //     address: '0x',
+        //     abi: [] as unknown as any[],
+        //     tokenLogo: "https://cryptologos.cc/logos/hive-blockchain-hive-logo.png"
+        // }
     };
 
-    const sendTokentoMultipleAddresses = async (amount: string, tokenKey: string) => {
-        // if (tokenKey in tokenDictionary) {
-        //     const { address, abi } = tokenDictionary[tokenKey];
-        //     try {
-        //         const writeContractParams = {
-        //             address, // contract address of the token
-        //             abi, // ABI for the token's contract
-        //             functionName: 'transfer',
-        //             args: [ethAddressList, parseUnits(dividedAmount, 18)], // Assuming the recipient's address is `author` and token decimals is 18
-        //         };
-        //         await writeContract({
-        //             ...writeContractParams
-        //         });
-        //         console.log(`Transaction hash: ${hash}`);
-        //     } catch (error) {
-        //         console.error(error);
-        //     }
-        // } else {
-        //     console.log("Unsupported token");
-        // }
+    const ethAddressListFormatted = ethAddressList.map((address) => address.startsWith("0x") ? address : `0x${address}`) as readonly `0x${string}`[];
+    const dividedAmountFormatted = BigInt(Math.round(dividedAmount * 1e18));
+
+    const handleBulkTransfer = async () => {
+        if (!writeContract) return;
+        console.log("ethAddressListFormatted", ethAddressListFormatted)
+        console.log("dividedAmountFormatted", dividedAmountFormatted)
+        const dividedAmountList = ethAddressListFormatted.map(() => dividedAmountFormatted);
+        writeContract({
+            address: SkateAirdropContract,
+            abi: airdropABI,
+            functionName: 'bulkTransfer',
+            args: [tokenDictionary[token].address, ethAddressListFormatted, dividedAmountList],
+        });
     }
 
     return (
@@ -109,13 +254,14 @@ const TokenSelector = ({ addressDict }: TokenSelectorProps) => {
                                     <MenuItem
                                         bg="black"
                                         _hover={{ bg: "red.500", color: "black" }}
-                                        onClick={() => {
-                                            setToken("HIVE");
-                                            setIsCustomToken(false);
-                                        }}
+                                        onClick={() => alert("We said SOON! bitch!")}
+                                    // onClick={() => {
+                                    //     setToken("HIVE");
+                                    //     setIsCustomToken(false);
+                                    // }}
                                     >
                                         <Image alt="hive-logo" mr={3} boxSize="20px" src="https://cryptologos.cc/logos/hive-blockchain-hive-logo.png" />
-                                        $HIVE
+                                        $HIVE (Soon)
                                     </MenuItem>
                                     <MenuItem
                                         bg="black"
@@ -149,17 +295,6 @@ const TokenSelector = ({ addressDict }: TokenSelectorProps) => {
                                     >
                                         <Image alt="member" mr={3} boxSize="20px" src="https://member.clinic/images/01-1.jpg" />
                                         $MEMBER
-                                    </MenuItem>
-                                    <MenuItem
-                                        bg="black"
-                                        _hover={{ bg: "blue.500" }}
-                                        onClick={() => {
-                                            setIsCustomToken(true);
-                                            setToken("ShitCoin");
-                                        }}
-                                    >
-                                        <Image alt="Custom" mr={3} boxSize="20px" src="/logos/base_logo.png" />
-                                        CUSTOM
                                     </MenuItem>
                                 </MenuList>
                             </Portal>
@@ -196,7 +331,11 @@ const TokenSelector = ({ addressDict }: TokenSelectorProps) => {
                 colorScheme="green"
                 variant={"outline"}
                 onClick={() => {
-                    sendTokentoMultipleAddresses(dividedAmount, token);
+                    if (account.isConnected) {
+                        handleBulkTransfer();
+                    } else {
+                        console.error("Wallet not connected");
+                    }
                 }}
             >
                 Send {amount} {token} to {ethAddressList.length} vagabonds !!!
