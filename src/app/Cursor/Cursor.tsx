@@ -28,7 +28,7 @@ const Cursor = () => {
     };
 
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
+      setIsMobile(window.innerWidth < 1000);
     };
 
     document.body.style.cursor = 'none';
@@ -48,6 +48,7 @@ const Cursor = () => {
   }, []);
 
   if (isMobile) {
+    // Retorne null para não renderizar nada em dispositivos móveis
     return null;
   }
 
@@ -70,4 +71,5 @@ const Cursor = () => {
 };
 
 export default Cursor;
+
 
