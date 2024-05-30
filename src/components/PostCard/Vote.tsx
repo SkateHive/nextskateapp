@@ -5,9 +5,8 @@ import { vote } from "@/lib/hive/client-functions"
 import { voteWithPrivateKey } from "@/lib/hive/server-functions"
 import { Button, Text, Tooltip } from "@chakra-ui/react"
 import { VoteOperation } from "@hiveio/dhive"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useReward } from "react-rewards"
-import { useEffect } from "react"
 import { voting_value2 } from "./calculateHiveVotingValueForHiveUser"
 export default function Vote() {
   const { post } = usePostContext()
@@ -77,7 +76,6 @@ export default function Vote() {
 
     if (!isVoted) reward()
     setIsVoted((isVoted) => !isVoted)
-    //mutate(SWR_POSTS_TAG)
   }
 
   return (
@@ -99,13 +97,11 @@ export default function Vote() {
           }}
         />
         <Text
-          // color={isVoted ? "limegreen" : "white"}
           fontSize={"18px"}
           fontWeight={"bold"}
         >
           ${postEarnings.toFixed(2)}
         </Text>
-        {/* <RiArrowRightUpLine size={25} style={{ marginLeft: "-4px" }} /> */}
       </Button>
     </Tooltip>
   )

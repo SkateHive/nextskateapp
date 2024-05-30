@@ -1,29 +1,26 @@
 'use client'
-import { useEffect, useState } from 'react';
-import * as dhive from '@hiveio/dhive';
 import {
-    Input,
-    Button,
     Box,
-    Text,
-    VStack,
-    FormControl,
-    FormLabel,
-    Icon,
+    Button,
     Center,
-    Flex,
     Checkbox,
-    Image,
+    Flex,
+    FormControl,
     HStack,
+    Icon,
+    Input,
+    Text,
+    VStack
 } from '@chakra-ui/react';
-import { FaCheck, FaTimes } from 'react-icons/fa';
-import { KeychainSDK, KeychainKeyTypes, KeychainRequestTypes } from 'keychain-sdk';
-import { KeyRole } from '@hiveio/dhive';
 import '@fontsource/creepster';
-import { FaKey, FaCopy, FaDownload } from 'react-icons/fa';
+import * as dhive from '@hiveio/dhive';
+import { KeyRole } from '@hiveio/dhive';
+import { KeychainKeyTypes, KeychainRequestTypes, KeychainSDK } from 'keychain-sdk';
+import { useEffect, useState } from 'react';
+import { FaCheck, FaDownload, FaKey, FaTimes } from 'react-icons/fa';
 
 
-// Initialize the Hive client with API endpoints
+
 const client = new dhive.Client([
     'https://api.hive.blog',
     'https://api.hivekings.com',
@@ -32,10 +29,9 @@ const client = new dhive.Client([
 ]);
 
 
-import { Operation } from '@hiveio/dhive';
 import { useHiveUser } from '@/contexts/UserContext';
+import { Operation } from '@hiveio/dhive';
 
-// generate random password
 const generatePassword = () => {
     const array = new Uint32Array(10);
     crypto.getRandomValues(array);
@@ -44,7 +40,6 @@ const generatePassword = () => {
     return key.substring(0, 25);
 }
 
-// generate account keys from username and password
 const getPrivateKeys = (username: string, password: string, roles = ['owner', 'active', 'posting', 'memo']) => {
     const privKeys = {} as any;
     roles.forEach((role) => {
@@ -56,10 +51,8 @@ const getPrivateKeys = (username: string, password: string, roles = ['owner', 'a
 };
 
 
-// Function to check if a Hive account exists
 const checkAccountExists = async (desiredUsername: string) => {
     try {
-        // Query the account using getAccounts method
         const accounts = await client.database.getAccounts([desiredUsername]);
         return accounts.length === 0;
     } catch (error) {
@@ -82,7 +75,6 @@ function AccountCreation() {
     const [showSecondForm, setShowSecondForm] = useState(false);
     const [accountAvailable, setAccountAvailable] = useState(false);
     const [isCheckedOnce, setIsCheckedOnce] = useState(false);
-    const [captchaCompleted, setCaptchaCompleted] = useState<boolean | null>(null);
     const [email, setEmail] = useState('');
     const [masterPassword, setMasterPassword] = useState('');
     const [keys, setKeys] = useState<any>(null);
@@ -111,20 +103,13 @@ function AccountCreation() {
         }
     };
 
-    // Callback function to set the captcha completion status
-    const handleCaptchaCompletion = (completed: boolean) => {
-        setCaptchaCompleted(completed);
-    };
-
     const handleGenerateKeys = () => {
-        // Generate new key pairs for different authorities
         const masterPassword = generatePassword();
         setMasterPassword(masterPassword);
 
         const keys = getPrivateKeys(desiredUsername, masterPassword);
         setKeys(keys);
 
-        // create download text
         let text = `Username: ${desiredUsername}\n\n`;
         text += `Master Password (Backup): ${masterPassword}\n\n`;
         text += `Owner Private Key: ${keys.owner}\n\n`;
@@ -145,7 +130,6 @@ function AccountCreation() {
 
     const handleCreateAccount = async () => {
         try {
-            // initialize keychain sdk
             const keychain = new KeychainSDK(window);
             let ops: Operation[] = [];
 
@@ -170,7 +154,7 @@ function AccountCreation() {
 
                 const formParamsAsObject = {
                     type: KeychainRequestTypes.broadcast,
-                    username: user.hiveUser?.name ?? '', // Provide a default value of an empty string if user.hiveUser?.name is undefined
+                    username: user.hiveUser?.name ?? '', 
                     operations: ops,
                     method: KeychainKeyTypes.active,
                 };
@@ -185,7 +169,7 @@ function AccountCreation() {
     };
 
     useEffect(() => {
-        const intervalTime = 30; // Increase the interval time for a smoother display
+        const intervalTime = 30; 
         const timer = setInterval(() => {
             setCharactersToShow((prevChars) => {
                 if (prevChars >= downloadText.length) {
@@ -255,11 +239,6 @@ function AccountCreation() {
 
                 {showSecondForm && (
                     <FormControl>
-                        {/* <FormLabel>Enter Your Email</FormLabel> */}
-                        {/* <Input bg={"black"} placeholder="Your email" value={email} onChange={(e) =>
-              setEmail(e.target.value)
-            } /> */}
-
                         <Center>
                             <Button leftIcon={<FaKey />} colorScheme="yellow" border={"2px solid black"} onClick={handleGenerateKeys} marginTop={5}>
                                 Generate Keys
@@ -292,7 +271,7 @@ function AccountCreation() {
                                     const file = new Blob([downloadText], { type: 'text/plain' });
                                     element.href = URL.createObjectURL(file);
                                     element.download = `KEYS BACKUP - @${desiredUsername.toUpperCase()}.txt`;
-                                    document.body.appendChild(element); // Required for this to work in FireFox
+                                    document.body.appendChild(element); 
                                     element.click();
 
                                     setAreKeysDownloaded(true);

@@ -1,11 +1,7 @@
-// path: src/lib/pages/upload/SocialModal.tsx 
-
+import { Button, Divider, Flex, Image, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Toast, VStack } from '@chakra-ui/react';
 import * as React from 'react';
-import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Button, Flex, Image, Text, Link, VStack, Divider, Badge, Input, FormControl, FormLabel, Grid, GridItem } from '@chakra-ui/react';
 import { FaCopy, FaDiscord } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
-import { useState } from 'react';
-import { Toast } from '@chakra-ui/react';
 interface SocialModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -29,7 +25,6 @@ const SocialModal: React.FC<SocialModalProps> = ({ isOpen, onClose, postUrl, con
             const postPageUrl = generatePostUrl();
             navigator.clipboard.writeText(postPageUrl);
             setPostLinkCopied(true);
-            //wait 3 seconds
             setTimeout(() => {
                 setPostLinkCopied(false);
             }, 3000);
@@ -51,7 +46,6 @@ const SocialModal: React.FC<SocialModalProps> = ({ isOpen, onClose, postUrl, con
     const handleShareTwitter = async () => {
         try {
             const postPageUrl = encodeURI(generatePostUrl());
-            // assemble text + url in just one string 
             const tweetText = `${aiSummary} ${postPageUrl}`;
             window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, '_blank');
 
@@ -63,12 +57,9 @@ const SocialModal: React.FC<SocialModalProps> = ({ isOpen, onClose, postUrl, con
     const handleShareDiscord = async () => {
         try {
             const postPageUrl = encodeURI(generatePostUrl());
-            // assemble text + url in just one string 
             const tweetText = `${aiSummary} ${postPageUrl}`;
-            // copy tweetText to clipboard
             navigator.clipboard.writeText(tweetText);
 
-            // open discord
             window.open('https://discord.com/channels/631777256234156033/631778823716864011', '_blank');
         }
         catch (error) {

@@ -1,32 +1,28 @@
 'use client'
+import { useHiveUser } from "@/contexts/UserContext"
+import { useHivePrice } from "@/hooks/useHivePrice"
+import { claimRewards } from "@/lib/hive/client-functions"
 import {
     Avatar,
+    Box,
     Button,
     Center,
     Divider,
     HStack,
-    Text,
-    VStack,
-    Grid,
-    Box,
-    GridItem,
-    Tooltip,
+    Menu,
     MenuButton,
     MenuItem,
     MenuList,
-    Menu
+    Text,
+    Tooltip,
+    VStack
 } from "@chakra-ui/react"
-import { FaHive } from "react-icons/fa"
-import { useHiveUser } from "@/contexts/UserContext"
-import { claimRewards } from "@/lib/hive/client-functions"
+import { SendIcon } from "lucide-react"
 import { useEffect, useState } from "react"
-import { FaGift } from "react-icons/fa"
+import { AiOutlineThunderbolt } from "react-icons/ai"
+import { BsArrowDownCircleFill } from "react-icons/bs"
+import { FaGift, FaHive } from "react-icons/fa"
 import { convertVestingSharesToHivePower } from "../utils/calculateHP"
-import { RadioReceiverIcon, SendIcon } from "lucide-react"
-import { AiOutlineThunderbolt } from "react-icons/ai";
-import { BsArrowDownCircleFill } from "react-icons/bs";
-import { useHivePrice } from "@/hooks/useHivePrice"
-import { set } from "lodash"
 const HIVE_LOGO_URL = "https://cryptologos.cc/logos/hive-blockchain-hive-logo.png";
 const HBD_LOGO_URL = "https://i.ibb.co/C6TPhs3/HBD.png";
 const SAVINGS_LOGO_URL = "https://i.ibb.co/rMVdTYt/savings-hive.png";
@@ -38,10 +34,8 @@ function HiveBox() {
     const { hiveUser } = useHiveUser()
     const hivePrice = useHivePrice()
 
-    // Hive 
     const [hiveUsdValue, setHiveUsdValue] = useState(0)
 
-    // HivePower
     const vestingShares = hiveUser?.vesting_shares
     const delegatedVestingShares = hiveUser?.delegated_vesting_shares
     const receivedVestingShares = hiveUser?.received_vesting_shares
@@ -52,13 +46,10 @@ function HiveBox() {
     const [HPUsdValue, setHPUsdValue] = useState(0)
     const [delegatedHPUsdValue, setDelegatedHPUsdValue] = useState(0)
 
-    // HBD
     const [HBDUsdValue, setHBDUsdValue] = useState(0)
 
-    // Savings
     const [savingsUSDvalue, setSavingsUSDvalue] = useState(0)
 
-    // Total 
     const [totalValue, setTotalValue] = useState(0)
 
     useEffect(() => {
@@ -79,7 +70,6 @@ function HiveBox() {
 
                 const delegatedHPUsd = hivePrice * HPthatUserDelegated;
                 const savingsValue = 1 * Number(String(hiveUser.savings_hbd_balance).split(" ")[0]);
-                //replace for useHBDprice hook 
                 const HBDUsd = 1 * Number(String(hiveUser.hbd_balance).split(" ")[0]);
                 setHiveUsdValue(hiveUsd);
                 setHPUsdValue(HPUsd);
@@ -102,7 +92,7 @@ function HiveBox() {
     return (
         <VStack
             w={"100%"}
-            gap={6} // Reduced gap from 6 to 3
+            gap={6} 
             align={"normal"}
             p={4}
             flex="1"
@@ -161,11 +151,7 @@ function HiveBox() {
                             </VStack>
                         </Center>
                     </Box>
-                    {/* <Text fontSize={12} color={"gray.400"}>
-                        {totalValue.toFixed(2)} USD
-                    </Text> */}
                     {isOpened && (
-
                         <Box>
                             <Center>
                                 <VStack width={"100%"}>

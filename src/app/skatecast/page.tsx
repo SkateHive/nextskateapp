@@ -59,11 +59,8 @@ const SkateCast = () => {
   const username = user?.hiveUser?.name;
   const [mediaModalOpen, setMediaModalOpen] = useState<boolean>(false);
   const [media, setMedia] = useState<string[]>([]);
-  const [mediaDictionary, setMediaDictionary] = useState<
-    Map<number, { media: string[]; type: string }>
-  >(new Map());
   const [hasPosted, setHasPosted] = useState<boolean>(false);
-  const [sortMethod, setSortMethod] = useState<string>("chronological"); // State to track sorting method
+  const [sortMethod, setSortMethod] = useState<string>("chronological"); 
 
   const sortedComments = useMemo(() => {
     if (sortMethod === "chronological") {
@@ -207,14 +204,6 @@ const SkateCast = () => {
     });
   };
 
-  const handleMediaAvatarClick = (commentId: number) => {
-    const media = mediaDictionary.get(commentId);
-    console.log("media", media);
-    setMedia(media?.media ?? []);
-    console.log("media", media);
-    setMediaModalOpen(true);
-  };
-
   const handleSortChange = (method: string) => {
     setSortMethod(method);
   };
@@ -238,7 +227,6 @@ const SkateCast = () => {
       />
       <AvatarList sortedComments={sortedComments} />
 
-      {/* Create Post */}
       {user.hiveUser ? (
         <PostBox
           username={username}
@@ -248,7 +236,6 @@ const SkateCast = () => {
         />
       ) : null}
 
-      {/* Post Filter */}
       <HStack spacing="1" width="full" justifyContent="flex-end" mr={4}>
         <Menu>
           <MenuButton>
@@ -276,7 +263,6 @@ const SkateCast = () => {
         </Menu>
       </HStack>
 
-      {/* Casts */}
       <CommentList
         comments={sortedComments}
         visiblePosts={visiblePosts}

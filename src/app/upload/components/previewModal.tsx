@@ -1,5 +1,3 @@
-// path: src/app/upload/components/previewModal.tsx
-
 import Footer from '@/components/PostCard/Footer';
 import Header from '@/components/PostCard/Header';
 import PostImage from '@/components/PostCard/Image';
@@ -119,7 +117,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
                 return !duplicate;
             }).map(beneficiary => ({
                 account: beneficiary.account,
-                weight: parseInt(beneficiary.weight, 10) // Ensure weight is an integer
+                weight: parseInt(beneficiary.weight, 10) 
             })).sort((a, b) => a.account.localeCompare(b.account));
         };
 

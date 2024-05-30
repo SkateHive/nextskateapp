@@ -8,10 +8,9 @@ export interface LinkWithDomain {
 export function extractLinksFromMarkdown(
   markdownContent: string
 ): LinkWithDomain[] {
-  const linkRegex = /!\[.*?\]\((.*?)\)/g // Regex para encontrar links no formato [texto](url)
-  const links = markdownContent.match(linkRegex) || [] // Extrai todos os links encontrados no conteúdo
+  const linkRegex = /!\[.*?\]\((.*?)\)/g 
+  const links = markdownContent.match(linkRegex) || [] 
 
-  // Remove os colchetes e parênteses dos links encontrados e extrai o domínio de cada URL
   const linksWithDomains: LinkWithDomain[] = links.map((link) => {
     const urlMatch = link.match(/\[.*?\]\((.*?)\)/)
     const fullUrl = urlMatch ? urlMatch[1] : ""
@@ -24,7 +23,7 @@ export function extractLinksFromMarkdown(
 }
 
 export function extractIFrameLinks(htmlContent: string): LinkWithDomain[] {
-  const iframeRegex = /<iframe.*?src=["']([^"']*)["']/gi // Regex para encontrar iframes com src
+  const iframeRegex = /<iframe.*?src=["']([^"']*)["']/gi 
   const iframes = htmlContent.match(iframeRegex) || []
 
   const iframeWithDomains: LinkWithDomain[] = iframes.map((iframe) => {

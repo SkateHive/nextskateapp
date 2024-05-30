@@ -11,7 +11,6 @@ function CommunityTotalPayout() {
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
 
-  // format the dollar amount
   const formattedNumber = useMemo(
     () =>
       totalHBDPayout.toLocaleString("en-US", {
@@ -30,13 +29,13 @@ function CommunityTotalPayout() {
         )
         const resJson = await hiveHubResponse.json()
         const hiveInfo = resJson[SKATEHIVE_TAG]
-        let totalPayoutNumber = 65666; // default value
+        let totalPayoutNumber = 65666; 
         if (hiveInfo && hiveInfo.total_payouts_hbd) {
           try {
             totalPayoutNumber = parseFloat(hiveInfo.total_payouts_hbd.replace("$", ""));
           } catch (error) {
             console.error("Error reading 'total_payouts_hbd': ", error);
-            totalPayoutNumber = 65666; // hardcoded value in case of error
+            totalPayoutNumber = 65666; 
           }
         }
 

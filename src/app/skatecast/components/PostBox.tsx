@@ -9,6 +9,7 @@ import {
   Input,
   Textarea
 } from "@chakra-ui/react"
+import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
 import { useDropzone } from "react-dropzone"
 import { FaImage } from "react-icons/fa"
@@ -109,11 +110,11 @@ const PostBox = ({ username, postBody, setPostBody, handlePost }: PostBoxProps) 
         {imageList.map((item, index) => (
           <Box key={index}>
             {item.includes("![Image](") ? (
-              <img
-                src={item.match(/!\[Image\]\((.*?)\)/)?.[1]}
-                alt="markdown-image"
-                width="100%"
-                height="auto" // Adjust the height as needed
+              <Image
+              src={item.match(/!\[Image\]\((.*?)\)/)?.[1] || ""}
+              alt="markdown-image"
+              width={100}
+              height={undefined}
               />
             ) : (
               <video

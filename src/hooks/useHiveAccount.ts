@@ -21,7 +21,7 @@ export default function useHiveAccount(username: string) {
                 } else if (userAccount.json_metadata) {
                     userAccount.metadata = JSON.parse(userAccount.json_metadata)
                 } else {
-                    userAccount.metadata = {} // Initialize with an empty object or handle it as needed
+                    userAccount.metadata = {} 
                 }
                 setHiveAccount(userAccount)
             } catch {

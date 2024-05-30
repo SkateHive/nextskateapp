@@ -1,14 +1,13 @@
 import CommentsComponent from "@/app/dao/components/comments"
 import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers"
+import AuthorAvatar from "@/components/AuthorAvatar"
 import HiveClient from "@/lib/hive/hiveclient"
 import { transform3SpeakContent, transformIPFSContent } from "@/lib/utils"
-import { Avatar, Badge, Box, Center, Container, Divider, HStack, Heading, Table, Tbody, Td, Text, Th, Thead, Tr, VStack } from "@chakra-ui/react"
+import { Badge, Box, Center, Container, Divider, HStack, Heading, Table, Tbody, Td, Text, Th, Thead, Tr, VStack } from "@chakra-ui/react"
 import { Metadata } from "next"
 import ReactMarkdown from "react-markdown"
 import rehypeRaw from "rehype-raw"
 import remarkGfm from "remark-gfm"
-import AuthorAvatar from "@/components/AuthorAvatar"
-// Revalidate requests in 10 minutes
 export const revalidate = 600
 
 const hiveClient = HiveClient
@@ -52,7 +51,6 @@ export default async function Page({ params }: { params: { slug: string } }) {
 
   const post = await getData(user, postId)
   if (!post) return <Text>404 - Post not found</Text>
-  // lets format user to be a normal string without unicode 
 
   const transformDate = (date: string) => {
     const dateObj = new Date(date);
@@ -62,7 +60,6 @@ export default async function Page({ params }: { params: { slug: string } }) {
   const getTotalPayout = (post: any) => {
     console.log("comment", post)
     console.log(typeof post.total_payout_value)
-    // undefined 
     if (post.total_payout_value === undefined) {
       return 0
     }

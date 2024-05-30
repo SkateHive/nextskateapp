@@ -1,5 +1,4 @@
 'use client'
-
 import useAuthHiveUser from "@/lib/useHiveAuth";
 import { transformIPFSContent } from "@/lib/utils";
 import { Avatar, Badge, Box, Button, Center, Checkbox, Divider, Flex, HStack, Image, Input, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Spinner, Text, Tooltip, VStack } from "@chakra-ui/react";
@@ -54,8 +53,8 @@ export default function Upload() {
         onDrop: async (acceptedFiles) => {
             setIsUploading(true);
             for (const file of acceptedFiles) {
-                const ipfsData = await uploadFileToIPFS(file); // Use the returned data directly
-                if (ipfsData !== undefined) { // Ensure ipfsData is not undefined
+                const ipfsData = await uploadFileToIPFS(file); 
+                if (ipfsData !== undefined) { 
                     const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}?pinataGatewayToken=${PINATA_GATEWAY_TOKEN}`;
                     const markdownLink = file.type.startsWith("video/") ? `<iframe src="${ipfsUrl}" allowfullscreen></iframe>` : `![Image](${ipfsUrl})`;
                     setValue(prevMarkdown => `${prevMarkdown}\n${markdownLink}\n`);
@@ -70,7 +69,6 @@ export default function Upload() {
         multiple: false
     }
     );
-    // Custom toolbar button for file upload
     const extraCommands = [
         {
             name: 'uploadImage',
@@ -78,7 +76,6 @@ export default function Upload() {
             buttonProps: { 'aria-label': 'Upload image' },
             icon: (<Tooltip label="Upload Image or Video"><span><FaImage color="yellow" /></span></Tooltip>),
             execute: (state: any, api: any) => {
-                // Trigger file input click
                 const element = document.getElementById('md-image-upload');
                 if (element) {
                     element.click();
@@ -86,17 +83,16 @@ export default function Upload() {
             }
         },
         {
-            name: 'saveDraftInTxt', // Corrected from 'saveDraftintxt'
-            keyCommand: 'saveDraftInTxt', // Also corrected for consistency
+            name: 'saveDraftInTxt',
+            keyCommand: 'saveDraftInTxt', 
             buttonProps: { 'aria-label': 'Save Draft' },
             icon: (<Tooltip label="Save Draft" ><span><FaSave color="limegreen" /></span></Tooltip>),
             execute: (state: any, api: any) => {
-                // save .txt from value in the local machine
                 const element = document.createElement('a');
                 const file = new Blob([value], { type: 'text/plain' });
                 element.href = URL.createObjectURL(file);
                 element.download = "draft.txt";
-                document.body.appendChild(element); // Required for this to work in FireFox
+                document.body.appendChild(element); 
                 element.click();
             }
         }
@@ -139,33 +135,15 @@ export default function Upload() {
     };
 
     const handleNewTagChange = (index: number, newValue: string) => {
-        // Update the specific new tag input by index
         const updatedNewTags = newTagInputs.map((tag, tagIndex) => tagIndex === index ? newValue : tag);
         setNewTagInputs(updatedNewTags);
     };
 
     const handlePost = async () => {
-        // Directly combine the tags for this operation instead of relying on state update
         const combinedTags = [
             ...tags,
             ...newTagInputs.filter(tag => tag.trim() !== "")
         ];
-
-
-        // Add defaultFooter to the markdown if includeFooter is true
-        // if (includeFooter) {
-        //     const link = `https://skatehive.app/post/hive-173115/@${username}/${permlink}`;
-
-        //     let newFooter = "\n" + "> **Check this post on** " + `[Skatehive App](${link})`
-
-        //     // set the final markdown text again
-        //     finalMarkdown = finalMarkdown + newFooter;
-
-        //     setMarkdownText((prevMarkdown) => prevMarkdown + newFooter);
-        // }
-
-        // Define the post operation
-
 
         setTags(combinedTags);
 
@@ -175,7 +153,6 @@ export default function Upload() {
     const handleAuthorSearch = (searchUsername: string) => {
         const percentage = 10;
 
-        // Check if the beneficiary already exists
         const beneficiaryExists = beneficiaries.some(b => b.name === searchUsername);
 
         if (!beneficiaryExists && percentage > 0) {
@@ -199,7 +176,7 @@ export default function Upload() {
     const handleBeneficiaryPercentageChange = (index: number, newPercentage: number) => {
         if (index < 0 || index >= beneficiaries.length) {
             console.error('Invalid index for beneficiaries:', index);
-            return; // Early return to prevent error
+            return; 
         }
 
         const updatedBeneficiaries = [...beneficiaries];
@@ -215,7 +192,7 @@ export default function Upload() {
     const handleDefaultBeneficiaryPercentageChange = (index: number, newPercentage: number) => {
         if (index < 0 || index >= defaultBeneficiaries.length) {
             console.error('Invalid index for default beneficiaries:', index);
-            return; // Early return to prevent error
+            return; 
         }
 
         const updatedDefaultBeneficiaries = [...defaultBeneficiaries];
@@ -239,14 +216,11 @@ export default function Upload() {
                     tags={tags}
                 />}
 
-            {/* Hidden file input for image upload */}
             <Input {...getInputProps()} id="md-image-upload" style={{ display: 'none' }} size="md" />
 
             <Flex direction={{ base: 'column', md: 'row' }} width="100%">
-                {/* Content Editing Area */}
                 <Box width={{ base: '100%', md: '50%' }} p="4">
                     <HStack>
-
 
                         <Input
                             borderColor={"green.600"}
@@ -356,7 +330,7 @@ export default function Upload() {
                                             </Text>
                                         </Center>
                                         <Slider
-                                            id={`slider-${index}`} // Ensure unique ID for each slider
+                                            id={`slider-${index}`} 
                                             defaultValue={beneficiary.percentage}
                                             min={0}
                                             max={100}
@@ -403,13 +377,13 @@ export default function Upload() {
                                                 defaultValue={beneficiary.percentage}
                                                 min={0}
                                                 max={100}
-                                                colorScheme="green" // This affects the color of the slider thumb and filled track
+                                                colorScheme="green" 
                                                 onChange={(val) => handleBeneficiaryPercentageChange(index, val)}
                                                 onMouseEnter={() => setShowTooltip(true)}
                                                 onMouseLeave={() => setShowTooltip(false)}
                                             >
                                                 <SliderTrack>
-                                                    <SliderFilledTrack bg="limegreen" /> {/* Customizing the filled track color */}
+                                                    <SliderFilledTrack bg="limegreen" /> 
                                                 </SliderTrack>
                                                 <Tooltip
                                                     hasArrow
@@ -444,7 +418,6 @@ export default function Upload() {
                     </Center>
 
                 </Box>
-                {/* Preview and Submit Area */}
                 <Box width={{ base: '100%', md: '50%' }} p="4" borderRadius="2px" border="1px solid limegreen">
                     <HStack>
                         <Avatar name={hiveUser?.name} src={hiveUser?.metadata?.profile?.profile_image} boxSize="58px" borderRadius={'10px'} />

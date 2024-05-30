@@ -1,9 +1,6 @@
-// lets create a useHivePrice hook that will fetch the current price of HIVE from coingecko API.
-
-import { useEffect, useState } from "react";
 import axios from "axios";
+import { useEffect, useState } from "react";
 
-// Define the hook
 export const useHivePrice = () => {
     const [hivePrice, setHivePrice] = useState<number | null>(null);
 

@@ -1,13 +1,13 @@
 'use client'
-import { Box, Grid, Flex } from "@chakra-ui/react"
-import InfiniteScroll from "react-infinite-scroll-component"
-import { BeatLoader } from "react-spinners"
-import { useState } from "react"
+import Post from "@/components/PostCard"
 import useHiveAccount from "@/hooks/useHiveAccount"
 import usePosts from "@/hooks/usePosts"
 import PostModel from "@/lib/models/post"
-import Post from "@/components/PostCard"
 import { HiveAccount } from "@/lib/models/user"
+import { Box, Flex, Grid } from "@chakra-ui/react"
+import { useState } from "react"
+import InfiniteScroll from "react-infinite-scroll-component"
+import { BeatLoader } from "react-spinners"
 
 
 interface ProfilePageProps {

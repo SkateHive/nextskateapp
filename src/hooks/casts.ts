@@ -1,5 +1,5 @@
 import HiveClient from "@/lib/hive/hiveclient";
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export interface Comment {
     abs_rshares?: number;
@@ -65,9 +65,6 @@ export async function fetchComments(
         console.time("fetchComments");
         const comments = await HiveClient.database.call("get_content_replies", [author, permlink]) as Comment[];
         const fetchReplies = async (comment: Comment): Promise<Comment> => {
-            // if (comment.children && comment.children > 0) {
-            //     comment.replies = await fetchComments(comment.author, comment.permlink);
-            // }
             return comment;
         };
         const commentsWithReplies = await Promise.all(comments.map(fetchReplies));

@@ -114,7 +114,6 @@ const CommandPrompt = ({ post, addComment }: CommandPromptProps) => {
         </Tooltip>
       ),
       execute: (state: any, api: any) => {
-        // Trigger file input click
         const element = document.getElementById("md-image-upload")
         if (element) {
           element.click()
@@ -122,8 +121,8 @@ const CommandPrompt = ({ post, addComment }: CommandPromptProps) => {
       },
     },
     {
-      name: "saveDraftInTxt", // Corrected from 'saveDraftintxt'
-      keyCommand: "saveDraftInTxt", // Also corrected for consistency
+      name: "saveDraftInTxt", 
+      keyCommand: "saveDraftInTxt", 
       buttonProps: { "aria-label": "Save Draft" },
       icon: (
         <Tooltip label="Save Draft">
@@ -133,12 +132,11 @@ const CommandPrompt = ({ post, addComment }: CommandPromptProps) => {
         </Tooltip>
       ),
       execute: (state: any, api: any) => {
-        // save .txt from value in the local machine
         const element = document.createElement("a")
         const file = new Blob([value], { type: "text/plain" })
         element.href = URL.createObjectURL(file)
         element.download = "draft.txt"
-        document.body.appendChild(element) // Required for this to work in FireFox
+        document.body.appendChild(element) 
         element.click()
       },
     },

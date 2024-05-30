@@ -63,7 +63,6 @@ export async function vote(props: Vote): Promise<KeychainRequestResponse> {
   } as Vote);
   return result;
 }
-// TODO : fix this type
 export async function commentWithKeychain(formParamsAsObject: any): Promise<HiveKeychainResponse | undefined> {
 
   const keychain = new KeychainSDK(window);

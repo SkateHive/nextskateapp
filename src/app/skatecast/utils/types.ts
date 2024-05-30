@@ -1,4 +1,3 @@
-// src/types.ts
 export interface Comment {
     id: string;
     author: string;

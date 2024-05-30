@@ -1,9 +1,21 @@
 'use client'
-import React from "react";
+import { getENSavatar } from "@/app/dao/utils/getENSavatar";
+import { getENSnamefromAddress } from "@/app/dao/utils/getENSfromAddress";
 import {
+    Accordion,
+    AccordionButton,
+    AccordionIcon,
+    AccordionItem,
+    AccordionPanel,
     Avatar,
+    AvatarBadge,
+    Badge,
+    Box,
+    Center,
     Divider,
+    Flex,
     HStack,
+    Image,
     Table,
     TableContainer,
     Tbody,
@@ -12,26 +24,13 @@ import {
     Th,
     Thead,
     Tr,
-    VStack,
-    Box,
-    Accordion,
-    AccordionItem,
-    AccordionButton,
-    AccordionPanel,
-    AccordionIcon,
-    Center,
-    Image,
-    Badge,
-    AvatarBadge,
-    Flex
-} from "@chakra-ui/react"
-import { useEffect, useState } from "react"
-import { useAccount } from "wagmi"
-import axios from "axios"
-import * as Types from "../types"
-import { getENSavatar } from "@/app/dao/utils/getENSavatar";
-import { getENSnamefromAddress } from "@/app/dao/utils/getENSfromAddress";
-import { FaHive, FaEthereum } from "react-icons/fa"
+    VStack
+} from "@chakra-ui/react";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { FaEthereum } from "react-icons/fa";
+import { useAccount } from "wagmi";
+import * as Types from "../types";
 
 
 function EthBox() {
@@ -59,7 +58,6 @@ function EthBox() {
                 return acc;
             }, {} as { [key: string]: Types.TokenDetail[] });
 
-            // Sort each group by USD balance in descending order
             Object.keys(newGroupedTokens).forEach(network => {
                 newGroupedTokens[network].sort((a, b) => b.token.balanceUSD - a.token.balanceUSD);
             });

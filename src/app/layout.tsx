@@ -1,4 +1,3 @@
-// RootLayout.tsx
 import Favicon from "@/components/FaviconLinks";
 import SidebarDesktop from "@/components/Navbar/sidebarDesktop";
 import MobileMenuButton from "@/components/mobileMenuButton";
