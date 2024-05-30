@@ -1,11 +1,7 @@
-// path: src/lib/pages/upload/SocialModal.tsx 
-
+import { Button, Divider, Flex, Image, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Toast, VStack } from '@chakra-ui/react';
 import * as React from 'react';
-import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Button, Flex, Image, Text, Link, VStack, Divider, Badge, Input, FormControl, FormLabel, Grid, GridItem } from '@chakra-ui/react';
 import { FaCopy, FaDiscord } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
-import { useState } from 'react';
-import { Toast } from '@chakra-ui/react';
 interface SocialModalProps {
     isOpen: boolean;
     onClose: () => void;
