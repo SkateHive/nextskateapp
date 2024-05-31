@@ -69,9 +69,13 @@ const PostBox = ({ username, postBody, setPostBody, handlePost }: PostBoxProps) 
   const handlePostClick = () => {
     setPostBody((prevMarkdown: string) => {
       const updatedBody = `${prevMarkdown}\n${imageList.join('\n')}\n`;
-      console.log("imageList", imageList, "updatedBody", updatedBody);
       return updatedBody;
     });
+    // dont let users post empty posts
+    if (postBody.trim() === "" && imageList.length === 0) {
+      alert("Nothing to say?")
+      return;
+    }
     setShouldPost(true);
   };
 
@@ -111,10 +115,10 @@ const PostBox = ({ username, postBody, setPostBody, handlePost }: PostBoxProps) 
           <Box key={index}>
             {item.includes("![Image](") ? (
               <Image
-              src={item.match(/!\[Image\]\((.*?)\)/)?.[1] || ""}
-              alt="markdown-image"
-              width={100}
-              height={undefined}
+                src={item.match(/!\[Image\]\((.*?)\)/)?.[1] || ""}
+                alt="markdown-image"
+                width={100}
+                height={undefined}
               />
             ) : (
               <video
