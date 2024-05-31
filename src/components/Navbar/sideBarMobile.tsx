@@ -1,6 +1,9 @@
-import { Link } from "@chakra-ui/next-js"
+import NotificationsPage from "@/app/notifications/page";
+import { useHiveUser } from "@/contexts/UserContext";
+import { claimRewards } from "@/lib/hive/client-functions";
+import { formatETHaddress } from "@/lib/utils";
+import { Link } from "@chakra-ui/next-js";
 import {
-    Box,
     Button,
     Divider,
     Drawer,
@@ -8,30 +11,20 @@ import {
     DrawerContent,
     DrawerFooter,
     DrawerOverlay,
-    Flex,
     HStack,
-    Heading,
     Icon,
-    IconButton,
     Image,
-    Tooltip,
-    keyframes,
-    useDisclosure,
-    useMediaQuery,
     Text,
-} from "@chakra-ui/react"
-import { FaBell, FaEthereum, FaHome, FaSpeakap, FaUser, FaWallet } from "react-icons/fa";
-import { useHiveUser } from "@/contexts/UserContext";
-import { useAccount } from "wagmi";
-import { formatETHaddress } from "@/lib/utils";
-import CommunityTotalPayout from "../communityTotalPayout";
-import NotificationsPage from "@/app/notifications/page";
+    keyframes,
+    useDisclosure
+} from "@chakra-ui/react";
+import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
 import { useEffect, useState } from "react";
-import checkRewards from "./utils/checkReward"
-import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit"
-import { claimRewards } from "@/lib/hive/client-functions";
+import { FaBell, FaBook, FaEthereum, FaHive, FaSpeakap, FaUser, FaWallet } from "react-icons/fa";
+import { useAccount } from "wagmi";
+import CommunityTotalPayout from "../communityTotalPayout";
 import LoginModal from "../Hive/Login/LoginModal";
-import { FaHive, FaBook } from "react-icons/fa";
+import checkRewards from "./utils/checkReward";
 
 const blink = keyframes`
   0% { opacity: 1; }

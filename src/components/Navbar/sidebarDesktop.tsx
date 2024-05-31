@@ -71,12 +71,6 @@ const SidebarDesktop = () => {
     }
   };
 
-  const [isMoreToggle, setIsMoreToggle] = useState(false);
-
-  const handleMoreToggle = () => {
-    setIsMoreToggle(!isMoreToggle);
-  };
-
   return (
     <>
       <LoginModal isOpen={isLoginOpen} onClose={onLoginClose} />

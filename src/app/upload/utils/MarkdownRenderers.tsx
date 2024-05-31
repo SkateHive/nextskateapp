@@ -1,5 +1,5 @@
+import { Divider, Image } from '@chakra-ui/react';
 import React from 'react';
-import { Image, Divider } from '@chakra-ui/react';
 
 type MarkdownProps = {
   node?: any;
@@ -80,11 +80,11 @@ export const MarkdownRenderers = {
   pre: ({ children, ...props }: RendererProps) => (
     <div
       style={{
-        backgroundColor: '#1E1E1E', // Dark gray background
+        backgroundColor: '#1E1E1E', 
         padding: '16px',
         borderRadius: '8px',
         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.2)',
-        overflowX: 'auto', // Horizontal scrollbar for long code lines
+        overflowX: 'auto', 
       }}
     >
       <center>
@@ -92,7 +92,7 @@ export const MarkdownRenderers = {
         <code
           {...props}
           style={{
-            color: 'red', // Light gray text color
+            color: 'red', 
             fontFamily: 'monospace',
             fontSize: '14px',
             lineHeight: '1.5',

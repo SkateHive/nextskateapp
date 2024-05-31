@@ -1,29 +1,21 @@
-// path: src/app/dao/components/DaoTreasure.tsx
 'use client'
-import React, { useEffect, useState } from 'react';
+import { useETHPrice } from '@/hooks/useETHprice';
 import {
-    Box,
-    Text,
-    Button,
+    Badge,
     Card,
     CardBody,
     CardHeader,
-    CardFooter,
     Center,
     Divider,
-    Flex,
-    VStack,
     HStack,
+    Text,
     Tooltip,
-    Badge
+    VStack
 } from "@chakra-ui/react";
 import axios from 'axios';
-import * as Types from "../../wallet/types";
-import { getDefaultConfig } from '@rainbow-me/rainbowkit';
+import { useEffect, useState } from 'react';
 import { mainnet } from 'viem/chains';
-import { http } from 'viem';
 import { useBalance } from 'wagmi';
-import { useETHPrice } from '@/hooks/useETHprice';
 
 const HOT_ADDRESS = '0xB4964e1ecA55Db36a94e8aeFfBFBAb48529a2f6c';
 const MULTISIG_ADDRESS = '0x5501838d869B125EFd90daCf45cDFAC4ea192c12' as `0x${string}`;

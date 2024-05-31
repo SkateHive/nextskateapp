@@ -1,14 +1,13 @@
 'use client'
-import { Center, Box, Button, VStack, Input, FormControl, FormLabel, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, Image } from "@chakra-ui/react";
-import React, { useState } from "react";
 import { HiveAccount } from "@/lib/models/user";
-import { updateProfile } from "@/lib/hive/client-functions";
+import { Button, Center, FormControl, FormLabel, Image, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, VStack } from "@chakra-ui/react";
+import React, { useState } from "react";
 
 interface VideoPartsFormProps {
     skater: HiveAccount;
-    onNewVideoPart: (videoPart: VideoPart) => void; // Callback to notify parent of new video part
-    isOpen: boolean; // Modal open state
-    onClose: () => void; // Modal close function
+    onNewVideoPart: (videoPart: VideoPart) => void; 
+    isOpen: boolean; 
+    onClose: () => void; 
 }
 
 interface VideoPart {
@@ -37,7 +36,7 @@ const VideoPartsForm = ({ skater, onNewVideoPart, isOpen, onClose }: VideoPartsF
 
     const submitVideoPart = () => {
         onNewVideoPart(videoPart);
-        onClose(); // Close the modal after submission
+        onClose(); 
     };
 
     return (

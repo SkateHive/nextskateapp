@@ -1,8 +1,7 @@
-import { getENSnamefromAddress } from './getENSfromAddress'
-import { getEnsAvatar } from '@wagmi/core'
-import { normalize } from 'viem/ens'
-import { http, createConfig, getEnsName } from '@wagmi/core'
+import { createConfig, getEnsAvatar, http } from '@wagmi/core'
 import { mainnet } from '@wagmi/core/chains'
+import { normalize } from 'viem/ens'
+import { getENSnamefromAddress } from './getENSfromAddress'
 
 const config = createConfig({
     chains: [mainnet],
@@ -30,7 +29,7 @@ export const getENSavatar = async (address: string) => {
 
         if (!ensName4avatar) {
             console.error("No ENS name found for address:", address);
-            return '/pepenation.gif'; // Or return a default avatar URL if preferred
+            return '/pepenation.gif'; 
         }
 
         const normalizedENS = normalize(String(ensName4avatar));

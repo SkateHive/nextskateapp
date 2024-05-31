@@ -1,5 +1,5 @@
-import { HiveAccount } from "@/lib/useHiveAuth";
 import HiveClient from "@/lib/hive/hiveclient";
+import { HiveAccount } from "@/lib/useHiveAuth";
 
 interface Asset {
     toString(): string;

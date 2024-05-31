@@ -1,5 +1,4 @@
 "use client"
-
 import useAuthHiveUser from "@/lib/useHiveAuth"
 import { Button, useDisclosure } from "@chakra-ui/react"
 import { LogIn, LogOut } from "lucide-react"

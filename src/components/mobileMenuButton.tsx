@@ -1,7 +1,7 @@
 'use client';
-import React, { useState } from "react";
-import SideBarMobile from "./Navbar/sideBarMobile";
 import { Image } from "@chakra-ui/react";
+import { useState } from "react";
+import SideBarMobile from "./Navbar/sideBarMobile";
 
 const MobileMenuButton = () => {
     const [isOpen, setIsOpen] = useState(false);

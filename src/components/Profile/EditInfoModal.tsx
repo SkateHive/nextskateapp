@@ -1,11 +1,15 @@
 'use client'
 
-import { useEffect, useState, ChangeEvent } from "react"
+import { uploadFileToIPFS } from "@/app/upload/utils/uploadToIPFS";
+import { updateProfile } from "@/lib/hive/client-functions";
+import { HiveAccount } from "@/lib/models/user";
 import {
-  Box,
+  Badge,
   Button,
-  Input,
   Flex,
+  HStack,
+  Image,
+  Input,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -15,25 +19,17 @@ import {
   ModalOverlay,
   Text,
   Textarea,
-  Center,
-  VStack,
-  HStack,
-  Badge,
-  Image
-} from "@chakra-ui/react"
+  VStack
+} from "@chakra-ui/react";
+import { ChangeEvent, useState } from "react";
 import { FaUpload } from 'react-icons/fa';
-import { uploadFileToIPFS } from "@/app/upload/utils/uploadToIPFS";
 import { useAccount } from "wagmi";
-import { HiveAccount } from "@/lib/models/user"
-import { updateProfile } from "@/lib/hive/client-functions";
 
 interface EditModalProps {
   isOpen: boolean
   onClose(): void
   user: HiveAccount
 }
-
-
 
 const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN
 console.log(PINATA_GATEWAY_TOKEN, "PINATA_GATEWAY_TOKEN")
@@ -43,14 +39,13 @@ export default function EditInfoModal({ isOpen, onClose, user }: EditModalProps)
   const [about, setAbout] = useState<string>(user.metadata?.about || '');
   const [avatarUrl, setAvatarUrl] = useState<string>(user.metadata?.profile_image || '');
   const [coverImageUrl, setCoverImageUrl] = useState<string>(user.metadata?.cover_image || '');
-  const current_extensions = user?.json_metadata;
   const [extensions, setExtensions] = useState<any>(
     (() => {
       try {
         return (JSON.parse(user?.json_metadata)?.extensions) || "";
       } catch (error) {
         console.error("Error parsing JSON metadata:", error);
-        return ""; // or set a default value based on your requirements
+        return ""; 
       }
     })()
   );

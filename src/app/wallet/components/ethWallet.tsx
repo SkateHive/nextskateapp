@@ -1,9 +1,21 @@
 'use client'
-import React from "react";
+import { getENSavatar } from "@/app/dao/utils/getENSavatar";
+import { getENSnamefromAddress } from "@/app/dao/utils/getENSfromAddress";
 import {
+    Accordion,
+    AccordionButton,
+    AccordionIcon,
+    AccordionItem,
+    AccordionPanel,
     Avatar,
+    AvatarBadge,
+    Badge,
+    Box,
+    Center,
     Divider,
+    Flex,
     HStack,
+    Image,
     Table,
     TableContainer,
     Tbody,
@@ -12,29 +24,19 @@ import {
     Th,
     Thead,
     Tr,
-    VStack,
-    Box,
-    Accordion,
-    AccordionItem,
-    AccordionButton,
-    AccordionPanel,
-    AccordionIcon,
-    Center,
-    Image,
-    Badge,
-    AvatarBadge,
-    Flex
-} from "@chakra-ui/react"
-import { useEffect, useState } from "react"
-import { useAccount } from "wagmi"
-import axios from "axios"
-import * as Types from "../types"
-import { getENSavatar } from "@/app/dao/utils/getENSavatar";
-import { getENSnamefromAddress } from "@/app/dao/utils/getENSfromAddress";
-import { FaHive, FaEthereum } from "react-icons/fa"
+    VStack
+} from "@chakra-ui/react";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { FaEthereum } from "react-icons/fa";
+import { useAccount } from "wagmi";
+import * as Types from "../types";
 
+interface EthBoxProps {
+    onNetWorthChange: (value: number) => void;
+}
 
-function EthBox() {
+const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
     const account = useAccount();
     const [portfolio, setPortfolio] = useState<Types.PortfolioData>();
     const [userENSavatar, SetUserENSAvatar] = useState<string | null>(null);
@@ -45,12 +47,12 @@ function EthBox() {
         const getPortfolio = async () => {
             const Portfolio = await axios.get(`https://pioneers.dev/api/v1/portfolio/${account.address}`);
             setPortfolio(Portfolio.data);
+            onNetWorthChange(Portfolio.data.totalNetWorth);
         };
-
         if (account.address) {
             getPortfolio();
         }
-    }, [account.address]);
+    }, [account.address, onNetWorthChange]);
 
     useEffect(() => {
         if (portfolio?.tokens) {
@@ -59,7 +61,6 @@ function EthBox() {
                 return acc;
             }, {} as { [key: string]: Types.TokenDetail[] });
 
-            // Sort each group by USD balance in descending order
             Object.keys(newGroupedTokens).forEach(network => {
                 newGroupedTokens[network].sort((a, b) => b.token.balanceUSD - a.token.balanceUSD);
             });
@@ -68,8 +69,23 @@ function EthBox() {
         }
     }, [portfolio?.tokens]);
 
+    useEffect(() => {
+        const getUserENSAvatar = async () => {
+            const avatar = await getENSavatar(String(account.address));
+            SetUserENSAvatar(avatar);
+        };
 
+        const getUserENSname = async () => {
+            const name = await getENSnamefromAddress(String(account.address));
+            SetUserENSName(name);
+        };
 
+        if (account.address) {
+            getUserENSAvatar();
+            getUserENSname();
+        }
+    }, [account.address]);
+    
     const formatEthWallet = (address: string) => {
         return `${address.slice(0, 6)}...${address.slice(-4)}`;
     };
@@ -78,21 +94,6 @@ function EthBox() {
             .filter((token) => token.network === network)
             .reduce((acc, token) => acc + token.token.balanceUSD, 0);
     }
-    const getUserENSAvatar = async () => {
-        const avatar = await getENSavatar(String(account.address));
-        SetUserENSAvatar(avatar);
-    }
-
-    const getUserENSname = async () => {
-        const name = await getENSnamefromAddress(String(account.address));
-        SetUserENSName(name);
-    }
-    useEffect(() => {
-        if (account.address) {
-            getUserENSAvatar();
-            getUserENSname();
-        }
-    }, [account.address]);
 
     const [isOpened, setIsOpened] = useState(false);
 
@@ -104,21 +105,31 @@ function EthBox() {
             flex="1"
             p={4}
             border="1px solid #0fb9fc"
-            borderRadius={"10px"}
-            bg="blue.800">
-            <Center onClick={() => setIsOpened(!isOpened)} >
-                <HStack>
+            borderRadius="10px"
+            bg="blue.800"
+        >
+            <Center onClick={() => setIsOpened(!isOpened)}>
+                <HStack cursor="pointer">
                     <FaEthereum />
-                    <Text align="center" fontSize={28}>
-                        ETH Wallet
+                    <Text align="center" fontSize={{ base: 24, md: 28 }}>
+                    <Text fontSize={{ base: 18, md: 18 }}>{userENSname || formatEthWallet(String(account.address))}</Text>
+
                     </Text>
                 </HStack>
             </Center>
             <Divider mt={-6} />
             <Center>
-                <HStack minWidth={"100%"} border={"1px solid white"} p={5} borderTopRadius={10} mb={-6} justifyContent={"center"} bg="blue.900">
+                <HStack
+                    minWidth="100%"
+                    border="1px solid white"
+                    p={5}
+                    borderTopRadius={10}
+                    mb={-6}
+                    justifyContent="center"
+                    bg="blue.900"
+                >
                     <Avatar
-                        boxSize={'48px'}
+                        boxSize="48px"
                         src={String(userENSavatar)}
                         bg="transparent"
                     >
@@ -130,15 +141,16 @@ function EthBox() {
                             />
                         </AvatarBadge>
                     </Avatar>
-                    <Text>{userENSname || formatEthWallet(String(account.address))}</Text>
                 </HStack>
             </Center>
-            <Box minWidth={"100%"} border={"1px solid white"} >
-
+            <Box minWidth="100%" border="1px solid white">
                 <Center>
                     <VStack m={5}>
-                        <Text fontWeight={"bold"} fontSize={"34px"}>Net Worth: {portfolio?.totalNetWorth?.toFixed(2) || 0}</Text>
-                        <Text fontSize={"18px"} >Tokens Value: {portfolio?.totalBalanceUsdTokens?.toFixed(2) || 0}</Text>
+                        <Box bg="#0fb9fc48" borderRadius="8px" padding="4px 8px">
+                            <Text fontWeight="bold" fontSize={{ base: 24, md: 34 }}>
+                                ${portfolio?.totalNetWorth?.toFixed(2) || 0}
+                            </Text>
+                        </Box>
                     </VStack>
                 </Center>
             </Box>
@@ -155,14 +167,14 @@ function EthBox() {
                                                 boxSize="24px"
                                                 alt={`${network} logo`}
                                             />
-                                            <Text color={Types.blockchainDictionary[network]?.color || 'white'}>
+                                            <Text color={Types.blockchainDictionary[network]?.color || 'white'} fontSize={{ base: 16, md: 18 }}>
                                                 {network.charAt(0).toUpperCase() + network.slice(1)}
                                             </Text>
                                         </HStack>
                                     </Box>
                                     <Box>
                                         <Badge bg={Types.blockchainDictionary[network]?.color || 'black'}>
-                                            <Text color={"black"} isTruncated flex="1" textAlign="right">
+                                            <Text color="black" isTruncated flex="1" textAlign="right" fontSize={{ base: 16, md: 18 }}>
                                                 ${calculateBlockchainTotal(network)?.toFixed(2)}
                                             </Text>
                                         </Badge>
@@ -174,7 +186,7 @@ function EthBox() {
                                 <TableContainer>
                                     <Table variant="simple" size="sm">
                                         <Thead>
-                                            <Tr color={"red"}>
+                                            <Tr color="red">
                                                 <Th>Token</Th>
                                                 <Th>Balance</Th>
                                                 <Th isNumeric>USD Value</Th>
@@ -196,7 +208,7 @@ function EthBox() {
                     ))}
                 </Accordion>
             )}
-        </VStack >
+        </VStack>
     );
 }
 

@@ -1,18 +1,16 @@
-import { FaDonate } from "react-icons/fa"
+import { usePostContext } from "@/contexts/PostContext"
+import { useUserData } from "@/hooks/useUserData"
 import {
     Button,
+    Image,
     Menu,
     MenuButton,
     MenuItem,
-    MenuList,
-    Image
+    MenuList
 } from "@chakra-ui/react"
-import { useState, useEffect } from "react"
-import usePosts from "@/hooks/usePosts"
-import TipModal from "./TipModal"
-import { usePostContext } from "@/contexts/PostContext";
-import { useUserData } from "@/hooks/useUserData"
+import { useEffect, useState } from "react"
 import HiveTipModal from "./HiveTipModal"
+import TipModal from "./TipModal"
 
 interface TipButtonProps {
     author: string
@@ -26,8 +24,7 @@ export default function TipButton({ author }: TipButtonProps) {
     const [authorETHwallet, setAuthorETHwallet] = useState("")
     const [isHiveTipModalOpen, setIsHiveTipModalOpen] = useState(false)
     const [isUserEthWalletSet, setIsUserEthWalletSet] = useState(false)
-
-    // we need to check to see if the user has an eth wallet set in their metadata to condionally show the eth buttons 
+    
     useEffect(() => {
         if (userData?.json_metadata) {
             const eth_address = JSON.parse(userData.json_metadata).extensions?.eth_address;

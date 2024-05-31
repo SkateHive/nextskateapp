@@ -1,9 +1,15 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
-    Box, InputGroup, InputLeftElement, Spinner, Input, List, ListItem, Avatar, Text
+    Avatar,
+    Box,
+    Input,
+    InputGroup, InputLeftElement,
+    List, ListItem,
+    Spinner,
+    Text
 } from '@chakra-ui/react';
 import { Client } from "@hiveio/dhive";
 import debounce from 'lodash/debounce';
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 
 interface AuthorSearchBarProps {
@@ -18,7 +24,7 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
     const [isListVisible, setIsListVisible] = useState(false);
 
     const fetchAuthors = async (query: string) => {
-        if (!query) return; // Early return if query is empty
+        if (!query) return; 
         setIsLoading(true);
         try {
             const result = await client.database.call("lookup_accounts", [query, 5]);
@@ -29,10 +35,9 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
         setIsLoading(false);
     };
 
-    // Create a debounced function using useCallback to ensure it doesn't get recreated on each render
     const debouncedFetchAuthors = useCallback(debounce((search: string) => {
         fetchAuthors(search);
-    }, 800), []); // Dependency array is empty, so the function is created only once
+    }, 800), []); 
 
     useEffect(() => {
         if (username.trim() !== "") {
@@ -47,7 +52,6 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
         setAuthors([]);
         onSearch(selectedUsername);
     };
-    // Handler for hiding the list
     const containerRef = useRef<HTMLDivElement>(null);
 
     const hideList = (event: MouseEvent) => {
@@ -57,7 +61,6 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
     };
 
 
-    // Effect to add and remove the event listener
     useEffect(() => {
         document.addEventListener('mousedown', hideList);
         return () => {
@@ -85,7 +88,7 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
                     }}
                     borderColor="green.600"
                     color="limegreen"
-                    minW={{ base: "100%", md: "40%" }} // Responsive width
+                    minW={{ base: "100%", md: "40%" }} 
                     _placeholder={{ color: "limegreen", opacity: 0.4 }}
                     focusBorderColor="limegreen"
                 />
@@ -95,12 +98,12 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
                 <List
                     position="absolute"
                     top="100%"
-                    left={{ base: "0", md: "0" }} // Responsive left
-                    right={{ base: "0", md: "0" }} // Responsive right
+                    left={{ base: "0", md: "0" }} 
+                    right={{ base: "0", md: "0" }} 
                     bg="white"
                     boxShadow="md"
                     zIndex="999"
-                    width={{ base: "100%", md: "auto" }} // Responsive width
+                    width={{ base: "100%", md: "auto" }} 
                 >
                     {authors.map((author) => (
                         <ListItem
