@@ -166,7 +166,7 @@ const ReplyModal = ({ isOpen, onClose, comment }: ReplyModalProps) => {
                                     onChange={(e) => setReplyBody(e.target.value)}
                                     placeholder="Write your reply here"
                                     bg="transparent"
-                                    _focus={{ border: "limegreen", boxShadow: "none" }}
+                                    _focus={{ border: "#A5D6A7", boxShadow: "none" }}
                                     resize="none"
                                     minHeight="100px"
                                     borderRadius="xl"

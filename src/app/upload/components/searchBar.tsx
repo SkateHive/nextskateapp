@@ -24,7 +24,7 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
     const [isListVisible, setIsListVisible] = useState(false);
 
     const fetchAuthors = async (query: string) => {
-        if (!query) return; 
+        if (!query) return;
         setIsLoading(true);
         try {
             const result = await client.database.call("lookup_accounts", [query, 5]);
@@ -37,7 +37,7 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
 
     const debouncedFetchAuthors = useCallback(debounce((search: string) => {
         fetchAuthors(search);
-    }, 800), []); 
+    }, 800), []);
 
     useEffect(() => {
         if (username.trim() !== "") {
@@ -72,11 +72,11 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
             <InputGroup>
                 {isLoading ? (
                     <InputLeftElement pointerEvents="none">
-                        <Spinner color="limegreen" />
+                        <Spinner color="#A5D6A7" />
                     </InputLeftElement>
                 ) : (
                     <InputLeftElement pointerEvents="none">
-                        <FaSearch color="limegreen" />
+                        <FaSearch color="#A5D6A7" />
                     </InputLeftElement>
                 )}
                 <Input
@@ -87,10 +87,10 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
                         setIsListVisible(true);
                     }}
                     borderColor="green.600"
-                    color="limegreen"
-                    minW={{ base: "100%", md: "40%" }} 
-                    _placeholder={{ color: "limegreen", opacity: 0.4 }}
-                    focusBorderColor="limegreen"
+                    color="#A5D6A7"
+                    minW={{ base: "100%", md: "40%" }}
+                    _placeholder={{ color: "#A5D6A7", opacity: 0.4 }}
+                    focusBorderColor="#A5D6A7"
                 />
             </InputGroup>
 
@@ -98,12 +98,12 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
                 <List
                     position="absolute"
                     top="100%"
-                    left={{ base: "0", md: "0" }} 
-                    right={{ base: "0", md: "0" }} 
+                    left={{ base: "0", md: "0" }}
+                    right={{ base: "0", md: "0" }}
                     bg="white"
                     boxShadow="md"
                     zIndex="999"
-                    width={{ base: "100%", md: "auto" }} 
+                    width={{ base: "100%", md: "auto" }}
                 >
                     {authors.map((author) => (
                         <ListItem
@@ -117,7 +117,7 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
                             display="flex"
                             backgroundColor={"black"}
                             alignItems="center"
-                            _hover={{ bg: "limegreen", color: "black" }}
+                            _hover={{ bg: "#A5D6A7", color: "black" }}
                         >
                             <Avatar borderRadius={"5px"} size="sm" src={`https://images.ecency.com/webp/u/${author}/avatar/small`} mr={2} />
                             <Text>{author}</Text>

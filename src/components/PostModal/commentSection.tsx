@@ -22,7 +22,7 @@ const CommentsSection = ({ comments, isCommentReply = false }: CommentsSectionPr
         <Box
             bg="black"
             p={4}
-            border={isCommentReply ? "" : "0px solid limegreen"}
+            border={isCommentReply ? "" : "0px solid #A5D6A7"}
             borderLeft={isCommentReply ? "1.4px dashed green" : ""}
             pl={isCommentReply ? 8 : 4}
             borderRadius={0}

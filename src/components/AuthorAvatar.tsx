@@ -45,8 +45,8 @@ export default function AuthorAvatar({ username, borderRadius, hover }: AuthorAv
             {/* <Tooltip
                 label={username}
                 bg={"black"}
-                color={"limegreen"}
-                border={"1px dashed limegreen"}
+                color={"#A5D6A7"}
+                border={"1px dashed #A5D6A7"}
             > */}
             <Avatar
                 name={username}

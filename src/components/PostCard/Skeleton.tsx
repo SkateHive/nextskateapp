@@ -15,10 +15,10 @@ export default function PostSkeleton() {
       size="sm"
       boxShadow="none"
       borderRadius="none"
-      border={"1px solid limegreen"}
+      border={"1px solid #A5D6A7"}
       _hover={{
         outline: "1px solid",
-        outlineColor: "limegreen",
+        outlineColor: "#A5D6A7",
       }}
       bg={"black"}
       p={2}
@@ -27,7 +27,7 @@ export default function PostSkeleton() {
         <Flex gap="4" align={"end"}>
           <Flex flex="1" gap="2" alignItems="center">
             <SkeletonCircle
-              startColor="limegreen"
+              startColor="#A5D6A7"
               endColor="black"
               fadeDuration={4}
               size="10"
@@ -36,14 +36,14 @@ export default function PostSkeleton() {
             <Flex flexDir="column" gap={1}>
               <Flex gap={1} alignItems="center">
                 <Skeleton
-                  startColor="limegreen"
+                  startColor="#A5D6A7"
                   endColor="black"
                   h={4}
                   w={32}
                 />
               </Flex>
               <Skeleton
-                startColor="limegreen"
+                startColor="#A5D6A7"
                 endColor="black"
                 h={4}
                 w={"80%"}
@@ -51,13 +51,13 @@ export default function PostSkeleton() {
             </Flex>
           </Flex>
           <Flex gap={1} align={"center"}>
-            <Skeleton startColor="limegreen" endColor="black" h={4} w={16} />
+            <Skeleton startColor="#A5D6A7" endColor="black" h={4} w={16} />
           </Flex>
         </Flex>
       </CardHeader>
       <Box p={3}>
         <Skeleton
-          startColor="limegreen"
+          startColor="#A5D6A7"
           endColor="black"
           border={"1px"}
           borderColor={"gray.50"}
@@ -68,22 +68,22 @@ export default function PostSkeleton() {
       </Box>
       <CardFooter pt={0} flexDirection={"column"} gap={2}>
         <Flex w={"100%"} justify={"space-between"} align={"center"}>
-          <Skeleton startColor="limegreen" endColor="black" h={4} w={48} />
+          <Skeleton startColor="#A5D6A7" endColor="black" h={4} w={48} />
           <Stack direction={"row"} gap={1}>
             <SkeletonCircle
-              startColor="limegreen"
+              startColor="#A5D6A7"
               endColor="black"
               fadeDuration={4}
               size="5"
             />
             <SkeletonCircle
-              startColor="limegreen"
+              startColor="#A5D6A7"
               endColor="black"
               fadeDuration={4}
               size="5"
             />
             <SkeletonCircle
-              startColor="limegreen"
+              startColor="#A5D6A7"
               endColor="black"
               fadeDuration={4}
               size="5"

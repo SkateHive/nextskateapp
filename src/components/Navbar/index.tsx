@@ -92,7 +92,7 @@ export default function Navbar() {
         <DrawerContent
           bg={"black"}
           color={"white"}
-          borderRight={"1px solid limegreen"}
+          borderRight={"1px solid #A5D6A7"}
         >
           <DrawerBody
             marginTop={"8px"}
@@ -102,7 +102,7 @@ export default function Navbar() {
           >
             <Image
               src="/skatehive-banner.png" w={"100%"} h={"auto"} alt="SkateHive" />
-            <Divider mb={3} mt={3} style={{ color: 'limegreen', borderColor: 'limegreen' }} />
+            <Divider mb={3} mt={3} style={{ color: '#A5D6A7', borderColor: '#A5D6A7' }} />
             <CommunityTotalPayout />
             {hasRewards && (
               <Button
@@ -214,7 +214,7 @@ export default function Navbar() {
                 <Link href="/" scroll={false}>
                   <IconButton
                     aria-label="Home"
-                    icon={<Home color="limegreen" />}
+                    icon={<Home color="#A5D6A7" />}
                     size="lg"
                     color={"white"}
                     bg={"transparent"}

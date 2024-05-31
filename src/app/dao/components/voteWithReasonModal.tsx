@@ -31,7 +31,7 @@ const VoteConfirmationModal: React.FC<VoteConfirmationModalProps> = ({
             <ModalOverlay />
             <ModalContent
                 bg={"#201d21"}
-                border={"1px solid limegreen"}
+                border={"1px solid #A5D6A7"}
             >
                 <ModalHeader>Confirm Vote</ModalHeader>
                 <ModalCloseButton />

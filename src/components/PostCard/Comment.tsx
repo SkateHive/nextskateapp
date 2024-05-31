@@ -88,7 +88,7 @@ export default function PostComment({ comment }: PostCommentProps) {
         <br />
         <Flex justifyContent="flex-end">
           {" "}
-          
+
           <Text
             fontSize="12px"
             color="darkgray"
@@ -101,7 +101,7 @@ export default function PostComment({ comment }: PostCommentProps) {
             <FaFire
               cursor={"pointer"}
               onClick={handleVoteClick}
-              color={hasVoted ? "limegreen" : "grey"}
+              color={hasVoted ? "#A5D6A7" : "grey"}
             />
             <Text fontSize="12px" color="darkgray" fontWeight="300">
               {newTotalPayout.toFixed(2)}

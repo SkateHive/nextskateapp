@@ -27,8 +27,8 @@ const AvatarList = ({ sortedComments }: AvatarListProps) => {
           <Tooltip
             label={"Invite someone cool enough"}
             bg={"black"}
-            color={"limegreen"}
-            border={"1px dashed limegreen"}
+            color={"#A5D6A7"}
+            border={"1px dashed #A5D6A7"}
           >
 
             <Avatar
@@ -105,7 +105,7 @@ const AvatarList = ({ sortedComments }: AvatarListProps) => {
             hover={{
               zIndex: 1,
               transform: "scale(1.05)",
-              border: "1px solid limegreen",
+              border: "1px solid #A5D6A7",
             }}
             borderRadius={100}
 

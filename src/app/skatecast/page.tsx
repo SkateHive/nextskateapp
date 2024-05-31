@@ -241,7 +241,7 @@ const SkateCast = () => {
           <MenuButton>
             <IoFilter color="#9AE6B4" />
           </MenuButton>
-          <MenuList bg={"black"} border={"1px solid limegreen"}>
+          <MenuList bg={"black"} border={"1px solid #A5D6A7"}>
             <MenuItem
               bg={"black"}
               onClick={() => handleSortChange("chronological")}

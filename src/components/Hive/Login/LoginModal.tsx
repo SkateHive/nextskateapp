@@ -68,8 +68,8 @@ function LoginModal({
       <ModalContent
         bg={"black"}
         mx={4}
-        border={"1.2px solid limegreen"}
-        boxShadow={"0 0 20px limegreen"}
+        border={"1.2px solid #A5D6A7"}
+        boxShadow={"0 0 20px #A5D6A7"}
       >
         {hiveUser ? (
           <>
@@ -78,8 +78,8 @@ function LoginModal({
             <ModalBody>
               <VStack align={"normal"}>
                 <Center>
-                  <Image border={"1.2px solid limegreen"}
-                    boxShadow={"0 0 20px limegreen"} mb={2} borderRadius={"10px"} boxSize={"120px"} src={`https://images.ecency.com/webp/u/${hiveUser.name}/avatar/small`} alt="Hive Logo" />
+                  <Image border={"1.2px solid #A5D6A7"}
+                    boxShadow={"0 0 20px #A5D6A7"} mb={2} borderRadius={"10px"} boxSize={"120px"} src={`https://images.ecency.com/webp/u/${hiveUser.name}/avatar/small`} alt="Hive Logo" />
                 </Center>
                 <Button
                   w={"100%"}
@@ -106,9 +106,9 @@ function LoginModal({
                 <VStack align={"normal"}>
                   <Input
                     borderColor={"green.600"}
-                    color={"limegreen"}
-                    _placeholder={{ color: "limegreen", opacity: 0.4 }}
-                    focusBorderColor="limegreen"
+                    color={"#A5D6A7"}
+                    _placeholder={{ color: "#A5D6A7", opacity: 0.4 }}
+                    focusBorderColor="#A5D6A7"
                     placeholder="Hive Username"
                     onChange={(event) =>
                       setUsername(event.target.value.toLowerCase())
@@ -120,9 +120,9 @@ function LoginModal({
                     <Input
                       type="password"
                       borderColor={"green.600"}
-                      color={"limegreen"}
-                      _placeholder={{ color: "limegreen", opacity: 0.4 }}
-                      focusBorderColor="limegreen"
+                      color={"#A5D6A7"}
+                      _placeholder={{ color: "#A5D6A7", opacity: 0.4 }}
+                      focusBorderColor="#A5D6A7"
                       placeholder="Password"
                       onChange={(event1) => setPrivateKey(event1.target.value)}
                     />

@@ -51,8 +51,8 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
         onDrop: async (acceptedFiles) => {
             setIsUploading(true);
             for (const file of acceptedFiles) {
-                const ipfsData = await uploadFileToIPFS(file); 
-                if (ipfsData !== undefined) { 
+                const ipfsData = await uploadFileToIPFS(file);
+                if (ipfsData !== undefined) {
                     const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}?pinataGatewayToken=${PINATA_GATEWAY_TOKEN}`;
                     const markdownLink = file.type.startsWith("video/") ? `<iframe src="${ipfsUrl}" allowfullscreen></iframe>` : `![Image](${ipfsUrl})`;
                     setValue(prevMarkdown => `${prevMarkdown}\n${markdownLink}\n`);
@@ -74,7 +74,7 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
             buttonProps: { 'aria-label': 'Upload image' },
             icon: (<Tooltip label="Upload Image or Video"><span><FaImage color="yellow" /></span></Tooltip>),
             execute: (state: any, api: any) => {
-               
+
                 const element = document.getElementById('md-image-upload');
                 if (element) {
                     element.click();
@@ -82,10 +82,10 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
             }
         },
         {
-            name: 'saveDraftInTxt', 
-            keyCommand: 'saveDraftInTxt', 
+            name: 'saveDraftInTxt',
+            keyCommand: 'saveDraftInTxt',
             buttonProps: { 'aria-label': 'Save Draft' },
-            icon: (<Tooltip label="Save Draft" ><span><FaSave color="limegreen" /></span></Tooltip>),
+            icon: (<Tooltip label="Save Draft" ><span><FaSave color="#A5D6A7" /></span></Tooltip>),
             execute: (state: any, api: any) => {
                 const element = document.createElement('a');
                 const file = new Blob([value], { type: 'text/plain' });
@@ -127,7 +127,7 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
             {useBreakpointValue({
                 base: <VStack spacing="4">
                     <Box
-                        width="100%" 
+                        width="100%"
                     >
                         <Input
                             placeholder="Proposal Title"
@@ -135,9 +135,9 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
                             onChange={(e) => setTitle(e.target.value)}
                             borderColor={"green.600"}
                             border={"2px solid"}
-                            color={"limegreen"}
-                            _placeholder={{ color: "limegreen", opacity: 0.4 }}
-                            focusBorderColor="limegreen"
+                            color={"#A5D6A7"}
+                            _placeholder={{ color: "#A5D6A7", opacity: 0.4 }}
+                            focusBorderColor="#A5D6A7"
                         />
                         <Box  {...getRootProps()} >
                             {isUploading && <Center><Spinner /></Center>}
@@ -153,7 +153,7 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
                                 height="600px"
                                 preview="edit"
                                 style={{
-                                    border: "2px solid limegreen",
+                                    border: "2px solid #A5D6A7",
                                     padding: "10px",
                                     backgroundColor: "black",
                                 }}
@@ -163,7 +163,7 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
                     <Box
                         width="100%"
                         height="100%"
-                        border="1px solid limegreen"
+                        border="1px solid #A5D6A7"
                         minHeight="100%"
                     >
                         <ReactMarkdown
@@ -192,7 +192,7 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
                                 height="600px"
                                 preview="edit"
                                 style={{
-                                    border: "1px solid limegreen",
+                                    border: "1px solid #A5D6A7",
                                     padding: "10px",
                                     backgroundColor: "black",
                                 }}
@@ -202,7 +202,7 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
                     <Box
                         width="50%"
                         height="100%"
-                        border="1px solid limegreen"
+                        border="1px solid #A5D6A7"
                         minHeight="100%"
                     >
                         <ReactMarkdown

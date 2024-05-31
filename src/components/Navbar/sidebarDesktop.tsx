@@ -92,7 +92,7 @@ const SidebarDesktop = () => {
             _hover={{
               cursor: "pointer",
               transform: "scale(1.03)",
-              border: "1px solid limegreen",
+              border: "1px solid #A5D6A7",
             }}
             minW={"100%"}
             h={"auto"}
@@ -103,7 +103,7 @@ const SidebarDesktop = () => {
         </Heading>
         <Divider
           my={4}
-          style={{ color: "limegreen", borderColor: "limegreen" }}
+          style={{ color: "#A5D6A7", borderColor: "#A5D6A7" }}
         />
         <CommunityTotalPayout />
 

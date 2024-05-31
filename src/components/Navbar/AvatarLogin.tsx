@@ -35,7 +35,7 @@ export default function AvatarLogin() {
       <MenuList bg="black" >
         <MenuItem
           bg="black"
-          _hover={{ bg: "limegreen", color: "black" }}
+          _hover={{ bg: "#A5D6A7", color: "black" }}
           icon={<User size={"16px"} />}
           as={Link}
           href={`/profile/${hiveUser.name}`}
@@ -43,7 +43,7 @@ export default function AvatarLogin() {
           Profile
         </MenuItem>
         <MenuItem
-          _hover={{ bg: "limegreen", color: "black" }}
+          _hover={{ bg: "#A5D6A7", color: "black" }}
           bg="black"
           icon={<FaEthereum size={"16px"} />}
           as={Link}
@@ -52,7 +52,7 @@ export default function AvatarLogin() {
           Dao
         </MenuItem>
         <MenuItem
-          _hover={{ bg: "limegreen", color: "black" }}
+          _hover={{ bg: "#A5D6A7", color: "black" }}
           bg="black"
           icon={<FaWallet size={"16px"} />}
           as={Link}
@@ -61,7 +61,7 @@ export default function AvatarLogin() {
           Wallet
         </MenuItem>
         <MenuItem
-          _hover={{ bg: "limegreen", color: "black" }}
+          _hover={{ bg: "#A5D6A7", color: "black" }}
           bg="black"
           icon={<FaSpeakap size={"16px"} />}
           as={Link}

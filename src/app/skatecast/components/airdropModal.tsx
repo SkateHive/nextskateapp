@@ -90,7 +90,7 @@ const AirdropModal = ({ sortedComments, isOpen, onClose }: AirdropModalProps) =>
                                 <VStack>
 
                                     <Image src="https://media.tenor.com/2mY8gJ1WWqsAAAAM/peppo-pepe.gif" alt="airdrop" />
-                                    <BeatLoader color={"limegreen"} />
+                                    <BeatLoader color={"#A5D6A7"} />
                                     <Center>
 
                                         <Text textAlign={"center"}>Wait a bit. Pepe is checkin who here deserves some tokens</Text>
@@ -99,7 +99,7 @@ const AirdropModal = ({ sortedComments, isOpen, onClose }: AirdropModalProps) =>
                             ) : (
                                 <>
                                     <Image src="https://www.skatehive.app/assets/cryptopepe.png" alt="airdrop" />
-                                    <Text fontFamily="Creepster" fontSize="42px" color={"limegreen"}> Sponsor {walletDict.length} skaters !!!</Text>
+                                    <Text fontFamily="Creepster" fontSize="42px" color={"#A5D6A7"}> Sponsor {walletDict.length} skaters !!!</Text>
                                     <TokenSelector addressDict={walletDict} setShowConfetti={setShowConfetti} />
                                     <Button
                                         onClick={() => setIsCollapsed(!isCollapsed)}

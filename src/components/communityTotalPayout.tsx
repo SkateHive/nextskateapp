@@ -29,13 +29,13 @@ function CommunityTotalPayout() {
         )
         const resJson = await hiveHubResponse.json()
         const hiveInfo = resJson[SKATEHIVE_TAG]
-        let totalPayoutNumber = 65666; 
+        let totalPayoutNumber = 65666;
         if (hiveInfo && hiveInfo.total_payouts_hbd) {
           try {
             totalPayoutNumber = parseFloat(hiveInfo.total_payouts_hbd.replace("$", ""));
           } catch (error) {
             console.error("Error reading 'total_payouts_hbd': ", error);
-            totalPayoutNumber = 65666; 
+            totalPayoutNumber = 65666;
           }
         }
 
@@ -59,7 +59,7 @@ function CommunityTotalPayout() {
         width={"100%"}
         borderRadius="md"
         color="chartreuse"
-        border={"1px solid limegreen"}
+        border={"1px solid #A5D6A7"}
       >
         {loading ? (
           <VStack>
@@ -92,7 +92,7 @@ function CommunityTotalPayout() {
               ${formattedNumber}
             </Text>
             <Text
-              color={"limegreen"}
+              color={"#A5D6A7"}
               fontSize="12px"
               fontWeight="bold"
               textShadow={"1px 1px 15px black"}

@@ -119,7 +119,7 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
           </Link>
           <Flex flexDir="column" gap={0} w={"100%"}>
             <Flex gap={1} alignItems="center">
-              <Text color="green" fontSize="14px" as="b">
+              <Text color="limegreen" fontSize="14px" as="b">
                 {post.author}
               </Text>
               <Text fontSize="14px" color="darkgray">
@@ -138,7 +138,7 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
             <HStack justify={"space-between"} display={"flex"}>
               <Text
                 cursor={"pointer"}
-                color={"limegreen"}
+                color={"#A5D6A7"}
                 fontSize="16px"
                 noOfLines={1}
                 onClick={onOpen}
@@ -157,7 +157,7 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
               as={Eye}
               h={7}
               w={7}
-              color="limegreen"
+              color="#A5D6A7"
             />
           </Tooltip>
         ) : (
