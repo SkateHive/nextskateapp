@@ -44,7 +44,7 @@ export default function AuthorAvatar({ username, borderRadius, hover }: AuthorAv
                 bg="transparent"
                 loading="lazy"
                 borderRadius={borderRadius || 5}
-                _hover={hover || { cursor: "pointer" }}
+                _hover={hover || { transform: "scale(1.05)", cursor: "pointer" }}
             />
             {/* </Tooltip> */}
         </Link>

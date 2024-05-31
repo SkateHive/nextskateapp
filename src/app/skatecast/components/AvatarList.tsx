@@ -58,7 +58,7 @@ const AvatarList = ({ sortedComments }: AvatarListProps) => {
         justifyContent={"center"}
         alignItems={"center"}
       >
-        <AirdropModal sortedComments={sortedComments} isOpen={isOpen} onClose={handleCloseModal} />
+        {isOpen && <AirdropModal sortedComments={sortedComments} isOpen={isOpen} onClose={handleCloseModal} />}
         <Tooltip
           label={"Create Airdrop"}
           bg={"black"}

@@ -5,7 +5,7 @@ import { vote } from "@/lib/hive/client-functions"
 import { voteWithPrivateKey } from "@/lib/hive/server-functions"
 import { Button, Text, Tooltip } from "@chakra-ui/react"
 import { VoteOperation } from "@hiveio/dhive"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useReward } from "react-rewards"
 import { voting_value2 } from "./calculateHiveVotingValueForHiveUser"
 export default function Vote() {
@@ -15,38 +15,38 @@ export default function Vote() {
   const [userVotingValue, setUserVotingValue] = useState(0)
 
 
-  useEffect(() => {
-    const getVotingValue = async () => {
-      try {
-        if (!hiveUser) return;
-        const vote_value = await voting_value2(hiveUser);
-        setUserVotingValue(Number(vote_value.toFixed(2)));
-      } catch (error) {
-        console.error("Failed to calculate voting value:", error);
-      }
-    }
-    if (hiveUser) {
-      getVotingValue();
-    }
-  }, [hiveUser]);
-
-
+  // useEffect(() => {
+  //   const getVotingValue = async () => {
+  //     try {
+  //       if (!hiveUser) return;
+  //       const vote_value = await voting_value2(hiveUser);
+  //       setUserVotingValue(Number(vote_value.toFixed(2)));
+  //     } catch (error) {
+  //       console.error("Failed to calculate voting value:", error);
+  //     }
+  //   }
+  //   if (hiveUser) {
+  //     getVotingValue();
+  //   }
+  // }, [hiveUser]);
 
   const rewardId = post.post_id ? "postReward" + post.post_id : ""
   const { reward, isAnimating } = useReward(rewardId, "emoji", {
     emoji: ["$", "*", "#"],
     spread: 60,
   })
-
   const [isVoted, setIsVoted] = useState(
     !!(hiveUser && hiveUser.name && post.userHasVoted(hiveUser.name))
   )
-
   const handleVoteClick = async () => {
     const loginMethod = localStorage.getItem("LoginMethod")
     const voteWeight = isVoted ? 0 : 10000
 
     if (!hiveUser) return
+
+    const vote_value = await voting_value2(hiveUser);
+    console.log(vote_value)
+    setUserVotingValue(Number(vote_value.toFixed(2)));
 
     if (loginMethod === "keychain") {
       await vote({
@@ -56,9 +56,9 @@ export default function Vote() {
         weight: voteWeight,
       })
       if (!isVoted && voteWeight > 0) {
-        setPostEarnings(Number(postEarnings.toFixed(2)) + userVotingValue)
+        setPostEarnings(Number(postEarnings.toFixed(2)) + vote_value)
       } else if (isVoted && voteWeight === 0) {
-        setPostEarnings(Number(postEarnings.toFixed(2)) - userVotingValue)
+        setPostEarnings(Number(postEarnings.toFixed(2)) - vote_value)
       }
     } else if (loginMethod === "privateKey") {
       const vote: VoteOperation = [

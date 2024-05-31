@@ -17,14 +17,14 @@ interface ProfilePageProps {
 export default function ProfileBlog({ user }: ProfilePageProps) {
   const [visiblePosts, setVisiblePosts] = useState(20)
   const { hiveAccount } = useHiveAccount(user.name)
-  const { posts,queryCategory } = usePosts("blog", [{ tag: user.name, limit: 100 }])
+  const { posts, queryCategory } = usePosts("blog", [{ tag: user.name, limit: 100 }])
   if (!hiveAccount || !posts) return <div>Loading...</div>
 
   return (
     <Box width="100%" minHeight="100vh">
       <InfiniteScroll
         dataLength={visiblePosts}
-        next={() => setVisiblePosts((visiblePosts) => visiblePosts + 3)}
+        next={() => setVisiblePosts(visiblePosts + 3)}
         hasMore={visiblePosts < posts.length}
         loader={
           <Flex justify="center">
