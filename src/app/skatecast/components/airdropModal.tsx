@@ -3,6 +3,7 @@ import HiveClient from "@/lib/hive/hiveclient";
 import { formatETHaddress } from "@/lib/utils";
 import {
     Button,
+    Center,
     Collapse,
     Image,
     Modal,
@@ -18,10 +19,11 @@ import {
     Th,
     Thead,
     Tr,
-    VStack
+    VStack,
 } from "@chakra-ui/react";
 import '@fontsource/creepster';
 import { useEffect, useState } from "react";
+import { BeatLoader } from "react-spinners";
 import TokenSelector from "./TokenSelector";
 
 interface AirdropModalProps {
@@ -74,54 +76,63 @@ const AirdropModal = ({ sortedComments, isOpen, onClose }: AirdropModalProps) =>
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay style={{ backdropFilter: "blur(5px)" }} />
-            <ModalHeader><Text>Create an Airdrop</Text></ModalHeader>
             <ModalContent w={{ base: "100%", md: "75%" }} bg="black" border="0.6px solid grey" borderRadius="md" mx={4}>
+                <ModalHeader><Text>Create an Airdrop</Text></ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
                     <VStack w={"100%"} align="center" spacing={4} position="relative">
-                        <Image src="https://www.skatehive.app/assets/cryptopepe.png" alt="airdrop" />
-                        {!isLoading ? (
-                            <Text fontFamily="Creepster" fontSize="42px" color={"limegreen"}> Sponsor {walletDict.length} vagabonds !!!</Text>
+
+                        {isLoading ? (
+                            <VStack>
+
+                                <Image src="https://media.tenor.com/2mY8gJ1WWqsAAAAM/peppo-pepe.gif" alt="airdrop" />
+                                <BeatLoader color={"limegreen"} />
+                                <Center>
+
+                                    <Text textAlign={"center"}>Wait a bit. Pepe is checkin who here deserves some tokens</Text>
+                                </Center>
+                            </VStack>
                         ) : (
-                            <Text>Loading...</Text>
-                        )}
-                        <TokenSelector addressDict={walletDict} />
-                        <Button
-                            onClick={() => setIsCollapsed(!isCollapsed)}
-                            colorScheme="green"
-                            variant={"outline"}
-                            size="sm"
-                            mb={4}
-                        >
-                            {isCollapsed ? "Hide" : "Show"} Motherfuckers
-                        </Button>
-                        <Collapse in={isCollapsed}>
-                            {!isLoading ? (
-                                <Table variant="simple">
-                                    <Thead>
-                                        <Tr>
-                                            <Th>Author</Th>
-                                            <Th>ETH Address</Th>
-                                        </Tr>
-                                    </Thead>
-                                    <Tbody>
-                                        {walletDict.map(({ author, ethAddress }: AuthorWallets) => (
-                                            <Tr key={author}>
-                                                <Td>{author}</Td>
-                                                <Td>{formatETHaddress(ethAddress)}</Td>
+                            <>
+                                <Image src="https://www.skatehive.app/assets/cryptopepe.png" alt="airdrop" />
+
+                                <Text fontFamily="Creepster" fontSize="42px" color={"limegreen"}> Sponsor {walletDict.length} vagabonds !!!</Text>
+                                <TokenSelector addressDict={walletDict} />
+                                <Button
+                                    onClick={() => setIsCollapsed(!isCollapsed)}
+                                    colorScheme="green"
+                                    variant={"outline"}
+                                    size="sm"
+                                    mb={4}
+                                >
+                                    {isCollapsed ? "Hide" : "Show"} Motherfuckers
+                                </Button>
+                                <Collapse in={isCollapsed}>
+                                    <Table variant="simple">
+                                        <Thead>
+                                            <Tr>
+                                                <Th>Author</Th>
+                                                <Th>ETH Address</Th>
                                             </Tr>
-                                        ))}
-                                    </Tbody>
-                                </Table>
-                            ) : (
-                                <Text>Loading...</Text>
-                            )}
-                        </Collapse>
+                                        </Thead>
+                                        <Tbody>
+                                            {walletDict.map(({ author, ethAddress }: AuthorWallets) => (
+                                                <Tr key={author}>
+                                                    <Td>{author}</Td>
+                                                    <Td>{formatETHaddress(ethAddress)}</Td>
+                                                </Tr>
+                                            ))}
+                                        </Tbody>
+                                    </Table>
+                                </Collapse>
+                            </>
+                        )}
                     </VStack>
                 </ModalBody>
             </ModalContent>
         </Modal>
     );
+
 };
 
 export default AirdropModal;
