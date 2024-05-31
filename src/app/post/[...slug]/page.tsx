@@ -8,6 +8,7 @@ import { Metadata } from "next"
 import ReactMarkdown from "react-markdown"
 import rehypeRaw from "rehype-raw"
 import remarkGfm from "remark-gfm"
+
 export const revalidate = 600
 
 const hiveClient = HiveClient

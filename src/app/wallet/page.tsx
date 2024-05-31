@@ -1,11 +1,11 @@
 "use client"
 
 import {
-  Stack,
   Box,
-} from "@chakra-ui/react"
-import EthBox from "./components/ethWallet"
-import HiveBox from "./components/hiveWallet"
+  Stack,
+} from "@chakra-ui/react";
+import TotalValueBox from "./components/TotalWalletPage";
+
 
 
 function Wallet() {
@@ -15,11 +15,9 @@ function Wallet() {
       w={"100%"}
       align={"flex-start"}
     >
+      
       <Box width={{ base: "100%", md: "50%" }}>
-        <HiveBox />
-      </Box>
-      <Box width={{ base: "100%", md: "50%" }}>
-        <EthBox />
+       <TotalValueBox />
       </Box>
     </Stack>
   )
