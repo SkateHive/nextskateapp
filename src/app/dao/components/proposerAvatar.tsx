@@ -13,14 +13,14 @@ const ProposerAvatar: React.FC<ProposerAvatarProps> = ({ authorAddress }) => {
         const loadAvatar = async () => {
             try {
                 const url = await getENSavatar(authorAddress)
-                setAvatarUrl(url || "/infinitypepe.gif") // Ensure fallback to a default avatar if none is found
+                setAvatarUrl(url || "/infinitypepe.gif")  
             } catch (error) {
                 console.error(
                     "Failed to fetch avatar for address:",
                     authorAddress,
                     error
                 )
-                setAvatarUrl("infinitypepe.gif") // Use default avatar on error
+                setAvatarUrl("infinitypepe.gif") 
             }
         }
 

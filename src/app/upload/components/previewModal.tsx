@@ -1,3 +1,7 @@
+import Footer from '@/components/PostCard/Footer';
+import Header from '@/components/PostCard/Header';
+import PostImage from '@/components/PostCard/Image';
+import { PostProvider } from '@/contexts/PostContext';
 import { commentWithKeychain } from '@/lib/hive/client-functions';
 import { commentWithPrivateKey } from '@/lib/hive/server-functions';
 import { HiveAccount } from '@/lib/useHiveAuth';
@@ -64,6 +68,17 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
     }
 
     const handlePost = async () => {
+        const formatBeneficiaries = (beneficiariesArray: any[]) => {
+            let seen = new Set();
+            return beneficiariesArray.filter(({ account }: { account: string }) => {
+                const duplicate = seen.has(account);
+                seen.add(account);
+                return !duplicate;
+            }).map(beneficiary => ({
+                account: beneficiary.account,
+                weight: parseInt(beneficiary.weight, 10) 
+            })).sort((a, b) => a.account.localeCompare(b.account));
+        };
         const finalBeneficiaries = formatBeneficiaries(beneficiariesArray);
         const permlink = slugify(title.toLowerCase());
         const loginMethod = localStorage.getItem('LoginMethod');

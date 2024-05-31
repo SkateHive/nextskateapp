@@ -1,5 +1,3 @@
-// queries.tsx
-
 export const proposalsQuery = `
   {
     proposals (

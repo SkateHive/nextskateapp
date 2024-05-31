@@ -1,151 +1,4 @@
 'use client'
-
-// export const airdropABI = [
-//     {
-//         "inputs": [],
-//         "stateMutability": "nonpayable",
-//         "type": "constructor"
-//     },
-//     {
-//         "anonymous": false,
-//         "inputs": [
-//             {
-//                 "indexed": false,
-//                 "internalType": "address",
-//                 "name": "token",
-//                 "type": "address"
-//             },
-//             {
-//                 "indexed": true,
-//                 "internalType": "address",
-//                 "name": "from",
-//                 "type": "address"
-//             },
-//             {
-//                 "indexed": false,
-//                 "internalType": "address[]",
-//                 "name": "recipients",
-//                 "type": "address[]"
-//             },
-//             {
-//                 "indexed": false,
-//                 "internalType": "uint256[]",
-//                 "name": "amounts",
-//                 "type": "uint256[]"
-//             }
-//         ],
-//         "name": "BulkTransfer",
-//         "type": "event"
-//     },
-//     {
-//         "anonymous": false,
-//         "inputs": [
-//             {
-//                 "indexed": false,
-//                 "internalType": "address",
-//                 "name": "token",
-//                 "type": "address"
-//             }
-//         ],
-//         "name": "TokensApproved",
-//         "type": "event"
-//     },
-//     {
-//         "anonymous": false,
-//         "inputs": [
-//             {
-//                 "indexed": false,
-//                 "internalType": "address",
-//                 "name": "token",
-//                 "type": "address"
-//             }
-//         ],
-//         "name": "TokensDisapproved",
-//         "type": "event"
-//     },
-//     {
-//         "inputs": [
-//             {
-//                 "internalType": "address",
-//                 "name": "token",
-//                 "type": "address"
-//             }
-//         ],
-//         "name": "approveToken",
-//         "outputs": [],
-//         "stateMutability": "nonpayable",
-//         "type": "function"
-//     },
-//     {
-//         "inputs": [
-//             {
-//                 "internalType": "address",
-//                 "name": "",
-//                 "type": "address"
-//             }
-//         ],
-//         "name": "approvedTokens",
-//         "outputs": [
-//             {
-//                 "internalType": "bool",
-//                 "name": "",
-//                 "type": "bool"
-//             }
-//         ],
-//         "stateMutability": "view",
-//         "type": "function"
-//     },
-//     {
-//         "inputs": [
-//             {
-//                 "internalType": "address",
-//                 "name": "token",
-//                 "type": "address"
-//             },
-//             {
-//                 "internalType": "address[]",
-//                 "name": "recipients",
-//                 "type": "address[]"
-//             },
-//             {
-//                 "internalType": "uint256[]",
-//                 "name": "amounts",
-//                 "type": "uint256[]"
-//             }
-//         ],
-//         "name": "bulkTransfer",
-//         "outputs": [],
-//         "stateMutability": "nonpayable",
-//         "type": "function"
-//     },
-//     {
-//         "inputs": [
-//             {
-//                 "internalType": "address",
-//                 "name": "token",
-//                 "type": "address"
-//             }
-//         ],
-//         "name": "disapproveToken",
-//         "outputs": [],
-//         "stateMutability": "nonpayable",
-//         "type": "function"
-//     },
-//     {
-//         "inputs": [],
-//         "name": "owner",
-//         "outputs": [
-//             {
-//                 "internalType": "address",
-//                 "name": "",
-//                 "type": "address"
-//             }
-//         ],
-//         "stateMutability": "view",
-//         "type": "function"
-//     }
-// ] as const;
-
 import { TokenInfo } from "@/components/PostCard/TipModal";
 import { airdropABI } from "@/lib/abi/airdropABI";
 import { memberABI } from "@/lib/abi/memberABI";
@@ -168,7 +21,7 @@ import {
     Text
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { useAccount, useConfig, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
+import { useAccount, useWriteContract } from 'wagmi';
 
 interface TokenSelectorProps {
     addressDict: any;
@@ -190,12 +43,6 @@ const TokenSelector = ({ addressDict }: TokenSelectorProps) => {
     const ethAddressList = Object.values<AuthorEthAddress>(addressDict).map((item: AuthorEthAddress) => item.ethAddress);
     const dividedAmount = ethAddressList.length > 0 ? (Number(amount) / ethAddressList.length) : 0;
     const { data: hash, isPending, writeContract } = useWriteContract();
-    const config = useConfig();
-
-    const { isLoading: isConfirming, isSuccess: isConfirmed } =
-        useWaitForTransactionReceipt({
-            hash,
-        })
 
     const tokenDictionary: { [key: string]: TokenInfo } = {
         SENDIT: {
@@ -213,11 +60,6 @@ const TokenSelector = ({ addressDict }: TokenSelectorProps) => {
             abi: memberABI as unknown as any[],
             tokenLogo: "https://member.clinic/images/01-1.jpg"
         },
-        // HIVE: {
-        //     address: '0x',
-        //     abi: [] as unknown as any[],
-        //     tokenLogo: "https://cryptologos.cc/logos/hive-blockchain-hive-logo.png"
-        // }
     };
 
     const ethAddressListFormatted = ethAddressList.map((address) => address.startsWith("0x") ? address : `0x${address}`) as readonly `0x${string}`[];
@@ -255,10 +97,6 @@ const TokenSelector = ({ addressDict }: TokenSelectorProps) => {
                                         bg="black"
                                         _hover={{ bg: "red.500", color: "black" }}
                                         onClick={() => alert("We said SOON! bitch!")}
-                                    // onClick={() => {
-                                    //     setToken("HIVE");
-                                    //     setIsCustomToken(false);
-                                    // }}
                                     >
                                         <Image alt="hive-logo" mr={3} boxSize="20px" src="https://cryptologos.cc/logos/hive-blockchain-hive-logo.png" />
                                         $HIVE (Soon)

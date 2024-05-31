@@ -1,6 +1,3 @@
-// Lets create a HiveTip Modal component that will allow users to tip authors with HIVE tokens.
-
-// Path: src/components/PostCard/HiveTipModal.tsx
 import { usePostContext } from '@/contexts/PostContext';
 import { useHiveUser } from '@/contexts/UserContext';
 import { transferWithKeychain } from '@/lib/hive/client-functions';

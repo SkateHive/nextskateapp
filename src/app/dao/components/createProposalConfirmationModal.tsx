@@ -1,14 +1,14 @@
-import React, { useMemo, useState, useCallback } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import rehypeRaw from 'rehype-raw';
-import { Web3Provider } from '@ethersproject/providers';
-import { Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter } from "@chakra-ui/react";
 import { MarkdownRenderers } from '@/app/upload/utils/MarkdownRenderers';
-import { createProposal } from '../utils/createProposal';
-import Confetti from 'react-confetti';
 import { useHiveUser } from '@/contexts/UserContext';
 import { commentWithKeychain } from '@/lib/hive/client-functions';
+import { Button, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay } from "@chakra-ui/react";
+import { Web3Provider } from '@ethersproject/providers';
+import React, { useCallback, useMemo, useState } from 'react';
+import Confetti from 'react-confetti';
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+import remarkGfm from 'remark-gfm';
+import { createProposal } from '../utils/createProposal';
 export enum ProposalType {
     SingleChoice = 'single-choice',
     Approval = 'approval',
@@ -35,12 +35,12 @@ const CreateProposalConfirmationModal: React.FC<CreateProposalConfirmationModalP
 
     const fetchCurrentBlockNumber = useCallback(async () => {
         const blockNumber = await web3.getBlockNumber();
-        return blockNumber;  // Return the block number directly
+        return blockNumber; 
     }, [web3]);
 
     const handleCreateProposal = useCallback(async () => {
         try {
-            const currentBlockNumber = await fetchCurrentBlockNumber();  // Directly use the fetched block number
+            const currentBlockNumber = await fetchCurrentBlockNumber(); 
 
             if (currentBlockNumber <= 0) {
                 throw new Error('Invalid block number, please try again');
@@ -48,7 +48,7 @@ const CreateProposalConfirmationModal: React.FC<CreateProposalConfirmationModalP
             const proPostPermlink = generatePermlink(title);
             const currentTimeInSeconds = Math.floor(Date.now() / 1000);
             const start = currentTimeInSeconds;
-            const end = start + 172800; // 48 hours in seconds
+            const end = start + 172800; 
 
             const propostBody = `
             ---

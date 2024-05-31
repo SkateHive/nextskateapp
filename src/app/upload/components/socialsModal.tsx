@@ -25,7 +25,6 @@ const SocialModal: React.FC<SocialModalProps> = ({ isOpen, onClose, postUrl, con
             const postPageUrl = generatePostUrl();
             navigator.clipboard.writeText(postPageUrl);
             setPostLinkCopied(true);
-            //wait 3 seconds
             setTimeout(() => {
                 setPostLinkCopied(false);
             }, 3000);
@@ -47,7 +46,6 @@ const SocialModal: React.FC<SocialModalProps> = ({ isOpen, onClose, postUrl, con
     const handleShareTwitter = async () => {
         try {
             const postPageUrl = encodeURI(generatePostUrl());
-            // assemble text + url in just one string 
             const tweetText = `${aiSummary} ${postPageUrl}`;
             window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, '_blank');
 
@@ -59,12 +57,9 @@ const SocialModal: React.FC<SocialModalProps> = ({ isOpen, onClose, postUrl, con
     const handleShareDiscord = async () => {
         try {
             const postPageUrl = encodeURI(generatePostUrl());
-            // assemble text + url in just one string 
             const tweetText = `${aiSummary} ${postPageUrl}`;
-            // copy tweetText to clipboard
             navigator.clipboard.writeText(tweetText);
 
-            // open discord
             window.open('https://discord.com/channels/631777256234156033/631778823716864011', '_blank');
         }
         catch (error) {

@@ -1,5 +1,4 @@
 import HiveClient from "@/lib/hive/hiveclient";
-import { HiveAccount } from "@/lib/useHiveAuth";
 
 export const rewardFund = async () => {
     const client = HiveClient;
@@ -21,10 +20,10 @@ export const voting_value = async (user: any) => {
     const { reward_balance, recent_claims } = reward_fund;
     const { base, quote } = feed_history.current_median_history;
 
-    const baseNumeric = parseFloat(base.split(' ')[0]); // HBD
-    const quoteNumeric = parseFloat(quote.split(' ')[0]); // HIVE
+    const baseNumeric = parseFloat(base.split(' ')[0]);
+    const quoteNumeric = parseFloat(quote.split(' ')[0]);
 
-    const hbdMedianPrice = baseNumeric / quoteNumeric; // This converts base (HBD) to the HIVE equivalent
+    const hbdMedianPrice = baseNumeric / quoteNumeric; 
 
     const rewardBalanceNumeric = parseFloat(reward_balance.split(' ')[0]);
     const recentClaimsNumeric = parseFloat(recent_claims);

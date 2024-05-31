@@ -61,7 +61,6 @@ const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
                 return acc;
             }, {} as { [key: string]: Types.TokenDetail[] });
 
-            // Sort each group by USD balance in descending order
             Object.keys(newGroupedTokens).forEach(network => {
                 newGroupedTokens[network].sort((a, b) => b.token.balanceUSD - a.token.balanceUSD);
             });

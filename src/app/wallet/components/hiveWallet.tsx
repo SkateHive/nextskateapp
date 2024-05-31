@@ -37,10 +37,8 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
     const { hiveUser } = useHiveUser()
     const hivePrice = useHivePrice()
 
-    // Hive 
     const [hiveUsdValue, setHiveUsdValue] = useState(0)
 
-    // HivePower
     const vestingShares = hiveUser?.vesting_shares
     const delegatedVestingShares = hiveUser?.delegated_vesting_shares
     const receivedVestingShares = hiveUser?.received_vesting_shares
@@ -51,13 +49,10 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
     const [HPUsdValue, setHPUsdValue] = useState(0)
     const [delegatedHPUsdValue, setDelegatedHPUsdValue] = useState(0)
 
-    // HBD
     const [HBDUsdValue, setHBDUsdValue] = useState(0)
 
-    // Savings
     const [savingsUSDvalue, setSavingsUSDvalue] = useState(0)
 
-    // Total 
     const [totalValue, setTotalValue] = useState(0)
 
     useEffect(() => {
@@ -95,9 +90,9 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
 
     return (
         <VStack
-            w="100%"
-            gap={6}
-            align="normal"
+            w={"100%"}
+            gap={6} 
+            align={"normal"}
             p={4}
             flex="1"
             bg="#201d21"

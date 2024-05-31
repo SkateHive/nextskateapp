@@ -1,10 +1,13 @@
 "use client"
 
+import { useHiveUser } from "@/contexts/UserContext"
 import useAuthHiveUser from "@/lib/useHiveAuth"
 import {
   Button,
+  Center,
   FormControl,
   FormErrorMessage,
+  Image,
   Input,
   Modal,
   ModalBody,
@@ -14,12 +17,9 @@ import {
   ModalHeader,
   ModalOverlay,
   Spinner,
-  VStack,
-  Image,
-  Center
+  VStack
 } from "@chakra-ui/react"
-import { useState, useEffect } from "react"
-import { useHiveUser } from "@/contexts/UserContext"
+import { useEffect, useState } from "react"
 const environment = process.env.NODE_ENV
 
 function LoginModal({

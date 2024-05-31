@@ -1,22 +1,27 @@
 
 'use client';
-import React, { useState, useEffect, useMemo } from "react";
+import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
+import { uploadFileToIPFS } from "@/app/upload/utils/uploadToIPFS";
+import {
+    Box,
+    Button,
+    Center,
+    HStack,
+    Input,
+    Spinner,
+    Tooltip,
+    VStack, useBreakpointValue
+} from "@chakra-ui/react";
 import { Web3Provider } from '@ethersproject/providers';
 import snapshot from '@snapshot-labs/snapshot.js';
-import {
-    Tooltip, Box, HStack, VStack, useBreakpointValue, Button,
-    Input, Center, Spinner
-} from "@chakra-ui/react";
-import { FaImage, FaSave } from "react-icons/fa";
 import MDEditor, { commands } from '@uiw/react-md-editor';
+import { useEffect, useMemo, useState } from "react";
+import { useDropzone } from "react-dropzone";
+import { FaImage, FaSave } from "react-icons/fa";
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm';
-import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
-import { uploadFileToIPFS } from "@/app/upload/utils/uploadToIPFS";
-import { useDropzone } from "react-dropzone";
-import { createProposal } from "../utils/createProposal";
 import CreateProposalConfirmationModal from "./createProposalConfirmationModal";
 
 
@@ -46,8 +51,8 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
         onDrop: async (acceptedFiles) => {
             setIsUploading(true);
             for (const file of acceptedFiles) {
-                const ipfsData = await uploadFileToIPFS(file); // Use the returned data directly
-                if (ipfsData !== undefined) { // Ensure ipfsData is not undefined
+                const ipfsData = await uploadFileToIPFS(file); 
+                if (ipfsData !== undefined) { 
                     const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}?pinataGatewayToken=${PINATA_GATEWAY_TOKEN}`;
                     const markdownLink = file.type.startsWith("video/") ? `<iframe src="${ipfsUrl}" allowfullscreen></iframe>` : `![Image](${ipfsUrl})`;
                     setValue(prevMarkdown => `${prevMarkdown}\n${markdownLink}\n`);
@@ -69,7 +74,7 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
             buttonProps: { 'aria-label': 'Upload image' },
             icon: (<Tooltip label="Upload Image or Video"><span><FaImage color="yellow" /></span></Tooltip>),
             execute: (state: any, api: any) => {
-                // Trigger file input click
+               
                 const element = document.getElementById('md-image-upload');
                 if (element) {
                     element.click();
@@ -77,17 +82,16 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
             }
         },
         {
-            name: 'saveDraftInTxt', // Corrected from 'saveDraftintxt'
-            keyCommand: 'saveDraftInTxt', // Also corrected for consistency
+            name: 'saveDraftInTxt', 
+            keyCommand: 'saveDraftInTxt', 
             buttonProps: { 'aria-label': 'Save Draft' },
             icon: (<Tooltip label="Save Draft" ><span><FaSave color="limegreen" /></span></Tooltip>),
             execute: (state: any, api: any) => {
-                // save .txt from value in the local machine
                 const element = document.createElement('a');
                 const file = new Blob([value], { type: 'text/plain' });
                 element.href = URL.createObjectURL(file);
                 element.download = "draft.txt";
-                document.body.appendChild(element); // Required for this to work in FireFox
+                document.body.appendChild(element);
                 element.click();
             }
         }
@@ -118,13 +122,12 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
         }
     };
 
-    //TODO: add 10000 limit caracter
     return (
         <Box>
             {useBreakpointValue({
                 base: <VStack spacing="4">
                     <Box
-                        width="100%" // Make full width on mobile
+                        width="100%" 
                     >
                         <Input
                             placeholder="Proposal Title"
@@ -158,7 +161,7 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
                         </Box>
                     </Box>
                     <Box
-                        width="100%" // Make full width on mobile
+                        width="100%"
                         height="100%"
                         border="1px solid limegreen"
                         minHeight="100%"

@@ -34,7 +34,7 @@ export interface TokenDetail {
 }
 export interface PortfolioData {
     nftUsdNetWorth: Record<string, string>;
-    nfts: TokenDetail[]; // Assuming nfts follow a similar detailed structure.
+    nfts: TokenDetail[]; 
     tokens: TokenDetail[];
     totalBalanceUSDApp: number;
     totalBalanceUsdTokens: number;

@@ -1,4 +1,7 @@
 "use client"
+import LoginModal from "@/components/Hive/Login/LoginModal"
+import Post from "@/components/PostCard"
+import PostSkeleton from "@/components/PostCard/Skeleton"
 import { useHiveUser } from "@/contexts/UserContext"
 import usePosts from "@/hooks/usePosts"
 import PostModel from "@/lib/models/post"
@@ -6,21 +9,16 @@ import { Box, Button, ButtonGroup, Flex, Grid, HStack } from "@chakra-ui/react"
 import { useState } from "react"
 import InfiniteScroll from "react-infinite-scroll-component"
 import { BeatLoader } from "react-spinners"
-import LoginModal from "@/components/Hive/Login/LoginModal"
-import Post from "@/components/PostCard"
-import PostSkeleton from "@/components/PostCard/Skeleton"
 export default function Feed() {
   const SKATEHIVE_TAG = [{ tag: "hive-173115", limit: 100 }]
   const [tag, setTag] = useState(SKATEHIVE_TAG)
   const [query, setQuery] = useState("trending")
-  const [fetchedPosts, setFetchedPosts] = useState()
   const { posts, error, isLoading, setQueryCategory, setDiscussionQuery } =
     usePosts(query, tag)
   const [visiblePosts, setVisiblePosts] = useState(20)
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
   const hiveUser = useHiveUser()
 
-  //setFetchedPosts(usePosts(queryCategory, tag))
   function updateFeed(query: string, tagParams: any[]) {
     setQuery(query)
     setQueryCategory(query)

@@ -1,5 +1,5 @@
+import getSummary from "@/lib/getSummaryAI";
 import { proposalsQuery } from "../utils/queries";
-import getSummary from "@/lib/getSummaryAI"; // Confirm the path alias "@/" is configured correctly
 
 export interface Proposal {
     id: string;
@@ -28,7 +28,7 @@ const fetchProposals = async ({
     setProposals,
     setLoadingProposals,
     setLoadingSummaries
-}: FetchProposalsParams): Promise<void> => { // Specify return type of Promise<void>
+}: FetchProposalsParams): Promise<void> => { 
     try {
         const response = await fetch('https://hub.snapshot.org/graphql', {
             method: 'POST',

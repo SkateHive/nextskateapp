@@ -14,13 +14,11 @@ export default function Feed() {
   const SKATEHIVE_TAG = [{ tag: "hive-173115", limit: 100 }]
   const [tag, setTag] = useState(SKATEHIVE_TAG)
   const [query, setQuery] = useState("created")
-  const [fetchedPosts, setFetchedPosts] = useState()
   const { posts, error, isLoading, setQueryCategory, setDiscussionQuery } = usePosts(query, tag)
   const [visiblePosts, setVisiblePosts] = useState(20)
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
   const hiveUser = useHiveUser()
 
-  //setFetchedPosts(usePosts(queryCategory, tag))
   function updateFeed(query: string, tagParams: any[]) {
     setQuery(query)
     setQueryCategory(query)
@@ -38,9 +36,6 @@ export default function Feed() {
         p={1}
         templateColumns={{
           base: "repeat(1, 1fr)",
-          // md: "repeat(2, 1fr)",
-          // lg: "repeat(3, 1fr)",
-          // xl: "repeat(4, 1fr)",
         }}
         gap={0}
         minHeight="100vh"
@@ -135,9 +130,6 @@ export default function Feed() {
         <Grid
           templateColumns={{
             base: "repeat(1, 1fr)",
-            // md: "repeat(2, 1fr)",
-            // lg: "repeat(3, 1fr)",
-            // xl: "repeat(4, 1fr)",
           }}
           gap={0}
         >

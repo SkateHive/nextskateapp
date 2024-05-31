@@ -54,7 +54,6 @@ export async function hiveServerLoginWithPassword(
   )
 
   if (accountName === username) {
-    // user has used password
     let encryptedKey = encryptPrivateKey(hivePrivateKey)
     return {
       validation: { success: true, message: "User has found" },
@@ -62,14 +61,12 @@ export async function hiveServerLoginWithPassword(
       type: "posting",
     }
   } else {
-    // user did not use password
     let hivePrivateKey = dhive.PrivateKey.fromString(privateKey)
     let hivePublicKey = hivePrivateKey.createPublic()
     let val = await HiveClient.keys.getKeyReferences([hivePublicKey.toString()])
     let accountName = val.accounts[0][0]
 
     if (accountName === username) {
-      // user has logged in using correct private key
       const userData = await HiveClient.database.getAccounts([username])
       let encryptedKey = encryptPrivateKey(hivePrivateKey)
 
@@ -77,10 +74,8 @@ export async function hiveServerLoginWithPassword(
         ...userData[0],
       }
 
-      // check if user is using posting key
       let checkAuth = userAccount.posting.key_auths
       for (var i = 0, len = checkAuth.length; i < len; i++) {
-        // checking if key is in posting array
         if (checkAuth[i][0] == hivePublicKey.toString()) {
           return {
             validation: { success: true, message: "User has found" },
@@ -89,10 +84,8 @@ export async function hiveServerLoginWithPassword(
           }
         }
       }
-      // check if user is using active key
       checkAuth = userAccount.active.key_auths
       for (var i = 0, len = checkAuth.length; i < len; i++) {
-        // checking if key is in active array
         if (checkAuth[i][0] == hivePublicKey.toString()) {
           return {
             validation: { success: true, message: "User has found" },
@@ -102,10 +95,8 @@ export async function hiveServerLoginWithPassword(
         }
       }
 
-      // check if user is using owner key
       checkAuth = userAccount.owner.key_auths
       for (var i = 0, len = checkAuth.length; i < len; i++) {
-        // checking if key is in owner array
         if (checkAuth[i][0] == hivePublicKey.toString()) {
           return {
             validation: { success: true, message: "User has found" },

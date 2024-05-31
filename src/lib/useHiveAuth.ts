@@ -13,7 +13,6 @@ interface MetadataProps {
   [key: string]: any
 }
 
-// Define the Account type
 export interface HiveAccount extends dhive.Account {
 
   metadata?: MetadataProps
@@ -40,17 +39,15 @@ function useAuthHiveUser(): AuthUser {
       ...userData[0],
     }
 
-    // Check if json_metadata is a valid JSON string before parsing
     try {
       if (userAccount.json_metadata) {
         userAccount.metadata = JSON.parse(userAccount.json_metadata)
       }
     } catch (error) {
       console.error("Error parsing json_metadata:", error)
-      userAccount.metadata = {} // Initialize with an empty object or handle it as needed
+      userAccount.metadata = {} 
     }
 
-    // If metadata is empty or does not have a "profile" property, try parsing posting_json_metadata
     if (
       !userAccount.metadata ||
       !userAccount.metadata.hasOwnProperty("profile")
@@ -61,7 +58,7 @@ function useAuthHiveUser(): AuthUser {
         }
       } catch (error) {
         console.error("Error parsing posting_json_metadata:", error)
-        userAccount.metadata = {} // Initialize with an empty object or handle it as needed
+        userAccount.metadata = {} 
       }
     }
 
@@ -82,7 +79,6 @@ function useAuthHiveUser(): AuthUser {
         return
       }
 
-      // store encrypted private key
       if (privateKey) {
         const { validation, key, type } = await hiveServerLoginWithPassword(
           username,
@@ -108,82 +104,11 @@ function useAuthHiveUser(): AuthUser {
         }
       }
 
-      // grant posting authority to app
-      /*
-            if (privateKey) {
-              // dhive private key instance
-              const hivePrivateKey = dhive.PrivateKey.fromString(privateKey)
-              // get public key from private key
-              const hivePublicKey = hivePrivateKey.createPublic()
-              // get hive user from public key
-              const val = await hiveClient.keys.getKeyReferences([hivePublicKey.toString()])
-              const accountName = val.accounts[0][0]
-              // check if username from form match hive account name
-              if (accountName === username) {
-                const userData = await hiveClient.database.getAccounts([
-                  username,
-                ])
-        
-                const userAccount: HiveAccount = {
-                  ...userData[0],
-                }
-      
-                const postingAuth = userAccount.posting;
-      
-                //check for username duplication
-                const checkAuth = userAccount.posting.account_auths;
-                var arrayindex = -1;
-                for (var i = 0,len = checkAuth.length; i<len; i++) {
-                  // hard coded app name!!!!!!!
-                  // checking if user already granted posting auth
-                  if (checkAuth[i][0]=="skatehive") {
-                    arrayindex = i
-                    return
-                  }
-                }
-      
-                //add account permission
-                // hard coded app name!!!!
-                postingAuth.account_auths.push([
-                  "skatehive",
-                  1,
-                ])
-                postingAuth.account_auths.sort();
-      
-                //object creation
-                const accObj = {
-                  account: username,
-                  json_metadata: userAccount.json_metadata,
-                  memo_key: userAccount.memo_key,
-                  posting: postingAuth,
-                }
-      
-                //account update broadcast
-                hiveClient.broadcast.updateAccount(accObj, hivePrivateKey).then(
-                  function(result) {
-                    console.log(
-                      'included in block: ' + result.block_num,
-                      'expired: ' + result.expired
-                    );
-                  },
-                  function(error) {
-                    console.error(error);
-                  }
-                );
-                resolve()
-                return
-              }
-      
-            }
-      
-      */
-
-      // login with HiveAuth
+     
       if (privateKey) {
         return
       }
 
-      // Login with Keychain
       const memo = `${username} signed up with ${process.env.NEXT_PUBLIC_WEBSITE_URL
         } app at ${Date.now()}`
 
