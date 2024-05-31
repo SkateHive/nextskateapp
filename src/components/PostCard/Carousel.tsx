@@ -7,7 +7,7 @@ import {
   extractIFrameLinks,
   extractLinksFromMarkdown,
 } from "@/lib/markdown"
-import { Image } from "@chakra-ui/react"
+import { Box, Image } from "@chakra-ui/react"
 import Carousel from "react-multi-carousel"
 import "react-multi-carousel/lib/styles.css"
 import "./Post.css"
@@ -43,32 +43,35 @@ function PostCarousel() {
 
   return (
     <div style={{ position: 'relative' }}
-    
+
     >
-      <Carousel responsive={responsive}>
-        {videoLinks.map((video, i) => (
-          <iframe
-            key={i}
-            src={video.url}
-            width={"100%"}
-            height={"100%"}
-            style={{ aspectRatio: "16/9", border: "0" }}
-          />
-        ))}
-        {filteredImages.map((image, i) => (
-          <Image
-            key={i}
-            border={"0"}
-            w="100%"
-            src={image.url}
-            aspectRatio={16 / 9}
-            objectFit="cover"
-            borderRadius="none"
-            alt={post.title}
-            loading="lazy"
-          />
-        ))}
-      </Carousel>
+      <Box m={2} height={"auto"}>
+
+        <Carousel responsive={responsive}>
+          {videoLinks.map((video, i) => (
+            <iframe
+              key={i}
+              src={video.url}
+              width={"100%"}
+              height={"100%"}
+              style={{ aspectRatio: "16/9", border: "0" }}
+            />
+          ))}
+          {filteredImages.map((image, i) => (
+            <Image
+              key={i}
+              border={"0"}
+              w="100%"
+              src={image.url}
+              aspectRatio={16 / 9}
+              objectFit="cover"
+              borderRadius="none"
+              alt={post.title}
+              loading="lazy"
+            />
+          ))}
+        </Carousel>
+      </Box>
 
     </div>
   )
