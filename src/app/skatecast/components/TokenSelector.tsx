@@ -251,18 +251,7 @@ const TokenSelector = ({ addressDict }: TokenSelectorProps) => {
                             </MenuButton>
                             <Portal>
                                 <MenuList bg="black" zIndex="9999">
-                                    <MenuItem
-                                        bg="black"
-                                        _hover={{ bg: "red.500", color: "black" }}
-                                        onClick={() => alert("We said SOON! bitch!")}
-                                    // onClick={() => {
-                                    //     setToken("HIVE");
-                                    //     setIsCustomToken(false);
-                                    // }}
-                                    >
-                                        <Image alt="hive-logo" mr={3} boxSize="20px" src="https://cryptologos.cc/logos/hive-blockchain-hive-logo.png" />
-                                        $HIVE (Soon)
-                                    </MenuItem>
+
                                     <MenuItem
                                         bg="black"
                                         _hover={{ bg: "green.500", color: "black" }}
@@ -295,6 +284,18 @@ const TokenSelector = ({ addressDict }: TokenSelectorProps) => {
                                     >
                                         <Image alt="member" mr={3} boxSize="20px" src="https://member.clinic/images/01-1.jpg" />
                                         $MEMBER
+                                    </MenuItem>
+                                    <MenuItem
+                                        bg="black"
+                                        _hover={{ bg: "red.500", color: "black" }}
+                                        onClick={() => alert("We said SOON! bitch!")}
+                                    // onClick={() => {
+                                    //     setToken("HIVE");
+                                    //     setIsCustomToken(false);
+                                    // }}
+                                    >
+                                        <Image alt="hive-logo" mr={3} boxSize="20px" src="https://cryptologos.cc/logos/hive-blockchain-hive-logo.png" />
+                                        $HIVE (Soon)
                                     </MenuItem>
                                 </MenuList>
                             </Portal>
