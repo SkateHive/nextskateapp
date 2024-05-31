@@ -1,9 +1,6 @@
 "use client";
-import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import cursorImage from '../../../public/cursos.png';
 import styles from './Cursor.module.css';
-
 interface Position {
   x: number;
   y: number;
@@ -48,7 +45,6 @@ const Cursor = () => {
   }, []);
 
   if (isMobile) {
-    // Retorne null para não renderizar nada em dispositivos móveis
     return null;
   }
 
@@ -62,9 +58,15 @@ const Cursor = () => {
       
       <div 
         className={`${styles.cursor} ${isHovering ? styles.hover : ''}`} 
-        style={{ left: `${position.x - 12}px`, top: `${position.y - 10}px`, position: 'absolute' }}
+        style={{ 
+          left: `${position.x - 28}px`, 
+          top: `${position.y - 22}px`, 
+          position: 'absolute',
+          fontSize: '40px', 
+          zIndex: 2147483647
+        }}
       >
-        <Image src={cursorImage} alt="Custom Cursor" width={40} />
+        🛹
       </div>
     </>
   );
