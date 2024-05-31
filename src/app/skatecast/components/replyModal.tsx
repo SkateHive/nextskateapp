@@ -164,7 +164,7 @@ const ReplyModal = ({ isOpen, onClose, comment }: ReplyModalProps) => {
                                 <Textarea
                                     value={replyBody}
                                     onChange={(e) => setReplyBody(e.target.value)}
-                                    placeholder="Vomit your thoughts here"
+                                    placeholder="Write your reply here"
                                     bg="transparent"
                                     _focus={{ border: "limegreen", boxShadow: "none" }}
                                     resize="none"
