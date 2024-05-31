@@ -6,6 +6,7 @@ import { transform3SpeakContent, transformEcencyImages, transformIPFSContent, tr
 import {
   Box,
   Center,
+  Flex,
   Modal, ModalBody, ModalCloseButton, ModalContent,
   ModalFooter, ModalHeader, ModalOverlay, Text
 } from "@chakra-ui/react";
@@ -14,6 +15,7 @@ import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import Header from "../PostCard/Header";
+import Vote from "../PostCard/Vote";
 import CommandPrompt from "./commentPrompt";
 import CommentsSection from "./commentSection";
 
@@ -52,6 +54,10 @@ export function PostModal({ isOpen, onClose }: PostModalInterface) {
             </ReactMarkdown>
           </Box>
           <Box minW="50%">
+            <Flex mr={"35px"} justifyContent={"right"}>
+
+              <Vote />
+            </Flex>
             <CommandPrompt post={post} addComment={addComment} />
             <Center><Text fontSize="2xl">Comments</Text></Center>
             <CommentsSection comments={comments} />

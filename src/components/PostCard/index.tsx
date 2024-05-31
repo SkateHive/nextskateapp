@@ -18,8 +18,10 @@ export default function Post({ postData }: PostComponentProps) {
       border={"0.6px solid limegreen"}
       size="sm"
       boxShadow="none"
-      borderRadius="none"
+      borderRadius="5px"
       p={2}
+      m={2}
+      _hover={{ boxShadow: "0 0 2px 5px limegreen" }}
     >
       <PostProvider postData={postData}>
         <Header />
