@@ -53,14 +53,14 @@ const SkateCast = () => {
     parent_author,
     parent_permlink,
   );
-  const [visiblePosts, setVisiblePosts] = useState<number>(30);
+  const [visiblePosts, setVisiblePosts] = useState<number>(10);
   const [postBody, setPostBody] = useState<string>("");
   const user = useHiveUser();
   const username = user?.hiveUser?.name;
   const [mediaModalOpen, setMediaModalOpen] = useState<boolean>(false);
   const [media, setMedia] = useState<string[]>([]);
   const [hasPosted, setHasPosted] = useState<boolean>(false);
-  const [sortMethod, setSortMethod] = useState<string>("chronological"); 
+  const [sortMethod, setSortMethod] = useState<string>("chronological");
 
   const sortedComments = useMemo(() => {
     if (sortMethod === "chronological") {
