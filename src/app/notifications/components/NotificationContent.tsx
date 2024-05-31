@@ -40,7 +40,7 @@ export function NotificationContent({
       gap={4}
 
     >
-      <Link href={`/profile/${notification.user}`}>
+      <Link href={`/skater/${notification.user}`}>
         <Avatar
           boxSize={"30px"}
           name={notification.user}
@@ -61,7 +61,7 @@ export function NotificationContent({
           </Text>
         </HStack>
         <Text fontSize={"12px"}>
-          <Link fontWeight={"bold"} href={`/profile/${notification.user}`}>
+          <Link fontWeight={"bold"} href={`/skater/${notification.user}`}>
             @{notification.user}
           </Link>{" "}
           {notification.msg}
