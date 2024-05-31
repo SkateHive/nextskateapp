@@ -49,7 +49,7 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
         SENDIT: {
             address: '0xBa5B9B2D2d06a9021EB3190ea5Fb0e02160839A4',
             abi: SenditABI as unknown as any[],
-            tokenLogo: "/sendit.jpg"
+            tokenLogo: "/logos/sendit.jpg"
         },
         NOGS: {
             address: '0x13741C5dF9aB03E7Aa9Fb3Bf1f714551dD5A5F8a',
