@@ -1,5 +1,4 @@
 import { usePostContext } from "@/contexts/PostContext";
-//import UserModel from "@/lib/models/user"
 import {
   Button,
   CardHeader,
@@ -117,9 +116,6 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
         <Flex flex="1" gap="2" alignItems="center">
           <Link href={`/skater/${post.author}`} >
             <AuthorAvatar username={post.author} />
-            {/* <PostAvatar
-              username={post.author}
-            /> */}
           </Link>
           <Flex flexDir="column" gap={0} w={"100%"}>
             <Flex gap={1} alignItems="center">

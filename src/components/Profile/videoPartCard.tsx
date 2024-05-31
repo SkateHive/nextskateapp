@@ -1,7 +1,6 @@
 'use client'
-import { Box, Text, IconButton } from "@chakra-ui/react";
+import { Box, IconButton, Text } from "@chakra-ui/react";
 import { FaWindowClose } from "react-icons/fa";
-import React from "react";
 
 interface VideoCardProps {
     videoPart: {
@@ -11,7 +10,7 @@ interface VideoCardProps {
         year: number;
         url: string;
     };
-    onRemove: () => void; // Callback for removal
+    onRemove: () => void; 
 }
 
 const VideoCard = ({ videoPart, onRemove }: VideoCardProps) => {
@@ -50,14 +49,14 @@ const VideoCard = ({ videoPart, onRemove }: VideoCardProps) => {
             borderWidth="1px"
             borderRadius="lg"
             overflow="hidden"
-            p={6} // Increased padding
+            p={6} 
             mb={4}
-            boxShadow="md" // Added shadow
-            width="100%" // Ensure it takes full width of the parent
-            position="relative" // For positioning the close button
+            boxShadow="md" 
+            width="100%" 
+            position="relative" 
             _hover={{
                 '& button': {
-                    display: 'block' // Show button on hover
+                    display: 'block'
                 }
             }}
         >
@@ -68,7 +67,7 @@ const VideoCard = ({ videoPart, onRemove }: VideoCardProps) => {
                 top={2}
                 right={2}
                 size="sm"
-                display="none" // Hide by default
+                display="none" 
                 onClick={onRemove}
             />
             {embedUrl && (
@@ -89,7 +88,7 @@ const VideoCard = ({ videoPart, onRemove }: VideoCardProps) => {
                     ></iframe>
                 </Box>
             )}
-            <Text fontWeight="bold" fontSize="xl" mb={2}>{videoPart.name}</Text> {/* Added bottom margin */}
+            <Text fontWeight="bold" fontSize="xl" mb={2}>{videoPart.name}</Text> 
             <Text mb={1}>Filmmakers: {videoPart.filmmaker.join(", ")}</Text>
             <Text mb={1}>Friends: {videoPart.friends.join(", ")}</Text>
             <Text mb={1}>Year: {videoPart.year}</Text>

@@ -1,7 +1,6 @@
 import { Asset, Discussion } from "@hiveio/dhive"
 import { extractFirstLink, getWebsiteURL } from "../utils"
 import { HiveAccount } from "./user"
-// import UserModel from "./user"
 
 export interface PostProps {
   post_id: number
@@ -99,13 +98,7 @@ export default class PostModel {
     }
   }
 
-  /*
-  public async authorDetails(): Promise<UserModel> {
-    if (!this._author_details)
-      this._author_details = await UserModel.getNewFromUsername(this.author)
-    return this._author_details
-  }
-  */
+ 
 
   metadata(): PostMetadata {
     if (!this._metadata) this._metadata = JSON.parse(this.json_metadata)
@@ -114,7 +107,6 @@ export default class PostModel {
 
   static newFromDiscussion(post: Discussion): PostModel {
     return new PostModel({
-      // @todo remove when the Discussion get updated with new Props
       ...post,
       post_id: (post as any).post_id,
     })

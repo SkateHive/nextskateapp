@@ -1,7 +1,6 @@
-import React from 'react';
+import { Comment } from '@/hooks/comments';
 import { Box, Stack, Text } from '@chakra-ui/react';
 import PostComment from '../PostCard/Comment';
-import { Comment } from '@/hooks/comments';
 
 interface CommentsSectionProps {
     comments: Comment[] | undefined;

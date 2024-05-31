@@ -1,11 +1,11 @@
 'use client'
-import { Box, Button, VStack, Text, SimpleGrid, useDisclosure } from "@chakra-ui/react";
-import React, { useState } from "react";
-import { HiveAccount } from "@/lib/models/user";
-import VideoPartsForm from "./videoPartForm";
-import VideoCard from "./videoPartCard";
-import { updateProfile } from "@/lib/hive/client-functions";
 import { useHiveUser } from "@/contexts/UserContext";
+import { updateProfile } from "@/lib/hive/client-functions";
+import { HiveAccount } from "@/lib/models/user";
+import { Box, Button, SimpleGrid, Text, useDisclosure, VStack } from "@chakra-ui/react";
+import { useState } from "react";
+import VideoCard from "./videoPartCard";
+import VideoPartsForm from "./videoPartForm";
 
 interface VideoPartsProps {
     skater: HiveAccount;
@@ -29,12 +29,12 @@ const VideoParts = ({ skater }: VideoPartsProps) => {
                 return parsedExtensions;
             } catch (error) {
                 console.error("Error parsing JSON metadata:", error);
-                return { video_parts: [] }; // Initialize with default value
+                return { video_parts: [] };  
             }
         })()
     );
 
-    const { isOpen, onOpen, onClose } = useDisclosure(); // For modal control
+    const { isOpen, onOpen, onClose } = useDisclosure(); 
     const user = useHiveUser();
     const handleNewVideoPart = (videoPart: VideoPart) => {
         const newExtensions = {

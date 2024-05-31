@@ -6,12 +6,14 @@ import {
   Divider,
   Flex,
   HStack,
+  IconButton,
+  Image,
   Input,
-  Textarea
+  Textarea,
 } from "@chakra-ui/react"
 import { useEffect, useRef, useState } from "react"
 import { useDropzone } from "react-dropzone"
-import { FaImage } from "react-icons/fa"
+import { FaImage, FaTimes } from "react-icons/fa"
 import { uploadFileToIPFS } from "../../upload/utils/uploadToIPFS"
 
 interface PostBoxProps {
@@ -29,22 +31,23 @@ const PostBox = ({ username, postBody, setPostBody, handlePost }: PostBoxProps) 
   const [imageList, setImageList] = useState<string[]>([])
   const [shouldPost, setShouldPost] = useState(false)
 
-  const { getRootProps, getInputProps } = useDropzone({
+  const { getRootProps, getInputProps, open } = useDropzone({
     noClick: true,
     noKeyboard: true,
     onDrop: async (acceptedFiles) => {
       setIsUploading(true)
+      const newImageList: string[] = []
       for (const file of acceptedFiles) {
-        const ipfsData = await uploadFileToIPFS(file);
+        const ipfsData = await uploadFileToIPFS(file)
         if (ipfsData !== undefined) {
-          const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}?pinataGatewayToken=${PINATA_GATEWAY_TOKEN}`;
+          const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}?pinataGatewayToken=${PINATA_GATEWAY_TOKEN}`
           const markdownLink = file.type.startsWith("video/")
             ? `<iframe src="${ipfsUrl}" allowfullscreen></iframe>`
-            : `![Image](${ipfsUrl})`;
-
-          setImageList((prevList) => [...prevList, markdownLink])
+            : `![Image](${ipfsUrl})`
+          newImageList.push(markdownLink)
         }
       }
+      setImageList((prevList) => [...prevList, ...newImageList])
       setIsUploading(false)
     },
     accept: {
@@ -55,9 +58,11 @@ const PostBox = ({ username, postBody, setPostBody, handlePost }: PostBoxProps) 
   })
 
   const handleImageUploadClick = () => {
-    if (inputRef.current) {
-      inputRef.current.click()
-    }
+    open()
+  }
+
+  const handleRemoveImage = (index: number) => {
+    setImageList((prevList) => prevList.filter((_, i) => i !== index))
   }
 
   function textAreaAdjust(element: any) {
@@ -68,9 +73,12 @@ const PostBox = ({ username, postBody, setPostBody, handlePost }: PostBoxProps) 
   const handlePostClick = () => {
     setPostBody((prevMarkdown: string) => {
       const updatedBody = `${prevMarkdown}\n${imageList.join('\n')}\n`;
-      console.log("imageList", imageList, "updatedBody", updatedBody);
       return updatedBody;
     });
+    if (postBody.trim() === "" && imageList.length === 0) {
+      alert("Nothing to say?")
+      return;
+    }
     setShouldPost(true);
   };
 
@@ -107,13 +115,29 @@ const PostBox = ({ username, postBody, setPostBody, handlePost }: PostBoxProps) 
       </Flex>
       <HStack>
         {imageList.map((item, index) => (
-          <Box key={index}>
+          <Box key={index} position="relative" maxW={100} maxH={100}>
+          <IconButton
+          aria-label="Remove image"
+          icon={<FaTimes style={{ color: 'black', strokeWidth: 1 }} />} 
+          size="base"
+          color="white"
+          bg="white"
+          _hover={{ bg: 'white', color: 'black' }} 
+          _active={{ bg: 'white', color: 'black' }}
+          position="absolute"
+          top="0"
+          right="0"
+          onClick={() => handleRemoveImage(index)}
+          zIndex="1"
+          borderRadius="full" 
+        />
             {item.includes("![Image](") ? (
-              <img
-                src={item.match(/!\[Image\]\((.*?)\)/)?.[1]}
+              <Image
+                src={item.match(/!\[Image\]\((.*?)\)/)?.[1] || ""}
                 alt="markdown-image"
-                width="100%"
-                height="auto" // Adjust the height as needed
+                maxW="100%"
+                maxH="100%"
+                objectFit="contain"
               />
             ) : (
               <video
@@ -138,11 +162,13 @@ const PostBox = ({ username, postBody, setPostBody, handlePost }: PostBoxProps) 
           {...getInputProps({ refKey: "ref" })}
           ref={inputRef}
         />
-        <FaImage
-          color="#ABE4B8"
-          cursor="pointer"
+        <Button
+          colorScheme="green"
+          variant="ghost"
           onClick={handleImageUploadClick}
-        />
+        >
+          <FaImage color="#ABE4B8" cursor="pointer" />
+        </Button>
         <Button
           colorScheme="green"
           variant="outline"

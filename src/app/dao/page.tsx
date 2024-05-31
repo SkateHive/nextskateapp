@@ -1,10 +1,10 @@
 "use client"
 import {
-  Avatar,
   Badge,
   Box,
   Button,
   Center,
+  Flex,
   Grid,
   GridItem,
   HStack,
@@ -12,13 +12,10 @@ import {
   Progress,
   Stack,
   Text,
-  VStack,
-  Flex,
-  Input,
-  Textarea,
+  VStack
 } from "@chakra-ui/react"
 import { normalize } from "path"
-import React, { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import ReactMarkdown from "react-markdown"
 import rehypeRaw from "rehype-raw"
 import remarkGfm from "remark-gfm"
@@ -26,14 +23,14 @@ import { mainnet } from "viem/chains"
 import { useAccount, useEnsAvatar, useEnsName } from "wagmi"
 import { MarkdownRenderers } from "../upload/utils/MarkdownRenderers"
 import CreateProposalModal from "./components/createProposalModal"
+import DaoTreasure from "./components/daoTreasure"
+import ProposalListItem from "./components/proposalListItem"
+import VoteConfirmationModal from "./components/voteWithReasonModal"
+import { checkProposalOutcome } from "./utils/checkProposalOutcome"
 import fetchProposals, { Proposal } from "./utils/fetchProposals"
 import { getENSavatar } from "./utils/getENSavatar"
 import { getENSnamefromAddress } from "./utils/getENSfromAddress"
 import voteOnProposal from "./utils/voteOnProposal"
-import ProposalListItem from "./components/proposalListItem"
-import VoteConfirmationModal from "./components/voteWithReasonModal"
-import DaoTreasure from "./components/daoTreasure"
-import { checkProposalOutcome } from "./utils/checkProposalOutcome"
 
 const DaoPage = () => {
   const [proposals, setProposals] = useState<Proposal[]>([])
@@ -84,7 +81,6 @@ const DaoPage = () => {
   useEffect(() => {
     if (ethAccount.address && ethAccount.address.length > 0) {
 
-      // get the ethAccount.address and tranform it in a normal string Type 
       const formattedAddress = ethAccount.address.toString()
       setFormattedAddress(formattedAddress)
       getConnectedUserAvatar(ethAccount.address)
@@ -104,11 +100,9 @@ const DaoPage = () => {
     setIsCreateProposalModalOpen(!isCreateProposalModalOpen)
   }
 
-  // every proposal comes with a hiveuser and a permlink in its body , I want to extract the permlink and use it to fetch the post from the hive blockchain
   const extractPermlink = (proposal: Proposal) => {
     if (proposal) {
-      // const body = proposal["body"]
-      // const permlink = body.split(" ")[body.split(" ").length - 1]
+     
       const body = proposal.body
       const permlink = body.split(" ")[body.split(" ").length - 1]
     }
@@ -333,7 +327,7 @@ const DaoPage = () => {
           isOpen={confirmationModalOpen}
           onClose={() => setConfirmationModalOpen(false)}
           choice={mainProposal.choices[selectedChoice ?? 0]}
-          onConfirm={(reason: string) => {  // Add type annotation here
+          onConfirm={(reason: string) => {  
             if (selectedChoice !== null) {
               voteOnProposal(ethAccount, mainProposal.id, selectedChoice + 1, reason);
               setConfirmationModalOpen(false);

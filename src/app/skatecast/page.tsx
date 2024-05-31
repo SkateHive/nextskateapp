@@ -1,82 +1,92 @@
-"use client"
-import { useHiveUser } from "@/contexts/UserContext"
-import { useComments } from "@/hooks/comments"
-import { vote } from "@/lib/hive/client-functions"
-import { commentWithPrivateKey } from "@/lib/hive/server-functions"
-import { HStack, Menu, MenuButton, MenuItem, MenuList, Text, VStack } from "@chakra-ui/react"
-import * as dhive from "@hiveio/dhive"
-import { useMemo, useState } from "react"
-import { FaHistory, FaMoneyBill } from "react-icons/fa"
-import { FaArrowRightArrowLeft } from "react-icons/fa6"
-import { IoFilter } from "react-icons/io5"
-import AvatarList from "./components/AvatarList"
-import CommentList from "./components/CommentsList"
-import PostBox from "./components/PostBox"
-import LoadingComponent from "./components/loadingComponent"
-import AvatarMediaModal from "./components/mediaModal"
+"use client";
+import { useHiveUser } from "@/contexts/UserContext";
+import { useComments } from "@/hooks/comments";
+import { vote } from "@/lib/hive/client-functions";
+import { commentWithPrivateKey } from "@/lib/hive/server-functions";
+import {
+  HStack,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
+import * as dhive from "@hiveio/dhive";
+import { useMemo, useState } from "react";
+import { FaHistory, FaMoneyBill } from "react-icons/fa";
+import { FaArrowRightArrowLeft } from "react-icons/fa6";
+import { IoFilter } from "react-icons/io5";
+import AvatarList from "./components/AvatarList";
+import CommentList from "./components/CommentsList";
+import PostBox from "./components/PostBox";
+import LoadingComponent from "./components/loadingComponent";
+import AvatarMediaModal from "./components/mediaModal";
 
-const parent_author = "skatehacker"
-const parent_permlink = "test-advance-mode-post"
+const parent_author = "skatehacker";
+const parent_permlink = "test-advance-mode-post";
 
 interface Comment {
-  id: number
-  author: string
-  permlink: string
-  created: string
-  body: string
-  total_payout_value?: string
-  pending_payout_value?: string
-  curator_payout_value?: string
+  id: number;
+  author: string;
+  permlink: string;
+  created: string;
+  body: string;
+  total_payout_value?: string;
+  pending_payout_value?: string;
+  curator_payout_value?: string;
 }
 
 const getTotalPayout = (comment: Comment): number => {
-  const payout = parseFloat(comment.total_payout_value?.split(" ")[0] || "0")
-  const pendingPayout = parseFloat(comment.pending_payout_value?.split(" ")[0] || "0")
-  const curatorPayout = parseFloat(comment.curator_payout_value?.split(" ")[0] || "0")
-  return payout + pendingPayout + curatorPayout
-}
+  const payout = parseFloat(comment.total_payout_value?.split(" ")[0] || "0");
+  const pendingPayout = parseFloat(
+    comment.pending_payout_value?.split(" ")[0] || "0",
+  );
+  const curatorPayout = parseFloat(
+    comment.curator_payout_value?.split(" ")[0] || "0",
+  );
+  return payout + pendingPayout + curatorPayout;
+};
 
 const SkateCast = () => {
   const { comments, addComment, isLoading } = useComments(
     parent_author,
-    parent_permlink
-  )
-  const [visiblePosts, setVisiblePosts] = useState<number>(3)
-  const [postBody, setPostBody] = useState<string>("")
-  const user = useHiveUser()
-  const username = user?.hiveUser?.name
-  const [mediaModalOpen, setMediaModalOpen] = useState<boolean>(false)
-  const [media, setMedia] = useState<string[]>([])
-  const [mediaDictionary, setMediaDictionary] = useState<Map<number, { media: string[], type: string }>>(new Map())
-  const [hasPosted, setHasPosted] = useState<boolean>(false)
-  const [sortMethod, setSortMethod] = useState<string>('chronological') // State to track sorting method
-
+    parent_permlink,
+  );
+  const [visiblePosts, setVisiblePosts] = useState<number>(30);
+  const [postBody, setPostBody] = useState<string>("");
+  const user = useHiveUser();
+  const username = user?.hiveUser?.name;
+  const [mediaModalOpen, setMediaModalOpen] = useState<boolean>(false);
+  const [media, setMedia] = useState<string[]>([]);
+  const [hasPosted, setHasPosted] = useState<boolean>(false);
+  const [sortMethod, setSortMethod] = useState<string>("chronological"); 
 
   const sortedComments = useMemo(() => {
-    if (sortMethod === 'chronological') {
-      return comments?.slice().reverse()
-    } else if (sortMethod === 'engagement') {
+    if (sortMethod === "chronological") {
+      return comments?.slice().reverse();
+    } else if (sortMethod === "engagement") {
       return comments?.slice().sort((a, b) => {
-        return (b?.children ?? 0) - (a?.children ?? 0)
-      })
+        return (b?.children ?? 0) - (a?.children ?? 0);
+      });
     } else {
       return comments?.slice().sort((a: any, b: any) => {
-        return getTotalPayout(b) - getTotalPayout(a)
-      })
+        return getTotalPayout(b) - getTotalPayout(a);
+      });
     }
-  }, [comments, sortMethod])
+  }, [comments, sortMethod]);
 
   const handlePost = async () => {
     const permlink = new Date()
       .toISOString()
       .replace(/[^a-zA-Z0-9]/g, "")
-      .toLowerCase()
+      .toLowerCase();
 
-    const loginMethod = localStorage.getItem("LoginMethod")
+    const loginMethod = localStorage.getItem("LoginMethod");
 
     if (!username) {
-      console.error("Username is missing")
-      return
+      console.error("Username is missing");
+      return;
     }
 
     const postData = {
@@ -90,16 +100,16 @@ const SkateCast = () => {
         tags: ["skateboard"],
         app: "skatehive",
       }),
-    }
+    };
 
-    const operations = [["comment", postData]]
+    const operations = [["comment", postData]];
 
     if (loginMethod === "keychain") {
       if (typeof window !== "undefined") {
         try {
           const response = await new Promise<{
-            success: boolean
-            message?: string
+            success: boolean;
+            message?: string;
           }>((resolve, reject) => {
             window.hive_keychain.requestBroadcast(
               username,
@@ -107,20 +117,20 @@ const SkateCast = () => {
               "posting",
               (response: any) => {
                 if (response.success) {
-                  resolve(response)
+                  resolve(response);
                 } else {
-                  reject(new Error(response.message))
+                  reject(new Error(response.message));
                 }
-              }
-            )
-          })
+              },
+            );
+          });
 
           if (response.success) {
-            setPostBody("")
-            addComment(postData)
+            setPostBody("");
+            addComment(postData);
           }
         } catch (error) {
-          console.error("Error posting comment:", (error as Error).message)
+          console.error("Error posting comment:", (error as Error).message);
         }
       }
     } else if (loginMethod === "privateKey") {
@@ -147,7 +157,7 @@ const SkateCast = () => {
             ],
           ],
         },
-      ]
+      ];
 
       const postOperation: dhive.CommentOperation = [
         "comment",
@@ -164,49 +174,39 @@ const SkateCast = () => {
             image: "/skatehive_square_green.png",
           }),
         },
-      ]
+      ];
 
       try {
         await commentWithPrivateKey(
           localStorage.getItem("EncPrivateKey")!,
           postOperation,
-          commentOptions
-        )
-        addComment(postData)
-        setPostBody("")
-        setHasPosted(true)
+          commentOptions,
+        );
+        addComment(postData);
+        setPostBody("");
+        setHasPosted(true);
       } catch (error) {
-        console.error("Error posting comment:", (error as Error).message)
+        console.error("Error posting comment:", (error as Error).message);
       }
     }
-  }
+  };
 
   const handleVote = async (author: string, permlink: string) => {
     if (!username) {
-      console.error("Username is missing")
-      return
+      console.error("Username is missing");
+      return;
     }
     vote({
       username: username,
       permlink: permlink,
       author: author,
       weight: 10000,
-    })
-  }
-
-  const handleMediaAvatarClick = (commentId: number) => {
-    const media = mediaDictionary.get(commentId)
-    console.log("media", media)
-    setMedia(media?.media ?? [])
-    console.log("media", media)
-    setMediaModalOpen(true)
-  }
-
-
+    });
+  };
 
   const handleSortChange = (method: string) => {
-    setSortMethod(method)
-  }
+    setSortMethod(method);
+  };
 
   return isLoading ? (
     <LoadingComponent />
@@ -225,43 +225,44 @@ const SkateCast = () => {
         onClose={() => setMediaModalOpen(false)}
         media={media}
       />
-      <AvatarList
-        sortedComments={sortedComments}
-      />
-      {user.hiveUser !== null && (
+      <AvatarList sortedComments={sortedComments} />
+
+      {user.hiveUser ? (
         <PostBox
           username={username}
           postBody={postBody}
           setPostBody={setPostBody}
           handlePost={handlePost}
         />
-      )}
-      <HStack
-        spacing="1"
-        width="full"
-        justifyContent="flex-end"
-        mr={4}
-      >
-        <Menu
-        >
+      ) : null}
+
+      <HStack spacing="1" width="full" justifyContent="flex-end" mr={4}>
+        <Menu>
           <MenuButton>
             <IoFilter color="#9AE6B4" />
           </MenuButton>
-          <MenuList
-            bg={"black"}
-            border={"1px solid limegreen"}
-          >
-            <MenuItem bg={"black"}
-              onClick={() => handleSortChange('chronological')}> <FaHistory /> <Text ml={2}> Latest</Text></MenuItem>
+          <MenuList bg={"black"} border={"1px solid limegreen"}>
             <MenuItem
               bg={"black"}
-              onClick={() => handleSortChange('payout')}> <FaMoneyBill /> <Text ml={2}>Payout</Text> </MenuItem>
-            <MenuItem bg={"black"}
-              onClick={() => handleSortChange('engagement')}><FaArrowRightArrowLeft /> <Text ml={2}>Engagement</Text> </MenuItem>
+              onClick={() => handleSortChange("chronological")}
+            >
+              {" "}
+              <FaHistory /> <Text ml={2}> Latest</Text>
+            </MenuItem>
+            <MenuItem bg={"black"} onClick={() => handleSortChange("payout")}>
+              {" "}
+              <FaMoneyBill /> <Text ml={2}>Payout</Text>{" "}
+            </MenuItem>
+            <MenuItem
+              bg={"black"}
+              onClick={() => handleSortChange("engagement")}
+            >
+              <FaArrowRightArrowLeft /> <Text ml={2}>Engagement</Text>{" "}
+            </MenuItem>
           </MenuList>
         </Menu>
-
       </HStack>
+
       <CommentList
         comments={sortedComments}
         visiblePosts={visiblePosts}
@@ -271,7 +272,7 @@ const SkateCast = () => {
         getTotalPayout={getTotalPayout}
       />
     </VStack>
-  )
-}
+  );
+};
 
-export default SkateCast
+export default SkateCast;

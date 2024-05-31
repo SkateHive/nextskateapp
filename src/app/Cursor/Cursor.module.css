@@ -1,0 +1,10 @@
+.cursor {
+  pointer-events: none;
+  z-index: 9999;
+  position: absolute;
+  transition: transform 0.1s ease;
+}
+
+cursor.hover {
+  transform: scale(1.2); 
+}

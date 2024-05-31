@@ -1,6 +1,6 @@
 'use client';
-import { KeychainRequestResponse, KeychainSDK, Post, Vote, KeychainKeyTypes, Broadcast, Login, Transfer } from "keychain-sdk"
-import { Operation } from "@hiveio/dhive"
+import { Operation } from "@hiveio/dhive";
+import { Broadcast, KeychainKeyTypes, KeychainRequestResponse, KeychainSDK, Login, Post, Transfer, Vote } from "keychain-sdk";
 import { HiveAccount } from "../models/user";
 
 interface VideoPart {
@@ -63,7 +63,6 @@ export async function vote(props: Vote): Promise<KeychainRequestResponse> {
   } as Vote);
   return result;
 }
-
 export async function commentWithKeychain(formParamsAsObject: any): Promise<HiveKeychainResponse | undefined> {
 
   const keychain = new KeychainSDK(window);

@@ -1,5 +1,6 @@
 "use client"
 
+import NotificationsPage from "@/app/notifications/page"
 import AuthorSearchBar from "@/app/upload/components/searchBar"
 import { useHiveUser } from "@/contexts/UserContext"
 import { claimRewards } from "@/lib/hive/client-functions"
@@ -20,26 +21,23 @@ import {
   Icon,
   IconButton,
   Image,
+  Text,
   Tooltip,
   keyframes,
   useDisclosure,
   useMediaQuery,
-  Text,
 } from "@chakra-ui/react"
 import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit"
 import { Home } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
-import { FaHive, FaHome, FaSpeakap, FaUser, FaWallet } from "react-icons/fa"
+import { FaBell, FaHive, FaHome, FaSpeakap, FaUser, FaWallet } from "react-icons/fa"
 import { FaEthereum } from "react-icons/fa6"
 import { useAccount } from "wagmi"
 import LoginModal from "../Hive/Login/LoginModal"
 import CommunityTotalPayout from "../communityTotalPayout"
 import AvatarLogin from "./AvatarLogin"
 import checkRewards from "./utils/checkReward"
-import NotificationsPage from "@/app/notifications/page"
-import { FaBell } from "react-icons/fa"
-import { set } from "lodash"
 const blink = keyframes`
   0% { opacity: 1; }
   50% { opacity: 0.1; }

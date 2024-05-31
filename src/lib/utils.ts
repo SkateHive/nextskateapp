@@ -1,3 +1,4 @@
+import { isNaN } from "lodash"
 
 export function getWebsiteURL() {
   return process.env.NEXT_PUBLIC_WEBSITE_URL || ""
@@ -109,7 +110,7 @@ export function formatDate(date: string) {
     (now.getTime() - postDate.getTime()) / 1000
   )
 
-  if (diffInSeconds < 60) {
+  if (!date || diffInSeconds < 60) {
     return "Just now"
   } else if (diffInSeconds < 3600) {
     const minutes = Math.floor(diffInSeconds / 60)
@@ -119,7 +120,7 @@ export function formatDate(date: string) {
     return `${hours}h`
   } else {
     const days = Math.floor(diffInSeconds / 86400)
-    return `${days}d`
+    return isNaN(days) ? "Just now" : `${days}d` // @todo remove after CommentItem any prop refactor
   }
 }
 

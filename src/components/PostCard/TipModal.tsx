@@ -1,29 +1,26 @@
-import React from "react";
+import { memberABI } from "@/lib/abi/memberABI";
+import { nogsABI } from "@/lib/abi/nogsABI";
+import { formatETHaddress } from "@/lib/utils";
 import {
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalFooter,
-    ModalBody,
-    ModalCloseButton,
-    Button,
-    useDisclosure,
-    Text,
     Box,
+    Button,
     Image,
     Input,
     InputGroup,
     InputLeftElement,
+    Modal,
+    ModalBody,
+    ModalCloseButton,
+    ModalContent,
+    ModalFooter,
+    ModalHeader,
+    ModalOverlay,
+    Text
 } from "@chakra-ui/react";
-import { FaDonate } from "react-icons/fa";
-import { useWriteContract } from "wagmi";
-import { useAccount } from "wagmi";
-import { SenditABI } from "../../lib/abi/senditABI";
-import { memberABI } from "@/lib/abi/memberABI";
-import { nogsABI } from "@/lib/abi/nogsABI";
+import React from "react";
 import { parseUnits } from "viem";
-import { formatETHaddress } from "@/lib/utils";
+import { useAccount, useWriteContract } from "wagmi";
+import { SenditABI } from "../../lib/abi/senditABI";
 interface TipModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -31,16 +28,13 @@ interface TipModalProps {
     author: string;
     authorETHwallet: string;
 }
-interface TokenInfo {
+export interface TokenInfo {
     address: `0x${string}`;
     abi: any[];
     tokenLogo?: string;
 }
 
 
-interface TokenDictionary {
-    [key: string]: TokenInfo;
-}
 const TipModal: React.FC<TipModalProps> = ({ isOpen, onClose, token, author, authorETHwallet }) => {
     const account = useAccount();
     const { data: hash, writeContract } = useWriteContract();

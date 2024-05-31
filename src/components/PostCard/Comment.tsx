@@ -1,9 +1,9 @@
 "use client"
+import { handleVote } from "@/app/skatecast/utils/handleFeedVote"
 import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers"
 import CommentsSection from "@/components/PostModal/commentSection"
-import { usePostContext } from "@/contexts/PostContext"
 import { useHiveUser } from "@/contexts/UserContext"
-import { Comment, useComments } from "@/hooks/comments"
+import { Comment } from "@/hooks/comments"
 import useHiveAccount from "@/hooks/useHiveAccount"
 import { Flex, Text } from "@chakra-ui/react"
 import moment from "moment-timezone"
@@ -15,7 +15,6 @@ import remarkGfm from "remark-gfm"
 import CommandPrompt from "../PostModal/commentPrompt"
 import UserAvatar from "../UserAvatar"
 import { voting_value } from "./calculateHiveVotingValue"
-import { handleVote } from "@/app/skatecast/utils/handleFeedVote"
 
 interface PostCommentProps {
   comment: Comment
@@ -23,11 +22,9 @@ interface PostCommentProps {
 
 export default function PostComment({ comment }: PostCommentProps) {
   const { hiveAccount, isLoading } = useHiveAccount(comment.author)
-  const { addComment } = useComments(comment.author, comment.permlink, true)
   const user = useHiveUser()
   const [hasVoted, setHasVoted] = useState(false)
   const [replies, setReplies] = useState<Comment[] | undefined>(comment.replies)
-  const { post } = usePostContext()
 
   const calculateTotalPayout = (comment: Comment) => {
     return (
@@ -91,7 +88,7 @@ export default function PostComment({ comment }: PostCommentProps) {
         <br />
         <Flex justifyContent="flex-end">
           {" "}
-          {/* Adjust this Flex component */}
+          
           <Text
             fontSize="12px"
             color="darkgray"

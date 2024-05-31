@@ -1,13 +1,18 @@
 "use client"
 import AuthorAvatar from "@/components/AuthorAvatar"
 import { Avatar, Box, Divider, HStack, Link, Tooltip } from "@chakra-ui/react"
+import { useState } from "react"
+import AirdropModal from "./airdropModal"
 interface AvatarListProps {
   sortedComments: any[]
 }
-
 const AvatarList = ({ sortedComments }: AvatarListProps) => {
+  const [isOpen, setIsOpen] = useState(false)
+  const handleCloseModal = () => {
+    setIsOpen(false)
+  }
 
-  const FakeAvatar = () => {
+  const InviteAvatar = () => {
     return (
       <Box
         w={"40px"}
@@ -41,6 +46,39 @@ const AvatarList = ({ sortedComments }: AvatarListProps) => {
     )
   }
 
+  const AirdropAvatar = () => {
+    return (
+      <Box
+        mr={1}
+        w={"40px"}
+        h={"40px"}
+        borderRadius={"50%"}
+        bg={"gray.200"}
+        display={"flex"}
+        justifyContent={"center"}
+        alignItems={"center"}
+      >
+        <AirdropModal sortedComments={sortedComments} isOpen={isOpen} onClose={handleCloseModal} />
+        <Tooltip
+          label={"Create Airdrop"}
+          bg={"black"}
+          color={"gold"}
+          border={"1px dashed gold"}
+        >
+          <Avatar
+            onClick={() => setIsOpen(true)}
+            border={"1px solid white"}
+            name="airdrop"
+            boxSize={12}
+            bg="black"
+            src="https://i.ibb.co/cgykmcc/image.png"
+            loading="lazy"
+            borderRadius={100}
+            _hover={{ border: "1px solid gold", cursor: "pointer" }} />
+        </Tooltip>
+      </Box>
+    )
+  }
 
   return (
     <HStack
@@ -51,7 +89,8 @@ const AvatarList = ({ sortedComments }: AvatarListProps) => {
       minHeight={"60px"}
       px={4}
     >
-      <FakeAvatar />
+      <AirdropAvatar />
+      <InviteAvatar />
       {sortedComments?.map((comment, index, commentsArray) => {
         const isDuplicate =
           commentsArray.findIndex((c) => c.author === comment.author) !==
