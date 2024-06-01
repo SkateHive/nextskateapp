@@ -8,11 +8,11 @@ const LoadingComponent = () => (
         height={"100%"}
         overflow={"auto"}>
         <VStack>
-            <Image minW={"100%"} src="https://i.ibb.co/Br0SMjz/Crop-animated.gif" alt="Loading gif" />
-            <Image mt={-2} minW={"100%"} src="https://i.ibb.co/L8mj1CV/Crop-animated-1.gif" alt="Loading gif" />
-            <Image mt={-2} minW={"100%"} src="https://i.ibb.co/L8mj1CV/Crop-animated-1.gif" alt="Loading gif" />
-            <Image mt={-2} minW={"100%"} src="https://i.ibb.co/L8mj1CV/Crop-animated-1.gif" alt="Loading gif" />
-            <Image mt={-2} minW={"100%"} src="https://i.ibb.co/L8mj1CV/Crop-animated-1.gif" alt="Loading gif" />
+            <Image minW={"100%"} src="/home_animation_header.gif" alt="Loading gif" />
+            <Image mt={-2} minW={"100%"} src="/home_animation_body.gif" alt="Loading gif" />
+            <Image mt={-2} minW={"100%"} src="/home_animation_body.gif" alt="Loading gif" />
+            <Image mt={-2} minW={"100%"} src="/home_animation_body.gif" alt="Loading gif" />
+            <Image mt={-2} minW={"100%"} src="/home_animation_body.gif" alt="Loading gif" />
         </VStack>
     </VStack>
 )
