@@ -63,7 +63,7 @@ const Cursor = () => {
           top: `${position.y - 22}px`, 
           position: 'absolute',
           fontSize: '40px', 
-          zIndex: 2147483647
+          zIndex: 2147483647 // to stay on top of the rainbowkit modal
         }}
       >
         🛹
