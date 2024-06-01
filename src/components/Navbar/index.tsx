@@ -67,7 +67,7 @@ export default function Navbar() {
 
   useEffect(() => {
     if (hiveUser !== null) {
-      checkRewards(setHasRewards, hiveUser)
+      checkRewards(setHasRewards, hiveUser.name)
     }
   }, [hiveUser])
 
