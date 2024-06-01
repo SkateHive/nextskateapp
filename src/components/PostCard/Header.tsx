@@ -104,7 +104,6 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
       console.error("Failed to share in Discord:", error);
     }
   };
-
   return (
     <CardHeader p={2} pb={0}>
       {isOpen && <PostModal isOpen={isOpen} onClose={onClose} />}

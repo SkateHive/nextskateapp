@@ -1,7 +1,7 @@
 'use client'
 
 import ProfileTabs from "@/components/Profile/profileTabs";
-import ProfileHeader from "@/components/Skater/SkaterHeader";
+import SkateHeader from "@/components/Skater/SkaterHeader";
 import useHiveAccount from "@/hooks/useHiveAccount";
 import { Box } from "@chakra-ui/react";
 
@@ -16,7 +16,7 @@ export default function SkaterPage({ params }: ProfilePageProps) {
   if (!hiveAccount) return <Box w={"100%"}>Loading...</Box>
   return (
     <Box w={"100%"}>
-      <ProfileHeader user={hiveAccount} />
+      <SkateHeader user={hiveAccount} />
       <ProfileTabs user={hiveAccount} />
     </Box>
   )
