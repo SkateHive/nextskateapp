@@ -2,6 +2,8 @@
 import NotificationsPage from "@/app/notifications/page";
 import { useHiveUser } from "@/contexts/UserContext";
 import { claimRewards } from "@/lib/hive/client-functions";
+import HiveClient from "@/lib/hive/hiveclient";
+import { HiveAccount } from "@/lib/models/user";
 import { formatETHaddress } from "@/lib/utils";
 import {
   Box,
@@ -32,7 +34,6 @@ import { useAccount } from "wagmi";
 import LoginModal from "../Hive/Login/LoginModal";
 import CommunityTotalPayout from "../communityTotalPayout";
 import checkRewards from "./utils/checkReward";
-
 const blink = keyframes`
   0% { opacity: 1; }
   50% { opacity: 0.1; }
@@ -45,6 +46,17 @@ const SidebarDesktop = () => {
   const ethAccount = useAccount();
   const { openConnectModal } = useConnectModal();
   const { openAccountModal } = useAccountModal();
+  const [hiveAccount, setHiveAccount] = useState<HiveAccount | null>(null);
+  // fix maluco, melhorar isso
+  const client = HiveClient;
+  if (hiveUser !== null) {
+    const getUserAccount = async () => {
+      const userAccount = await client.database.getAccounts([hiveUser.name]);
+      console.log(userAccount);
+      setHiveAccount(userAccount[0]);
+    };
+    getUserAccount();
+  }
 
   const {
     isOpen: isLoginOpen,
@@ -57,7 +69,7 @@ const SidebarDesktop = () => {
 
   useEffect(() => {
     if (hiveUser !== null) {
-      checkRewards(setHasRewards, hiveUser);
+      checkRewards(setHasRewards, hiveUser.name);
     }
   }, [hiveUser]);
 
@@ -66,8 +78,8 @@ const SidebarDesktop = () => {
   };
 
   const handleClaimRewards = () => {
-    if (hiveUser) {
-      claimRewards(hiveUser);
+    if (hiveUser && hiveAccount) {
+      claimRewards(hiveAccount);
     }
   };
 
