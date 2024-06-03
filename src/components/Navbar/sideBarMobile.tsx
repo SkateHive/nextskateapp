@@ -51,7 +51,7 @@ const SideBarMobile = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
 
     useEffect(() => {
         if (hiveUser !== null) {
-            checkRewards(setHasRewards, hiveUser)
+            checkRewards(setHasRewards, hiveUser.name)
         }
     }, [hiveUser])
 

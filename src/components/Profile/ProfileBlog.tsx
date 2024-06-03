@@ -26,6 +26,8 @@ export default function ProfileBlog({ user }: ProfilePageProps) {
         dataLength={visiblePosts}
         next={() => setVisiblePosts(visiblePosts + 3)}
         hasMore={visiblePosts < posts.length}
+        scrollableTarget={"scrollableDiv"}
+
         loader={
           <Flex justify="center">
             <BeatLoader size={8} color="darkgrey" />

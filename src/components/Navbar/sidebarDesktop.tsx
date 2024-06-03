@@ -71,7 +71,7 @@ const SidebarDesktop = () => {
     if (hiveUser !== null) {
       checkRewards(setHasRewards, hiveUser.name);
     }
-  }, [hiveUser]);
+  }, []);
 
   const handleNotifications = () => {
     setNotifications(!notifications);
