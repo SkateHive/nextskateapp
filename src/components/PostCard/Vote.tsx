@@ -8,27 +8,13 @@ import { VoteOperation } from "@hiveio/dhive"
 import { useState } from "react"
 import { useReward } from "react-rewards"
 import { voting_value2 } from "./calculateHiveVotingValueForHiveUser"
+
 export default function Vote() {
   const { post } = usePostContext()
   const { hiveUser } = useHiveUser()
   const [postEarnings, setPostEarnings] = useState(Number(post.getEarnings().toFixed(2)))
   const [userVotingValue, setUserVotingValue] = useState(0)
 
-
-  // useEffect(() => {
-  //   const getVotingValue = async () => {
-  //     try {
-  //       if (!hiveUser) return;
-  //       const vote_value = await voting_value2(hiveUser);
-  //       setUserVotingValue(Number(vote_value.toFixed(2)));
-  //     } catch (error) {
-  //       console.error("Failed to calculate voting value:", error);
-  //     }
-  //   }
-  //   if (hiveUser) {
-  //     getVotingValue();
-  //   }
-  // }, [hiveUser]);
 
   const rewardId = post.post_id ? "postReward" + post.post_id : ""
   const { reward, isAnimating } = useReward(rewardId, "emoji", {
@@ -79,7 +65,7 @@ export default function Vote() {
   }
 
   return (
-    <Tooltip label="Post Earnings">
+    <Tooltip color={"white"} background={"blakc"} border={"1px dashed #A5D6A7"} label="Vote fo this">
       <Button
         variant={"link"}
         disabled={isAnimating}

@@ -102,7 +102,7 @@ const DaoPage = () => {
 
   const extractPermlink = (proposal: Proposal) => {
     if (proposal) {
-     
+
       const body = proposal.body
       const permlink = body.split(" ")[body.split(" ").length - 1]
     }
@@ -122,7 +122,7 @@ const DaoPage = () => {
             <HStack spacing={4}>
               <Image alt="Connected User Avatar" boxSize="86px" src={avatar || "/infinitypepe.gif"} />
               <VStack>
-                <Text fontSize="16px" color="limegreen">
+                <Text fontSize="16px" color="#A5D6A7">
                   {connectedUserEnsName}
                 </Text>
                 <Text fontSize="10px" mb={2}>
@@ -158,7 +158,7 @@ const DaoPage = () => {
             <Stack>
               {loadingProposals ? (
                 <Center>
-                  <Text fontSize="28px" color="limegreen">
+                  <Text fontSize="28px" color="#A5D6A7">
                     Loading...
                   </Text>
                 </Center>
@@ -205,7 +205,7 @@ const DaoPage = () => {
             <Box
               bg="#201d21"
               p={4}
-              border="0.6px solid limegreen"
+              border="0.6px solid #A5D6A7"
               borderRadius="none"
             >
 
@@ -214,7 +214,7 @@ const DaoPage = () => {
             <Box
               bg="#201d21"
               p={0}
-              border="0.6px solid limegreen"
+              border="0.6px solid #A5D6A7"
               borderRadius="none"
             >
               <HStack>
@@ -234,15 +234,15 @@ const DaoPage = () => {
             <Box
               bg="#201d21"
               p={4}
-              border="0.6px solid limegreen"
+              border="0.6px solid #A5D6A7"
               borderRadius="none"
             >
               <Center>
-                <Badge fontSize="28px" color="limegreen">
+                <Badge fontSize="28px" color="#A5D6A7">
                   Score
                 </Badge>
               </Center>
-              <Text fontSize="16px" color="limegreen">
+              <Text fontSize="16px" color="#A5D6A7">
                 {mainProposal?.scores[0]} For
               </Text>
               <Progress
@@ -250,7 +250,7 @@ const DaoPage = () => {
                 colorScheme="green"
                 size="sm"
               ></Progress>
-              <Text fontSize="16px" color="limegreen">
+              <Text fontSize="16px" color="#A5D6A7">
                 {mainProposal?.scores[1]} Against
               </Text>
               <Progress
@@ -265,7 +265,7 @@ const DaoPage = () => {
               {mainProposal && mainProposal.state !== "active" && (
                 <>
                   <HStack justifyContent={"space-between"}>
-                    <Text fontSize="14px" color="limegreen">
+                    <Text fontSize="14px" color="#A5D6A7">
                       Quorum:{" "}
                       {mainProposal &&
                         checkProposalOutcome(mainProposal).quorumReached
@@ -276,7 +276,7 @@ const DaoPage = () => {
                         checkProposalOutcome(mainProposal).totalVotes}{" "}
                       Votes)
                     </Text>
-                    <Badge fontSize="18px" color="limegreen">
+                    <Badge fontSize="18px" color="#A5D6A7">
                       {mainProposal && checkProposalOutcome(mainProposal).hasWon
                         ? "Passed"
                         : "Failed"}
@@ -327,7 +327,7 @@ const DaoPage = () => {
           isOpen={confirmationModalOpen}
           onClose={() => setConfirmationModalOpen(false)}
           choice={mainProposal.choices[selectedChoice ?? 0]}
-          onConfirm={(reason: string) => {  
+          onConfirm={(reason: string) => {
             if (selectedChoice !== null) {
               voteOnProposal(ethAccount, mainProposal.id, selectedChoice + 1, reason);
               setConfirmationModalOpen(false);

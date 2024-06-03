@@ -35,7 +35,7 @@ export default function ProfileHeader({ user }: ProfileProps) {
         <Avatar
           mt={-14}
           name={user.name}
-          src={profileImageUrl}
+          src={profileImageUrl || "/loading.gif"}
           size={{ base: "xl", lg: "2xl" }}
           showBorder={true}
         />

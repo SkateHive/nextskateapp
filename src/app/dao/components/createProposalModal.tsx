@@ -86,6 +86,7 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
                         </Box>
                     </HStack>
                 )
+
             })}
             <Button
                 width={"100%"}

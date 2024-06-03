@@ -36,7 +36,7 @@ export function NotificationContent({
       align={"center"}
       px={2}
       py={4}
-      _hover={{ bg: "limegreen", color: "black" }}
+      _hover={{ bg: "#A5D6A7", color: "black" }}
       gap={4}
 
     >

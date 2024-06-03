@@ -10,6 +10,7 @@ import {
   MenuDivider,
   MenuItem,
   MenuList,
+  Spacer,
   Text,
   Tooltip,
   useDisclosure,
@@ -20,14 +21,13 @@ import {
   Copy,
   ExternalLink,
   Eye,
-  Twitter,
+  Twitter
 } from "lucide-react";
 import moment from "moment-timezone";
 import Link from "next/link";
 import { FaDiscord } from "react-icons/fa";
 import AuthorAvatar from "../AuthorAvatar";
 import PostModal from "../PostModal";
-
 type Variant = "preview" | "open";
 interface HeaderInterface {
   variant?: Variant;
@@ -104,7 +104,6 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
       console.error("Failed to share in Discord:", error);
     }
   };
-
   return (
     <CardHeader p={2} pb={0}>
       {isOpen && <PostModal isOpen={isOpen} onClose={onClose} />}
@@ -119,7 +118,7 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
           </Link>
           <Flex flexDir="column" gap={0} w={"100%"}>
             <Flex gap={1} alignItems="center">
-              <Text color="green" fontSize="14px" as="b">
+              <Text color="limegreen" fontSize="14px" as="b">
                 {post.author}
               </Text>
               <Text fontSize="14px" color="darkgray">
@@ -132,11 +131,13 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
                   .replace("minutes", "m")
                   .replace("hours", "h")}
               </Text>
+              <Spacer />
+
             </Flex>
             <HStack justify={"space-between"} display={"flex"}>
               <Text
                 cursor={"pointer"}
-                color={"limegreen"}
+                color={"#A5D6A7"}
                 fontSize="16px"
                 noOfLines={1}
                 onClick={onOpen}
@@ -155,61 +156,65 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
               as={Eye}
               h={7}
               w={7}
-              color="limegreen"
+              color="#A5D6A7"
             />
           </Tooltip>
         ) : (
-          <Menu
-            placement={
-              variant == "open" && isSmallerThan400 ? "bottom" : "bottom-end"
-            }
-          >
-            <MenuButton
-              colorScheme="green"
-              as={Button}
-              rightIcon={<ChevronDownIcon />}
-              variant={"outline"}
-              width={variant == "open" && isSmallerThan400 ? "100%" : "auto"}
+          <>
+
+
+            <Menu
+              placement={
+                variant == "open" && isSmallerThan400 ? "bottom" : "bottom-end"
+              }
             >
-              Share
-            </MenuButton>
-            <MenuList fontSize={"sm"}>
-              <MenuItem onClick={handleCopyPostLink} icon={<Copy size={18} />}>
-                Copy link
-              </MenuItem>
-              <MenuItem
-                onClick={handleShareWarpCast}
-                icon={<ExternalLink size={18} />}
+              <MenuButton
+                colorScheme="green"
+                as={Button}
+                rightIcon={<ChevronDownIcon />}
+                variant={"outline"}
+                width={variant == "open" && isSmallerThan400 ? "100%" : "auto"}
               >
-                WarpCast
-              </MenuItem>
-              <MenuItem
-                onClick={handleShareTwitter}
-                icon={<Twitter size={18} />}
-              >
-                Twitter
-              </MenuItem>
-              <MenuItem
-                onClick={handleShareDiscord}
-                icon={<FaDiscord size={18} />}
-              >
-                Discord
-              </MenuItem>
-              <MenuDivider />
-              <MenuItem
-                onClick={handleOpenPostLink}
-                icon={<ExternalLink size={18} />}
-              >
-                Post page
-              </MenuItem>
-              <MenuItem
-                onClick={handleOpenPostLinkPeakd}
-                icon={<ExternalLink size={18} />}
-              >
-                PeakD
-              </MenuItem>
-            </MenuList>
-          </Menu>
+                Share
+              </MenuButton>
+              <MenuList fontSize={"sm"}>
+                <MenuItem onClick={handleCopyPostLink} icon={<Copy size={18} />}>
+                  Copy link
+                </MenuItem>
+                <MenuItem
+                  onClick={handleShareWarpCast}
+                  icon={<ExternalLink size={18} />}
+                >
+                  WarpCast
+                </MenuItem>
+                <MenuItem
+                  onClick={handleShareTwitter}
+                  icon={<Twitter size={18} />}
+                >
+                  Twitter
+                </MenuItem>
+                <MenuItem
+                  onClick={handleShareDiscord}
+                  icon={<FaDiscord size={18} />}
+                >
+                  Discord
+                </MenuItem>
+                <MenuDivider />
+                <MenuItem
+                  onClick={handleOpenPostLink}
+                  icon={<ExternalLink size={18} />}
+                >
+                  Post page
+                </MenuItem>
+                <MenuItem
+                  onClick={handleOpenPostLinkPeakd}
+                  icon={<ExternalLink size={18} />}
+                >
+                  PeakD
+                </MenuItem>
+              </MenuList>
+            </Menu>
+          </>
         )}
       </Flex>
     </CardHeader>
