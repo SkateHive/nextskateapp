@@ -19,7 +19,7 @@ import { FaArrowRightArrowLeft } from "react-icons/fa6";
 import { IoFilter } from "react-icons/io5";
 import AvatarList from "./components/AvatarList";
 import CommentList from "./components/CommentsList";
-import PostBox from "./components/PostBox";
+import PostBox from "./components/PostBox/PostBox";
 import LoadingComponent from "./components/loadingComponent";
 import AvatarMediaModal from "./components/mediaModal";
 
