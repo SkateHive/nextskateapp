@@ -49,14 +49,16 @@ const SidebarDesktop = () => {
   const [hiveAccount, setHiveAccount] = useState<HiveAccount | null>(null);
   // fix maluco, melhorar isso
   const client = HiveClient;
-  if (hiveUser !== null) {
-    const getUserAccount = async () => {
-      const userAccount = await client.database.getAccounts([hiveUser.name]);
-      console.log(userAccount);
-      setHiveAccount(userAccount[0]);
-    };
-    getUserAccount();
-  }
+  useEffect(() => {
+    if (hiveUser !== null) {
+      const getUserAccount = async () => {
+        const userAccount = await client.database.getAccounts([hiveUser.name]);
+        console.log(userAccount);
+        setHiveAccount(userAccount[0]);
+      };
+      getUserAccount();
+    }
+  }, []);
 
   const {
     isOpen: isLoginOpen,
