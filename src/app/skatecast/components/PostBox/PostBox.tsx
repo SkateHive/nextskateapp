@@ -40,20 +40,20 @@ const PostBox = ({ username, postBody, setPostBody, handlePost }: PostBoxProps) 
 
   return (
     <Box p={4} width={"100%"} bg="black" color="white" >
-     <div>
-     <PostBoxTextArea
-     username={username}
-     postBody={postBody}
-     setPostBody={setPostBody}
-   />
-   <PostBoxMedia
-     imageList={imageList}
-     setImageList={setImageList}
-     isUploading={isUploading}
-     handlePostClick={handlePostClick}
-   />
-     </div>
-     <Divider mt={4} />
+      <div>
+        <PostBoxTextArea
+          username={username}
+          postBody={postBody}
+          setPostBody={setPostBody}
+        />
+        <PostBoxMedia
+          imageList={imageList}
+          setImageList={setImageList}
+          isUploading={isUploading}
+          handlePostClick={handlePostClick}
+        />
+      </div>
+      <Divider mt={4} />
     </Box>
   )
 }

@@ -8,7 +8,7 @@ interface PostBoxTextAreaProps {
 }
 
 const PostBoxTextArea: React.FC<PostBoxTextAreaProps> = ({ username, postBody, setPostBody }) => {
-  
+
   function textAreaAdjust(element: any) {
     element.style.height = "1px"
     element.style.height = 25 + element.scrollHeight + "px"
@@ -36,7 +36,7 @@ const PostBoxTextArea: React.FC<PostBoxTextAreaProps> = ({ username, postBody, s
           onKeyUp={(e) => textAreaAdjust(e.target)}
         />
       </Flex>
-      
+
     </Box>
   );
 };
