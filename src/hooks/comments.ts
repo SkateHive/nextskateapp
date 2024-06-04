@@ -63,7 +63,6 @@ export async function fetchComments(
   recursive: boolean = false
 ): Promise<Comment[]> {
   try {
-    console.time("fetchComments")
     const comments = (await HiveClient.database.call("get_content_replies", [
       author,
       permlink,
@@ -76,7 +75,6 @@ export async function fetchComments(
         return comment
       }
       const commentsWithReplies = await Promise.all(comments.map(fetchReplies))
-      console.timeEnd("fetchComments")
       return commentsWithReplies
     } else {
       return comments
@@ -97,7 +95,6 @@ export function useComments(
   const [error, setError] = useState<string | null>(null)
 
   const fetchAndUpdateComments = useCallback(async () => {
-    console.time("fetchAndUpdateComments")
     setIsLoading(true)
     try {
       const fetchedComments = await fetchComments(author, permlink, recursive)
@@ -108,7 +105,6 @@ export function useComments(
       console.error(err)
     }
     setIsLoading(false)
-    console.timeEnd("fetchAndUpdateComments")
   }, [author, permlink, recursive])
 
   useEffect(() => {
