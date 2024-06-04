@@ -174,6 +174,7 @@ const SkateCast = () => {
               postBodyRef.current.value = "";
             }
             addComment(postData);
+            setImageList([]);
           }
         } catch (error) {
           console.error("Error posting comment:", (error as Error).message);
@@ -233,6 +234,7 @@ const SkateCast = () => {
         }
         addComment(postData);
         setHasPosted(true);
+        setImageList([]);
       } catch (error) {
         console.error("Error posting comment:", (error as Error).message);
       }
