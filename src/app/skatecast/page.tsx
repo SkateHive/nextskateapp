@@ -30,7 +30,6 @@ import AvatarList from "./components/AvatarList";
 import CommentList from "./components/CommentsList";
 import LoadingComponent from "./components/loadingComponent";
 import AvatarMediaModal from "./components/mediaModal";
-import PostBoxMedia from "./components/PostBox/PostBoxMedia";
 import { uploadFileToIPFS } from "../upload/utils/uploadToIPFS";
 
 const parent_author = "skatehacker";
@@ -288,55 +287,56 @@ const SkateCast = () => {
               boxSize={12}
               src={`https://images.ecency.com/webp/u/${username}/avatar/small`}
             />
-            <Textarea
-              border="none"
-              _focus={{
-                border: "none",
-                boxShadow: "none",
-              }}
-              overflow={"hidden"}
-              resize={"vertical"}
-              ref={postBodyRef}
-              placeholder="Write your comment..."
-            />
-            <HStack>
-              {imageList.map((item, index) => (
-                <Box key={index} position="relative" maxW={100} maxH={100}>
-                  <IconButton
-                    aria-label="Remove image"
-                    icon={<FaTimes style={{ color: "black", strokeWidth: 1 }} />}
-                    size="base"
-                    color="white"
-                    bg="white"
-                    _hover={{ bg: "white", color: "black" }}
-                    _active={{ bg: "white", color: "black" }}
-                    position="absolute"
-                    top="0"
-                    right="0"
-                    onClick={() => handleRemoveImage(index)}
-                    zIndex="1"
-                    borderRadius="full"
-                  />
-                  {item.includes("![Image](") ? (
-                    <Image
-                      src={item.match(/!\[Image\]\((.*?)\)/)?.[1] || ""}
-                      alt="markdown-image"
-                      maxW="100%"
-                      maxH="100%"
-                      objectFit="contain"
+            <Flex flexDir="column" w="100%">
+              <Textarea
+                border="none"
+                _focus={{
+                  border: "none",
+                  boxShadow: "none",
+                }}
+                overflow={"hidden"}
+                resize={"vertical"}
+                ref={postBodyRef}
+                placeholder="Write your comment..."
+              />
+              <HStack>
+                {imageList.map((item, index) => (
+                  <Box key={index} position="relative" maxW={100} maxH={100}>
+                    <IconButton
+                      aria-label="Remove image"
+                      icon={<FaTimes style={{ color: "black", strokeWidth: 1 }} />}
+                      size="base"
+                      color="white"
+                      bg="white"
+                      _hover={{ bg: "white", color: "black" }}
+                      _active={{ bg: "white", color: "black" }}
+                      position="absolute"
+                      top="0"
+                      right="0"
+                      onClick={() => handleRemoveImage(index)}
+                      zIndex="1"
+                      borderRadius="full"
                     />
-                  ) : (
-                    <video
-                      src={item.match(/<iframe src="(.*?)" allowfullscreen><\/iframe>/)?.[1]}
-                      controls
-                      muted
-                      width="100%"
-                    />
-                  )}
-                </Box>
-              ))}
-            </HStack>
-
+                    {item.includes("![Image](") ? (
+                      <Image
+                        src={item.match(/!\[Image\]\((.*?)\)/)?.[1] || ""}
+                        alt="markdown-image"
+                        maxW="100%"
+                        maxH="100%"
+                        objectFit="contain"
+                      />
+                    ) : (
+                      <video
+                        src={item.match(/<iframe src="(.*?)" allowfullscreen><\/iframe>/)?.[1]}
+                        controls
+                        muted
+                        width="100%"
+                      />
+                    )}
+                  </Box>
+                ))}
+              </HStack>
+            </Flex>
           </Flex>
           <HStack justifyContent="space-between" m={4}>
             <Input
