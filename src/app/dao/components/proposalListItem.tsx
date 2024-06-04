@@ -1,11 +1,10 @@
-import { Box, Badge, HStack, Text, Center } from "@chakra-ui/react";
-import React from "react";
-import { Proposal } from "../utils/fetchProposals";
-import { useEnsAvatar, useEnsName } from "wagmi";
-import { normalize } from "viem/ens";
+import { Badge, Box, Center, HStack, Text } from "@chakra-ui/react";
 import { mainnet } from "viem/chains";
-import ProposerAvatar from "./proposerAvatar";
+import { normalize } from "viem/ens";
+import { useEnsAvatar, useEnsName } from "wagmi";
 import { checkProposalOutcome } from "../utils/checkProposalOutcome";
+import { Proposal } from "../utils/fetchProposals";
+import ProposerAvatar from "./proposerAvatar";
 
 const formatEthAddress = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -41,7 +40,7 @@ function ProposalListItem({
         >
             <HStack justifyContent={"space-between"}>
                 <Text>{proposal.title}</Text>
-                <Badge fontSize="18px" color={checkProposalOutcome(proposal).hasWon ? "limegreen" : "red"}>
+                <Badge fontSize="18px" color={checkProposalOutcome(proposal).hasWon ? "#A5D6A7" : "red"}>
                     {checkProposalOutcome(proposal).hasWon ? "Passed" : "Failed"}
                 </Badge>
             </HStack>

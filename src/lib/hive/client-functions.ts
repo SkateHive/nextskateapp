@@ -17,11 +17,11 @@ interface HiveKeychainResponse {
 }
 
 export async function claimRewards(hiveUser: HiveAccount) {
-
+  console.log('claimRewards', hiveUser)
   const rewardHiveBalance = hiveUser.reward_hive_balance
   const rewardHBDBalance = hiveUser.reward_hbd_balance
   const rewardVests = hiveUser.reward_vesting_balance
-
+  console.log({ rewardHiveBalance, rewardHBDBalance, rewardVests });
   const operation: Operation = [
     "claim_reward_balance",
     {

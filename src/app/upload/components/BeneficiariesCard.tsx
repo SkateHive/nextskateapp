@@ -12,7 +12,7 @@ interface BeneficiariesCardProps {
 
 const BeneficiariesCard: React.FC<BeneficiariesCardProps> = ({ beneficiariesArray }) => {
     return (
-        <Card bg='darkseagreen' border="1px solid limegreen">
+        <Card bg='darkseagreen' border="1px solid #A5D6A7">
             <CardHeader>
                 <VStack spacing={4} align="stretch">
                     <Box>

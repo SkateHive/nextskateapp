@@ -1,6 +1,6 @@
+import PostCarousel from '@/components/PostCard/Carousel';
 import Footer from '@/components/PostCard/Footer';
 import Header from '@/components/PostCard/Header';
-import PostImage from '@/components/PostCard/Image';
 import { PostProvider } from '@/contexts/PostContext';
 import { Card } from '@chakra-ui/react';
 import React from 'react';
@@ -14,7 +14,7 @@ const PostPreview: React.FC<PostPreviewProps> = ({ postData }) => {
         <Card bg={"black"} border={"0.6px solid white"} size="sm" boxShadow="none" borderRadius="none" p={2}>
             <PostProvider postData={postData}>
                 <Header />
-                <PostImage />
+                <PostCarousel />
                 <Footer />
             </PostProvider>
         </Card>

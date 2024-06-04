@@ -36,11 +36,11 @@ export function NotificationContent({
       align={"center"}
       px={2}
       py={4}
-      _hover={{ bg: "limegreen", color: "black" }}
+      _hover={{ bg: "#A5D6A7", color: "black" }}
       gap={4}
 
     >
-      <Link href={`/profile/${notification.user}`}>
+      <Link href={`/skater/${notification.user}`}>
         <Avatar
           boxSize={"30px"}
           name={notification.user}
@@ -61,7 +61,7 @@ export function NotificationContent({
           </Text>
         </HStack>
         <Text fontSize={"12px"}>
-          <Link fontWeight={"bold"} href={`/profile/${notification.user}`}>
+          <Link fontWeight={"bold"} href={`/skater/${notification.user}`}>
             @{notification.user}
           </Link>{" "}
           {notification.msg}

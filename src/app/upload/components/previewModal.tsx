@@ -1,7 +1,3 @@
-import Footer from '@/components/PostCard/Footer';
-import Header from '@/components/PostCard/Header';
-import PostImage from '@/components/PostCard/Image';
-import { PostProvider } from '@/contexts/PostContext';
 import { commentWithKeychain } from '@/lib/hive/client-functions';
 import { commentWithPrivateKey } from '@/lib/hive/server-functions';
 import { HiveAccount } from '@/lib/useHiveAuth';
@@ -22,7 +18,7 @@ import React, { useState } from 'react';
 
 import slugify from '../utils/slugify';
 import BeneficiariesTable from './BeneficiariesTable';
-import { createCommentOptions, createPostOperation, formatBeneficiaries } from './formatPostData';
+import { createCommentOptions, createPostOperation } from './formatPostData';
 import ModalFooterButtons from './ModalFooterButton';
 import PostPreview from './PostPreview';
 import SocialsModal from './socialsModal';
@@ -76,7 +72,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
                 return !duplicate;
             }).map(beneficiary => ({
                 account: beneficiary.account,
-                weight: parseInt(beneficiary.weight, 10) 
+                weight: parseInt(beneficiary.weight, 10)
             })).sort((a, b) => a.account.localeCompare(b.account));
         };
         const finalBeneficiaries = formatBeneficiaries(beneficiariesArray);
@@ -132,7 +128,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
     return (
         <Modal isOpen={isOpen} onClose={onClose} size="xl">
             <ModalOverlay style={{ backdropFilter: "blur(5px)" }} />
-            <ModalContent backgroundColor={"black"} border={'1px solid limegreen'}>
+            <ModalContent backgroundColor={"black"} border={'1px solid #A5D6A7'}>
                 {hasPosted ? (
                     <SocialsModal isOpen={hasPosted} onClose={onClose} postUrl={postLink} content={body} aiSummary={AiSummary} />
                 ) : (

@@ -71,6 +71,9 @@ const VotingButton = ({
     }
   };
 
+
+
+
   return (
     <>
       <LoginModal
@@ -122,7 +125,7 @@ const CommentItem = ({
       <Flex>
         <AuthorAvatar username={comment.author} />
         <VStack ml={4} gap={0} alignItems={"start"} width={"full"} marginRight={"16px"}>
-          <HStack justify={"space-between"}  width={"full"}>
+          <HStack justify={"space-between"} width={"full"}>
             <HStack gap={"2px"}>
               <Text fontWeight="bold">{comment.author}</Text>
               <Text ml={2} color="gray.400" fontSize={"14px"}>

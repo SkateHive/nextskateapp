@@ -121,13 +121,13 @@ const CommandPrompt = ({ post, addComment }: CommandPromptProps) => {
       },
     },
     {
-      name: "saveDraftInTxt", 
-      keyCommand: "saveDraftInTxt", 
+      name: "saveDraftInTxt",
+      keyCommand: "saveDraftInTxt",
       buttonProps: { "aria-label": "Save Draft" },
       icon: (
         <Tooltip label="Save Draft">
           <span>
-            <FaSave color="limegreen" />
+            <FaSave color="#A5D6A7" />
           </span>
         </Tooltip>
       ),
@@ -136,7 +136,7 @@ const CommandPrompt = ({ post, addComment }: CommandPromptProps) => {
         const file = new Blob([value], { type: "text/plain" })
         element.href = URL.createObjectURL(file)
         element.download = "draft.txt"
-        document.body.appendChild(element) 
+        document.body.appendChild(element)
         element.click()
       },
     },

@@ -83,7 +83,7 @@ const TipModal: React.FC<TipModalProps> = ({ isOpen, onClose, token, author, aut
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
-            <ModalContent bg={"black"} border={"1px solid limegreen"}>
+            <ModalContent bg={"black"} border={"1px solid #A5D6A7"}>
                 <ModalHeader>Support {author} with {token}</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
@@ -111,7 +111,7 @@ const TipModal: React.FC<TipModalProps> = ({ isOpen, onClose, token, author, aut
                 </ModalBody>
                 <ModalFooter>
 
-                    <Button onClick={() => token && sendToken(amount, token)} variant="outline" border="1px solid limegreen">
+                    <Button onClick={() => token && sendToken(amount, token)} variant="outline" border="1px solid #A5D6A7">
                         Send
                     </Button>
                 </ModalFooter>

@@ -53,8 +53,8 @@ export default function Upload() {
         onDrop: async (acceptedFiles) => {
             setIsUploading(true);
             for (const file of acceptedFiles) {
-                const ipfsData = await uploadFileToIPFS(file); 
-                if (ipfsData !== undefined) { 
+                const ipfsData = await uploadFileToIPFS(file);
+                if (ipfsData !== undefined) {
                     const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}?pinataGatewayToken=${PINATA_GATEWAY_TOKEN}`;
                     const markdownLink = file.type.startsWith("video/") ? `<iframe src="${ipfsUrl}" allowfullscreen></iframe>` : `![Image](${ipfsUrl})`;
                     setValue(prevMarkdown => `${prevMarkdown}\n${markdownLink}\n`);
@@ -84,15 +84,15 @@ export default function Upload() {
         },
         {
             name: 'saveDraftInTxt',
-            keyCommand: 'saveDraftInTxt', 
+            keyCommand: 'saveDraftInTxt',
             buttonProps: { 'aria-label': 'Save Draft' },
-            icon: (<Tooltip label="Save Draft" ><span><FaSave color="limegreen" /></span></Tooltip>),
+            icon: (<Tooltip label="Save Draft" ><span><FaSave color="#A5D6A7" /></span></Tooltip>),
             execute: (state: any, api: any) => {
                 const element = document.createElement('a');
                 const file = new Blob([value], { type: 'text/plain' });
                 element.href = URL.createObjectURL(file);
                 element.download = "draft.txt";
-                document.body.appendChild(element); 
+                document.body.appendChild(element);
                 element.click();
             }
         }
@@ -101,7 +101,7 @@ export default function Upload() {
 
     const renderThumbnailOptions = () => {
         const selectedThumbnailStyle = {
-            border: '2px solid limegreen',
+            border: '2px solid #A5D6A7',
         };
 
         const imageUrls = extractImageUrls(value);
@@ -176,7 +176,7 @@ export default function Upload() {
     const handleBeneficiaryPercentageChange = (index: number, newPercentage: number) => {
         if (index < 0 || index >= beneficiaries.length) {
             console.error('Invalid index for beneficiaries:', index);
-            return; 
+            return;
         }
 
         const updatedBeneficiaries = [...beneficiaries];
@@ -192,7 +192,7 @@ export default function Upload() {
     const handleDefaultBeneficiaryPercentageChange = (index: number, newPercentage: number) => {
         if (index < 0 || index >= defaultBeneficiaries.length) {
             console.error('Invalid index for default beneficiaries:', index);
-            return; 
+            return;
         }
 
         const updatedDefaultBeneficiaries = [...defaultBeneficiaries];
@@ -224,18 +224,18 @@ export default function Upload() {
 
                         <Input
                             borderColor={"green.600"}
-                            color={"limegreen"}
-                            _placeholder={{ color: "limegreen", opacity: 0.4 }}
-                            focusBorderColor="limegreen"
+                            color={"#A5D6A7"}
+                            _placeholder={{ color: "#A5D6A7", opacity: 0.4 }}
+                            focusBorderColor="#A5D6A7"
                             placeholder="Insert title"
-                            style={{ caretColor: "limegreen" }}
+                            style={{ caretColor: "#A5D6A7" }}
                             type="text"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)} />
                     </HStack>
 
                     <Box marginTop="3" {...getRootProps()} >
-                        {isUploading && <Center m={3}><Spinner color="limegreen" /></Center>}
+                        {isUploading && <Center m={3}><Spinner color="#A5D6A7" /></Center>}
 
                         <MDEditor
                             value={value}
@@ -248,7 +248,7 @@ export default function Upload() {
                             height="600px"
                             preview="edit"
                             style={{
-                                border: "1px solid limegreen",
+                                border: "1px solid #A5D6A7",
                                 padding: "10px",
                                 backgroundColor: "black",
                             }}
@@ -256,8 +256,8 @@ export default function Upload() {
                     </Box>
                     <VStack>
 
-                        <Badge width={"100%"} mt={5} size="24px" color="limegreen" background={"green.600"}
-                            border={"1px solid limegreen"} {...getRootProps()}>
+                        <Badge width={"100%"} mt={5} size="24px" color="#A5D6A7" background={"green.600"}
+                            border={"1px solid #A5D6A7"} {...getRootProps()}>
                             <Center>
                                 <VStack padding={5}>
 
@@ -268,9 +268,9 @@ export default function Upload() {
 
                         </Badge>
 
-                        <Badge width={"100%"} mt={5} cursor={"pointer"} size="24px" color="limegreen"
+                        <Badge width={"100%"} mt={5} cursor={"pointer"} size="24px" color="#A5D6A7"
                             background={"green.600"}
-                            border={"1px solid limegreen"}
+                            border={"1px solid #A5D6A7"}
                             onClick={() => setShowAdvanced(!showAdvanced)}>
                             <Center>
                                 <Text fontSize={"22px"} color="black">
@@ -284,8 +284,8 @@ export default function Upload() {
                             <Center>
 
                                 <Badge
-                                    color="limegreen" background={"green.600"} marginBottom={3} >
-                                    <Text fontSize={"22px"} color="limegreen">Tags</Text>
+                                    color="#A5D6A7" background={"green.600"} marginBottom={3} >
+                                    <Text fontSize={"22px"} color="#A5D6A7">Tags</Text>
                                 </Badge>
                             </Center>
                             <Flex>
@@ -298,17 +298,17 @@ export default function Upload() {
                                         size="md"
                                         mr={2}
                                         borderColor={"green.600"}
-                                        color={"limegreen"}
-                                        _placeholder={{ color: "limegreen", opacity: 0.4 }}
-                                        focusBorderColor="limegreen"
+                                        color={"#A5D6A7"}
+                                        _placeholder={{ color: "#A5D6A7", opacity: 0.4 }}
+                                        focusBorderColor="#A5D6A7"
                                     />
                                 ))}
                             </Flex>
                             <Center>
                                 <Badge
-                                    color="limegreen" background={"green.600"} margin={2}>
+                                    color="#A5D6A7" background={"green.600"} margin={2}>
                                     <Tooltip label="Your Photographer/Video Maker deserves it">
-                                        <Text fontSize={"22px"} color="limegreen">Split Rewards</Text>
+                                        <Text fontSize={"22px"} color="#A5D6A7">Split Rewards</Text>
                                     </Tooltip>
 
                                 </Badge>
@@ -330,7 +330,7 @@ export default function Upload() {
                                             </Text>
                                         </Center>
                                         <Slider
-                                            id={`slider-${index}`} 
+                                            id={`slider-${index}`}
                                             defaultValue={beneficiary.percentage}
                                             min={0}
                                             max={100}
@@ -340,7 +340,7 @@ export default function Upload() {
                                             onMouseLeave={() => setShowTooltip(false)}
                                         >
                                             <SliderTrack>
-                                                <SliderFilledTrack bg="limegreen" />
+                                                <SliderFilledTrack bg="#A5D6A7" />
                                             </SliderTrack>
                                             <Tooltip
                                                 hasArrow
@@ -377,13 +377,13 @@ export default function Upload() {
                                                 defaultValue={beneficiary.percentage}
                                                 min={0}
                                                 max={100}
-                                                colorScheme="green" 
+                                                colorScheme="green"
                                                 onChange={(val) => handleBeneficiaryPercentageChange(index, val)}
                                                 onMouseEnter={() => setShowTooltip(true)}
                                                 onMouseLeave={() => setShowTooltip(false)}
                                             >
                                                 <SliderTrack>
-                                                    <SliderFilledTrack bg="limegreen" /> 
+                                                    <SliderFilledTrack bg="#A5D6A7" />
                                                 </SliderTrack>
                                                 <Tooltip
                                                     hasArrow
@@ -418,7 +418,7 @@ export default function Upload() {
                     </Center>
 
                 </Box>
-                <Box width={{ base: '100%', md: '50%' }} p="4" borderRadius="2px" border="1px solid limegreen">
+                <Box width={{ base: '100%', md: '50%' }} p="4" borderRadius="2px" border="1px solid #A5D6A7">
                     <HStack>
                         <Avatar name={hiveUser?.name} src={hiveUser?.metadata?.profile?.profile_image} boxSize="58px" borderRadius={'10px'} />
                         <Box p="7" borderRadius="4px" width="100%">

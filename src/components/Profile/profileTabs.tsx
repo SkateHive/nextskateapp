@@ -10,10 +10,10 @@ interface ProfilePageProps {
 
 export default function ProfileTabs({ user }: ProfilePageProps) {
     return (
-        <Box>
-            <Tabs isFitted variant="enclosed">
+        <Box h={"100vh"} >
+            <Tabs isLazy isFitted variant="enclosed">
                 <TabList mb="1em">
-                    <Tab>Blog</Tab>
+                    <Tab >Blog</Tab>
                     <Tab>Posts</Tab>
                     <Tab>VideoParts</Tab>
                     <Tab>Comments</Tab>

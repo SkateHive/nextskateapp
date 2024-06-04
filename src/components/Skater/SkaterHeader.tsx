@@ -1,10 +1,11 @@
 'use client'
 
-import { HiveAccount } from "@/lib/models/user"
-import { Avatar, Button, HStack, Image, Text, VStack, useDisclosure } from "@chakra-ui/react"
-import { FaGear } from "react-icons/fa6"
 import { useHiveUser } from "@/contexts/UserContext"
-
+import { HiveAccount } from "@/lib/models/user"
+import { Box, HStack, Image, Text, VStack, useDisclosure, useMediaQuery } from "@chakra-ui/react"
+import { useEffect, useState } from "react"
+import { FaGear } from "react-icons/fa6"
+import AuthorAvatar from "../AuthorAvatar"
 interface ProfileProps {
     user: HiveAccount
 }
@@ -18,37 +19,41 @@ export default function SkateHeader({ user }: ProfileProps) {
     console.log(metadata)
 
     const coverImageUrl = metadata?.profile?.cover_image || "https://i.pinimg.com/originals/4b/c7/91/4bc7917beb4aac43d2d405b05911e35f.gif";
-    const profileImageUrl = metadata?.profile?.profile_image || "/loading.gif";
     const profileName = metadata?.profile?.name || user.name;
+    const [isSmallerThan400] = useMediaQuery("(max-width: 400px)");
+    const [boxSize, setBoxSize] = useState(20)
+    // if mobile show smaller image
+    useEffect(() => {
+        if (isSmallerThan400) {
+            setBoxSize(20)
+        }
+        else {
+            setBoxSize(40)
+        }
+    }, [isSmallerThan400])
 
     return (
-        <VStack align={"start"}>
+        <VStack align={"center"}>
             <Image
+                mt={10}
                 w="100%"
                 src={coverImageUrl}
-                objectFit="cover"
+                objectFit="fill"
                 borderRadius="md"
                 alt={"Profile thumbnail"}
                 loading="lazy"
             />
-            <HStack ml={2} align={"start"}>
-                <Avatar
-                    mt={-14}
-                    name={user.name}
-                    src={profileImageUrl}
-                    size={{ base: "xl", lg: "2xl" }}
-                    showBorder={true}
-                />
+            <Box mt={-20}>
+                <AuthorAvatar username={user.name} boxSize={boxSize} borderRadius={5} />
+            </Box>
+
+            <HStack align={"flex-start"} >
+                <Text top={5} fontSize={{ base: "sm", lg: "3xl" }} fontWeight={"bold"}>
+                    {profileName} <br />
+                </Text>
                 {user.name === hiveUser.hiveUser?.name && (
-                    <VStack ml={-10} mt={1} zIndex={1}>
-                        <FaGear onClick={onOpen} color="white" size="2em" />
-                    </VStack>
+                    <FaGear onClick={onOpen} color="white" size="1em" />
                 )}
-                <VStack align={"flex-start"} gap={0}>
-                    <Text fontSize={{ base: "sm", lg: "xl" }} fontWeight={"bold"}>
-                        {profileName} <br />
-                    </Text>
-                </VStack>
             </HStack>
         </VStack>
     )

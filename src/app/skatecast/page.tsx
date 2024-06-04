@@ -19,7 +19,7 @@ import { FaArrowRightArrowLeft } from "react-icons/fa6";
 import { IoFilter } from "react-icons/io5";
 import AvatarList from "./components/AvatarList";
 import CommentList from "./components/CommentsList";
-import PostBox from "./components/PostBox";
+import PostBox from "./components/PostBox/PostBox";
 import LoadingComponent from "./components/loadingComponent";
 import AvatarMediaModal from "./components/mediaModal";
 
@@ -53,14 +53,14 @@ const SkateCast = () => {
     parent_author,
     parent_permlink,
   );
-  const [visiblePosts, setVisiblePosts] = useState<number>(30);
+  const [visiblePosts, setVisiblePosts] = useState<number>(10);
   const [postBody, setPostBody] = useState<string>("");
   const user = useHiveUser();
   const username = user?.hiveUser?.name;
   const [mediaModalOpen, setMediaModalOpen] = useState<boolean>(false);
   const [media, setMedia] = useState<string[]>([]);
   const [hasPosted, setHasPosted] = useState<boolean>(false);
-  const [sortMethod, setSortMethod] = useState<string>("chronological"); 
+  const [sortMethod, setSortMethod] = useState<string>("chronological");
 
   const sortedComments = useMemo(() => {
     if (sortMethod === "chronological") {
@@ -241,7 +241,7 @@ const SkateCast = () => {
           <MenuButton>
             <IoFilter color="#9AE6B4" />
           </MenuButton>
-          <MenuList bg={"black"} border={"1px solid limegreen"}>
+          <MenuList bg={"black"} border={"1px solid #A5D6A7"}>
             <MenuItem
               bg={"black"}
               onClick={() => handleSortChange("chronological")}

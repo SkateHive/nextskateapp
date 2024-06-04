@@ -22,8 +22,8 @@ import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
 import { useEffect, useState } from "react";
 import { FaBell, FaBook, FaEthereum, FaHive, FaSpeakap, FaUser, FaWallet } from "react-icons/fa";
 import { useAccount } from "wagmi";
-import CommunityTotalPayout from "../communityTotalPayout";
 import LoginModal from "../Hive/Login/LoginModal";
+import CommunityTotalPayout from "../communityTotalPayout";
 import checkRewards from "./utils/checkReward";
 
 const blink = keyframes`
@@ -51,7 +51,7 @@ const SideBarMobile = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
 
     useEffect(() => {
         if (hiveUser !== null) {
-            checkRewards(setHasRewards, hiveUser)
+            checkRewards(setHasRewards, hiveUser.name)
         }
     }, [hiveUser])
 
@@ -80,7 +80,7 @@ const SideBarMobile = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
                 <DrawerContent
                     bg={"black"}
                     color={"white"}
-                    borderRight={"1px solid limegreen"}
+                    borderRight={"1px solid #A5D6A7"}
                 >
                     <DrawerBody
                         marginTop={"8px"}
@@ -90,7 +90,7 @@ const SideBarMobile = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
                     >
                         <Image
                             src="/skatehive-banner.png" w={"100%"} h={"auto"} alt="SkateHive" />
-                        <Divider mb={3} mt={3} style={{ color: 'limegreen', borderColor: 'limegreen' }} />
+                        <Divider mb={3} mt={3} style={{ color: '#A5D6A7', borderColor: '#A5D6A7' }} />
                         <CommunityTotalPayout />
 
                         <HStack padding={0} mt={8} gap={3} fontSize={"22px"}>
