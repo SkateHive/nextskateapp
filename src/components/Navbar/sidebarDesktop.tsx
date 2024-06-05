@@ -53,7 +53,6 @@ const SidebarDesktop = () => {
     if (hiveUser !== null) {
       const getUserAccount = async () => {
         const userAccount = await client.database.getAccounts([hiveUser.name]);
-        console.log(userAccount);
         setHiveAccount(userAccount[0]);
       };
       getUserAccount();
@@ -123,20 +122,28 @@ const SidebarDesktop = () => {
 
         <HStack padding={0} mt={8} gap={3} fontSize={"22px"}>
           <FaSpeakap size={"22px"} />
-          <Link href={"/"}>Feed</Link>
+          <Text cursor={"pointer"} onClick={() => {
+            window.location.href = "/";
+          }}>Feed</Text>
         </HStack>
         <HStack padding={0} gap={3} fontSize={"22px"}>
           <FaBook size={"22px"} />
-          <Link href={"/mag"}>Magazine</Link>
+          <Text cursor={"pointer"} onClick={() => {
+            window.location.href = "/mag";
+          }}>Magazine</Text>
         </HStack>
         <HStack padding={0} gap={3} fontSize={"22px"}>
           <FaEthereum size={"22px"} />
-          <Link href={"/dao"}>Dao</Link>
+          <Text cursor={"pointer"} onClick={() => {
+            window.location.href = "/dao";
+          }}>Dao</Text>
         </HStack>
         {!hiveUser && (
           <HStack padding={0} gap={3} fontSize={"22px"}>
             <FaDiscord size={"22px"} />
-            <Link href={"https://discord.gg/skateboard"}>Chat</Link>
+            <Text cursor={"pointer"} onClick={() => {
+              window.location.href = "https://discord.gg/skateboard";
+            }}>Chat</Text>
           </HStack>
         )}
 
@@ -144,11 +151,15 @@ const SidebarDesktop = () => {
           <>
             <HStack padding={0} gap={3} fontSize={"22px"}>
               <FaUser size={"22px"} />
-              <Link href={`/profile/${hiveUser.name}`}>Profile</Link>
+              <Text cursor={"pointer"} onClick={() => {
+                window.location.href = `/profile/${hiveUser.name}`;
+              }}>Profile</Text>
             </HStack>
             <HStack padding={0} gap={3} fontSize={"22px"}>
               <FaWallet size={"22px"} />
-              <Link href={`/wallet`}>Wallet</Link>
+              <Text cursor={"pointer"} onClick={() => {
+                window.location.href = `/wallet`;
+              }}>Wallet</Text>
               {hasRewards && (
                 <Button
                   gap={0}

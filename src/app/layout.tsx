@@ -40,6 +40,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="manifest" href="/manifest.json"></link>
+        <meta name="theme-color" content="#000000" />
         <Favicon />
         <style>
           {`

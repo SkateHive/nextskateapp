@@ -350,9 +350,9 @@ const SkateCast = () => {
               ref={inputRef}
             />
             <Button
+              name="md-image-upload"
               variant="ghost"
               onClick={() => inputRef.current?.click()}
-              // onhover do nothing , dot not change background
               _hover={{
                 background: "none",
               }}
