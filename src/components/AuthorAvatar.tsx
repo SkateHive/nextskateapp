@@ -19,32 +19,36 @@ export default function AuthorAvatar({ username, borderRadius, hover, boxSize }:
     const fetchProfileImage = useCallback(async () => {
         if (profileImageCache[username]) {
             setProfileImage(profileImageCache[username]);
+            console.log("cache hit");
+            console.log(profileImageCache[username]);
         } else {
             const hiveClient = HiveClient;
-            const userData = await hiveClient.database.getAccounts([String(username)]);
-            if (userData.length > 0) {
-                const user = userData[0];
-                let profileImageUrl = "";
+            if (profileImageCache[username] === undefined) {
+                const userData = await hiveClient.database.getAccounts([String(username)]);
+                if (userData.length > 0) {
+                    const user = userData[0];
+                    let profileImageUrl = "";
 
-                if (user.posting_json_metadata) {
-                    const metadata = JSON.parse(user.posting_json_metadata);
-                    profileImageUrl = metadata.profile?.profile_image || "";
+                    if (user.posting_json_metadata) {
+                        const metadata = JSON.parse(user.posting_json_metadata);
+                        profileImageUrl = metadata.profile?.profile_image || "";
+                    }
+
+                    if (!profileImageUrl && user.json_metadata) {
+                        const metadata = JSON.parse(user.json_metadata);
+                        profileImageUrl = metadata.profile?.profile_image || "";
+                    }
+
+                    profileImageCache[username] = profileImageUrl || "/loading.gif";
+                    setProfileImage(profileImageUrl || "/loading.gif");
                 }
-
-                if (!profileImageUrl && user.json_metadata) {
-                    const metadata = JSON.parse(user.json_metadata);
-                    profileImageUrl = metadata.profile?.profile_image || "";
-                }
-
-                profileImageCache[username] = profileImageUrl || "/loading.gif";
-                setProfileImage(profileImageUrl || "/loading.gif");
             }
         }
     }, [username]);
 
     useEffect(() => {
         fetchProfileImage();
-    }, [fetchProfileImage]);
+    }, []);
 
     return (
         <Avatar
