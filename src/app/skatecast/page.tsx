@@ -19,6 +19,7 @@ import {
   Image,
   IconButton,
   Input,
+  Divider,
 } from "@chakra-ui/react";
 import { FaImage, FaTimes, FaHistory, FaMoneyBill } from "react-icons/fa";
 import { FaArrowRightArrowLeft } from "react-icons/fa6";
@@ -281,7 +282,7 @@ const SkateCast = () => {
       />
       <AvatarList sortedComments={sortedComments} />
 
-      <Box p={4} width={"100%"} bg="black" color="white" {...getRootProps()}>
+      <Box p={2} width={"100%"} bg="black" color="white" {...getRootProps()}>
         <div>
           <Flex>
             <Avatar
@@ -340,7 +341,7 @@ const SkateCast = () => {
               </HStack>
             </Flex>
           </Flex>
-          <HStack justifyContent="space-between" m={4}>
+          <HStack justifyContent="space-between" m={2}>
             <Input
               id="md-image-upload"
               type="file"
@@ -349,26 +350,46 @@ const SkateCast = () => {
               ref={inputRef}
             />
             <Button
-              colorScheme="green"
               variant="ghost"
               onClick={() => inputRef.current?.click()}
+              // onhover do nothing , dot not change background
+              _hover={{
+                background: "none",
+              }}
             >
-              <FaImage color="#ABE4B8" cursor="pointer" />
+              <FaImage style={{
+                color: "#ABE4B8",
+                cursor: "pointer",
+                transition: "all 0.2s",
+              }} onMouseOver={(e) => {
+                e.currentTarget.style.color = "limegreen";
+                e.currentTarget.style.textShadow = "0 0 10px 0 limegreen";
+              }} onMouseOut={(e) => {
+                e.currentTarget.style.color = "#ABE4B8";
+                e.currentTarget.style.textShadow = "none";
+              }} />
             </Button>
             <Button
               colorScheme="green"
-              variant="outline"
+              variant="ghost"
               ml="auto"
               onClick={handlePostClick}
               isLoading={isUploading}
+              // onhover glow effect with shadow and transition the letters only green
+              _hover={{
+                color: "limegreen",
+                textShadow: "0 0 10px 0 limegreen",
+                transition: "all 0.2s",
+              }}
             >
               Post
             </Button>
           </HStack>
         </div>
       </Box>
+      <Divider />
 
-      <HStack spacing="1" width="full" justifyContent="flex-end" mr={4}>
+      <HStack width="full" justifyContent="flex-end" m={-2} mr={4}>
         <Menu>
           <MenuButton>
             <IoFilter color="#9AE6B4" />
@@ -392,7 +413,6 @@ const SkateCast = () => {
           </MenuList>
         </Menu>
       </HStack>
-
       <CommentList
         comments={sortedComments}
         visiblePosts={visiblePosts}

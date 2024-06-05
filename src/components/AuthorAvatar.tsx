@@ -1,7 +1,8 @@
-'use client'
+'use client';
 import HiveClient from "@/lib/hive/hiveclient";
 import { Avatar, SystemStyleObject } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
+import { useInView } from "react-intersection-observer";
 
 interface AuthorAvatarProps {
     username: string;
@@ -19,42 +20,46 @@ export default function AuthorAvatar({ username, borderRadius, hover, boxSize }:
     const fetchProfileImage = useCallback(async () => {
         if (profileImageCache[username]) {
             setProfileImage(profileImageCache[username]);
-            console.log("cache hit");
-            console.log(profileImageCache[username]);
         } else {
             const hiveClient = HiveClient;
-            if (profileImageCache[username] === undefined) {
-                const userData = await hiveClient.database.getAccounts([String(username)]);
-                if (userData.length > 0) {
-                    const user = userData[0];
-                    let profileImageUrl = "";
+            const userData = await hiveClient.database.getAccounts([String(username)]);
+            if (userData.length > 0) {
+                const user = userData[0];
+                let profileImageUrl = "";
 
-                    if (user.posting_json_metadata) {
-                        const metadata = JSON.parse(user.posting_json_metadata);
-                        profileImageUrl = metadata.profile?.profile_image || "";
-                    }
-
-                    if (!profileImageUrl && user.json_metadata) {
-                        const metadata = JSON.parse(user.json_metadata);
-                        profileImageUrl = metadata.profile?.profile_image || "";
-                    }
-
-                    profileImageCache[username] = profileImageUrl || "/loading.gif";
-                    setProfileImage(profileImageUrl || "/loading.gif");
+                if (user.posting_json_metadata) {
+                    const metadata = JSON.parse(user.posting_json_metadata);
+                    profileImageUrl = metadata.profile?.profile_image || "";
                 }
+
+                if (!profileImageUrl && user.json_metadata) {
+                    const metadata = JSON.parse(user.json_metadata);
+                    profileImageUrl = metadata.profile?.profile_image || "";
+                }
+
+                profileImageCache[username] = profileImageUrl || "/loading.gif";
+                setProfileImage(profileImageUrl || "/loading.gif");
             }
         }
     }, [username]);
 
+    const { ref, inView } = useInView({
+        triggerOnce: true,
+        threshold: 0.1,
+    });
+
     useEffect(() => {
-        fetchProfileImage();
-    }, []);
+        if (inView) {
+            fetchProfileImage();
+        }
+    }, [inView, fetchProfileImage]);
 
     return (
         <Avatar
+            ref={ref}
             onClick={() => window.open(`/skater/${username}`, "_blank")}
             name={username}
-            src={profileImage}
+            src={inView ? profileImage : "/loading.gif"}
             boxSize={boxSize || 12}
             bg="transparent"
             loading="lazy"

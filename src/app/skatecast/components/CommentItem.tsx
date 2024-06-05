@@ -71,9 +71,6 @@ const VotingButton = ({
     }
   };
 
-
-
-
   return (
     <>
       <LoginModal
