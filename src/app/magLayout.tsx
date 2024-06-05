@@ -1,14 +1,14 @@
 "use client";
 
-import Feed from "@/components/Feed";
+import MagColumn from "@/components/Mag";
 import { Box } from "@chakra-ui/react";
 
-const FeedLayout = () => {
+const MagLayout = () => {
   return (
     <Box className="hide-on-mobile" maxW={"400px"} width={"100%"}>
-      <Feed />
+      <MagColumn />
     </Box>
   );
 };
 
-export default FeedLayout;
+export default MagLayout;

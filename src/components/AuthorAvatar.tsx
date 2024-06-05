@@ -32,7 +32,7 @@ export default function AuthorAvatar({ username, borderRadius, hover, boxSize }:
                     profileImageUrl = metadata.profile?.profile_image || "";
                 }
 
-                if (!profileImageUrl && user.json_metadata) {
+                if (profileImageUrl === "" && user.json_metadata) {
                     const metadata = JSON.parse(user.json_metadata);
                     profileImageUrl = metadata.profile?.profile_image || "";
                 }

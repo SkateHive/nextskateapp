@@ -10,7 +10,9 @@ import { BeatLoader } from "react-spinners"
 import LoginModal from "../Hive/Login/LoginModal"
 import Post from "../PostCard"
 import PostSkeleton from "../PostCard/Skeleton"
-export default function Feed() {
+
+
+export default function MagColumn() {
   const SKATEHIVE_TAG = [{ tag: "hive-173115", limit: 100 }]
   const [tag, setTag] = useState(SKATEHIVE_TAG)
   const [query, setQuery] = useState("created")
