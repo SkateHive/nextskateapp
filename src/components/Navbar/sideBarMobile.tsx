@@ -118,30 +118,30 @@ const SideBarMobile = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
                         <Divider mb={3} mt={3} style={{ color: '#A5D6A7', borderColor: '#A5D6A7' }} />
                         <CommunityTotalPayout />
 
-                        <HStack padding={0} mt={8} gap={3} fontSize={"22px"}>
+                        <HStack onClick={() => setNotifications(false)} padding={0} mt={8} gap={3} fontSize={"22px"}>
                             <FaSpeakap size={"22px"} />
                             <Link href={"/"}>Feed</Link>
                         </HStack>
-                        <HStack padding={0} gap={3} fontSize={"22px"}>
+                        <HStack onClick={() => setNotifications(false)} padding={0} gap={3} fontSize={"22px"}>
                             <FaBook size={"22px"} />
                             <Link href={"/mag"}>Magazine</Link>
                         </HStack>
                         {ethAccount.address && (
 
-                            <HStack padding={0} gap={3} fontSize={"22px"}>
+                            <HStack onClick={() => setNotifications(false)} padding={0} gap={3} fontSize={"22px"}>
                                 <FaEthereum size={"22px"} />
                                 <Link href={"/dao"}>Dao</Link>
                             </HStack>
                         )}
                         {hiveUser ? (
                             <>
-                                <HStack padding={0} gap={3} fontSize={"22px"}>
+                                <HStack onClick={() => setNotifications(false)} padding={0} gap={3} fontSize={"22px"}>
                                     <FaUser size={"22px"} />
                                     <Text cursor={"pointer"} onClick={() => {
                                         window.location.href = `/profile/${hiveUser.name}`;
                                     }}>Profile</Text>
                                 </HStack>
-                                <HStack padding={0} gap={3} fontSize={"22px"}>
+                                <HStack onClick={() => setNotifications(false)} padding={0} gap={3} fontSize={"22px"}>
                                     <FaWallet size={"22px"} />
                                     <Text cursor={"pointer"} onClick={() => {
                                         window.location.href = `/wallet`;
