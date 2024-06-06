@@ -18,7 +18,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaHeart, FaRegComment, FaRegHeart } from "react-icons/fa";
 import ReactMarkdown from "react-markdown";
 import { useReward } from "react-rewards";
@@ -26,6 +26,7 @@ import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import { handleVote } from "../utils/handleFeedVote";
 import ReplyModal from "./replyModal";
+import { useComments } from "@/hooks/comments";
 
 interface CommentItemProps {
   comment: any;
@@ -52,6 +53,7 @@ const VotingButton = ({
     emoji: ["$", "*", "#"],
     spread: 60,
   });
+
 
   const handleVoteClick = async () => {
     if (username === "") {
@@ -111,6 +113,18 @@ const CommentItem = ({
     setIsModalOpen(!isModalOpen);
   };
 
+  const commentReplies = useComments(comment.author, comment.permlink);
+  const comments_count = commentReplies.comments.length;
+  const [numberOfComments, setNumberOfComments] = useState(0);
+
+  useEffect(() => {
+    setNumberOfComments(comments_count);
+  }
+    , [numberOfComments, comments_count]);
+
+
+
+
   return (
     <Box key={comment.id} p={4} width="100%" bg="black" color="white">
       <ReplyModal
@@ -168,15 +182,16 @@ const CommentItem = ({
       {/* Buttons */}
       <Flex ml={14} justifyContent={"space-between"}>
         <TipButton author={comment.author} />
-        <IconButton
+        <Button
           colorScheme="green"
           variant="ghost"
-          icon={<FaRegComment />}
+          leftIcon={<FaRegComment />}
           onClick={handleModal}
           aria-label="Comments"
         >
-          {comment.children}
-        </IconButton>
+          {numberOfComments}
+        </Button>
+
         <VotingButton comment={comment} username={username} />
       </Flex>
       <Divider mt={4} />
