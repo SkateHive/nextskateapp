@@ -1,15 +1,7 @@
 'use client';
 import { Operation } from "@hiveio/dhive";
 import { Broadcast, KeychainKeyTypes, KeychainRequestResponse, KeychainSDK, Login, Post, Transfer, Vote } from "keychain-sdk";
-import { HiveAccount } from "../models/user";
-
-interface VideoPart {
-  name: string;
-  filmmaker: string[];
-  friends: string[];
-  year: number;
-  url: string;
-}
+import { HiveAccount, VideoPart } from "../models/user";
 
 interface HiveKeychainResponse {
   success: boolean
