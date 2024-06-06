@@ -25,7 +25,8 @@ import { useAccount } from "wagmi";
 import LoginModal from "../Hive/Login/LoginModal";
 import CommunityTotalPayout from "../communityTotalPayout";
 import checkRewards from "./utils/checkReward";
-
+import { HiveAccount } from "@/lib/models/user";
+import HiveClient from "@/lib/hive/hiveclient";
 const blink = keyframes`
   0% { opacity: 1; }
   50% { opacity: 0.1; }
@@ -36,6 +37,7 @@ const blink = keyframes`
 const SideBarMobile = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) => {
     const user = useHiveUser();
     const hiveUser = user.hiveUser;
+    const client = HiveClient;
 
     const ethAccount = useAccount()
     const [notifications, setNotifications] = useState(false)
@@ -47,19 +49,42 @@ const SideBarMobile = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
     } = useDisclosure()
     const { openConnectModal } = useConnectModal()
     const { openAccountModal } = useAccountModal()
+    const [hiveAccount, setHiveAccount] = useState<HiveAccount>();
 
 
     useEffect(() => {
-        if (hiveUser !== null) {
-            checkRewards(hiveUser.name)
-        }
-    }, [hiveUser])
+        if (hiveUser?.name) {
+            const getUserAccount = async () => {
+                try {
+                    const userAccount = await client.database.getAccounts([hiveUser.name]);
+                    if (userAccount.length > 0) {
+                        setHiveAccount(userAccount[0]);
+                    }
+                } catch (error) {
+                    console.error("Failed to fetch user account", error);
+                }
+            };
 
-    const handleClaimRewards = () => {
-        if (hiveUser) {
-            claimRewards(hiveUser)
+            getUserAccount();
         }
-    }
+    }, [hiveUser?.name]);
+
+    useEffect(() => {
+        const checkUserRewards = async () => {
+            if (hiveUser) {
+                setHasRewards(await checkRewards(String(hiveUser.name)));
+            }
+        };
+
+        checkUserRewards();
+    }, [hiveUser]);
+    const handleClaimRewards = () => {
+        console.log("Claiming rewards");
+        console.log(hiveAccount);
+        if (hiveAccount) {
+            claimRewards(hiveAccount);
+        }
+    };
     const handleNotifications = () => {
         setNotifications(!notifications)
     }
@@ -112,12 +137,16 @@ const SideBarMobile = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
                             <>
                                 <HStack padding={0} gap={3} fontSize={"22px"}>
                                     <FaUser size={"22px"} />
-                                    <Link href={`/profile/${hiveUser.name}`}>Profile</Link>
+                                    <Text cursor={"pointer"} onClick={() => {
+                                        window.location.href = `/profile/${hiveUser.name}`;
+                                    }}>Profile</Text>
                                 </HStack>
                                 <HStack padding={0} gap={3} fontSize={"22px"}>
                                     <FaWallet size={"22px"} />
-                                    <Link href={`/wallet`}>Wallet</Link>
-                                    {hasRewards && (
+                                    <Text cursor={"pointer"} onClick={() => {
+                                        window.location.href = `/wallet`;
+                                    }}>Wallet</Text>
+                                    {hasRewards && (console.log(hasRewards),
                                         <Button
                                             gap={0}
                                             leftIcon={<Icon as={FaHive} />}
@@ -134,7 +163,13 @@ const SideBarMobile = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
                                         </Button>
                                     )}
                                 </HStack>
-                                <HStack cursor={"pointer"} onClick={handleNotifications} padding={0} gap={3} fontSize={"22px"}>
+                                <HStack
+                                    cursor={"pointer"}
+                                    onClick={handleNotifications}
+                                    padding={0}
+                                    gap={3}
+                                    fontSize={"22px"}
+                                >
                                     <FaBell size={"22px"} />
                                     <Text> Notifications</Text>
                                 </HStack>

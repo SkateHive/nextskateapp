@@ -74,16 +74,16 @@ const SidebarDesktop = () => {
 
   const [notifications, setNotifications] = useState(false);
   const [hasRewards, setHasRewards] = useState(false);
-
   useEffect(() => {
     const checkUserRewards = async () => {
       if (hiveUser) {
         setHasRewards(await checkRewards(String(hiveUser.name)));
+        console.log(hasRewards ? "User has rewards" : "User has no rewards");
       }
     };
 
     checkUserRewards();
-  }, []);
+  }, [hiveUser]);
 
   const handleNotifications = () => {
     setNotifications(!notifications);
