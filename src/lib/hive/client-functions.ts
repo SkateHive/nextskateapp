@@ -2,6 +2,7 @@
 import { Operation } from "@hiveio/dhive";
 import { Broadcast, KeychainKeyTypes, KeychainRequestResponse, KeychainSDK, Login, Post, Transfer, Vote } from "keychain-sdk";
 import { HiveAccount } from "../models/user";
+import { formatDate } from "../utils";
 
 interface VideoPart {
   name: string;
@@ -84,7 +85,7 @@ export async function commentWithKeychain(formParamsAsObject: any): Promise<Hive
 
 export async function loginWithKeychain(username: string) {
   try {
-    const memo = `${username} signed up with ${process.env.NEXT_PUBLIC_WEBSITE_URL} app at ${Date.now()}`
+    const memo = `${username} signed up with skatehive app at ${formatDate(String(Date.now()))}`
     const keychain = new KeychainSDK(window);
     undefined
     const formParamsAsObject = {
