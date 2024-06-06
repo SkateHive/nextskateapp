@@ -13,7 +13,6 @@ import {
   Heading,
   Icon,
   Image,
-  Link,
   Text,
   keyframes,
   useDisclosure
@@ -46,18 +45,26 @@ const SidebarDesktop = () => {
   const ethAccount = useAccount();
   const { openConnectModal } = useConnectModal();
   const { openAccountModal } = useAccountModal();
-  const [hiveAccount, setHiveAccount] = useState<HiveAccount | null>(null);
+  const [hiveAccount, setHiveAccount] = useState<HiveAccount>();
   // fix maluco, melhorar isso
   const client = HiveClient;
   useEffect(() => {
-    if (hiveUser !== null) {
+    if (hiveUser?.name) {
       const getUserAccount = async () => {
-        const userAccount = await client.database.getAccounts([hiveUser.name]);
-        setHiveAccount(userAccount[0]);
+        try {
+          const userAccount = await client.database.getAccounts([hiveUser.name]);
+          if (userAccount.length > 0) {
+            setHiveAccount(userAccount[0]);
+          }
+        } catch (error) {
+          console.error("Failed to fetch user account", error);
+        }
       };
+
       getUserAccount();
     }
-  }, []);
+  }, [hiveUser?.name]);
+
 
   const {
     isOpen: isLoginOpen,
@@ -67,23 +74,28 @@ const SidebarDesktop = () => {
 
   const [notifications, setNotifications] = useState(false);
   const [hasRewards, setHasRewards] = useState(false);
-
   useEffect(() => {
-    if (hiveUser !== null) {
-      checkRewards(setHasRewards, hiveUser.name);
-    }
-  }, []);
+    const checkUserRewards = async () => {
+      if (hiveUser) {
+        setHasRewards(await checkRewards(String(hiveUser.name)));
+        console.log(hasRewards ? "User has rewards" : "User has no rewards");
+      }
+    };
+
+    checkUserRewards();
+  }, [hiveUser]);
 
   const handleNotifications = () => {
     setNotifications(!notifications);
   };
 
   const handleClaimRewards = () => {
-    if (hiveUser && hiveAccount) {
+    console.log("Claiming rewards");
+    console.log(hiveAccount);
+    if (hiveAccount) {
       claimRewards(hiveAccount);
     }
   };
-
   return (
     <>
       <LoginModal isOpen={isLoginOpen} onClose={onLoginClose} />
@@ -160,7 +172,7 @@ const SidebarDesktop = () => {
               <Text cursor={"pointer"} onClick={() => {
                 window.location.href = `/wallet`;
               }}>Wallet</Text>
-              {hasRewards && (
+              {hasRewards && (console.log(hasRewards),
                 <Button
                   gap={0}
                   leftIcon={<Icon as={FaHive} />}

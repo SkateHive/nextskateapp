@@ -24,6 +24,7 @@ import {
 import { ChangeEvent, useState } from "react";
 import { FaUpload } from 'react-icons/fa';
 import { useAccount } from "wagmi";
+import { updateProfileWithPrivateKey } from "@/lib/hive/server-functions";
 
 interface EditModalProps {
   isOpen: boolean
@@ -34,7 +35,7 @@ interface EditModalProps {
 const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN
 console.log(PINATA_GATEWAY_TOKEN, "PINATA_GATEWAY_TOKEN")
 export default function EditInfoModal({ isOpen, onClose, user }: EditModalProps) {
-  console.log(user.metadata, "here")
+  //console.log(user.metadata, "here")
   const [name, setName] = useState<string>(user.metadata?.name || '');
   const [about, setAbout] = useState<string>(user.metadata?.about || '');
   const [avatarUrl, setAvatarUrl] = useState<string>(user.metadata?.profile_image || '');
@@ -79,7 +80,17 @@ export default function EditInfoModal({ isOpen, onClose, user }: EditModalProps)
   }
 
   async function sendEditTransaction() {
-    await updateProfile(user.name, name, about, coverImageUrl, avatarUrl, website, ethAddress, []);
+    const loginMethod = localStorage.getItem("LoginMethod")
+    if (!user.name) {
+      console.error("Username is missing")
+      return
+    }
+    if (loginMethod === "keychain") {
+      await updateProfile(user.name, name, about, coverImageUrl, avatarUrl, website, ethAddress, []);
+    } else if (loginMethod === "privateKey") {
+      const encryptedPrivateKey = localStorage.getItem("EncPrivateKey");
+      await updateProfileWithPrivateKey (encryptedPrivateKey, user.name, name, about, coverImageUrl, avatarUrl, website, ethAddress, [])
+    }
   }
 
   function handleClickaddEthAddress() {
