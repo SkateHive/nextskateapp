@@ -12,8 +12,7 @@ const getSummary = async (body: string) => {
         model: 'gpt-3.5-turbo',
     });
     const summary = response.choices[0]?.message?.content || 'Check my new Post on Skatehive';
-    const encodedSummary = encodeURIComponent(summary);
-    return encodedSummary;
+    return summary;
 };
 
 
