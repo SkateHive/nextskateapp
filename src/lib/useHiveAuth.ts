@@ -2,7 +2,6 @@ import { useHiveUser } from "@/contexts/UserContext"
 import * as dhive from "@hiveio/dhive"
 import HiveClient from "./hive/hiveclient"
 import { hiveServerLoginWithPassword } from "./hive/server-functions"
-import { formatDate } from "./utils"
 
 interface HiveKeychainResponse {
   success: boolean
