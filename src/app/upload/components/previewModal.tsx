@@ -81,7 +81,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
 
         if (!user || !title || !user.name) {
             if (loginMethod === 'keychain') {
-                alert('You have to log in with Hive Keychain to use this feature...');
+                alert('Something wrong is not right...');
             }
             return;
         }

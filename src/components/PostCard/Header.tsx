@@ -28,6 +28,9 @@ import Link from "next/link";
 import { FaDiscord } from "react-icons/fa";
 import AuthorAvatar from "../AuthorAvatar";
 import PostModal from "../PostModal";
+import { useHiveUser } from "@/contexts/UserContext";
+import EditButton from "../PostModal/editButton";
+
 type Variant = "preview" | "open";
 interface HeaderInterface {
   variant?: Variant;
@@ -39,6 +42,7 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
   const [isSmallerThan400] = useMediaQuery("(max-width: 400px)");
   const postFullUrl = `${window.location.origin}/post/${post.url}`;
   const postSummary = `Check out this awesome post on SkateHive by @${post.author} \n\n`;
+  const user = useHiveUser()
 
   const handleCopyPostLink = () => {
     try {
@@ -104,6 +108,8 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
       console.error("Failed to share in Discord:", error);
     }
   };
+
+
   return (
     <CardHeader p={2} pb={0}>
       {isOpen && <PostModal isOpen={isOpen} onClose={onClose} />}
@@ -161,7 +167,9 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
           </Tooltip>
         ) : (
           <>
-
+            {user.hiveUser?.name === post.author && (
+              <EditButton username={user.hiveUser.name} post={post} />
+            )}
 
             <Menu
               placement={
