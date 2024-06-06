@@ -3,15 +3,13 @@ import AuthorSearchBar from "@/app/upload/components/searchBar"
 import { useHiveUser } from "@/contexts/UserContext"
 import usePosts from "@/hooks/usePosts"
 import PostModel from "@/lib/models/post"
-import { Box, Button, ButtonGroup, Flex, Grid, HStack, Tooltip } from "@chakra-ui/react"
-import { useEffect, useState } from "react"
+import { Box, Button, ButtonGroup, Flex, Grid, HStack } from "@chakra-ui/react"
+import { useState } from "react"
 import InfiniteScroll from "react-infinite-scroll-component"
 import { BeatLoader } from "react-spinners"
 import LoginModal from "../Hive/Login/LoginModal"
 import Post from "../PostCard"
 import PostSkeleton from "../PostCard/Skeleton"
-import AvatarModal from "./AvatarModal"
-
 
 
 export default function MagColumn() {
@@ -21,27 +19,7 @@ export default function MagColumn() {
   const { posts, error, isLoading, setQueryCategory, setDiscussionQuery } = usePosts(query, tag)
   const [visiblePosts, setVisiblePosts] = useState(20)
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
-  const [userHasProfileImage, setUserHasProfileImage] = useState(false)
-  const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false)
-
   const hiveUser = useHiveUser()
-
-  useEffect(() => {
-    console.log("Dados do usuário:", hiveUser.hiveUser?.metadata?.profile?.profile_image || "");
-    if (hiveUser.hiveUser && hiveUser.hiveUser.metadata) {
-      let metadata = null;
-      try {
-        metadata = JSON.parse(hiveUser.hiveUser.json_metadata);
-        console.log("Parsed metadata:", metadata);
-        const profileImage = metadata.profile?.profile_image || "";
-        setUserHasProfileImage(!!profileImage);
-      } catch (error) {
-        console.error("Erro ao fazer parse do JSON metadata:", error);
-      }
-    }
-  }, [hiveUser]);
-  
-  
 
   function updateFeed(query: string, tagParams: any[]) {
     setQuery(query)
@@ -83,10 +61,6 @@ export default function MagColumn() {
   const handleAuthorSearch = (author: string) => {
     updateFeed("blog", [{ tag: author, limit: 10 }])
   }
-  const handleOpenAvatarModal = () => {
-    setIsAvatarModalOpen(true)
-  }
-
 
   return (
     <Box
@@ -144,29 +118,6 @@ export default function MagColumn() {
           onClose={() => setIsLoginModalOpen(false)}
         />
       )}
-      {hiveUser.hiveUser && !userHasProfileImage && (
-        <HStack justifyContent="center" marginBottom={"12px"}>
-          <Tooltip label="No profile photo? Click here!" bg={"black"} color={"#A5D6A7"} border={"1px dashed #A5D6A7"}>
-            <Button
-              size={"sm"}
-              colorScheme="green"
-              variant={"outline"}
-              onClick={handleOpenAvatarModal}
-            >
-              Update Profile
-            </Button>
-          </Tooltip>
-          {isAvatarModalOpen && (
-            <AvatarModal
-              isOpen={isAvatarModalOpen}
-              onClose={() => setIsAvatarModalOpen(false)}
-              user={hiveUser.hiveUser}
-            />
-          )}
-        </HStack>
-      )}
-
-
       <InfiniteScroll
         dataLength={visiblePosts}
         next={() => setVisiblePosts(visiblePosts + 3)}
