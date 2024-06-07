@@ -1,4 +1,4 @@
-import NotificationsPage from "@/app/notifications/page";
+import NotificationsPage from "@/components/notifications/page";
 import { useHiveUser } from "@/contexts/UserContext";
 import { claimRewards } from "./utils/claimRewards";
 import { formatETHaddress } from "@/lib/utils";

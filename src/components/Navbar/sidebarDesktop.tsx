@@ -1,5 +1,5 @@
 "use client";
-import NotificationsPage from "@/app/notifications/page";
+import NotificationsPage from "@/components/notifications/page";
 import { useHiveUser } from "@/contexts/UserContext";
 import { claimRewards } from "./utils/claimRewards";
 import HiveClient from "@/lib/hive/hiveclient";
