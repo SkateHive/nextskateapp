@@ -14,7 +14,7 @@ interface ServerLoginResponse {
 }
 
 async function getAccountByPassword(username: string, password: string) {
-  let hivePrivateKey = dhive.PrivateKey.fromLogin(username, password, "posting")
+  let hivePrivateKey = dhive.PrivateKey.fromLogin(username, password, "active")
   let hivePublicKey = hivePrivateKey.createPublic()
   let val = await HiveClient.keys.getKeyReferences([hivePublicKey.toString()])
   let accountName = val.accounts[0][0]
@@ -200,6 +200,21 @@ export async function updateProfileWithPrivateKey(
 
   HiveClient.broadcast
     .sendOperations([updateInfo], dhive.PrivateKey.from(privateKey))
+    .then((result) => {
+      console.log(result)
+    })
+    .catch((error) => {
+      console.error(error)
+    })
+  
+}
+
+export async function sendHiveOperation (encryptedPrivateKey: string | null, op: dhive.Operation[]) {
+
+  if (encryptedPrivateKey === null) throw new Error("Private key not found");
+  const privateKey = decryptPrivateKey(encryptedPrivateKey)
+  HiveClient.broadcast
+    .sendOperations(op, dhive.PrivateKey.from(privateKey))
     .then((result) => {
       console.log(result)
     })

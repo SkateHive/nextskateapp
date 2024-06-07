@@ -1,7 +1,7 @@
 "use client";
 import NotificationsPage from "@/app/notifications/page";
 import { useHiveUser } from "@/contexts/UserContext";
-import { claimRewards } from "@/lib/hive/client-functions";
+import { claimRewards } from "./utils/claimRewards";
 import HiveClient from "@/lib/hive/hiveclient";
 import { HiveAccount } from "@/lib/models/user";
 import { formatETHaddress } from "@/lib/utils";
@@ -90,6 +90,7 @@ const SidebarDesktop = () => {
   };
 
   const handleClaimRewards = () => {
+
     console.log("Claiming rewards");
     console.log(hiveAccount);
     if (hiveAccount) {
