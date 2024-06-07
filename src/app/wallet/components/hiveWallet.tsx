@@ -1,7 +1,7 @@
 'use client'
 import { useHiveUser } from "@/contexts/UserContext"
 import { useHivePrice } from "@/hooks/useHivePrice"
-import { claimRewards } from "@/lib/hive/client-functions"
+import { claimRewards } from "@/components/Navbar/utils/claimRewards"
 import {
     Avatar,
     Box,
