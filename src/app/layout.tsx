@@ -5,7 +5,6 @@ import { getWebsiteURL } from "@/lib/utils";
 import { Box, ColorModeScript, Flex } from "@chakra-ui/react";
 import { Share_Tech_Mono } from "next/font/google";
 import type { ReactNode } from "react";
-import Cursor from "./Cursor/Cursor";
 import { Providers } from "./providers";
 
 
