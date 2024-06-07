@@ -67,8 +67,9 @@ export default function RootLayout({
         </style>
       </head>
       <body className={share_tech_mono.className}>
-        <ColorModeScript initialColorMode="dark" />
         <Providers>
+          <ColorModeScript initialColorMode="dark" />
+
           {/* <Cursor /> */}
           <Flex justifyContent={"center"} id="layout" height={"100vh"}>
             <Box className="hide-on-mobile">
