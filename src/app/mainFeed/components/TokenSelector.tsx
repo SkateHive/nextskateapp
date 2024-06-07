@@ -74,6 +74,12 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
             abi: memberABI as unknown as any[],
             tokenLogo: "/logos/degen.png"
         },
+        HIVE: {
+            address: '0x',
+            abi: [],
+            tokenLogo: "https://cryptologos.cc/logos/hive-blockchain-hive-logo.png"
+        }
+
     };
 
     const ethAddressListFormatted = ethAddressList.map((address) => address.startsWith("0x") ? address : `0x${address}`) as readonly `0x${string}`[];
@@ -94,18 +100,18 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
         try {
             const operations: Operation[] = [];
             const amount = String(dividedAmount.toFixed(3)) + " HIVE"
-            addressDict.forEach( (element: any) => {
+            addressDict.forEach((element: any) => {
 
-                const operation: Operation = 
-                [
-                    "transfer",
-                    {
-                         "from": user.hiveUser?.name,
-                         "to": element.author,
-                         "amount": amount,
-                         "memo": "airdrop skatehive!"
-                    }
-                ]
+                const operation: Operation =
+                    [
+                        "transfer",
+                        {
+                            "from": user.hiveUser?.name,
+                            "to": element.author,
+                            "amount": amount,
+                            "memo": "airdrop skatehive!"
+                        }
+                    ]
                 operations.push(operation)
 
                 //const hiveAddress = element.author;
@@ -113,33 +119,32 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
             });
             const loginMethod = localStorage.getItem("LoginMethod")
             if (!user) {
-              console.error("Username is missing")
-              return
+                console.error("Username is missing")
+                return
             }
             if (loginMethod === "keychain") {
-                try
-                {
-                  const keychain = new KeychainSDK(window);
-                  undefined
-                  const formParamsAsObject = {
-                   "data": {
-                        "username": user.hiveUser?.name,
-                        "operations": operations,
-                        "method" : KeychainKeyTypes.active
-                   }
-                  }
-                  
-                  const broadcast = await keychain
-                       .broadcast(
+                try {
+                    const keychain = new KeychainSDK(window);
+                    undefined
+                    const formParamsAsObject = {
+                        "data": {
+                            "username": user.hiveUser?.name,
+                            "operations": operations,
+                            "method": KeychainKeyTypes.active
+                        }
+                    }
+
+                    const broadcast = await keychain
+                        .broadcast(
                             formParamsAsObject.data as Broadcast);
-                  console.log({ broadcast });
+                    console.log({ broadcast });
                 } catch (error) {
-                  console.log({ error });
+                    console.log({ error });
                 }
 
             } else if (loginMethod === "privateKey") {
                 const encryptedPrivateKey = localStorage.getItem("EncPrivateKey");
-                sendHiveOperation (encryptedPrivateKey, operations)
+                sendHiveOperation(encryptedPrivateKey, operations)
             }
 
         } catch (error) {
@@ -228,14 +233,14 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                                     <MenuItem
                                         bg="black"
                                         _hover={{ bg: "red.500", color: "black" }}
-                                    //    onClick={() => alert("We said SOON! bitch!")}
-                                         onClick={() => {
-                                         setToken("HIVE");
-                                         setIsCustomToken(false);
-                                         }}
+                                        //    onClick={() => alert("We said SOON! bitch!")}
+                                        onClick={() => {
+                                            setToken("HIVE");
+                                            setIsCustomToken(false);
+                                        }}
                                     >
                                         <Image alt="hive-logo" mr={3} boxSize="20px" src="https://cryptologos.cc/logos/hive-blockchain-hive-logo.png" />
-                                        $HIVE (Soon)
+                                        $HIVE
                                     </MenuItem>
                                 </MenuList>
                             </Portal>
