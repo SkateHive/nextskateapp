@@ -22,6 +22,12 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useAccount, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
+import { Operation } from "@hiveio/dhive";
+import { useHiveUser } from "@/contexts/UserContext";
+import { KeychainSDK, KeychainKeyTypes, Broadcast } from "keychain-sdk";
+import { sendHiveOperation } from "@/lib/hive/server-functions";
+
+
 
 interface TokenSelectorProps {
     addressDict: any;
@@ -36,6 +42,8 @@ interface AuthorEthAddress {
 const SkateAirdropContract = '0x8bD8F0D46c84feCBFbF270bac4Ad28bFA2c78F05';
 
 const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => {
+    console.log(addressDict)
+    const user = useHiveUser();
     const [token, setToken] = useState("NOGS");
     const [isCustomToken, setIsCustomToken] = useState(false);
     const [customTokenContract, setCustomTokenContract] = useState("");
@@ -82,6 +90,62 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
         }
     }, [isConfirmed, setShowConfetti]);
 
+    const handleHiveBulkTransfer = async () => {
+        try {
+            const operations: Operation[] = [];
+            const amount = String(dividedAmount.toFixed(3)) + " HIVE"
+            addressDict.forEach( (element: any) => {
+
+                const operation: Operation = 
+                [
+                    "transfer",
+                    {
+                         "from": user.hiveUser?.name,
+                         "to": element.author,
+                         "amount": amount,
+                         "memo": "airdrop skatehive!"
+                    }
+                ]
+                operations.push(operation)
+
+                //const hiveAddress = element.author;
+                //console.log(hiveAddress)
+            });
+            const loginMethod = localStorage.getItem("LoginMethod")
+            if (!user) {
+              console.error("Username is missing")
+              return
+            }
+            if (loginMethod === "keychain") {
+                try
+                {
+                  const keychain = new KeychainSDK(window);
+                  undefined
+                  const formParamsAsObject = {
+                   "data": {
+                        "username": user.hiveUser?.name,
+                        "operations": operations,
+                        "method" : KeychainKeyTypes.active
+                   }
+                  }
+                  
+                  const broadcast = await keychain
+                       .broadcast(
+                            formParamsAsObject.data as Broadcast);
+                  console.log({ broadcast });
+                } catch (error) {
+                  console.log({ error });
+                }
+
+            } else if (loginMethod === "privateKey") {
+                const encryptedPrivateKey = localStorage.getItem("EncPrivateKey");
+                sendHiveOperation (encryptedPrivateKey, operations)
+            }
+
+        } catch (error) {
+            console.error("Error handling bulk transfer:", error);
+        }
+    };
     const handleBulkTransfer = async () => {
         try {
             if (!writeContract) return;
@@ -164,11 +228,11 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                                     <MenuItem
                                         bg="black"
                                         _hover={{ bg: "red.500", color: "black" }}
-                                        onClick={() => alert("We said SOON! bitch!")}
-                                    // onClick={() => {
-                                    //     setToken("HIVE");
-                                    //     setIsCustomToken(false);
-                                    // }}
+                                    //    onClick={() => alert("We said SOON! bitch!")}
+                                         onClick={() => {
+                                         setToken("HIVE");
+                                         setIsCustomToken(false);
+                                         }}
                                     >
                                         <Image alt="hive-logo" mr={3} boxSize="20px" src="https://cryptologos.cc/logos/hive-blockchain-hive-logo.png" />
                                         $HIVE (Soon)
@@ -208,10 +272,14 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                 colorScheme="green"
                 variant={"outline"}
                 onClick={() => {
-                    if (account.isConnected) {
-                        handleBulkTransfer();
+                    if (token == "HIVE") {
+                        handleHiveBulkTransfer();
                     } else {
-                        console.error("Wallet not connected");
+                        if (account.isConnected) {
+                            handleBulkTransfer();
+                        } else {
+                            console.error("Wallet not connected");
+                        }
                     }
                 }}
             >

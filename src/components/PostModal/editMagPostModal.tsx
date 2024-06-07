@@ -14,6 +14,8 @@ import Post from '../PostCard';
 import PostPreview from '@/app/upload/components/PostPreview';
 import { set } from 'lodash';
 import { on } from 'events';
+import { Operation } from '@hiveio/dhive';
+import { sendHiveOperation } from '@/lib/hive/server-functions';
 
 interface editModalProps {
     isOpen: boolean;
@@ -104,7 +106,7 @@ export const EditModal = ({ isOpen, onClose, post, username }: editModalProps) =
                     : editedContent;
             console.log('patchedContent', patchedContent);
             const user_name = String(username)
-            const operations = [
+            const operation: Operation = 
                 [
                     'comment',
                     {
@@ -117,17 +119,30 @@ export const EditModal = ({ isOpen, onClose, post, username }: editModalProps) =
                         thumbnail: thumbnailToUse,
                         json_metadata: JSON.stringify(updatedMetadata),
                     },
-                ],
-            ];
-            window.hive_keychain.requestBroadcast(username, operations, 'posting', (response: any) => {
-                console.log(response);
-                if (response.success) {
-                    setIsEditing(false);
-                    setEditedContent(patchedContent); // Update state after a successful broadcast
-                } else {
-                    console.error('Error updating the post:', response.message);
-                }
-            });
+                ]
+
+            const operations = [operation]
+
+            const loginMethod = localStorage.getItem("LoginMethod")
+            if (!user_name) {
+              console.error("Username is missing")
+              return
+            }
+            if (loginMethod === "keychain") {
+                window.hive_keychain.requestBroadcast(username, operations, 'posting', (response: any) => {
+                    console.log(response);
+                    if (response.success) {
+                        setIsEditing(false);
+                        setEditedContent(patchedContent); // Update state after a successful broadcast
+                    } else {
+                        console.error('Error updating the post:', response.message);
+                    }
+                });
+            } else if (loginMethod === "privateKey") {
+              const encryptedPrivateKey = localStorage.getItem("EncPrivateKey");
+              sendHiveOperation (encryptedPrivateKey, operations)
+            }
+
         } else {
             alert('No changes detected, if you are trying to change the thumbnail, change at least one character on the post.');
         }
