@@ -2,9 +2,10 @@
 
 import { useHiveUser } from "@/contexts/UserContext"
 import { HiveAccount } from "@/lib/models/user"
-import { Avatar, HStack, Image, Text, VStack, useDisclosure } from "@chakra-ui/react"
-import { FaGear } from "react-icons/fa6"
+import { Avatar, Box, Center, HStack, Image, Text, VStack, useDisclosure } from "@chakra-ui/react"
+import { FaGear, FaPencil } from "react-icons/fa6"
 import EditInfoModal from "./EditInfoModal"
+import AuthorAvatar from "../AuthorAvatar"
 
 interface ProfileProps {
   user: HiveAccount
@@ -19,8 +20,9 @@ export default function ProfileHeader({ user }: ProfileProps) {
   const profileName = metadata?.profile?.name || user.name
   const profileAbout = metadata?.profile?.about || "No bio available"
 
+
   return (
-    <VStack align={"start"}>
+    <VStack >
       {isOpen && <EditInfoModal isOpen={isOpen} onClose={onClose} user={user} />}
       <Image
         w="100%"
@@ -30,27 +32,29 @@ export default function ProfileHeader({ user }: ProfileProps) {
         borderRadius="md"
         alt={"Profile thumbnail"}
         loading="lazy"
+        mt={5}
+        border={"1px solid limegreen"}
       />
-      <HStack ml={2} align={"start"}>
-        <Avatar
-          mt={-14}
-          name={user.name}
-          src={profileImageUrl || "/loading.gif"}
-          size={{ base: "xl", lg: "2xl" }}
-          showBorder={true}
+      <Center border={"3px solid limegreen"} borderRadius={7} mt={'-80px'}>
+        <AuthorAvatar
+          username={user.name}
+          borderRadius={4}
+          hover={{ cursor: "pointer" }}
+          boxSize={100}
         />
+
+      </Center>
+
+      <HStack cursor={'pointer'} onClick={onOpen} ml={2} align={"start"}>
+        <br />
+        <Text mb={3} fontSize={{ base: "sm", lg: "xl" }} fontWeight={"bold"}>
+          {profileName}
+        </Text>
         {user.name === hiveUser.hiveUser?.name && (
-          <VStack ml={-10} mt={1} zIndex={1}>
-            <FaGear onClick={onOpen} color="white" size="2em" />
-          </VStack>
+
+          <FaPencil color="white" size="1em" />
         )}
-        <VStack align={"flex-start"} gap={0}>
-          <Text mb={3} fontSize={{ base: "sm", lg: "xl" }} fontWeight={"bold"}>
-            {profileName}
-            <br />
-            {profileAbout}
-          </Text>
-        </VStack>
+
       </HStack>
     </VStack>
   )
