@@ -18,7 +18,6 @@ import { KeyRole } from '@hiveio/dhive';
 import { KeychainKeyTypes, KeychainRequestTypes, KeychainSDK } from 'keychain-sdk';
 import { useEffect, useState } from 'react';
 import { FaCheck, FaDownload, FaKey, FaTimes } from 'react-icons/fa';
-import Email from 'vercel-email';
 
 
 
@@ -35,7 +34,6 @@ import { Operation } from '@hiveio/dhive';
 
 
 
-export const runtime = 'edge';
 
 
 const generatePassword = () => {
@@ -194,14 +192,7 @@ function AccountCreation() {
     };
 
 
-    const sendEmail = async (email: string, text: string) => {
-        await Email.send({
-            to: 'vlad.testnet@gmail.com',
-            from: 'thomas@turbando.com',
-            subject: 'Hello World',
-            text: 'Aquele 6x1 foi cagada',
-        });
-    }
+
 
 
     return (
@@ -218,7 +209,6 @@ function AccountCreation() {
                 height: '100vh',
             }}
         >
-            <Button onClick={() => sendEmail(email, 'Aquele 6x1 foi cagada')}>Send Email</Button>
 
             <VStack spacing={3}>
                 <Center>
