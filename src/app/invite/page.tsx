@@ -35,9 +35,8 @@ import { Operation } from '@hiveio/dhive';
 
 
 
-export const config = {
-    runtime: 'edge',
-};
+export const runtime = 'edge';
+
 
 const generatePassword = () => {
     const array = new Uint32Array(10);
