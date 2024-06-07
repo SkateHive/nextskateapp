@@ -75,7 +75,7 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
             tokenLogo: "/logos/degen.png"
         },
         HIVE: {
-            address: '0x',
+            address: '0xFUCKTHEGOVERMENT',
             abi: [],
             tokenLogo: "https://cryptologos.cc/logos/hive-blockchain-hive-logo.png"
         }
