@@ -18,6 +18,7 @@ import { KeyRole } from '@hiveio/dhive';
 import { KeychainKeyTypes, KeychainRequestTypes, KeychainSDK } from 'keychain-sdk';
 import { useEffect, useState } from 'react';
 import { FaCheck, FaDownload, FaKey, FaTimes } from 'react-icons/fa';
+import Email from 'vercel-email';
 
 
 
@@ -31,6 +32,12 @@ const client = new dhive.Client([
 
 import { useHiveUser } from '@/contexts/UserContext';
 import { Operation } from '@hiveio/dhive';
+
+
+
+export const config = {
+    runtime: 'edge',
+};
 
 const generatePassword = () => {
     const array = new Uint32Array(10);
@@ -132,7 +139,6 @@ function AccountCreation() {
         try {
             const keychain = new KeychainSDK(window);
             let ops: Operation[] = [];
-
             if (user) {
                 const createAccountOperation: Operation = [
                     'account_create',
@@ -154,7 +160,7 @@ function AccountCreation() {
 
                 const formParamsAsObject = {
                     type: KeychainRequestTypes.broadcast,
-                    username: user.hiveUser?.name ?? '', 
+                    username: user.hiveUser?.name ?? '',
                     operations: ops,
                     method: KeychainKeyTypes.active,
                 };
@@ -169,7 +175,7 @@ function AccountCreation() {
     };
 
     useEffect(() => {
-        const intervalTime = 30; 
+        const intervalTime = 30;
         const timer = setInterval(() => {
             setCharactersToShow((prevChars) => {
                 if (prevChars >= downloadText.length) {
@@ -188,6 +194,17 @@ function AccountCreation() {
         }
     };
 
+
+    const sendEmail = async (email: string, text: string) => {
+        await Email.send({
+            to: 'vlad.testnet@gmail.com',
+            from: 'thomas@turbando.com',
+            subject: 'Hello World',
+            text: 'Aquele 6x1 foi cagada',
+        });
+    }
+
+
     return (
         <Flex
             style={{
@@ -202,6 +219,7 @@ function AccountCreation() {
                 height: '100vh',
             }}
         >
+            <Button onClick={() => sendEmail(email, 'Aquele 6x1 foi cagada')}>Send Email</Button>
 
             <VStack spacing={3}>
                 <Center>
@@ -271,7 +289,7 @@ function AccountCreation() {
                                     const file = new Blob([downloadText], { type: 'text/plain' });
                                     element.href = URL.createObjectURL(file);
                                     element.download = `KEYS BACKUP - @${desiredUsername.toUpperCase()}.txt`;
-                                    document.body.appendChild(element); 
+                                    document.body.appendChild(element);
                                     element.click();
 
                                     setAreKeysDownloaded(true);

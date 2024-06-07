@@ -162,6 +162,9 @@ importers:
       swr:
         specifier: ^2.2.5
         version: 2.2.5(react@18.3.1)
+      vercel-email:
+        specifier: ^0.0.6
+        version: 0.0.6
       viem:
         specifier: ~2.9.16
         version: 2.9.32(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@5.0.10)
@@ -6612,6 +6615,9 @@ packages:
   vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
+
+  vercel-email@0.0.6:
+    resolution: {integrity: sha512-lpELZ8/B6qyLMUOzmvZiU5evo1Hv5jfSpI/rrzny5UYfOAUKFYycraXNT+fT/cC6ewUKQVJDg8/v3LwyX3cCzA==}
 
   verror@1.10.1:
     resolution: {integrity: sha512-veufcmxri4e3XSrT0xwfUR7kguIkaxBeosDg00yDWhk49wdwkSUrvvsm7nc75e1PUyvIeZj6nS8VQRYz2/S4Xg==}
@@ -15455,6 +15461,8 @@ snapshots:
       react: 18.3.1
 
   vary@1.1.2: {}
+
+  vercel-email@0.0.6: {}
 
   verror@1.10.1:
     dependencies:

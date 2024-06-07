@@ -59,6 +59,7 @@
     "remark-gfm": "^4.0.0",
     "remarkable": "^2.0.1",
     "swr": "^2.2.5",
+    "vercel-email": "^0.0.6",
     "viem": "~2.9.16",
     "wagmi": "^2.5.19"
   },
