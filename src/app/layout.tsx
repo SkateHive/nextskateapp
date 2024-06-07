@@ -36,13 +36,15 @@ export default function RootLayout({
   children,
 }: RootLayoutProps) {
   return (
-    <html lang="en">
-      <head>
-        <link rel="manifest" href="/manifest.json"></link>
-        <meta name="theme-color" content="#000000" />
-        <Favicon />
-        <style>
-          {`
+    <Providers>
+
+      <html lang="en">
+        <head>
+          <link rel="manifest" href="/manifest.json"></link>
+          <meta name="theme-color" content="#000000" />
+          <Favicon />
+          <style>
+            {`
             @media (max-width: 768px) {
               .hide-on-mobile {
                 display: none;
@@ -63,11 +65,10 @@ export default function RootLayout({
               }
             }
           `}
-        </style>
-      </head>
-      <body className={share_tech_mono.className}>
-        <ColorModeScript initialColorMode="dark" />
-        <Providers>
+          </style>
+        </head>
+        <body className={share_tech_mono.className}>
+          <ColorModeScript initialColorMode="dark" />
           {/* <Cursor /> */}
           <Flex justifyContent={"center"} id="layout" height={"100vh"}>
             <Box className="hide-on-mobile">
@@ -78,8 +79,9 @@ export default function RootLayout({
             </div>
             {children}
           </Flex>
-        </Providers>
-      </body>
-    </html>
+        </body>
+      </html>
+    </Providers>
+
   );
 }
