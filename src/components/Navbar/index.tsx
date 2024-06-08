@@ -1,9 +1,9 @@
 "use client"
 
-import NotificationsPage from "@/app/notifications/page"
+import NotificationsPage from "@/components/notifications/page"
 import AuthorSearchBar from "@/app/upload/components/searchBar"
 import { useHiveUser } from "@/contexts/UserContext"
-import { claimRewards } from "@/lib/hive/client-functions"
+import { claimRewards } from "./utils/claimRewards"
 import { formatEthereumAddress } from "@/lib/web3"
 import { Link } from "@chakra-ui/next-js"
 import {

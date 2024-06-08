@@ -63,9 +63,9 @@ const AirdropModal = ({ sortedComments, isOpen, onClose }: AirdropModalProps) =>
                         }
                     }
                 }
+                setIsLoading(false);
 
                 setWalletDict(newWalletDict);
-                setIsLoading(false);
             } catch (error) {
                 console.error("Error fetching ETH addresses:", error);
                 setIsLoading(false);

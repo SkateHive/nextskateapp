@@ -8,6 +8,7 @@ interface HiveKeychainResponse {
   publicKey: string
 }
 
+/*
 export async function claimRewards(hiveUser: HiveAccount) {
   console.log('claimRewards', hiveUser)
   const rewardHiveBalance = hiveUser.reward_hive_balance
@@ -43,6 +44,7 @@ export async function claimRewards(hiveUser: HiveAccount) {
   }
 
 }
+*/
 
 export async function vote(props: Vote): Promise<KeychainRequestResponse> {
   const keychain = new KeychainSDK(window)

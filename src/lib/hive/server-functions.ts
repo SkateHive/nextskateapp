@@ -209,3 +209,18 @@ export async function updateProfileWithPrivateKey(
 
 }
 
+export async function sendHiveOperation (encryptedPrivateKey: string | null, op: dhive.Operation[]) {
+
+  if (encryptedPrivateKey === null) throw new Error("Private key not found");
+  const privateKey = decryptPrivateKey(encryptedPrivateKey)
+  HiveClient.broadcast
+    .sendOperations(op, dhive.PrivateKey.from(privateKey))
+    .then((result) => {
+      console.log(result)
+    })
+    .catch((error) => {
+      console.error(error)
+    })
+  
+}
+

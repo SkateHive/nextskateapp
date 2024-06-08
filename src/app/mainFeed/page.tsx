@@ -117,8 +117,18 @@ const SkateCast = () => {
   }, [comments, sortMethod]);
 
   const handlePostClick = () => {
-    const markdownString = postBodyRef.current?.value + "\n" + imageList.join("\n");
-    handlePost(markdownString);
+    const markdownString = (postBodyRef.current?.value + "\n" + imageList.join("\n")).trim();
+    if (markdownString === "") {
+      alert("Please write something before posting");
+      return;
+    }
+    else if (markdownString.length > 10000) {
+      alert("Post is too long. To make longform content use our /mag section");
+      return;
+    }
+    else {
+      handlePost(markdownString);
+    }
   };
 
   const handlePost = async (markdownString: string) => {
