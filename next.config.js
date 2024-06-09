@@ -1,9 +1,4 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-    compiler: {
-        // Enables the styled-components SWC transform
-        styledComponents: true
-    }
-}
+const nextConfig = {}
 
 module.exports = nextConfig
