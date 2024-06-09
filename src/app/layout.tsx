@@ -1,8 +1,10 @@
+// src/app/RootLayout.tsx
+
 import Favicon from "@/components/FaviconLinks";
 import SidebarDesktop from "@/components/Navbar/sidebarDesktop";
 import MobileMenuButton from "@/components/mobileMenuButton";
 import { getWebsiteURL } from "@/lib/utils";
-import { Box, ColorModeScript, Flex } from "@chakra-ui/react";
+import { Box, Flex } from "@chakra-ui/react";
 import { Share_Tech_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 import { Providers } from "./providers";
@@ -66,13 +68,11 @@ export default function RootLayout({
         </style>
       </head>
       <body className={share_tech_mono.className}>
-        <ColorModeScript initialColorMode="dark" />
         <Providers>
-          {/* <Cursor /> */}
           <Flex justifyContent={"center"} id="layout" height={"100vh"}>
-            <Box className="hide-on-mobile">
+            <div className="hide-on-mobile">
               <SidebarDesktop />
-            </Box>
+            </div>
             <div className="mobile-menu-button">
               <MobileMenuButton />
             </div>
