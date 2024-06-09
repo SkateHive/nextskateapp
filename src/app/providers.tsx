@@ -1,30 +1,23 @@
-"use client"
+// src/app/providers.tsx
 
-import { PostsProvider } from "@/contexts/PostsContext"
-import { UserProvider } from "@/contexts/UserContext"
-import { ChakraProvider, extendTheme } from "@chakra-ui/react"
+"use client";
+
+import { PostsProvider } from "@/contexts/PostsContext";
+import { UserProvider } from "@/contexts/UserContext";
+import { ChakraProvider } from "@chakra-ui/react"; // Ensure ChakraProvider is imported
 import {
   RainbowKitProvider,
   darkTheme,
   getDefaultConfig,
-} from "@rainbow-me/rainbowkit"
-import "@rainbow-me/rainbowkit/styles.css"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { http } from "viem"
-import { WagmiProvider } from "wagmi"
-import { base, mainnet } from "wagmi/chains"
+} from "@rainbow-me/rainbowkit";
+import "@rainbow-me/rainbowkit/styles.css";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { http } from "viem";
+import { WagmiProvider } from "wagmi";
+import { base, mainnet } from "wagmi/chains";
+import theme from '../theme'; // Ensure you import the theme
 
-const chakraTheme = extendTheme({
-  styles: {
-    global: {
-      body: {
-        bg: "black",
-      },
-    },
-  },
-})
-
-export const wagmiConfig = getDefaultConfig({
+const wagmiConfig = getDefaultConfig({
   appName: "SkateHive",
   projectId: "52f3a9b032f5caf26719af6939715629",
   ssr: true,
@@ -33,9 +26,9 @@ export const wagmiConfig = getDefaultConfig({
     [base.id]: http(),
     [mainnet.id]: http(),
   },
-})
+});
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient();
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -47,7 +40,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
             borderRadius: "small",
           })}
         >
-          <ChakraProvider theme={chakraTheme}>
+          <ChakraProvider theme={theme}>
             <UserProvider>
               <PostsProvider>{children}</PostsProvider>
             </UserProvider>
@@ -55,5 +48,5 @@ export function Providers({ children }: { children: React.ReactNode }) {
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
-  )
+  );
 }
