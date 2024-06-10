@@ -115,8 +115,6 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                     ]
                 operations.push(operation)
 
-                //const hiveAddress = element.author;
-                //console.log(hiveAddress)
             });
             const loginMethod = localStorage.getItem("LoginMethod")
             if (!user) {

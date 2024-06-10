@@ -143,7 +143,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
                                         <Box width={"100%"}>
                                             <PostPreview postData={postDataForPreview} />
                                         </Box>
-                                        <Box border={'1px solid white'} w="sm" maxWidth="sm">
+                                        <Box border={'1px solid white'} w="432px">
                                             <BeneficiariesTable beneficiariesArray={beneficiariesArray} />
                                             <TagsTable tags={tags} />
                                         </Box>
