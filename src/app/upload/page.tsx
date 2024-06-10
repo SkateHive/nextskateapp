@@ -200,7 +200,7 @@ export default function Upload() {
     }
 
     return (
-        <Box width="100%">
+        <Box h={"100vh"} width="100%" overflow="hidden">
             {showPreview &&
                 <PreviewModal
                     isOpen={showPreview}
@@ -218,10 +218,9 @@ export default function Upload() {
 
             <Input {...getInputProps()} id="md-image-upload" style={{ display: 'none' }} size="md" />
 
-            <Flex direction={{ base: 'column', md: 'row' }} width="100%">
-                <Box width={{ base: '100%', md: '50%' }} p="4">
+            <Flex direction={{ base: 'column', md: 'row' }} >
+                <Box width={{ base: '90%', md: '50%' }} p="4">
                     <HStack>
-
                         <Input
                             borderColor={"green.600"}
                             color={"#A5D6A7"}
@@ -245,7 +244,7 @@ export default function Upload() {
                             ]
                             }
                             extraCommands={extraCommands}
-                            height="600px"
+                            height="700px"
                             preview="edit"
                             style={{
                                 border: "1px solid #A5D6A7",
@@ -409,7 +408,7 @@ export default function Upload() {
                             onClick={() => handlePost()}
                             isDisabled={isUploading}
                             w={"100%"}
-                            colorScheme="green"
+                            colorScheme="blue"
                             variant={"outline"}
 
                         >
@@ -418,15 +417,15 @@ export default function Upload() {
                     </Center>
 
                 </Box>
-                <Box width={{ base: '100%', md: '50%' }} p="4" borderRadius="2px" border="1px solid #A5D6A7">
+                <Box h={"100vh"} mt={4} width={{ base: '100%', md: '50%' }} p="4" borderRadius="2px" border="1px solid #A5D6A7">
                     <HStack>
                         <Avatar name={hiveUser?.name} src={hiveUser?.metadata?.profile?.profile_image} boxSize="58px" borderRadius={'10px'} />
-                        <Box p="7" borderRadius="4px" width="100%">
-                            <Text fontSize="22px">{title}</Text>
+                        <Box borderRadius="4px" width="100%">
+                            <Text ml={5} color={"green.200"} fontSize="28px">{title}</Text>
                         </Box>
                     </HStack>
-                    <Divider />
-                    <Box overflowY="auto" p="5px" borderRadius="4px" >
+                    <Divider my={5} />
+                    <Box maxH="90vh" overflow="auto" p={1} borderRadius="md">
                         <ReactMarkdown components={MarkdownRenderers} rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
                             {(transformIPFSContent(value))}
                         </ReactMarkdown>

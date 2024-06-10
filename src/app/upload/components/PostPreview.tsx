@@ -10,9 +10,6 @@ interface PostPreviewProps {
 }
 
 const PostPreview: React.FC<PostPreviewProps> = ({ postData }) => {
-    console.log(postData);
-    const metadata = JSON.parse(postData.json_metadata)
-    const thumbnailUrl = metadata?.image || metadata?.images[0]
     return (
         <Card
             bg={"black"}
