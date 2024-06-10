@@ -1,4 +1,4 @@
-import NotificationsPage from "@/app/notifications/page";
+import NotificationsPage from "@/components/notifications/page";
 import { useHiveUser } from "@/contexts/UserContext";
 import { claimRewards } from "./utils/claimRewards";
 import { formatETHaddress } from "@/lib/utils";
@@ -79,8 +79,6 @@ const SideBarMobile = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
         checkUserRewards();
     }, [hiveUser]);
     const handleClaimRewards = () => {
-        console.log("Claiming rewards");
-        console.log(hiveAccount);
         if (hiveAccount) {
             claimRewards(hiveAccount);
         }
@@ -146,7 +144,7 @@ const SideBarMobile = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
                                     <Text cursor={"pointer"} onClick={() => {
                                         window.location.href = `/wallet`;
                                     }}>Wallet</Text>
-                                    {hasRewards && (console.log(hasRewards),
+                                    {hasRewards && (
                                         <Button
                                             gap={0}
                                             leftIcon={<Icon as={FaHive} />}

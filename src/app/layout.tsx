@@ -1,15 +1,20 @@
+// src/app/RootLayout.tsx
+
+import dynamic from 'next/dynamic';
 import Favicon from "@/components/FaviconLinks";
 import SidebarDesktop from "@/components/Navbar/sidebarDesktop";
 import MobileMenuButton from "@/components/mobileMenuButton";
 import { getWebsiteURL } from "@/lib/utils";
-import { Box, ColorModeScript, Flex } from "@chakra-ui/react";
+import { Box, Flex } from "@chakra-ui/react"; // Remove ColorModeScript import from here
 import { Share_Tech_Mono } from "next/font/google";
 import type { ReactNode } from "react";
-import Cursor from "./Cursor/Cursor";
 import { Providers } from "./providers";
-
+import theme from '../theme'; // Ensure you import the theme
 
 const share_tech_mono = Share_Tech_Mono({ subsets: ["latin"], weight: "400" });
+
+// Dynamically import ColorModeScriptWrapper
+const ColorModeScriptWrapper = dynamic(() => import('./ColorModeScriptWrapper'), { ssr: false });
 
 export type Metadata = {
   title: string;
@@ -67,13 +72,13 @@ export default function RootLayout({
         </style>
       </head>
       <body className={share_tech_mono.className}>
-        <ColorModeScript initialColorMode="dark" />
+        {/* Dynamically load ColorModeScriptWrapper */}
+        <ColorModeScriptWrapper />
         <Providers>
-          {/* <Cursor /> */}
-          <Flex justifyContent={"center"} id="layout" height={"100vh"}>
-            <Box className="hide-on-mobile">
+          <Flex justifyContent={"center"} id="layout" >
+            <div className="hide-on-mobile">
               <SidebarDesktop />
-            </Box>
+            </div>
             <div className="mobile-menu-button">
               <MobileMenuButton />
             </div>

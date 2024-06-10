@@ -21,12 +21,14 @@ import {
     Text
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { useAccount, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
+import { useAccount, useWaitForTransactionReceipt, useWriteContract, useReadContract } from 'wagmi';
 import { Operation } from "@hiveio/dhive";
 import { useHiveUser } from "@/contexts/UserContext";
 import { KeychainSDK, KeychainKeyTypes, Broadcast } from "keychain-sdk";
 import { sendHiveOperation } from "@/lib/hive/server-functions";
-
+import { wagmiConfig } from "@/app/providers";
+import ethers from "ethers";
+import { all } from "axios";
 
 
 interface TokenSelectorProps {
@@ -42,7 +44,6 @@ interface AuthorEthAddress {
 const SkateAirdropContract = '0x8bD8F0D46c84feCBFbF270bac4Ad28bFA2c78F05';
 
 const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => {
-    console.log(addressDict)
     const user = useHiveUser();
     const [token, setToken] = useState("NOGS");
     const [isCustomToken, setIsCustomToken] = useState(false);
@@ -52,7 +53,7 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
     const ethAddressList = Object.values<AuthorEthAddress>(addressDict).map((item: AuthorEthAddress) => item.ethAddress);
     const dividedAmount = ethAddressList.length > 0 ? (Number(amount) / ethAddressList.length) : 0;
     const { data: hash, error, isPending, writeContract } = useWriteContract();
-
+    const ethUser = useAccount();
     const tokenDictionary: { [key: string]: TokenInfo } = {
         SENDIT: {
             address: '0xBa5B9B2D2d06a9021EB3190ea5Fb0e02160839A4',
@@ -74,6 +75,12 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
             abi: memberABI as unknown as any[],
             tokenLogo: "/logos/degen.png"
         },
+        HIVE: {
+            address: '0xFUCKTHEGOVERMENT',
+            abi: [],
+            tokenLogo: "https://cryptologos.cc/logos/hive-blockchain-hive-logo.png"
+        }
+
     };
 
     const ethAddressListFormatted = ethAddressList.map((address) => address.startsWith("0x") ? address : `0x${address}`) as readonly `0x${string}`[];
@@ -94,63 +101,95 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
         try {
             const operations: Operation[] = [];
             const amount = String(dividedAmount.toFixed(3)) + " HIVE"
-            addressDict.forEach( (element: any) => {
+            addressDict.forEach((element: any) => {
 
-                const operation: Operation = 
-                [
-                    "transfer",
-                    {
-                         "from": user.hiveUser?.name,
-                         "to": element.author,
-                         "amount": amount,
-                         "memo": "airdrop skatehive!"
-                    }
-                ]
+                const operation: Operation =
+                    [
+                        "transfer",
+                        {
+                            "from": user.hiveUser?.name,
+                            "to": element.author,
+                            "amount": amount,
+                            "memo": "you just got skatehive airdrop for testing beta.skatehive.app!"
+                        }
+                    ]
                 operations.push(operation)
 
-                //const hiveAddress = element.author;
-                //console.log(hiveAddress)
             });
             const loginMethod = localStorage.getItem("LoginMethod")
             if (!user) {
-              console.error("Username is missing")
-              return
+                console.error("Username is missing")
+                return
             }
             if (loginMethod === "keychain") {
-                try
-                {
-                  const keychain = new KeychainSDK(window);
-                  undefined
-                  const formParamsAsObject = {
-                   "data": {
-                        "username": user.hiveUser?.name,
-                        "operations": operations,
-                        "method" : KeychainKeyTypes.active
-                   }
-                  }
-                  
-                  const broadcast = await keychain
-                       .broadcast(
+                try {
+                    const keychain = new KeychainSDK(window);
+                    undefined
+                    const formParamsAsObject = {
+                        "data": {
+                            "username": user.hiveUser?.name,
+                            "operations": operations,
+                            "method": KeychainKeyTypes.active
+                        }
+                    }
+
+                    const broadcast = await keychain
+                        .broadcast(
                             formParamsAsObject.data as Broadcast);
-                  console.log({ broadcast });
+                    console.log({ broadcast });
+                    setShowConfetti(true);
+
                 } catch (error) {
-                  console.log({ error });
+                    console.log({ error });
                 }
 
             } else if (loginMethod === "privateKey") {
                 const encryptedPrivateKey = localStorage.getItem("EncPrivateKey");
-                sendHiveOperation (encryptedPrivateKey, operations)
+                sendHiveOperation(encryptedPrivateKey, operations)
+                setShowConfetti(true);
             }
 
         } catch (error) {
             console.error("Error handling bulk transfer:", error);
         }
     };
+    useEffect(() => {
+        console.log(isConfirmed, isConfirming)
+    }
+        , [isConfirmed, isConfirming])
+    const allowance: any = useReadContract({
+        address: tokenDictionary[token].address,
+        abi: tokenDictionary[token].abi,
+        functionName: 'allowance',
+        //@ts-ignore
+        args: [ethUser.address, SkateAirdropContract],
+    });
+
     const handleBulkTransfer = async () => {
         try {
-            if (!writeContract) return;
+            if (!account.isConnected) {
+                console.error("Wallet not connected");
+                return;
+            }
 
             const dividedAmountList = ethAddressListFormatted.map(() => dividedAmountFormatted);
+            if (allowance?.data < dividedAmountFormatted) {
+                try {
+                    writeContract({
+                        address: tokenDictionary[token].address,
+                        abi: tokenDictionary[token].abi,
+                        functionName: 'approve',
+                        args: [SkateAirdropContract, "1000000000000000000000000"], // String representation
+                    });
+                    if (error) {
+                        console.error("Error approving tokens:", error.message);
+                    }
+
+                } catch (error) {
+                    console.error("Error approving tokens:", error);
+
+                }
+            }
             writeContract({
                 address: SkateAirdropContract,
                 abi: airdropABI,
@@ -158,13 +197,16 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                 args: [tokenDictionary[token].address, ethAddressListFormatted, dividedAmountList],
             });
 
+
             if (error) {
-                console.error("Error sending tokens:", error);
+                console.error("Error sending tokens:", error.message);
+                console.log(allowance.data, dividedAmountFormatted)
             }
         } catch (error) {
             console.error("Error handling bulk transfer:", error);
         }
     };
+
 
     return (
         <>
@@ -228,14 +270,14 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                                     <MenuItem
                                         bg="black"
                                         _hover={{ bg: "red.500", color: "black" }}
-                                    //    onClick={() => alert("We said SOON! bitch!")}
-                                         onClick={() => {
-                                         setToken("HIVE");
-                                         setIsCustomToken(false);
-                                         }}
+                                        //    onClick={() => alert("We said SOON! bitch!")}
+                                        onClick={() => {
+                                            setToken("HIVE");
+                                            setIsCustomToken(false);
+                                        }}
                                     >
                                         <Image alt="hive-logo" mr={3} boxSize="20px" src="https://cryptologos.cc/logos/hive-blockchain-hive-logo.png" />
-                                        $HIVE (Soon)
+                                        $HIVE
                                     </MenuItem>
                                 </MenuList>
                             </Portal>

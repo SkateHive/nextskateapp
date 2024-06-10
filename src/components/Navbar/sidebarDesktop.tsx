@@ -1,5 +1,5 @@
 "use client";
-import NotificationsPage from "@/app/notifications/page";
+import NotificationsPage from "@/components/notifications/page";
 import { useHiveUser } from "@/contexts/UserContext";
 import { claimRewards } from "./utils/claimRewards";
 import HiveClient from "@/lib/hive/hiveclient";
@@ -78,7 +78,6 @@ const SidebarDesktop = () => {
     const checkUserRewards = async () => {
       if (hiveUser) {
         setHasRewards(await checkRewards(String(hiveUser.name)));
-        console.log(hasRewards ? "User has rewards" : "User has no rewards");
       }
     };
 
@@ -90,9 +89,6 @@ const SidebarDesktop = () => {
   };
 
   const handleClaimRewards = () => {
-
-    console.log("Claiming rewards");
-    console.log(hiveAccount);
     if (hiveAccount) {
       claimRewards(hiveAccount);
     }
@@ -173,7 +169,7 @@ const SidebarDesktop = () => {
               <Text cursor={"pointer"} onClick={() => {
                 window.location.href = `/wallet`;
               }}>Wallet</Text>
-              {hasRewards && (console.log(hasRewards),
+              {hasRewards && (
                 <Button
                   gap={0}
                   leftIcon={<Icon as={FaHive} />}

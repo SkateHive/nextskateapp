@@ -1,5 +1,5 @@
 'use client'
-import { Box, Center, Image, Stack, Text, VStack } from '@chakra-ui/react';
+import { Box, Center, Flex, Image, Stack, Text, VStack } from '@chakra-ui/react';
 import { useState } from 'react';
 
 import EthBox from './ethWallet';
@@ -26,12 +26,11 @@ const TotalValueBox: React.FC = () => {
             alignItems="center"
             flex="1"
             p={4}
-            border="1px solid #0fb9fc"
             borderRadius="10px"
-            bg="blue.800"
+            h={{ base: "100%", md: "100%" }}
         >
             <Box w={{ base: "80%", md: "40%" }} textAlign="center">
-                <Text align="center" fontSize={{ base: 20, md: 20 }} mb={4} backgroundColor="#0fb9fc">
+                <Text color={"black"} align="center" borderRadius={"md"} fontSize={{ base: 20, md: 20 }} mb={4} backgroundColor="white">
                     Total Value
                 </Text>
                 <Center>
@@ -43,11 +42,11 @@ const TotalValueBox: React.FC = () => {
                     />
                 </Center>
                 <Box
-                    bg="#ccffcc"
                     borderRadius="8px"
                     padding="4px 8px"
                     mb={4}
                     textAlign="center"
+                    backgroundColor="white"
                 >
                     <Text
                         fontWeight="bold"
@@ -58,20 +57,11 @@ const TotalValueBox: React.FC = () => {
                     </Text>
                 </Box>
             </Box>
-            <Stack
-                direction={{ base: "column", md: "column" }}
-                w="100%"
-                spacing={4}
-                p={4}
-                alignItems="center"
-            >
-                <Center w={{ base: "100%", md: "100%" }} mb={{ base: 4, md: 0 }}>
-                    <HiveBox onNetWorthChange={handleHiveNetWorth} />
-                </Center>
-                <Center w={{ base: "100%", md: "100%" }}>
-                    <EthBox onNetWorthChange={handleEthNetWorth} />
-                </Center>
-            </Stack>
+
+            <Flex direction={{ base: 'column', md: 'row' }} w="100%">
+                <HiveBox onNetWorthChange={handleHiveNetWorth} />
+                <EthBox onNetWorthChange={handleEthNetWorth} />
+            </Flex>
         </VStack>
     );
 };

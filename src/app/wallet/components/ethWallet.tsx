@@ -28,9 +28,10 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { FaEthereum } from "react-icons/fa";
+import { FaEthereum, FaEye } from "react-icons/fa";
 import { useAccount } from "wagmi";
 import * as Types from "../types";
+import { CustomConnectWallet } from "@/components/customConnectWallet";
 
 interface EthBoxProps {
     onNetWorthChange: (value: number) => void;
@@ -85,7 +86,7 @@ const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
             getUserENSname();
         }
     }, [account.address]);
-    
+
     const formatEthWallet = (address: string) => {
         return `${address.slice(0, 6)}...${address.slice(-4)}`;
     };
@@ -107,17 +108,25 @@ const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
             border="1px solid #0fb9fc"
             borderRadius="10px"
             bg="blue.800"
+            m={2}
+
         >
             <Center onClick={() => setIsOpened(!isOpened)}>
-                <HStack cursor="pointer">
-                    <FaEthereum />
-                    <Text align="center" fontSize={{ base: 24, md: 28 }}>
-                    <Text fontSize={{ base: 18, md: 18 }}>{userENSname || formatEthWallet(String(account.address))}</Text>
 
-                    </Text>
+                <HStack>
+                    {userENSname && account.address ? (
+                        <HStack cursor="pointer">
+                            <FaEthereum />
+                            <Text fontSize={{ base: 18, md: 18 }}>{userENSname || formatEthWallet(String(account.address))}</Text>
+                        </HStack>
+                    ) : (
+                        <CustomConnectWallet />
+                    )}
+                    <FaEye />
+
                 </HStack>
             </Center>
-            <Divider mt={-6} />
+
             <Center>
                 <HStack
                     minWidth="100%"
@@ -147,7 +156,7 @@ const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
                 <Center>
                     <VStack m={5}>
                         <Box bg="#0fb9fc48" borderRadius="8px" padding="4px 8px">
-                            <Text fontWeight="bold" fontSize={{ base: 24, md: 34 }}>
+                            <Text color={"black"} fontWeight="bold" fontSize={{ base: 24, md: 34 }}>
                                 ${portfolio?.totalNetWorth?.toFixed(2) || 0}
                             </Text>
                         </Box>
