@@ -129,7 +129,8 @@ export const MarkdownRenderers = {
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingTop: '10px', minWidth: '100%', minHeight: 'auto' }}>
       <video
         {...props}
-        autoPlay={false}
+        autoPlay={true}
+        muted={true}
         src={src}
         style={{ background: 'transparent', borderRadius: '10px', marginBottom: '20px', border: '2px grey solid', minWidth: '70%', minHeight: '50%' }}
       />

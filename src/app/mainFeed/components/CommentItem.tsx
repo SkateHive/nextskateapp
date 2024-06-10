@@ -137,45 +137,43 @@ const CommentItem = ({
         <AuthorAvatar username={comment.author} />
         <VStack ml={4} gap={0} alignItems={"start"} width={"full"} marginRight={"16px"}>
           <HStack justify={"space-between"} width={"full"}>
-            <HStack gap={"2px"}>
+            <HStack cursor={"pointer"} onClick={() =>
+              window.open(
+                `/post/test/@${comment.author}/${comment.permlink}`,
+                "_self",
+              )
+            } gap={"2px"}>
               <Text fontWeight="bold">{comment.author}</Text>
               <Text ml={2} color="gray.400" fontSize={"14px"}>
                 · {formatDate(String(comment.created))}
               </Text>
             </HStack>
             <Text
+              fontWeight={"bold"}
+              color={"green.400"}
               onClick={() =>
                 window.open(
                   `/post/test/@${comment.author}/${comment.permlink}`,
                   "_self",
                 )
               }
-              fontWeight={"bold"}
-              color={"green.400"}
+              cursor={"pointer"}
             >
               ${getTotalPayout(comment)}
             </Text>
           </HStack>
           {/* Post Content */}
-          <Box
-            cursor={"pointer"}
-            onClick={() =>
-              window.open(
-                `/post/test/@${comment.author}/${comment.permlink}`,
-                "_self",
-              )
-            }
+
+          <ReactMarkdown
+            components={MarkdownRenderers}
+            rehypePlugins={[rehypeRaw]}
+            remarkPlugins={[remarkGfm]}
+
           >
-            <ReactMarkdown
-              components={MarkdownRenderers}
-              rehypePlugins={[rehypeRaw]}
-              remarkPlugins={[remarkGfm]}
-            >
-              {transformIPFSContent(
-                transformShortYoutubeLinksinIframes(comment.body),
-              )}
-            </ReactMarkdown>
-          </Box>
+            {transformIPFSContent(
+              transformShortYoutubeLinksinIframes(comment.body),
+            )}
+          </ReactMarkdown>
         </VStack>
       </Flex>
 
