@@ -33,17 +33,18 @@ interface EditModalProps {
 }
 
 const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN
-console.log(PINATA_GATEWAY_TOKEN, "PINATA_GATEWAY_TOKEN")
+//console.log(PINATA_GATEWAY_TOKEN, "PINATA_GATEWAY_TOKEN")
 export default function EditInfoModal({ isOpen, onClose, user }: EditModalProps) {
-  //console.log(user.metadata, "here")
-  const [name, setName] = useState<string>(user.metadata?.name || '');
-  const [about, setAbout] = useState<string>(user.metadata?.about || '');
-  const [avatarUrl, setAvatarUrl] = useState<string>(user.metadata?.profile_image || '');
-  const [coverImageUrl, setCoverImageUrl] = useState<string>(user.metadata?.cover_image || '');
+  //console.log(user.json_metadata, "here")
+  const metadata = user.posting_json_metadata ? JSON.parse(user.posting_json_metadata).profile : (user.json_metadata ? JSON.parse(user.json_metadata) : {});
+  const [name, setName] = useState<string>(metadata.name || '');
+  const [about, setAbout] = useState<string>(metadata.about || '');
+  const [avatarUrl, setAvatarUrl] = useState<string>(metadata.profile_image || '');
+  const [coverImageUrl, setCoverImageUrl] = useState<string>(metadata.cover_image || '');
   const [extensions, setExtensions] = useState<any>(
     (() => {
       try {
-        return (JSON.parse(user?.json_metadata)?.extensions) || "";
+        return (metadata.extensions) || "";
       } catch (error) {
         console.error("Error parsing JSON metadata:", error);
         return ""; 
@@ -51,7 +52,7 @@ export default function EditInfoModal({ isOpen, onClose, user }: EditModalProps)
     })()
   );
 
-  const [website, setWebsite] = useState<string>(user.metadata?.website || '');
+  const [website, setWebsite] = useState<string>(metadata.website || '');
   const [selectedProfileFile, setSelectedProfileFile] = useState<File | null>(null);
   const [selectedCoverFile, setSelectedCoverFile] = useState<File | null>(null);
   const connecteWallet = useAccount().address;
