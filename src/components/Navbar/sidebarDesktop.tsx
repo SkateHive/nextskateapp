@@ -108,8 +108,8 @@ const SidebarDesktop = () => {
         <Heading size="md">
           <Image
             boxSize={"58px"}
-            src="/skatehive_square_green.png"
-            alt="SkateHive"
+            src="https://bless.skatehive.app/assets/lojabless/blesslogo.png"
+            alt="Loja Bless"
             borderRadius={"5px"}
             _hover={{
               cursor: "pointer",
@@ -130,19 +130,19 @@ const SidebarDesktop = () => {
         <CommunityTotalPayout />
 
         <HStack padding={0} mt={8} gap={3} fontSize={"22px"}>
-          <FaSpeakap color="white" size={"22px"} />
+          <FaSpeakap size={"22px"} />
           <Text color={"white"} cursor={"pointer"} onClick={() => {
             window.location.href = "/";
           }}>Feed</Text>
         </HStack>
         <HStack padding={0} gap={3} fontSize={"22px"}>
-          <FaBook color="white" size={"22px"} />
+          <FaBook size={"22px"} />
           <Text color={"white"} cursor={"pointer"} onClick={() => {
             window.location.href = "/mag";
-          }}>Magazine</Text>
+          }}>Revista</Text>
         </HStack>
         <HStack padding={0} gap={3} fontSize={"22px"}>
-          <FaEthereum color={'white'} size={"22px"} />
+          <FaEthereum size={"22px"} />
           <Text color={"white"} cursor={"pointer"} onClick={() => {
             window.location.href = "/dao";
           }}>Dao</Text>
@@ -159,16 +159,16 @@ const SidebarDesktop = () => {
         {hiveUser ? (
           <>
             <HStack padding={0} gap={3} fontSize={"22px"}>
-              <FaUser color="white" size={"22px"} />
+              <FaUser size={"22px"} />
               <Text color={"white"} cursor={"pointer"} onClick={() => {
                 window.location.href = `/profile/${hiveUser.name}`;
-              }}>Profile</Text>
+              }}>Perfil</Text>
             </HStack>
             <HStack padding={0} gap={3} fontSize={"22px"}>
-              <FaWallet color="white" size={"22px"} />
+              <FaWallet size={"22px"} />
               <Text color={"white"} cursor={"pointer"} onClick={() => {
                 window.location.href = `/wallet`;
-              }}>Wallet</Text>
+              }}>Carteira</Text>
               {hasRewards && (
                 <Button
                   gap={0}
@@ -193,8 +193,8 @@ const SidebarDesktop = () => {
               gap={3}
               fontSize={"22px"}
             >
-              <FaBell color="white" size={"22px"} />
-              <Text color={"white"} > Notifications</Text>
+              <FaBell size={"22px"} />
+              <Text color={"white"} >Notificações</Text>
             </HStack>
             {notifications ? <NotificationsPage /> : null}
           </>
