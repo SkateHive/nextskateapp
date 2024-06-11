@@ -191,8 +191,7 @@ export async function updateProfileWithPrivateKey(
     {
       account: username,
       extensions: [],
-      json_metadata: JSON.stringify(profileMetadata),
-      posting_json_metadata: JSON.stringify(profileMetadata.profile)
+      posting_json_metadata: JSON.stringify(profileMetadata)
     }
   ]
 

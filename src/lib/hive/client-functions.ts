@@ -155,8 +155,7 @@ export async function updateProfile(username: string, name: string, about: strin
             'account_update2',
             {
               account: username,
-              json_metadata: JSON.stringify(profileMetadata),
-              posting_json_metadata: JSON.stringify(profileMetadata.profile),
+              posting_json_metadata: JSON.stringify(profileMetadata),
               extensions: [],
             },
           ],
