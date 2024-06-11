@@ -80,7 +80,7 @@ const AirdropModal = ({ sortedComments, isOpen, onClose }: AirdropModalProps) =>
             {showConfetti && <Confetti />}
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay style={{ backdropFilter: "blur(5px)" }} />
-                <ModalContent w={{ base: "100%", md: "75%" }} bg="black" border="0.6px solid grey" borderRadius="md" mx={4}>
+                <ModalContent color="white" w={{ base: "100%", md: "75%" }} bg="black" border="0.6px solid grey" borderRadius="md" mx={4}>
                     <ModalHeader><Center>Create an Airdrop</Center></ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
@@ -98,7 +98,7 @@ const AirdropModal = ({ sortedComments, isOpen, onClose }: AirdropModalProps) =>
                                 </VStack>
                             ) : (
                                 <>
-                                    <Image src="https://www.skatehive.app/assets/cryptopepe.png" alt="airdrop" />
+                                    <Image src="/pepe-money.gif" alt="airdrop" />
                                     <Text fontFamily="Creepster" fontSize="42px" color={"#A5D6A7"}> Sponsor {walletDict.length} skaters !!!</Text>
                                     <TokenSelector addressDict={walletDict} setShowConfetti={setShowConfetti} />
                                     <Button

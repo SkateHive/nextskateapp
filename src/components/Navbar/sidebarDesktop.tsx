@@ -142,7 +142,7 @@ const SidebarDesktop = () => {
           }}>Magazine</Text>
         </HStack>
         <HStack padding={0} gap={3} fontSize={"22px"}>
-          <FaEthereum size={"22px"} />
+          <FaEthereum color={'white'} size={"22px"} />
           <Text color={"white"} cursor={"pointer"} onClick={() => {
             window.location.href = "/dao";
           }}>Dao</Text>

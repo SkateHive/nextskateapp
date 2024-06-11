@@ -12,7 +12,6 @@ import {
 import {
   Box,
   Button,
-  Divider,
   Flex,
   HStack,
   Text,
@@ -201,7 +200,6 @@ const CommentItem = ({
           ${getTotalPayout(comment)}
         </Text>
       </Flex>
-      <Divider color={"grey"} mt={4} />
       {isEyeClicked && (
         <Box ml={10} mt={4} pl={4} borderLeft="2px solid gray">
 
