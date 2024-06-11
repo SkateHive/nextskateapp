@@ -3,6 +3,7 @@ import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
 import AuthorAvatar from "@/components/AuthorAvatar";
 import LoginModal from "@/components/Hive/Login/LoginModal";
 import TipButton from "@/components/PostCard/TipButton";
+import { useComments } from "@/hooks/comments";
 import {
   formatDate,
   transformIPFSContent,
@@ -14,19 +15,18 @@ import {
   Divider,
   Flex,
   HStack,
-  IconButton,
   Text,
-  VStack,
+  VStack
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { FaHeart, FaRegComment, FaRegHeart } from "react-icons/fa";
+import { FaEye, FaHeart, FaRegComment, FaRegHeart } from "react-icons/fa";
 import ReactMarkdown from "react-markdown";
 import { useReward } from "react-rewards";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import { handleVote } from "../utils/handleFeedVote";
+import CommentList from "./CommentsList";
 import ReplyModal from "./replyModal";
-import { useComments } from "@/hooks/comments";
 
 interface CommentItemProps {
   comment: any;
@@ -122,6 +122,11 @@ const CommentItem = ({
   }
     , [numberOfComments, comments_count]);
 
+  const [isEyeClicked, setIsEyeClicked] = useState(false);
+  const handleEyeClick = () => {
+    setIsEyeClicked(!isEyeClicked);
+  }
+
 
 
 
@@ -148,19 +153,8 @@ const CommentItem = ({
                 · {formatDate(String(comment.created))}
               </Text>
             </HStack>
-            <Text
-              fontWeight={"bold"}
-              color={"green.400"}
-              onClick={() =>
-                window.open(
-                  `/post/test/@${comment.author}/${comment.permlink}`,
-                  "_self",
-                )
-              }
-              cursor={"pointer"}
-            >
-              ${getTotalPayout(comment)}
-            </Text>
+            <FaEye onClick={handleEyeClick} />
+
           </HStack>
           {/* Post Content */}
 
@@ -191,8 +185,34 @@ const CommentItem = ({
         </Button>
 
         <VotingButton comment={comment} username={username} />
+        <Text
+          fontWeight={"bold"}
+          color={"green.400"}
+          onClick={() =>
+            window.open(
+              `/post/test/@${comment.author}/${comment.permlink}`,
+              "_self",
+            )
+          }
+          cursor={"pointer"}
+          mt={2}
+        >
+          ${getTotalPayout(comment)}
+        </Text>
       </Flex>
       <Divider mt={4} />
+      {isEyeClicked && (
+        <Box ml={14} mt={4} pl={4} borderLeft="2px solid gray">
+          <CommentList
+            comments={commentReplies.comments}
+            visiblePosts={5}
+            setVisiblePosts={() => { }}
+            username={username}
+            handleVote={handleVote}
+            getTotalPayout={getTotalPayout}
+          />
+        </Box>
+      )}
     </Box>
   );
 };
