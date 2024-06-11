@@ -130,13 +130,13 @@ const SidebarDesktop = () => {
         <CommunityTotalPayout />
 
         <HStack padding={0} mt={8} gap={3} fontSize={"22px"}>
-          <FaSpeakap size={"22px"} />
+          <FaSpeakap color="white" size={"22px"} />
           <Text color={"white"} cursor={"pointer"} onClick={() => {
             window.location.href = "/";
           }}>Feed</Text>
         </HStack>
         <HStack padding={0} gap={3} fontSize={"22px"}>
-          <FaBook size={"22px"} />
+          <FaBook color="white" size={"22px"} />
           <Text color={"white"} cursor={"pointer"} onClick={() => {
             window.location.href = "/mag";
           }}>Magazine</Text>
@@ -159,13 +159,13 @@ const SidebarDesktop = () => {
         {hiveUser ? (
           <>
             <HStack padding={0} gap={3} fontSize={"22px"}>
-              <FaUser size={"22px"} />
+              <FaUser color="white" size={"22px"} />
               <Text color={"white"} cursor={"pointer"} onClick={() => {
                 window.location.href = `/profile/${hiveUser.name}`;
               }}>Profile</Text>
             </HStack>
             <HStack padding={0} gap={3} fontSize={"22px"}>
-              <FaWallet size={"22px"} />
+              <FaWallet color="white" size={"22px"} />
               <Text color={"white"} cursor={"pointer"} onClick={() => {
                 window.location.href = `/wallet`;
               }}>Wallet</Text>
@@ -193,7 +193,7 @@ const SidebarDesktop = () => {
               gap={3}
               fontSize={"22px"}
             >
-              <FaBell size={"22px"} />
+              <FaBell color="white" size={"22px"} />
               <Text color={"white"} > Notifications</Text>
             </HStack>
             {notifications ? <NotificationsPage /> : null}

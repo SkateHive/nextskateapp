@@ -1,7 +1,6 @@
 'use client';
-import { Operation } from "@hiveio/dhive";
 import { Broadcast, KeychainKeyTypes, KeychainRequestResponse, KeychainSDK, Login, Post, Transfer, Vote } from "keychain-sdk";
-import { HiveAccount, VideoPart } from "../models/user";
+import { VideoPart } from "../models/user";
 
 interface HiveKeychainResponse {
   success: boolean
@@ -155,6 +154,7 @@ export async function updateProfile(username: string, name: string, about: strin
             'account_update2',
             {
               account: username,
+              json_metadata: "",
               posting_json_metadata: JSON.stringify(profileMetadata),
               extensions: [],
             },
