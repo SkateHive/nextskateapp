@@ -128,7 +128,7 @@ const CommentItem = ({
   }
 
 
-
+  const [visiblePosts, setVisiblePosts] = useState(5);
 
   return (
     <Box key={comment.id} p={4} width="100%" bg="black" color="white">
@@ -153,6 +153,7 @@ const CommentItem = ({
                 · {formatDate(String(comment.created))}
               </Text>
             </HStack>
+
             <FaEye onClick={handleEyeClick} />
 
           </HStack>
@@ -202,15 +203,29 @@ const CommentItem = ({
       </Flex>
       <Divider mt={4} />
       {isEyeClicked && (
-        <Box ml={14} mt={4} pl={4} borderLeft="2px solid gray">
+        <Box ml={10} mt={4} pl={4} borderLeft="2px solid gray">
+
           <CommentList
             comments={commentReplies.comments}
-            visiblePosts={5}
+            visiblePosts={visiblePosts}
             setVisiblePosts={() => { }}
             username={username}
             handleVote={handleVote}
             getTotalPayout={getTotalPayout}
           />
+          {visiblePosts < numberOfComments &&
+            <Button
+              onClick={() => setVisiblePosts(visiblePosts + 5)}
+              variant="outline"
+              colorScheme="green"
+              size="sm"
+              mt={4}
+            >
+              Show More
+            </Button>
+          }
+
+
         </Box>
       )}
     </Box>
