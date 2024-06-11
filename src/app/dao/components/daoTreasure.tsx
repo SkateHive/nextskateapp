@@ -62,13 +62,13 @@ const DaoTreasure = () => {
                                 <VStack >
 
                                     <Text color="white">ETH Multisig Wallet </Text>
-                                    <Text fontSize={"28px"}>
+                                    <Text color="white" fontSize={"28px"}>
                                         {Number(multisigBalance.data?.formatted)} ETH
                                     </Text>
                                 </VStack>
                                 <VStack >
                                     <Text color={"white"}>skatehive.eth</Text>
-                                    <Text fontSize={"28px"}>{Number(hotWalletbalance).toFixed(2)} USD</Text>
+                                    <Text color="white" fontSize={"28px"}>{Number(hotWalletbalance).toFixed(2)} USD</Text>
                                 </VStack>
                             </center>
                         }>
@@ -82,7 +82,6 @@ const DaoTreasure = () => {
                 flexDirection="column"
                 alignItems="center"
             >
-
                 <HStack width={"100%"}
                     justifyContent={"space-between"}
                 >
