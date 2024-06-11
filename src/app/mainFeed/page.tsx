@@ -1,4 +1,5 @@
 "use client";
+import { usePostViewContext } from "@/contexts/PostViewContext";
 import { useHiveUser } from "@/contexts/UserContext";
 import { useComments } from "@/hooks/comments";
 import { vote } from "@/lib/hive/client-functions";
@@ -51,10 +52,10 @@ interface Comment {
 const getTotalPayout = (comment: Comment): number => {
   const payout = parseFloat(comment.total_payout_value?.split(" ")[0] || "0");
   const pendingPayout = parseFloat(
-    comment.pending_payout_value?.split(" ")[0] || "0"
+    comment.pending_payout_value?.split(" ")[0] || "0",
   );
   const curatorPayout = parseFloat(
-    comment.curator_payout_value?.split(" ")[0] || "0"
+    comment.curator_payout_value?.split(" ")[0] || "0",
   );
   return payout + pendingPayout + curatorPayout;
 };
@@ -62,7 +63,7 @@ const getTotalPayout = (comment: Comment): number => {
 const SkateCast = () => {
   const { comments, addComment, isLoading } = useComments(
     parent_author,
-    parent_permlink
+    parent_permlink,
   );
   const [visiblePosts, setVisiblePosts] = useState<number>(10);
   const postBodyRef = useRef<HTMLTextAreaElement>(null);
@@ -75,6 +76,7 @@ const SkateCast = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [imageList, setImageList] = useState<string[]>([]);
+  const { postView, setPostView } = usePostViewContext();
 
   const { getRootProps, getInputProps } = useDropzone({
     noClick: true,
@@ -117,16 +119,18 @@ const SkateCast = () => {
   }, [comments, sortMethod]);
 
   const handlePostClick = () => {
-    const markdownString = (postBodyRef.current?.value + "\n" + imageList.join("\n")).trim();
+    const markdownString = (
+      postBodyRef.current?.value +
+      "\n" +
+      imageList.join("\n")
+    ).trim();
     if (markdownString === "") {
       alert("Please write something before posting");
       return;
-    }
-    else if (markdownString.length > 10000) {
+    } else if (markdownString.length > 10000) {
       alert("Post is too long. To make longform content use our /mag section");
       return;
-    }
-    else {
+    } else {
       handlePost(markdownString);
     }
   };
@@ -176,7 +180,7 @@ const SkateCast = () => {
                 } else {
                   reject(new Error(response.message));
                 }
-              }
+              },
             );
           });
 
@@ -238,7 +242,7 @@ const SkateCast = () => {
         await commentWithPrivateKey(
           localStorage.getItem("EncPrivateKey")!,
           postOperation,
-          commentOptions
+          commentOptions,
         );
         if (postBodyRef.current) {
           postBodyRef.current.value = "";
@@ -285,153 +289,185 @@ const SkateCast = () => {
       borderInline={"1px solid rgb(255,255,255,0.2)"}
       height={"100vh"}
     >
-      <AvatarMediaModal
-        isOpen={mediaModalOpen}
-        onClose={() => setMediaModalOpen(false)}
-        media={media}
-      />
-      <AvatarList sortedComments={sortedComments} />
+      {postView ? (
+        <>{postView.title}</>
+      ) : (
+        <>
+          <AvatarMediaModal
+            isOpen={mediaModalOpen}
+            onClose={() => setMediaModalOpen(false)}
+            media={media}
+          />
+          <AvatarList sortedComments={sortedComments} />
 
-      <Box p={4} width={"100%"} bg="black" color="white" {...getRootProps()}>
-        <div>
-          <Flex>
-            <Avatar
-              borderRadius={6}
-              boxSize={12}
-              marginRight={2}
-              src={`https://images.ecency.com/webp/u/${username}/avatar/small`}
-            />
-            <Flex flexDir="column" w="100%">
-              <Textarea
-                border="none"
-                _focus={{
-                  border: "none",
-                  boxShadow: "none",
-                }}
-                overflow={"hidden"}
-                resize={"vertical"}
-                ref={postBodyRef}
-                placeholder="Write your comment..."
-              />
-              <HStack>
-                {imageList.map((item, index) => (
-                  <Box key={index} position="relative" maxW={100} maxH={100}>
-                    <IconButton
-                      aria-label="Remove image"
-                      icon={<FaTimes style={{ color: "black", strokeWidth: 1 }} />}
-                      size="base"
-                      color="white"
-                      bg="white"
-                      _hover={{ bg: "white", color: "black" }}
-                      _active={{ bg: "white", color: "black" }}
-                      position="absolute"
-                      top="0"
-                      right="0"
-                      onClick={() => handleRemoveImage(index)}
-                      zIndex="1"
-                      borderRadius="full"
-                    />
-                    {item.includes("![Image](") ? (
-                      <Image
-                        src={item.match(/!\[Image\]\((.*?)\)/)?.[1] || ""}
-                        alt="markdown-image"
-                        maxW="100%"
-                        maxH="100%"
-                        objectFit="contain"
-                      />
-                    ) : (
-                      <video
-                        src={item.match(/<iframe src="(.*?)" allowfullscreen><\/iframe>/)?.[1]}
-                        controls
-                        muted
-                        width="100%"
-                      />
-                    )}
-                  </Box>
-                ))}
+          <Box
+            p={4}
+            width={"100%"}
+            bg="black"
+            color="white"
+            {...getRootProps()}
+          >
+            <div>
+              <Flex>
+                <Avatar
+                  borderRadius={6}
+                  boxSize={12}
+                  marginRight={2}
+                  src={`https://images.ecency.com/webp/u/${username}/avatar/small`}
+                />
+                <Flex flexDir="column" w="100%">
+                  <Textarea
+                    border="none"
+                    _focus={{
+                      border: "none",
+                      boxShadow: "none",
+                    }}
+                    overflow={"hidden"}
+                    resize={"vertical"}
+                    ref={postBodyRef}
+                    placeholder="Write your comment..."
+                  />
+                  <HStack>
+                    {imageList.map((item, index) => (
+                      <Box
+                        key={index}
+                        position="relative"
+                        maxW={100}
+                        maxH={100}
+                      >
+                        <IconButton
+                          aria-label="Remove image"
+                          icon={
+                            <FaTimes
+                              style={{ color: "black", strokeWidth: 1 }}
+                            />
+                          }
+                          size="base"
+                          color="white"
+                          bg="white"
+                          _hover={{ bg: "white", color: "black" }}
+                          _active={{ bg: "white", color: "black" }}
+                          position="absolute"
+                          top="0"
+                          right="0"
+                          onClick={() => handleRemoveImage(index)}
+                          zIndex="1"
+                          borderRadius="full"
+                        />
+                        {item.includes("![Image](") ? (
+                          <Image
+                            src={item.match(/!\[Image\]\((.*?)\)/)?.[1] || ""}
+                            alt="markdown-image"
+                            maxW="100%"
+                            maxH="100%"
+                            objectFit="contain"
+                          />
+                        ) : (
+                          <video
+                            src={
+                              item.match(
+                                /<iframe src="(.*?)" allowfullscreen><\/iframe>/,
+                              )?.[1]
+                            }
+                            controls
+                            muted
+                            width="100%"
+                          />
+                        )}
+                      </Box>
+                    ))}
+                  </HStack>
+                </Flex>
+              </Flex>
+              <HStack justifyContent="space-between" marginTop={2}>
+                <Input
+                  id="md-image-upload"
+                  type="file"
+                  style={{ display: "none" }}
+                  {...getInputProps({ refKey: "ref" })}
+                  ref={inputRef}
+                />
+                <Button
+                  name="md-image-upload"
+                  variant="ghost"
+                  onClick={() => inputRef.current?.click()}
+                  _hover={{
+                    background: "none",
+                  }}
+                >
+                  <FaImage
+                    style={{
+                      color: "#ABE4B8",
+                      cursor: "pointer",
+                      transition: "all 0.2s",
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.color = "limegreen";
+                      e.currentTarget.style.textShadow = "0 0 10px 0 limegreen";
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.color = "#ABE4B8";
+                      e.currentTarget.style.textShadow = "none";
+                    }}
+                  />
+                </Button>
+                <Button
+                  colorScheme="green"
+                  variant="ghost"
+                  ml="auto"
+                  onClick={handlePostClick}
+                  isLoading={isUploading}
+                  // onhover glow effect with shadow and transition the letters only green
+                  _hover={{
+                    color: "limegreen",
+                    textShadow: "0 0 10px 0 limegreen",
+                    transition: "all 0.2s",
+                  }}
+                >
+                  Post
+                </Button>
               </HStack>
-            </Flex>
-          </Flex>
-          <HStack justifyContent="space-between" marginTop={2}>
-            <Input
-              id="md-image-upload"
-              type="file"
-              style={{ display: "none" }}
-              {...getInputProps({ refKey: "ref" })}
-              ref={inputRef}
-            />
-            <Button
-              name="md-image-upload"
-              variant="ghost"
-              onClick={() => inputRef.current?.click()}
-              _hover={{
-                background: "none",
-              }}
-            >
-              <FaImage style={{
-                color: "#ABE4B8",
-                cursor: "pointer",
-                transition: "all 0.2s",
-              }} onMouseOver={(e) => {
-                e.currentTarget.style.color = "limegreen";
-                e.currentTarget.style.textShadow = "0 0 10px 0 limegreen";
-              }} onMouseOut={(e) => {
-                e.currentTarget.style.color = "#ABE4B8";
-                e.currentTarget.style.textShadow = "none";
-              }} />
-            </Button>
-            <Button
-              colorScheme="green"
-              variant="ghost"
-              ml="auto"
-              onClick={handlePostClick}
-              isLoading={isUploading}
-              // onhover glow effect with shadow and transition the letters only green
-              _hover={{
-                color: "limegreen",
-                textShadow: "0 0 10px 0 limegreen",
-                transition: "all 0.2s",
-              }}
-            >
-              Post
-            </Button>
-          </HStack>
-        </div>
-      </Box>
-      <Divider />
+            </div>
+          </Box>
+          <Divider />
 
-      <HStack width="full" justifyContent="flex-end" m={-2} mr={4}>
-        <Menu>
-          <MenuButton>
-            <IoFilter color="#9AE6B4" />
-          </MenuButton>
-          <MenuList bg={"black"} border={"1px solid #A5D6A7"}>
-            <MenuItem
-              bg={"black"}
-              onClick={() => handleSortChange("chronological")}
-            >
-              <FaHistory /> <Text ml={2}> Latest</Text>
-            </MenuItem>
-            <MenuItem bg={"black"} onClick={() => handleSortChange("payout")}>
-              <FaMoneyBill /> <Text ml={2}>Payout</Text>{" "}
-            </MenuItem>
-            <MenuItem
-              bg={"black"}
-              onClick={() => handleSortChange("engagement")}
-            >
-              <FaArrowRightArrowLeft /> <Text ml={2}>Engagement</Text>{" "}
-            </MenuItem>
-          </MenuList>
-        </Menu>
-      </HStack>
-      <CommentList
-        comments={sortedComments}
-        visiblePosts={visiblePosts}
-        setVisiblePosts={setVisiblePosts}
-        username={username}
-        handleVote={handleVote}
-        getTotalPayout={getTotalPayout}
-      />
+          <HStack width="full" justifyContent="flex-end" m={-2} mr={4}>
+            <Menu>
+              <MenuButton>
+                <IoFilter color="#9AE6B4" />
+              </MenuButton>
+              <MenuList bg={"black"} border={"1px solid #A5D6A7"}>
+                <MenuItem
+                  bg={"black"}
+                  onClick={() => handleSortChange("chronological")}
+                >
+                  <FaHistory /> <Text ml={2}> Latest</Text>
+                </MenuItem>
+                <MenuItem
+                  bg={"black"}
+                  onClick={() => handleSortChange("payout")}
+                >
+                  <FaMoneyBill /> <Text ml={2}>Payout</Text>{" "}
+                </MenuItem>
+                <MenuItem
+                  bg={"black"}
+                  onClick={() => handleSortChange("engagement")}
+                >
+                  <FaArrowRightArrowLeft /> <Text ml={2}>Engagement</Text>{" "}
+                </MenuItem>
+              </MenuList>
+            </Menu>
+          </HStack>
+          <CommentList
+            comments={sortedComments}
+            visiblePosts={visiblePosts}
+            setVisiblePosts={setVisiblePosts}
+            username={username}
+            handleVote={handleVote}
+            getTotalPayout={getTotalPayout}
+          />
+        </>
+      )}
     </VStack>
   );
 };

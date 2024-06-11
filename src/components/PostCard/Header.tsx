@@ -1,4 +1,7 @@
 import { usePostContext } from "@/contexts/PostContext";
+import { usePostViewContext } from "@/contexts/PostViewContext";
+import { useHiveUser } from "@/contexts/UserContext";
+import getSummary from "@/lib/getSummaryAI";
 import {
   Button,
   CardHeader,
@@ -13,8 +16,7 @@ import {
   Spacer,
   Text,
   Tooltip,
-  useDisclosure,
-  useMediaQuery,
+  useMediaQuery
 } from "@chakra-ui/react";
 import {
   ChevronDownIcon,
@@ -27,10 +29,7 @@ import moment from "moment-timezone";
 import Link from "next/link";
 import { FaDiscord } from "react-icons/fa";
 import AuthorAvatar from "../AuthorAvatar";
-import PostModal from "../PostModal";
-import { useHiveUser } from "@/contexts/UserContext";
 import EditButton from "../PostModal/editButton";
-import getSummary from "@/lib/getSummaryAI";
 
 type Variant = "preview" | "open";
 interface HeaderInterface {
@@ -39,9 +38,14 @@ interface HeaderInterface {
 
 export default function Header({ variant = "preview" }: HeaderInterface) {
   const { post } = usePostContext();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  // const { isOpen, onOpen, onClose } = useDisclosure();
   const [isSmallerThan400] = useMediaQuery("(max-width: 400px)");
   const postFullUrl = `${window.location.origin}/post/${post.url}`;
+  const { postView, setPostView, hidePostView } = usePostViewContext();
+
+  function onOpen() {
+    postView ? hidePostView() : setPostView(post)
+  }
 
   const user = useHiveUser()
 
@@ -116,7 +120,7 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
 
   return (
     <CardHeader p={2} pb={0}>
-      {isOpen && <PostModal isOpen={isOpen} onClose={onClose} />}
+      {/* {isOpen && <PostModal isOpen={isOpen} onClose={onClose} />} */}
       <Flex
         gap="4"
         align={"start"}
