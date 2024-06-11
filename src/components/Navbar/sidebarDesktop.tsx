@@ -108,8 +108,8 @@ const SidebarDesktop = () => {
         <Heading size="md">
           <Image
             boxSize={"58px"}
-            src="/skatehive_square_green.png"
-            alt="SkateHive"
+            src="https://bless.skatehive.app/assets/lojabless/blesslogo.png"
+            alt="Loja Bless"
             borderRadius={"5px"}
             _hover={{
               cursor: "pointer",
@@ -139,7 +139,7 @@ const SidebarDesktop = () => {
           <FaBook size={"22px"} />
           <Text color={"white"} cursor={"pointer"} onClick={() => {
             window.location.href = "/mag";
-          }}>Magazine</Text>
+          }}>Revista</Text>
         </HStack>
         <HStack padding={0} gap={3} fontSize={"22px"}>
           <FaEthereum size={"22px"} />
@@ -162,13 +162,13 @@ const SidebarDesktop = () => {
               <FaUser size={"22px"} />
               <Text color={"white"} cursor={"pointer"} onClick={() => {
                 window.location.href = `/profile/${hiveUser.name}`;
-              }}>Profile</Text>
+              }}>Perfil</Text>
             </HStack>
             <HStack padding={0} gap={3} fontSize={"22px"}>
               <FaWallet size={"22px"} />
               <Text color={"white"} cursor={"pointer"} onClick={() => {
                 window.location.href = `/wallet`;
-              }}>Wallet</Text>
+              }}>Carteira</Text>
               {hasRewards && (
                 <Button
                   gap={0}
@@ -194,7 +194,7 @@ const SidebarDesktop = () => {
               fontSize={"22px"}
             >
               <FaBell size={"22px"} />
-              <Text color={"white"} > Notifications</Text>
+              <Text color={"white"} >Notificações</Text>
             </HStack>
             {notifications ? <NotificationsPage /> : null}
           </>
