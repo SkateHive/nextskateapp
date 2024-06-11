@@ -62,7 +62,9 @@ export default function TipButton({ author }: TipButtonProps) {
 
     return (
         <Menu>
-            <MenuButton onClick={fetchUserData} w={"auto"} as={Button} color="green.200" variant={"ghost"} size="sm">
+            <MenuButton onClick={fetchUserData} w={"auto"} as={Button} color="green.200" variant={"ghost"} _hover={{
+                background: "none",
+            }} size="sm">
                 ⌐◨-◨
             </MenuButton>
             <MenuList bg="black">
