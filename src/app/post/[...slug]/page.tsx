@@ -18,9 +18,7 @@ export async function generateMetadata({
 }: {
   params: { slug: [tag: string, user: string, postId: string] }
 }): Promise<Metadata> {
-  console.log("Received User:", params.slug[1]);
   let [tag, user, postId] = params.slug
-  console.log("Received User:", user);
 
   const post = await getData(user, postId)
   const banner = JSON.parse(post.json_metadata).image
@@ -29,7 +27,7 @@ export async function generateMetadata({
     title: post.title,
     description: `${String(post.body).slice(0, 128)}...`,
     authors: post.author,
-    applicationName: "UnderHive",
+    applicationName: "SkateHive",
     openGraph: {
       images: banner,
     },

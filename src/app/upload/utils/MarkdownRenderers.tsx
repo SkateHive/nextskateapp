@@ -14,38 +14,48 @@ type RendererProps = MarkdownProps & {
   href?: any;
 };
 
-
 export const MarkdownRenderers = {
-  img: ({ alt, src, title, ...props }: RendererProps) => {
-
-    return (
-      <span style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', }}>
-        <Image
-          {...props}
-          alt={alt}
-          src={src}
-          title={title}
-          style={{
-            display: 'inline-block',
-            maxWidth: '100%',
-            height: 'auto',
-            borderRadius: '10px',
-            marginTop: '20px',
-            marginBottom: '20px',
-          }}
-
-        />
-      </span>
-    );
-  },
-  p: ({ children, ...props }: RendererProps) => <p {...props} style={{ color: 'white', fontSize: '18px', paddingBottom: '15px' }}>{children}</p>,
-  a: ({ href, children, ...props }: RendererProps) => <a style={{ color: "yellow" }} href={href}  {...props} > {children} </a>,
-  h1: ({ children, ...props }: RendererProps) => <h1 {...props} style={{ fontWeight: 'bold', color: '#A5D6A7', fontSize: '28px', paddingBottom: '10px', paddingTop: "10px", paddingLeft: '8px' }}>{children}</h1>,
-  h3: ({ children, ...props }: RendererProps) => <h3 {...props} style={{ fontWeight: 'bold', color: '#A5D6A7', fontSize: '24px', paddingBottom: '6px', paddingTop: "12px", paddingLeft: '8px' }}>{children}</h3>,
-  h2: ({ children, ...props }: RendererProps) => <h2 {...props} style={{ fontWeight: 'bold', color: '#A5D6A7', fontSize: '26px', paddingBottom: '8px', paddingTop: "10px", paddingLeft: '8px' }}>{children}</h2>,
-  h4: ({ children, ...props }: RendererProps) => <h4 {...props} style={{ fontWeight: 'bold', color: '#A5D6A7', fontSize: '22px', paddingBottom: '6px', paddingTop: "12px", paddingLeft: '8px' }}>{children}</h4>,
-  em: ({ children, ...props }: RendererProps) => <em {...props} style={{ color: '#A5D6A7' }}>{children}</em>,
-
+  img: ({ alt, src, title, ...props }: RendererProps) => (
+    <span style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <Image
+        {...props}
+        alt={alt}
+        src={src}
+        title={title}
+        style={{
+          display: 'inline-block',
+          maxWidth: '100%',
+          height: 'auto',
+          borderRadius: '10px',
+          marginTop: '20px',
+          marginBottom: '20px',
+        }}
+      />
+    </span>
+  ),
+  p: ({ children, ...props }: RendererProps) => (
+    <div {...props} style={{ color: 'white', fontSize: '18px', paddingBottom: '15px' }}>
+      {children}
+    </div>
+  ),
+  a: ({ href, children, ...props }: RendererProps) => (
+    <a style={{ color: "yellow" }} href={href} {...props}>{children}</a>
+  ),
+  h1: ({ children, ...props }: RendererProps) => (
+    <h1 {...props} style={{ fontWeight: 'bold', color: '#A5D6A7', fontSize: '28px', paddingBottom: '10px', paddingTop: "10px", paddingLeft: '8px' }}>{children}</h1>
+  ),
+  h3: ({ children, ...props }: RendererProps) => (
+    <h3 {...props} style={{ fontWeight: 'bold', color: '#A5D6A7', fontSize: '24px', paddingBottom: '6px', paddingTop: "12px", paddingLeft: '8px' }}>{children}</h3>
+  ),
+  h2: ({ children, ...props }: RendererProps) => (
+    <h2 {...props} style={{ fontWeight: 'bold', color: '#A5D6A7', fontSize: '26px', paddingBottom: '8px', paddingTop: "10px", paddingLeft: '8px' }}>{children}</h2>
+  ),
+  h4: ({ children, ...props }: RendererProps) => (
+    <h4 {...props} style={{ fontWeight: 'bold', color: '#A5D6A7', fontSize: '22px', paddingBottom: '6px', paddingTop: "12px", paddingLeft: '8px' }}>{children}</h4>
+  ),
+  em: ({ children, ...props }: RendererProps) => (
+    <em {...props} style={{ color: '#A5D6A7' }}>{children}</em>
+  ),
   blockquote: ({ children, ...props }: RendererProps) => (
     <div
       style={{
@@ -72,11 +82,15 @@ export const MarkdownRenderers = {
     const listType = ordered ? "1" : "decimal";
     return <ul {...props} data-ordered={listType} style={{ padding: '5%', paddingLeft: '10%', color: 'white' }}>{children}</ul>;
   },
-  sub: ({ children, ...props }: RendererProps) => (<sub {...props} style={{ color: 'gray' }}>{children}</sub>),
-  hr: ({ children, ...props }: RendererProps) =>
-
-    <Divider {...props} style={{ paddingBottom: '20px', color: '#A5D6A7', marginBottom: '5px' }}>{children}</Divider>,
-  br: ({ children, ...props }: RendererProps) => <br {...props} style={{ paddingBottom: '20px' }}>{children}</br>,
+  sub: ({ children, ...props }: RendererProps) => (
+    <sub {...props} style={{ color: 'gray' }}>{children}</sub>
+  ),
+  hr: ({ children, ...props }: RendererProps) => (
+    <Divider {...props} style={{ paddingBottom: '20px', color: '#A5D6A7', marginBottom: '5px' }}>{children}</Divider>
+  ),
+  br: ({ children, ...props }: RendererProps) => (
+    <br {...props} style={{ paddingBottom: '20px' }}>{children}</br>
+  ),
   pre: ({ children, ...props }: RendererProps) => (
     <div
       style={{
@@ -88,7 +102,6 @@ export const MarkdownRenderers = {
       }}
     >
       <center>
-
         <code
           {...props}
           style={{
@@ -105,7 +118,6 @@ export const MarkdownRenderers = {
   ),
   iframe: ({ src, ...props }: RendererProps) => (
     <center>
-
       <iframe
         {...props}
         src={src}
@@ -117,9 +129,10 @@ export const MarkdownRenderers = {
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingTop: '10px', minWidth: '100%', minHeight: 'auto' }}>
       <video
         {...props}
-        autoPlay={false}
+        autoPlay={true}
+        muted={true}
         src={src}
-        style={{ background: 'transparent', borderRadius: '10px', marginBottom: '20px', border: '2px grey solid', minWidth: '7s0%', minHeight: '50%' }}
+        style={{ background: 'transparent', borderRadius: '10px', marginBottom: '20px', border: '2px grey solid', minWidth: '70%', minHeight: '50%' }}
       />
     </div>
   ),
@@ -178,7 +191,6 @@ export const MarkdownRenderers = {
     >
       {children}
     </td>
-
   ),
   strong: ({ children, ...props }: RendererProps) => (
     <strong {...props} style={{ color: '#A5D6A7' }}>{children}</strong>
@@ -187,4 +199,3 @@ export const MarkdownRenderers = {
     <code {...props} style={{ color: '#A6E22E', backgroundColor: '#001a09', padding: '2px', borderRadius: '4px' }}>{children}</code>
   )
 };
-

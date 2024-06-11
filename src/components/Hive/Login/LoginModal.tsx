@@ -101,7 +101,7 @@ function LoginModal({
             <ModalHeader>Hive Log In</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              <Image mb={2} src="https://www.skatehive.app/assets/pepe_login.png" alt="Hive Logo" />
+              <Image mb={2} src="/pepe-login.png" alt="Hive Logo" />
               <FormControl isInvalid={Boolean(errorMessage)}>
                 <VStack align={"normal"}>
                   <Input

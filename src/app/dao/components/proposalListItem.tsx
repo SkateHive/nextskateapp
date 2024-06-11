@@ -39,8 +39,8 @@ function ProposalListItem({
             borderRadius="10px"
         >
             <HStack justifyContent={"space-between"}>
-                <Text>{proposal.title}</Text>
-                <Badge fontSize="18px" color={checkProposalOutcome(proposal).hasWon ? "#A5D6A7" : "red"}>
+                <Text color={"white"}>{proposal.title}</Text>
+                <Badge colorScheme='green' bg={"black"} fontSize="18px" color={checkProposalOutcome(proposal).hasWon ? "#A5D6A7" : "red"}>
                     {checkProposalOutcome(proposal).hasWon ? "Passed" : "Failed"}
                 </Badge>
             </HStack>
@@ -54,6 +54,7 @@ function ProposalListItem({
                         mb={2}
                         borderRadius={5}
                         fontSize={"12px"}
+                        color={"white"}
                     >
                         Summary: {decodeURIComponent(proposal.summary ?? "")}
                     </Text>

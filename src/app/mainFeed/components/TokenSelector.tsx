@@ -1,9 +1,11 @@
 'use client'
 import { TokenInfo } from "@/components/PostCard/TipModal";
+import { useHiveUser } from "@/contexts/UserContext";
 import { airdropABI } from "@/lib/abi/airdropABI";
 import { memberABI } from "@/lib/abi/memberABI";
 import { nogsABI } from "@/lib/abi/nogsABI";
 import { SenditABI } from "@/lib/abi/senditABI";
+import { sendHiveOperation } from "@/lib/hive/server-functions";
 import {
     Box,
     Button,
@@ -20,15 +22,11 @@ import {
     Portal,
     Text
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
-import { useAccount, useWaitForTransactionReceipt, useWriteContract, useReadContract } from 'wagmi';
 import { Operation } from "@hiveio/dhive";
-import { useHiveUser } from "@/contexts/UserContext";
-import { KeychainSDK, KeychainKeyTypes, Broadcast } from "keychain-sdk";
-import { sendHiveOperation } from "@/lib/hive/server-functions";
-import { wagmiConfig } from "@/app/providers";
-import ethers from "ethers";
-import { all } from "axios";
+import { Broadcast, KeychainKeyTypes, KeychainSDK } from "keychain-sdk";
+import { useEffect, useState } from "react";
+import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
+
 
 
 interface TokenSelectorProps {
@@ -53,7 +51,7 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
     const ethAddressList = Object.values<AuthorEthAddress>(addressDict).map((item: AuthorEthAddress) => item.ethAddress);
     const dividedAmount = ethAddressList.length > 0 ? (Number(amount) / ethAddressList.length) : 0;
     const { data: hash, error, isPending, writeContract } = useWriteContract();
-    const ethUser = useAccount();
+
     const tokenDictionary: { [key: string]: TokenInfo } = {
         SENDIT: {
             address: '0xBa5B9B2D2d06a9021EB3190ea5Fb0e02160839A4',
@@ -115,8 +113,6 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                     ]
                 operations.push(operation)
 
-                //const hiveAddress = element.author;
-                //console.log(hiveAddress)
             });
             const loginMethod = localStorage.getItem("LoginMethod")
             if (!user) {
@@ -155,16 +151,18 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
             console.error("Error handling bulk transfer:", error);
         }
     };
+
     useEffect(() => {
         console.log(isConfirmed, isConfirming)
     }
         , [isConfirmed, isConfirming])
+
     const allowance: any = useReadContract({
         address: tokenDictionary[token].address,
         abi: tokenDictionary[token].abi,
         functionName: 'allowance',
         //@ts-ignore
-        args: [ethUser.address, SkateAirdropContract],
+        args: [account.address, SkateAirdropContract],
     });
 
     const handleBulkTransfer = async () => {
@@ -175,7 +173,7 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
             }
 
             const dividedAmountList = ethAddressListFormatted.map(() => dividedAmountFormatted);
-            if (allowance?.data < dividedAmountFormatted) {
+            if (allowance?.data < amount) {
                 try {
                     writeContract({
                         address: tokenDictionary[token].address,
