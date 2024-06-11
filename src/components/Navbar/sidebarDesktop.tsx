@@ -1,7 +1,6 @@
 "use client";
 import NotificationsPage from "@/components/notifications/page";
 import { useHiveUser } from "@/contexts/UserContext";
-import { claimRewards } from "./utils/claimRewards";
 import HiveClient from "@/lib/hive/hiveclient";
 import { HiveAccount } from "@/lib/models/user";
 import { formatETHaddress } from "@/lib/utils";
@@ -33,6 +32,7 @@ import { useAccount } from "wagmi";
 import LoginModal from "../Hive/Login/LoginModal";
 import CommunityTotalPayout from "../communityTotalPayout";
 import checkRewards from "./utils/checkReward";
+import { claimRewards } from "./utils/claimRewards";
 const blink = keyframes`
   0% { opacity: 1; }
   50% { opacity: 0.1; }
@@ -131,26 +131,26 @@ const SidebarDesktop = () => {
 
         <HStack padding={0} mt={8} gap={3} fontSize={"22px"}>
           <FaSpeakap size={"22px"} />
-          <Text cursor={"pointer"} onClick={() => {
+          <Text color={"white"} cursor={"pointer"} onClick={() => {
             window.location.href = "/";
           }}>Feed</Text>
         </HStack>
         <HStack padding={0} gap={3} fontSize={"22px"}>
           <FaBook size={"22px"} />
-          <Text cursor={"pointer"} onClick={() => {
+          <Text color={"white"} cursor={"pointer"} onClick={() => {
             window.location.href = "/mag";
           }}>Magazine</Text>
         </HStack>
         <HStack padding={0} gap={3} fontSize={"22px"}>
           <FaEthereum size={"22px"} />
-          <Text cursor={"pointer"} onClick={() => {
+          <Text color={"white"} cursor={"pointer"} onClick={() => {
             window.location.href = "/dao";
           }}>Dao</Text>
         </HStack>
         {!hiveUser && (
           <HStack padding={0} gap={3} fontSize={"22px"}>
             <FaDiscord size={"22px"} />
-            <Text cursor={"pointer"} onClick={() => {
+            <Text color={"white"} cursor={"pointer"} onClick={() => {
               window.location.href = "https://discord.gg/skateboard";
             }}>Chat</Text>
           </HStack>
@@ -160,13 +160,13 @@ const SidebarDesktop = () => {
           <>
             <HStack padding={0} gap={3} fontSize={"22px"}>
               <FaUser size={"22px"} />
-              <Text cursor={"pointer"} onClick={() => {
+              <Text color={"white"} cursor={"pointer"} onClick={() => {
                 window.location.href = `/profile/${hiveUser.name}`;
               }}>Profile</Text>
             </HStack>
             <HStack padding={0} gap={3} fontSize={"22px"}>
               <FaWallet size={"22px"} />
-              <Text cursor={"pointer"} onClick={() => {
+              <Text color={"white"} cursor={"pointer"} onClick={() => {
                 window.location.href = `/wallet`;
               }}>Wallet</Text>
               {hasRewards && (
@@ -194,7 +194,7 @@ const SidebarDesktop = () => {
               fontSize={"22px"}
             >
               <FaBell size={"22px"} />
-              <Text> Notifications</Text>
+              <Text color={"white"} > Notifications</Text>
             </HStack>
             {notifications ? <NotificationsPage /> : null}
           </>
@@ -206,6 +206,7 @@ const SidebarDesktop = () => {
             variant={"outline"}
             borderColor={"red.400"}
             width={"100%"}
+            color={"white"}
             bg="black"
             leftIcon={
               <Icon color={hiveUser ? "red.400" : "white"} as={FaHive} />
@@ -221,6 +222,7 @@ const SidebarDesktop = () => {
             borderColor={"blue.400"}
             width={"100%"}
             bg="black"
+            color={"white"}
             leftIcon={
               <Icon
                 color={ethAccount.address ? "blue.400" : "white"}
