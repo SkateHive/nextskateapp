@@ -6,12 +6,12 @@ const getTranslation = async (body: string, language: string) => {
         dangerouslyAllowBrowser: true,
     });
 
-    const prompt = `Translate this Text to ${language} keep the markdown formatting the pictures and videos in your response: ${body}`;
+    const prompt = `Translate this Text to ${language}: ${body}`;
     const response = await openai.chat.completions.create({
         messages: [{ role: 'user', content: prompt }],
         model: 'gpt-4o',
     });
-    const summary = response.choices[0]?.message?.content || 'Ops, our devs forgot to pay the AI bill, try again later. if you are the DEV, check your .env.local variables bro!';
+    const summary = response.choices[0]?.message?.content || 'Ops, our devs forgot to pay the AI bill, try again later. if you are the DEV, check your .env.local variables';
     return summary;
 };
 
