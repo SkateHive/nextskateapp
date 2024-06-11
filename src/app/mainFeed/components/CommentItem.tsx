@@ -201,7 +201,7 @@ const CommentItem = ({
           ${getTotalPayout(comment)}
         </Text>
       </Flex>
-      <Divider mt={4} />
+      <Divider color={"grey"} mt={4} />
       {isEyeClicked && (
         <Box ml={10} mt={4} pl={4} borderLeft="2px solid gray">
 
@@ -224,8 +224,6 @@ const CommentItem = ({
               Show More
             </Button>
           }
-
-
         </Box>
       )}
     </Box>
