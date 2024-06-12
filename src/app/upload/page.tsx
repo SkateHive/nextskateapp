@@ -219,7 +219,7 @@ export default function Upload() {
             <Input {...getInputProps()} id="md-image-upload" style={{ display: 'none' }} size="md" />
 
             <Flex direction={{ base: 'column', md: 'row' }} >
-                <Box width={{ base: '90%', md: '50%' }} p="4">
+                <Box width={{ base: '100%', md: '50%' }} p="4">
                     <HStack>
                         <Input
                             borderColor={"green.600"}

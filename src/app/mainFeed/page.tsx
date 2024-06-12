@@ -311,7 +311,7 @@ const SkateCast = () => {
                 overflow={"hidden"}
                 resize={"vertical"}
                 ref={postBodyRef}
-                placeholder="Write your comment..."
+                placeholder="Write your stuff..."
               />
               <HStack>
                 {imageList.map((item, index) => (
