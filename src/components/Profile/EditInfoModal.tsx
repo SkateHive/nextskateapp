@@ -59,7 +59,7 @@ export default function EditInfoModal({ isOpen, onClose, user }: EditModalProps)
   const connecteWallet = useAccount().address;
   const [isEthSetupModalOpen, setIsEthSetupModalOpen] = useState(false);
   const [ethAddress, setEthAddress] = useState<string>(extensions?.eth_address || '');
-  const [videoParts, setVideoParts] = useState<VideoPart[]>(extensions?.videoParts || '')
+  const [videoParts, setVideoParts] = useState<VideoPart[]>(extensions?.video_parts || '')
 
   async function handleProfileFileInputChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
