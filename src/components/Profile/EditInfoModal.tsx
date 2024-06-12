@@ -2,7 +2,7 @@
 
 import { uploadFileToIPFS } from "@/app/upload/utils/uploadToIPFS";
 import { updateProfile } from "@/lib/hive/client-functions";
-import { HiveAccount } from "@/lib/models/user";
+import { HiveAccount, VideoPart } from "@/lib/models/user";
 import {
   Badge,
   Button,
@@ -37,6 +37,7 @@ const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN
 export default function EditInfoModal({ isOpen, onClose, user }: EditModalProps) {
 
   const metadata = JSON.parse(user.posting_json_metadata).profile ? JSON.parse(user.posting_json_metadata) : (user.json_metadata ? JSON.parse(user.json_metadata) : {});
+  const extMetadata = JSON.parse(user.json_metadata).extensions ? JSON.parse(user.json_metadata) : {};
   const [name, setName] = useState<string>(metadata?.profile.name || '');
   const [about, setAbout] = useState<string>(metadata?.profile.about || '');
   const [avatarUrl, setAvatarUrl] = useState<string>(metadata?.profile.profile_image || '');
@@ -44,7 +45,7 @@ export default function EditInfoModal({ isOpen, onClose, user }: EditModalProps)
   const [extensions, setExtensions] = useState<any>(
     (() => {
       try {
-        return (metadata?.extensions) || "";
+        return (extMetadata?.extensions) || "";
       } catch (error) {
         console.error("Error parsing JSON metadata:", error);
         return ""; 
@@ -58,6 +59,7 @@ export default function EditInfoModal({ isOpen, onClose, user }: EditModalProps)
   const connecteWallet = useAccount().address;
   const [isEthSetupModalOpen, setIsEthSetupModalOpen] = useState(false);
   const [ethAddress, setEthAddress] = useState<string>(extensions?.eth_address || '');
+  const [videoParts, setVideoParts] = useState<VideoPart[]>(extensions?.video_parts || '');
 
 
   async function handleProfileFileInputChange(e: ChangeEvent<HTMLInputElement>) {
@@ -87,10 +89,10 @@ export default function EditInfoModal({ isOpen, onClose, user }: EditModalProps)
       return
     }
     if (loginMethod === "keychain") {
-      await updateProfile(user.name, name, about, coverImageUrl, avatarUrl, website, ethAddress, []);
+      await updateProfile(user.name, name, about, coverImageUrl, avatarUrl, website, ethAddress, videoParts);
     } else if (loginMethod === "privateKey") {
       const encryptedPrivateKey = localStorage.getItem("EncPrivateKey");
-      await updateProfileWithPrivateKey (encryptedPrivateKey, user.name, name, about, coverImageUrl, avatarUrl, website, ethAddress, [])
+      await updateProfileWithPrivateKey (encryptedPrivateKey, user.name, name, about, coverImageUrl, avatarUrl, website, ethAddress, videoParts)
     }
   }
 

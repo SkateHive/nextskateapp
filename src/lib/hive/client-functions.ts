@@ -140,12 +140,14 @@ export async function updateProfile(username: string, name: string, about: strin
         cover_image: coverImageUrl,
         profile_image: avatarUrl,
         website: website,
-      },
+      }
+    };
+    const extensionsMetadata = {
       extensions: {
         eth_address: ethAddress,
         video_parts: videoParts,
-      },
-    };
+      }
+    }
 
     const formParamsAsObject = {
       data: {
@@ -155,8 +157,9 @@ export async function updateProfile(username: string, name: string, about: strin
             'account_update2',
             {
               account: username,
+              json_metadata: JSON.stringify(extensionsMetadata),
               posting_json_metadata: JSON.stringify(profileMetadata),
-              extensions: [],
+              extensions: []
             },
           ],
         ],
