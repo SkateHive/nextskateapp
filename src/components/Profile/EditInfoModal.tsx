@@ -2,6 +2,7 @@
 
 import { uploadFileToIPFS } from "@/app/upload/utils/uploadToIPFS";
 import { updateProfile } from "@/lib/hive/client-functions";
+import { updateProfileWithPrivateKey } from "@/lib/hive/server-functions";
 import { HiveAccount, VideoPart } from "@/lib/models/user";
 import {
   Badge,
@@ -24,7 +25,6 @@ import {
 import { ChangeEvent, useState } from "react";
 import { FaUpload } from 'react-icons/fa';
 import { useAccount } from "wagmi";
-import { updateProfileWithPrivateKey } from "@/lib/hive/server-functions";
 
 interface EditModalProps {
   isOpen: boolean
@@ -48,7 +48,7 @@ export default function EditInfoModal({ isOpen, onClose, user }: EditModalProps)
         return (extMetadata?.extensions) || "";
       } catch (error) {
         console.error("Error parsing JSON metadata:", error);
-        return ""; 
+        return "";
       }
     })()
   );
@@ -59,7 +59,7 @@ export default function EditInfoModal({ isOpen, onClose, user }: EditModalProps)
   const connecteWallet = useAccount().address;
   const [isEthSetupModalOpen, setIsEthSetupModalOpen] = useState(false);
   const [ethAddress, setEthAddress] = useState<string>(extensions?.eth_address || '');
-  const [videoParts, setVideoParts] = useState<VideoPart[]>(extensions?.videoParts || '') 
+  const [videoParts, setVideoParts] = useState<VideoPart[]>(extensions?.videoParts || '')
 
   async function handleProfileFileInputChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -91,7 +91,7 @@ export default function EditInfoModal({ isOpen, onClose, user }: EditModalProps)
       await updateProfile(user.name, name, about, coverImageUrl, avatarUrl, website, ethAddress, videoParts);
     } else if (loginMethod === "privateKey") {
       const encryptedPrivateKey = localStorage.getItem("EncPrivateKey");
-      await updateProfileWithPrivateKey (encryptedPrivateKey, user.name, name, about, coverImageUrl, avatarUrl, website, ethAddress, videoParts)
+      await updateProfileWithPrivateKey(encryptedPrivateKey, user.name, name, about, coverImageUrl, avatarUrl, website, ethAddress, videoParts)
     }
   }
 
@@ -105,7 +105,7 @@ export default function EditInfoModal({ isOpen, onClose, user }: EditModalProps)
     return (
       <Modal isOpen={isEthSetupModalOpen} onClose={() => setIsEthSetupModalOpen(false)} size="md">
         <ModalOverlay />
-        <ModalContent bg={"black"} border={"0.6px solid grey"}>
+        <ModalContent color={"white"} bg={"black"} border={"0.6px solid grey"}>
           <ModalHeader>Is that your wallet? </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -126,7 +126,7 @@ export default function EditInfoModal({ isOpen, onClose, user }: EditModalProps)
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="md">
       <ModalOverlay />
-      <ModalContent bg={"black"} border={"0.6px solid grey"}>
+      <ModalContent color={"white"} bg={"black"} border={"0.6px solid grey"}>
         <ModalHeader>Edit Profile</ModalHeader>
         <ModalCloseButton />
         <ModalBody>

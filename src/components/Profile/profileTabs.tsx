@@ -12,7 +12,7 @@ export default function ProfileTabs({ user }: ProfilePageProps) {
     return (
         <Box h={"100vh"} >
             <Tabs isLazy isFitted variant="enclosed">
-                <TabList mb="1em">
+                <TabList color={"white"} mb="1em">
                     <Tab >Blog</Tab>
                     <Tab>Posts</Tab>
                     <Tab>VideoParts</Tab>
