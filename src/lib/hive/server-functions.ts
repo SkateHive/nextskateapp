@@ -179,19 +179,23 @@ export async function updateProfileWithPrivateKey(
       cover_image: coverImageUrl,
       profile_image: avatarUrl,
       website: website,
-    },
+    }
+  };
+
+  const extMetadata = {
     extensions: {
       eth_address: ethAddress,
       video_parts: videoParts,
-    },
-  };
+    }
+  }
 
   const updateInfo: dhive.Operation = [
     "account_update2",
     {
       account: username,
-      extensions: [],
-      posting_json_metadata: JSON.stringify(profileMetadata)
+      json_metadata: JSON.stringify(extMetadata),
+      posting_json_metadata: JSON.stringify(profileMetadata),
+      extensions: []
     }
   ]
 
