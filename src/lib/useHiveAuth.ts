@@ -18,6 +18,14 @@ export interface HiveAccount extends dhive.Account {
   metadata?: MetadataProps
 }
 
+interface Evt {
+  account: string
+  cmd: string
+  expire: undefined
+  key: string
+  uuid: string
+}
+
 export type AuthUser = {
   hiveUser: HiveAccount | null
   loginWithHive: (
@@ -68,7 +76,8 @@ function useAuthHiveUser(): AuthUser {
   const loginWithHive = (
     username: string,
     loginAs: boolean = false,
-    privateKey: string | undefined
+    privateKey: string | undefined,
+    setHASUrl?: (url: string) => void
   ): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       if (!username) reject("Empty username")

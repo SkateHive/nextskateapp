@@ -8,6 +8,7 @@ import {
   FormControl,
   FormErrorMessage,
   Image,
+  Image,
   Input,
   Modal,
   ModalBody,
@@ -48,7 +49,7 @@ function LoginModal({
   async function doLogin(useLoginAs: boolean = false) {
     try {
       setIsLogginIn(true)
-      await loginWithHive(username, useLoginAs, privateKey)
+      await loginWithHive(username, useLoginAs, privateKey, setHASUrl)
       onClose()
       console.log(hiveUser)
     } catch (error) {
