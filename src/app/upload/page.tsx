@@ -200,7 +200,7 @@ export default function Upload() {
     }
 
     return (
-        <Box h={"100vh"} width="100%" overflow="hidden">
+        <Box width="100%" overflow="hidden">
             {showPreview &&
                 <PreviewModal
                     isOpen={showPreview}
