@@ -1,15 +1,14 @@
 // src/app/RootLayout.tsx
 
-import dynamic from 'next/dynamic';
 import Favicon from "@/components/FaviconLinks";
+import MobileNavbar from "@/components/Navbar/MobileNavbar";
 import SidebarDesktop from "@/components/Navbar/sidebarDesktop";
-import MobileMenuButton from "@/components/mobileMenuButton";
 import { getWebsiteURL } from "@/lib/utils";
-import { Box, Flex } from "@chakra-ui/react"; // Remove ColorModeScript import from here
+import { Flex } from "@chakra-ui/react"; // Remove ColorModeScript import from here
+import dynamic from 'next/dynamic';
 import { Share_Tech_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 import { Providers } from "./providers";
-import theme from '../theme'; // Ensure you import the theme
 
 const share_tech_mono = Share_Tech_Mono({ subsets: ["latin"], weight: "400" });
 
@@ -56,9 +55,8 @@ export default function RootLayout({
               .mobile-menu-button {   
                 z-index: 1000;
                 position: fixed;
-                left: 16px;
-                bottom: 16px;
-              }
+                left: 0px;
+                }
             }
             @media (min-width: 769px) {
               #layout {
@@ -80,7 +78,7 @@ export default function RootLayout({
               <SidebarDesktop />
             </div>
             <div className="mobile-menu-button">
-              <MobileMenuButton />
+              <MobileNavbar />
             </div>
             {children}
           </Flex>
