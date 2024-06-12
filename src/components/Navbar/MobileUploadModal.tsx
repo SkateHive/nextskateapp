@@ -36,82 +36,115 @@ const MobileUploadModal: React.FC<MobileUploadModalProps> = ({ isOpen, onClose, 
         if (ipfsData !== undefined) {
             const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}?pinataGatewayToken=${PINATA_GATEWAY_TOKEN}`;
             const markdownLink = file.type.startsWith("video/") ? `<iframe src="${ipfsUrl}" allowfullscreen></iframe>` : `![Image](${ipfsUrl})`;
-            setFinalPost(`${post}\n${markdownLink}`);
-            console.log(finalPost);
-        }
+            const updatedFinalPost = `${post}\n${markdownLink}`;
+            setFinalPost(updatedFinalPost);
+            const loginMethod = localStorage.getItem("LoginMethod");
 
-        if (user.hiveUser) {
-            const postData = {
-                parent_author: parent_author,
-                parent_permlink: parent_permlink,
-                author: String(user.hiveUser.name),
-                permlink: permlink,
-                title: "Cast",
-                body: finalPost,
-                json_metadata: JSON.stringify({
-                    tags: ["skateboard"],
-                    app: "skatehive",
-                }),
-            };
-            const commentOptions: dhive.CommentOptionsOperation = [
-                "comment_options",
-                {
-                    author: String(user.hiveUser.name),
-                    permlink: permlink,
-                    max_accepted_payout: "10000.000 HBD",
-                    percent_hbd: 10000,
-                    allow_votes: true,
-                    allow_curation_rewards: true,
-                    extensions: [
-                        [
-                            0,
-                            {
-                                beneficiaries: [
-                                    {
-                                        account: "skatehacker",
-                                        weight: 1000,
-                                    },
-                                ],
-                            },
-                        ],
-                    ],
-                },
-            ];
-
-            const postOperation: dhive.CommentOperation = [
-                "comment",
-                {
+            if (user.hiveUser) {
+                const postData = {
                     parent_author: parent_author,
                     parent_permlink: parent_permlink,
                     author: String(user.hiveUser.name),
                     permlink: permlink,
                     title: "Cast",
-                    body: finalPost,
+                    body: updatedFinalPost,
                     json_metadata: JSON.stringify({
                         tags: ["skateboard"],
-                        app: "Skatehive App",
-                        image: "/skatehive_square_green.png",
+                        app: "skatehive",
                     }),
-                },
-            ];
+                };
+                const operations = [["comment", postData]];
+                if (loginMethod === "keychain") {
+                    if (typeof window !== "undefined") {
+                        try {
+                            const response = await new Promise<{
+                                success: boolean;
+                                message?: string;
+                            }>((resolve, reject) => {
+                                window.hive_keychain.requestBroadcast(
+                                    String(user?.hiveUser?.name),
+                                    operations,
+                                    "posting",
+                                    (response: any) => {
+                                        if (response.success) {
+                                            resolve(response);
+                                        } else {
+                                            reject(new Error(response.message));
+                                        }
+                                    }
+                                );
+                            });
+                            if (response.success) {
+                                addComment(postData);
+                                window.location.reload();
+                                onClose();
+                            }
+                        } catch (error) {
+                            console.error("Error posting comment:", (error as Error).message);
+                        }
+                    }
+                } else if (loginMethod === "privateKey") {
 
-            try {
-                await commentWithPrivateKey(
-                    localStorage.getItem("EncPrivateKey")!,
-                    postOperation,
-                    commentOptions
-                );
+                    const commentOptions: dhive.CommentOptionsOperation = [
+                        "comment_options",
+                        {
+                            author: String(user.hiveUser.name),
+                            permlink: permlink,
+                            max_accepted_payout: "10000.000 HBD",
+                            percent_hbd: 10000,
+                            allow_votes: true,
+                            allow_curation_rewards: true,
+                            extensions: [
+                                [
+                                    0,
+                                    {
+                                        beneficiaries: [
+                                            {
+                                                account: "skatehacker",
+                                                weight: 1000,
+                                            },
+                                        ],
+                                    },
+                                ],
+                            ],
+                        },
+                    ];
 
-                addComment(postData);
-                onClose();
+                    const postOperation: dhive.CommentOperation = [
+                        "comment",
+                        {
+                            parent_author: parent_author,
+                            parent_permlink: parent_permlink,
+                            author: String(user.hiveUser.name),
+                            permlink: permlink,
+                            title: "Cast",
+                            body: updatedFinalPost,
+                            json_metadata: JSON.stringify({
+                                tags: ["skateboard"],
+                                app: "Skatehive App",
+                                image: "/skatehive_square_green.png",
+                            }),
+                        },
+                    ];
 
-            } catch (error) {
-                console.error("Error posting comment:", (error as Error).message);
+                    try {
+                        await commentWithPrivateKey(
+                            localStorage.getItem("EncPrivateKey")!,
+                            postOperation,
+                            commentOptions
+                        );
+
+                        addComment(postData);
+                        onClose();
+                        window.location.reload();
+
+                    } catch (error) {
+                        console.error("Error posting comment:", (error as Error).message);
+                    }
+                }
             }
         }
-
-    }
-
+    };
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} isCentered>
@@ -119,7 +152,6 @@ const MobileUploadModal: React.FC<MobileUploadModalProps> = ({ isOpen, onClose, 
             <ModalContent w={{ base: "100%", md: "75%" }} bg="black" border="0.6px solid grey" borderRadius="md" mx={4}>
                 <ModalHeader>
                     <Center>
-
                         <Text color={'green.200'}>
                             Post something DOPE!
                         </Text>
@@ -146,10 +178,7 @@ const MobileUploadModal: React.FC<MobileUploadModalProps> = ({ isOpen, onClose, 
                         width={"100%"}
                         variant={"outline"}
                         colorScheme="green"
-                        onClick={() => {
-                            // onClose();
-                            handlePost();
-                        }}
+                        onClick={handlePost}
                     >
                         Post
                     </Button>
