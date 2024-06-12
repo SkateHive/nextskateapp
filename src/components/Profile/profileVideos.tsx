@@ -45,11 +45,11 @@ const VideoParts = ({ skater }: VideoPartsProps) => {
 
         updateProfile(
             skater.name,
-            JSON.parse(skater?.json_metadata)?.profile?.name,
-            JSON.parse(skater?.json_metadata)?.profile?.about,
-            JSON.parse(skater?.json_metadata)?.profile?.cover_image,
-            JSON.parse(skater?.json_metadata)?.profile?.profile_image,
-            JSON.parse(skater?.json_metadata)?.profile?.website,
+            JSON.parse(skater?.posting_json_metadata)?.profile?.name,
+            JSON.parse(skater?.posting_json_metadata)?.profile?.about,
+            JSON.parse(skater?.posting_json_metadata)?.profile?.cover_image,
+            JSON.parse(skater?.posting_json_metadata)?.profile?.profile_image,
+            JSON.parse(skater?.posting_json_metadata)?.profile?.website,
             newExtensions.eth_address,
             newExtensions.video_parts
         );
@@ -65,11 +65,11 @@ const VideoParts = ({ skater }: VideoPartsProps) => {
 
         updateProfile(
             skater.name,
-            JSON.parse(skater?.json_metadata)?.profile?.name,
-            JSON.parse(skater?.json_metadata)?.profile?.about,
-            JSON.parse(skater?.json_metadata)?.profile?.cover_image,
-            JSON.parse(skater?.json_metadata)?.profile?.profile_image,
-            JSON.parse(skater?.json_metadata)?.profile?.website,
+            JSON.parse(skater?.posting_json_metadata)?.profile?.name,
+            JSON.parse(skater?.posting_json_metadata)?.profile?.about,
+            JSON.parse(skater?.posting_json_metadata)?.profile?.cover_image,
+            JSON.parse(skater?.posting_json_metadata)?.profile?.profile_image,
+            JSON.parse(skater?.posting_json_metadata)?.profile?.website,
             newExtensions.eth_address,
             newExtensions.video_parts
         );
