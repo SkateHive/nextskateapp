@@ -122,7 +122,7 @@ const SkateCast = () => {
       alert("Please write something before posting");
       return;
     }
-    else if (markdownString.length > 10000) {
+    else if (markdownString.length > 2000) {
       alert("Post is too long. To make longform content use our /mag section");
       return;
     }

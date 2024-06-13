@@ -6,12 +6,12 @@ import {
     Menu,
     MenuButton,
     MenuItem,
-    MenuList
+    MenuList,
+    Tooltip
 } from "@chakra-ui/react";
 import { useState } from "react";
 import HiveTipModal from "./HiveTipModal";
 import TipModal from "./TipModal";
-import { Tooltip } from "@chakra-ui/react";
 interface TipButtonProps {
     author: string;
 }
@@ -63,10 +63,10 @@ export default function TipButton({ author }: TipButtonProps) {
     return (
         <Menu>
             <Tooltip
-            label = 'Spend Money 💸'
-            bg={'black'}
-            color={"limegreen"}
-            border={"1px dashed #A5D6A7"}
+                label='Send Money 💸'
+                bg={'black'}
+                color={"limegreen"}
+                border={"1px dashed #A5D6A7"}
             >
                 <MenuButton onClick={fetchUserData} w={"auto"} as={Button} color="green.200" variant={"ghost"} _hover={{
                     background: "none",
