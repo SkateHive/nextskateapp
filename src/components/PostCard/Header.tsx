@@ -189,36 +189,37 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
               >
                 Share
               </MenuButton>
-              <MenuList fontSize={"sm"}>
-                <MenuItem onClick={handleCopyPostLink} icon={<Copy size={18} />}>
+              <MenuList bg={"black"} fontSize={"sm"}>
+                <MenuItem bg={"black"}
+                  onClick={handleCopyPostLink} icon={<Copy size={18} />}>
                   Copy link
                 </MenuItem>
-                <MenuItem
+                <MenuItem bg={"black"}
                   onClick={handleShareWarpCast}
                   icon={<ExternalLink size={18} />}
                 >
                   WarpCast
                 </MenuItem>
-                <MenuItem
+                <MenuItem bg={"black"}
                   onClick={handleShareTwitter}
                   icon={<Twitter size={18} />}
                 >
                   Twitter
                 </MenuItem>
-                <MenuItem
+                <MenuItem bg={"black"}
                   onClick={handleShareDiscord}
                   icon={<FaDiscord size={18} />}
                 >
                   Discord
                 </MenuItem>
                 <MenuDivider />
-                <MenuItem
+                <MenuItem bg={"black"}
                   onClick={handleOpenPostLink}
                   icon={<ExternalLink size={18} />}
                 >
                   Post page
                 </MenuItem>
-                <MenuItem
+                <MenuItem bg={"black"}
                   onClick={handleOpenPostLinkPeakd}
                   icon={<ExternalLink size={18} />}
                 >
