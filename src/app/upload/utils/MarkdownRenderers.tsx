@@ -132,7 +132,7 @@ export const MarkdownRenderers = {
         autoPlay={true}
         muted={true}
         src={src}
-        style={{ background: 'transparent', borderRadius: '10px', marginBottom: '20px', border: '2px grey solid', minWidth: '70%', minHeight: '50%' }}
+        style={{ background: 'transparent', borderRadius: '10px', marginBottom: '20px', border: '0px grey solid', minWidth: '480px', minHeight: '50%', maxHeight: '420px' }}
       />
     </div>
   ),
