@@ -125,7 +125,7 @@ const DaoPage = () => {
                 <Text fontSize="16px" color="#A5D6A7">
                   {connectedUserEnsName}
                 </Text>
-                <Text fontSize="10px" mb={2}>
+                <Text color={"white"} fontSize="10px" mb={2}>
                   Voting Power: 123 Votes
                 </Text>
               </VStack>
@@ -184,7 +184,7 @@ const DaoPage = () => {
             {mainProposal?.author && (
               <>
                 <HStack justifyContent="space-between">
-                  <Text>
+                  <Text color={"white"}>
                     Start:{" "}
                     <Badge>
                       {new Date(
@@ -192,9 +192,9 @@ const DaoPage = () => {
                       ).toLocaleDateString()}
                     </Badge>
                   </Text>
-                  <Text>
+                  <Text color={"white"}>
                     End:
-                    <Badge>
+                    <Badge bg={"black"} colorScheme="green" >
                       {" "}
                       {new Date(mainProposal.end * 1000).toLocaleDateString()}
                     </Badge>
@@ -207,6 +207,7 @@ const DaoPage = () => {
               p={4}
               border="0.6px solid #A5D6A7"
               borderRadius="none"
+              color={"green.200"}
             >
 
               <Text fontSize={"28px"}> {mainProposal?.title}</Text>

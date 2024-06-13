@@ -1,7 +1,7 @@
 'use client'
 import { useHiveUser } from "@/contexts/UserContext"
 import { useHivePrice } from "@/hooks/useHivePrice"
-import { claimRewards } from "@/lib/hive/client-functions"
+import { claimRewards } from "@/components/Navbar/utils/claimRewards"
 import {
     Avatar,
     Box,
@@ -21,7 +21,7 @@ import { SendIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 import { AiOutlineThunderbolt } from "react-icons/ai"
 import { BsArrowDownCircleFill } from "react-icons/bs"
-import { FaGift, FaHive } from "react-icons/fa"
+import { FaEye, FaGift, FaHive } from "react-icons/fa"
 import { convertVestingSharesToHivePower } from "../utils/calculateHP"
 const HIVE_LOGO_URL = "https://cryptologos.cc/logos/hive-blockchain-hive-logo.png";
 const HBD_LOGO_URL = "https://i.ibb.co/C6TPhs3/HBD.png";
@@ -36,9 +36,7 @@ interface HiveBoxProps {
 const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
     const { hiveUser } = useHiveUser()
     const hivePrice = useHivePrice()
-
     const [hiveUsdValue, setHiveUsdValue] = useState(0)
-
     const vestingShares = hiveUser?.vesting_shares
     const delegatedVestingShares = hiveUser?.delegated_vesting_shares
     const receivedVestingShares = hiveUser?.received_vesting_shares
@@ -48,12 +46,10 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
     const [totalHP, setTotalHP] = useState(0)
     const [HPUsdValue, setHPUsdValue] = useState(0)
     const [delegatedHPUsdValue, setDelegatedHPUsdValue] = useState(0)
-
     const [HBDUsdValue, setHBDUsdValue] = useState(0)
-
     const [savingsUSDvalue, setSavingsUSDvalue] = useState(0)
-
     const [totalValue, setTotalValue] = useState(0)
+    const [isModalOpened, setIsOpened] = useState(false);
 
     useEffect(() => {
         const calculateHP = async () => {
@@ -85,34 +81,36 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
         calculateHiveUsdValue();
     }, [hiveUser, hivePrice, vestingShares, delegatedVestingShares, receivedVestingShares, hivePower, HPthatUserDelegated, delegatedHPUsdValue, onNetWorthChange]);
 
-    const [isOpened, setIsOpened] = useState(false);
-
 
     return (
         <VStack
             w={"100%"}
-            gap={6} 
+            gap={6}
             align={"normal"}
             p={4}
             flex="1"
             bg="#201d21"
             borderRadius="10px"
             border="1px solid red"
+            m={2}
         >
-            <Center onClick={() => setIsOpened(!isOpened)}>
+            <Center onClick={() => setIsOpened(!isModalOpened)}>
+
                 <HStack cursor="pointer">
+
                     <FaHive />
-                    <Text align="center" fontSize={{ base: 24, md: 28 }}>
-                       
-                    </Text>
+
                     {hiveUser && (
                         <Text fontSize={{ base: 18, md: 22 }}>
                             {hiveUser.name}
                         </Text>
                     )}
+                    <FaEye />
+
                 </HStack>
             </Center>
-            <Divider mt={-6} />
+
+
             {hiveUser ? (
                 <VStack align="normal">
                     <Center>
@@ -133,22 +131,6 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                     boxSize="48px"
                                     bg="gray.200"
                                 />
-                                <Tooltip
-                                    border="1px solid red"
-                                    color="black"
-                                    bg="white"
-                                    placement="right-start"
-                                    label={
-                                        <Text>
-                                            Rewards to Claim: <br />
-                                            HBD: {String(hiveUser.reward_hbd_balance)}<br />
-                                            Hive: {String(hiveUser.reward_hive_balance)}<br />
-                                            HP: {String(hiveUser.reward_vesting_hive)}
-                                        </Text>
-                                    }
-                                >
-                                    <FaGift onClick={() => claimRewards(hiveUser)} />
-                                </Tooltip>
                             </HStack>
                         </Box>
                     </Center>
@@ -156,12 +138,12 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                         minWidth="100%"
                         border="1px solid white"
                         bg="red.700"
-                        onClick={() => setIsOpened(!isOpened)}
+                        onClick={() => setIsOpened(!isModalOpened)}
                         cursor="pointer"
                     >
                         <Center>
                             <VStack m={5}>
-                                <Box bg="#b32227" borderRadius="8px" padding="4px 8px">
+                                <Box bg="#b32227" border={"2px solid black"} borderRadius="8px" padding="4px 8px">
                                     <Text fontWeight="bold" fontSize={{ base: 24, md: 34 }} color="#33000a">
                                         ${totalValue.toFixed(2)}
                                     </Text>
@@ -169,7 +151,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                             </VStack>
                         </Center>
                     </Box>
-                    {isOpened && (
+                    {isModalOpened && (
                         <Box>
                             <Center>
                                 <VStack width="100%">

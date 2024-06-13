@@ -3,6 +3,7 @@ import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
 import AuthorAvatar from "@/components/AuthorAvatar";
 import LoginModal from "@/components/Hive/Login/LoginModal";
 import TipButton from "@/components/PostCard/TipButton";
+import { useComments } from "@/hooks/comments";
 import {
   formatDate,
   transformIPFSContent,
@@ -11,20 +12,19 @@ import {
 import {
   Box,
   Button,
-  Divider,
   Flex,
   HStack,
-  IconButton,
   Text,
-  VStack,
+  VStack
 } from "@chakra-ui/react";
-import { useState } from "react";
-import { FaHeart, FaRegComment, FaRegHeart } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import { FaEye, FaHeart, FaRegComment, FaRegHeart } from "react-icons/fa";
 import ReactMarkdown from "react-markdown";
 import { useReward } from "react-rewards";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import { handleVote } from "../utils/handleFeedVote";
+import CommentList from "./CommentsList";
 import ReplyModal from "./replyModal";
 
 interface CommentItemProps {
@@ -53,6 +53,7 @@ const VotingButton = ({
     spread: 60,
   });
 
+
   const handleVoteClick = async () => {
     if (username === "") {
       setIsLoginModalOpen(true);
@@ -70,9 +71,6 @@ const VotingButton = ({
       }
     }
   };
-
-
-
 
   return (
     <>
@@ -114,6 +112,23 @@ const CommentItem = ({
     setIsModalOpen(!isModalOpen);
   };
 
+  const commentReplies = useComments(comment.author, comment.permlink);
+  const comments_count = commentReplies.comments.length;
+  const [numberOfComments, setNumberOfComments] = useState(0);
+
+  useEffect(() => {
+    setNumberOfComments(comments_count);
+  }
+    , [numberOfComments, comments_count]);
+
+  const [isEyeClicked, setIsEyeClicked] = useState(false);
+  const handleEyeClick = () => {
+    setIsEyeClicked(!isEyeClicked);
+  }
+
+
+  const [visiblePosts, setVisiblePosts] = useState(5);
+
   return (
     <Box key={comment.id} p={4} width="100%" bg="black" color="white">
       <ReplyModal
@@ -126,63 +141,89 @@ const CommentItem = ({
         <AuthorAvatar username={comment.author} />
         <VStack ml={4} gap={0} alignItems={"start"} width={"full"} marginRight={"16px"}>
           <HStack justify={"space-between"} width={"full"}>
-            <HStack gap={"2px"}>
+            <HStack cursor={"pointer"} onClick={() =>
+              window.open(
+                `/post/test/@${comment.author}/${comment.permlink}`,
+                "_self",
+              )
+            } gap={"2px"}>
               <Text fontWeight="bold">{comment.author}</Text>
               <Text ml={2} color="gray.400" fontSize={"14px"}>
                 · {formatDate(String(comment.created))}
               </Text>
             </HStack>
-            <Text
-              onClick={() =>
-                window.open(
-                  `/post/test/@${comment.author}/${comment.permlink}`,
-                  "_self",
-                )
-              }
-              fontWeight={"bold"}
-              color={"green.400"}
-            >
-              ${getTotalPayout(comment)}
-            </Text>
+
+            <FaEye onClick={handleEyeClick} />
+
           </HStack>
           {/* Post Content */}
-          <Box
-            cursor={"pointer"}
-            onClick={() =>
-              window.open(
-                `/post/test/@${comment.author}/${comment.permlink}`,
-                "_self",
-              )
-            }
+
+          <ReactMarkdown
+            components={MarkdownRenderers}
+            rehypePlugins={[rehypeRaw]}
+            remarkPlugins={[remarkGfm]}
+
           >
-            <ReactMarkdown
-              components={MarkdownRenderers}
-              rehypePlugins={[rehypeRaw]}
-              remarkPlugins={[remarkGfm]}
-            >
-              {transformIPFSContent(
-                transformShortYoutubeLinksinIframes(comment.body),
-              )}
-            </ReactMarkdown>
-          </Box>
+            {transformIPFSContent(
+              transformShortYoutubeLinksinIframes(comment.body),
+            )}
+          </ReactMarkdown>
         </VStack>
       </Flex>
 
       {/* Buttons */}
       <Flex ml={14} justifyContent={"space-between"}>
         <TipButton author={comment.author} />
-        <IconButton
+        <Button
           colorScheme="green"
           variant="ghost"
-          icon={<FaRegComment />}
+          leftIcon={<FaRegComment />}
           onClick={handleModal}
           aria-label="Comments"
         >
-          {comment.children}
-        </IconButton>
+          {numberOfComments}
+        </Button>
+
         <VotingButton comment={comment} username={username} />
+        <Text
+          fontWeight={"bold"}
+          color={"green.400"}
+          onClick={() =>
+            window.open(
+              `/post/test/@${comment.author}/${comment.permlink}`,
+              "_self",
+            )
+          }
+          cursor={"pointer"}
+          mt={2}
+        >
+          ${getTotalPayout(comment)}
+        </Text>
       </Flex>
-      <Divider mt={4} />
+      {isEyeClicked && (
+        <Box ml={10} mt={4} pl={4} borderLeft="2px solid gray">
+
+          <CommentList
+            comments={commentReplies.comments}
+            visiblePosts={visiblePosts}
+            setVisiblePosts={() => { }}
+            username={username}
+            handleVote={handleVote}
+            getTotalPayout={getTotalPayout}
+          />
+          {visiblePosts < numberOfComments &&
+            <Button
+              onClick={() => setVisiblePosts(visiblePosts + 5)}
+              variant="outline"
+              colorScheme="green"
+              size="sm"
+              mt={4}
+            >
+              Show More
+            </Button>
+          }
+        </Box>
+      )}
     </Box>
   );
 };

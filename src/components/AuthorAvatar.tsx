@@ -1,8 +1,8 @@
-'use client'
+'use client';
 import HiveClient from "@/lib/hive/hiveclient";
-import { Link } from "@chakra-ui/next-js";
 import { Avatar, SystemStyleObject } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
+import { useInView } from "react-intersection-observer";
 
 interface AuthorAvatarProps {
     username: string;
@@ -32,7 +32,7 @@ export default function AuthorAvatar({ username, borderRadius, hover, boxSize }:
                     profileImageUrl = metadata.profile?.profile_image || "";
                 }
 
-                if (!profileImageUrl && user.json_metadata) {
+                if (profileImageUrl === "" && user.json_metadata) {
                     const metadata = JSON.parse(user.json_metadata);
                     profileImageUrl = metadata.profile?.profile_image || "";
                 }
@@ -43,21 +43,28 @@ export default function AuthorAvatar({ username, borderRadius, hover, boxSize }:
         }
     }, [username]);
 
+    const { ref, inView } = useInView({
+        triggerOnce: true,
+        threshold: 0.1,
+    });
+
     useEffect(() => {
-        fetchProfileImage();
-    }, [fetchProfileImage]);
+        if (inView) {
+            fetchProfileImage();
+        }
+    }, [inView, fetchProfileImage]);
 
     return (
-        <Link href={`/skater/${username}`}>
-            <Avatar
-                name={username}
-                src={profileImage}
-                boxSize={boxSize || 12}
-                bg="transparent"
-                loading="lazy"
-                borderRadius={borderRadius || 5}
-                _hover={hover || { transform: "scale(1.05)", cursor: "pointer" }}
-            />
-        </Link>
+        <Avatar
+            ref={ref}
+            onClick={() => window.open(`/skater/${username}`, "_blank")}
+            name={username}
+            src={inView ? profileImage : "/loading.gif"}
+            boxSize={boxSize || 12}
+            bg="transparent"
+            loading="lazy"
+            borderRadius={borderRadius || 5}
+            _hover={hover || { transform: "scale(1.05)", cursor: "pointer" }}
+        />
     );
 }

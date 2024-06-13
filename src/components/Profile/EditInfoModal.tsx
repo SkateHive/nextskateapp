@@ -2,7 +2,8 @@
 
 import { uploadFileToIPFS } from "@/app/upload/utils/uploadToIPFS";
 import { updateProfile } from "@/lib/hive/client-functions";
-import { HiveAccount } from "@/lib/models/user";
+import { updateProfileWithPrivateKey } from "@/lib/hive/server-functions";
+import { HiveAccount, VideoPart } from "@/lib/models/user";
 import {
   Badge,
   Button,
@@ -32,31 +33,33 @@ interface EditModalProps {
 }
 
 const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN
-console.log(PINATA_GATEWAY_TOKEN, "PINATA_GATEWAY_TOKEN")
+//console.log(PINATA_GATEWAY_TOKEN, "PINATA_GATEWAY_TOKEN")
 export default function EditInfoModal({ isOpen, onClose, user }: EditModalProps) {
-  console.log(user.metadata, "here")
-  const [name, setName] = useState<string>(user.metadata?.name || '');
-  const [about, setAbout] = useState<string>(user.metadata?.about || '');
-  const [avatarUrl, setAvatarUrl] = useState<string>(user.metadata?.profile_image || '');
-  const [coverImageUrl, setCoverImageUrl] = useState<string>(user.metadata?.cover_image || '');
+
+  const metadata = JSON.parse(user.posting_json_metadata).profile ? JSON.parse(user.posting_json_metadata) : (user.json_metadata ? JSON.parse(user.json_metadata) : {});
+  const extMetadata = JSON.parse(user.json_metadata).extensions ? JSON.parse(user.json_metadata) : {};
+  const [name, setName] = useState<string>(metadata?.profile.name || '');
+  const [about, setAbout] = useState<string>(metadata?.profile.about || '');
+  const [avatarUrl, setAvatarUrl] = useState<string>(metadata?.profile.profile_image || '');
+  const [coverImageUrl, setCoverImageUrl] = useState<string>(metadata?.profile.cover_image || '');
   const [extensions, setExtensions] = useState<any>(
     (() => {
       try {
-        return (JSON.parse(user?.json_metadata)?.extensions) || "";
+        return (extMetadata?.extensions) || "";
       } catch (error) {
         console.error("Error parsing JSON metadata:", error);
-        return ""; 
+        return "";
       }
     })()
   );
 
-  const [website, setWebsite] = useState<string>(user.metadata?.website || '');
+  const [website, setWebsite] = useState<string>(metadata?.profile.website || '');
   const [selectedProfileFile, setSelectedProfileFile] = useState<File | null>(null);
   const [selectedCoverFile, setSelectedCoverFile] = useState<File | null>(null);
   const connecteWallet = useAccount().address;
   const [isEthSetupModalOpen, setIsEthSetupModalOpen] = useState(false);
   const [ethAddress, setEthAddress] = useState<string>(extensions?.eth_address || '');
-
+  const [videoParts, setVideoParts] = useState<VideoPart[]>(extensions?.video_parts || '')
 
   async function handleProfileFileInputChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -79,7 +82,17 @@ export default function EditInfoModal({ isOpen, onClose, user }: EditModalProps)
   }
 
   async function sendEditTransaction() {
-    await updateProfile(user.name, name, about, coverImageUrl, avatarUrl, website, ethAddress, []);
+    const loginMethod = localStorage.getItem("LoginMethod")
+    if (!user.name) {
+      console.error("Username is missing")
+      return
+    }
+    if (loginMethod === "keychain") {
+      await updateProfile(user.name, name, about, coverImageUrl, avatarUrl, website, ethAddress, videoParts);
+    } else if (loginMethod === "privateKey") {
+      const encryptedPrivateKey = localStorage.getItem("EncPrivateKey");
+      await updateProfileWithPrivateKey(encryptedPrivateKey, user.name, name, about, coverImageUrl, avatarUrl, website, ethAddress, videoParts)
+    }
   }
 
   function handleClickaddEthAddress() {
@@ -92,7 +105,7 @@ export default function EditInfoModal({ isOpen, onClose, user }: EditModalProps)
     return (
       <Modal isOpen={isEthSetupModalOpen} onClose={() => setIsEthSetupModalOpen(false)} size="md">
         <ModalOverlay />
-        <ModalContent bg={"black"} border={"0.6px solid grey"}>
+        <ModalContent color={"white"} bg={"black"} border={"0.6px solid grey"}>
           <ModalHeader>Is that your wallet? </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -113,7 +126,7 @@ export default function EditInfoModal({ isOpen, onClose, user }: EditModalProps)
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="md">
       <ModalOverlay />
-      <ModalContent bg={"black"} border={"0.6px solid grey"}>
+      <ModalContent color={"white"} bg={"black"} border={"0.6px solid grey"}>
         <ModalHeader>Edit Profile</ModalHeader>
         <ModalCloseButton />
         <ModalBody>

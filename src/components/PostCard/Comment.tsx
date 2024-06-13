@@ -1,5 +1,5 @@
 "use client"
-import { handleVote } from "@/app/skatecast/utils/handleFeedVote"
+import { handleVote } from "@/app/mainFeed/utils/handleFeedVote"
 import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers"
 import CommentsSection from "@/components/PostModal/commentSection"
 import { useHiveUser } from "@/contexts/UserContext"

@@ -5,6 +5,7 @@ import * as dhive from "@hiveio/dhive"
 import CryptoJS from "crypto-js"
 import { HiveAccount } from "../useHiveAuth"
 import HiveClient from "./hiveclient"
+import { VideoPart } from "../models/user"
 
 interface ServerLoginResponse {
   validation: Validation
@@ -13,7 +14,7 @@ interface ServerLoginResponse {
 }
 
 async function getAccountByPassword(username: string, password: string) {
-  let hivePrivateKey = dhive.PrivateKey.fromLogin(username, password, "posting")
+  let hivePrivateKey = dhive.PrivateKey.fromLogin(username, password, "active")
   let hivePublicKey = hivePrivateKey.createPublic()
   let val = await HiveClient.keys.getKeyReferences([hivePublicKey.toString()])
   let accountName = val.accounts[0][0]
@@ -118,8 +119,8 @@ export async function voteWithPrivateKey(
   if (encryptedPrivateKey === null) throw new Error("Private key not found")
   const privateKey = decryptPrivateKey(encryptedPrivateKey)
 
-  const client = new dhive.Client("https://api.hive.blog")
-  client.broadcast
+  //const client = new dhive.Client("https://api.hive.blog")
+  HiveClient.broadcast
     .vote(vote[1], dhive.PrivateKey.from(privateKey))
     .then((result) => {
       console.log(result)
@@ -154,5 +155,75 @@ export async function commentWithPrivateKey(
       console.error(error);
       throw error;
     });
+}
+
+export async function updateProfileWithPrivateKey(
+  encryptedPrivateKey: string | null,
+  username: string,
+  name: string,
+  about: string,
+  coverImageUrl: string,
+  avatarUrl: string,
+  website: string,
+  ethAddress: string,
+  videoParts: VideoPart[]) {
+
+  if (encryptedPrivateKey === null) throw new Error("Private key not found");
+
+  const privateKey = decryptPrivateKey(encryptedPrivateKey)
+
+  const profileMetadata = {
+    profile: {
+      name: name,
+      about: about,
+      cover_image: coverImageUrl,
+      profile_image: avatarUrl,
+      website: website,
+    }
+  };
+
+  const extMetadata = {
+    extensions: {
+      eth_address: ethAddress,
+      video_parts: videoParts,
+    }
+  }
+
+  const updateInfo: dhive.Operation = [
+    "account_update2",
+    {
+      account: username,
+      json_metadata: JSON.stringify(extMetadata),
+      posting_json_metadata: JSON.stringify(profileMetadata),
+      extensions: []
+    }
+  ]
+
+  // const client = new dhive.Client("https://api.hive.blog")
+
+  HiveClient.broadcast
+    .sendOperations([updateInfo], dhive.PrivateKey.from(privateKey))
+    .then((result) => {
+      console.log(result)
+    })
+    .catch((error) => {
+      console.error(error)
+    })
+
+}
+
+export async function sendHiveOperation (encryptedPrivateKey: string | null, op: dhive.Operation[]) {
+
+  if (encryptedPrivateKey === null) throw new Error("Private key not found");
+  const privateKey = decryptPrivateKey(encryptedPrivateKey)
+  HiveClient.broadcast
+    .sendOperations(op, dhive.PrivateKey.from(privateKey))
+    .then((result) => {
+      console.log(result)
+    })
+    .catch((error) => {
+      console.error(error)
+    })
+  
 }
 

@@ -5,9 +5,9 @@ import React, { useState } from "react";
 
 interface VideoPartsFormProps {
     skater: HiveAccount;
-    onNewVideoPart: (videoPart: VideoPart) => void; 
-    isOpen: boolean; 
-    onClose: () => void; 
+    onNewVideoPart: (videoPart: VideoPart) => void;
+    isOpen: boolean;
+    onClose: () => void;
 }
 
 interface VideoPart {
@@ -36,13 +36,13 @@ const VideoPartsForm = ({ skater, onNewVideoPart, isOpen, onClose }: VideoPartsF
 
     const submitVideoPart = () => {
         onNewVideoPart(videoPart);
-        onClose(); 
+        onClose();
     };
 
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
-            <ModalContent bg={"black"} border={"0.6px solid grey"}>
+            <ModalContent color={"white"} bg={"black"} border={"0.6px solid grey"}>
                 <ModalHeader>
                     <Center>
 

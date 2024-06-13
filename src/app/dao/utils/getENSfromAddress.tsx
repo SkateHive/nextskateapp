@@ -1,17 +1,12 @@
 import { http, createConfig, getEnsName } from '@wagmi/core'
 import { mainnet } from '@wagmi/core/chains'
 
-const config = createConfig({
-    chains: [mainnet],
-    transports: {
-        [mainnet.id]: http(),
-    },
-})
+import { wagmiConfig } from '@/app/providers'
 
 export const getENSnamefromAddress = async (address: string) => {
     const formattedAddress = address.split('0x')[1]
 
-    let ensName = await getEnsName(config, {
+    let ensName = await getEnsName(wagmiConfig, {
         address: `0x${formattedAddress}`,
         chainId: mainnet.id,
     })

@@ -69,6 +69,7 @@ export default function Vote() {
       <Button
         variant={"link"}
         disabled={isAnimating}
+        color={isVoted || isAnimating ? "green.200" : "white"}
         colorScheme={isVoted || isAnimating ? "green" : "white"}
         onClick={handleVoteClick}
         gap={0}

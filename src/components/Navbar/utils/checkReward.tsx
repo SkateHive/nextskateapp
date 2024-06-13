@@ -10,14 +10,13 @@ interface ExtendedAccount {
     reward_vesting_hive: string | Asset;
 }
 
-export default async function checkRewards(setHasRewards: (hasRewards: boolean) => void, username: string): Promise<void> {
+export default async function checkRewards(username: string): Promise<boolean> {
     const client = HiveClient;
     try {
-        const result: ExtendedAccount[] = await client.database.getAccounts([username])
+        const result: ExtendedAccount[] = await client.database.getAccounts([username]);
 
         if (result && result.length > 0) {
             const account = result[0];
-            console.log("Account data:", account);
             const getBalance = (balance: string | Asset): number => {
                 const balanceStr = typeof balance === 'string' ? balance : balance.toString();
                 return Number(balanceStr.split(' ')[0]);
@@ -27,19 +26,15 @@ export default async function checkRewards(setHasRewards: (hasRewards: boolean) 
             const hiveBalance = getBalance(account.reward_hive_balance);
             const vestingHive = getBalance(account.reward_vesting_hive);
 
-            console.log({ hbdBalance, hiveBalance, vestingHive });
-            if (hbdBalance > 0 || hiveBalance > 0 || vestingHive > 0) {
-                setHasRewards(true);
-            } else {
-                setHasRewards(false);
-            }
+            const hasRewards = hbdBalance > 0 || hiveBalance > 0 || vestingHive > 0;
+            console.log(hasRewards ? "User has rewards" : "User has no rewards");
+            return hasRewards;
         } else {
             console.error("Account data not found.");
-            setHasRewards(false);
+            return false;
         }
     } catch (error) {
         console.error("Error fetching account data:", error);
-        setHasRewards(false);
+        return false;
     }
-
 }

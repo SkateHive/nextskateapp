@@ -1,3 +1,4 @@
+
 export interface Token {
     address: string;
     balance: number;
@@ -34,7 +35,7 @@ export interface TokenDetail {
 }
 export interface PortfolioData {
     nftUsdNetWorth: Record<string, string>;
-    nfts: TokenDetail[]; 
+    nfts: TokenDetail[];
     tokens: TokenDetail[];
     totalBalanceUSDApp: number;
     totalBalanceUsdTokens: number;
@@ -78,5 +79,9 @@ export const blockchainDictionary: Record<string, BlockchainInfo> = {
     polygon: {
         color: "#8247E5",
         logo: "/logos/polygon_logo.png",
+    },
+    degen: {
+        color: "purple.200",
+        logo: "/logos/degen.png",
     },
 };

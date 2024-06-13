@@ -101,7 +101,7 @@ function LoginModal({
             <ModalHeader>Hive Log In</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              <Image mb={2} src="https://www.skatehive.app/assets/pepe_login.png" alt="Hive Logo" />
+              <Image mb={2} src="/pepe-login.png" alt="Hive Logo" />
               <FormControl isInvalid={Boolean(errorMessage)}>
                 <VStack align={"normal"}>
                   <Input
@@ -142,9 +142,18 @@ function LoginModal({
                 disabled={isLogginIn}
 
               >
-                {isLogginIn ? <Spinner size={"sm"} /> : "Continue"}
+                {isLogginIn ? <Spinner size={"sm"} /> : "Log In"}
               </Button>
-              {environment === "development" && (
+              <Button
+                w={"100%"}
+                onClick={() => window.open("https://hiveonboard.com/create-account")}
+                colorScheme="blue"
+                variant={"outline"}
+
+              >
+                Sign Up
+              </Button>
+              {/* {environment === "development" && (
                 <Button
                   w={"100%"}
                   onClick={() => doLogin(true)}
@@ -153,7 +162,7 @@ function LoginModal({
                 >
                   Continue As (DEV)
                 </Button>
-              )}
+              )} */}
             </ModalFooter>
           </>
         )}

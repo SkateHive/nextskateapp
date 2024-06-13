@@ -1,15 +1,19 @@
+// src/app/RootLayout.tsx
+
 import Favicon from "@/components/FaviconLinks";
+import MobileNavbar from "@/components/Navbar/MobileNavbar";
 import SidebarDesktop from "@/components/Navbar/sidebarDesktop";
-import MobileMenuButton from "@/components/mobileMenuButton";
 import { getWebsiteURL } from "@/lib/utils";
-import { Box, ColorModeScript, Flex } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react"; // Remove ColorModeScript import from here
+import dynamic from 'next/dynamic';
 import { Share_Tech_Mono } from "next/font/google";
 import type { ReactNode } from "react";
-import Cursor from "./Cursor/Cursor";
 import { Providers } from "./providers";
 
-
 const share_tech_mono = Share_Tech_Mono({ subsets: ["latin"], weight: "400" });
+
+// Dynamically import ColorModeScriptWrapper
+const ColorModeScriptWrapper = dynamic(() => import('./ColorModeScriptWrapper'), { ssr: false });
 
 export type Metadata = {
   title: string;
@@ -40,6 +44,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="manifest" href="/manifest.json"></link>
+        <meta name="theme-color" content="#000000" />
         <Favicon />
         <style>
           {`
@@ -50,9 +55,8 @@ export default function RootLayout({
               .mobile-menu-button {   
                 z-index: 1000;
                 position: fixed;
-                left: 16px;
-                bottom: 16px;
-              }
+                left: 0px;
+                }
             }
             @media (min-width: 769px) {
               #layout {
@@ -66,15 +70,15 @@ export default function RootLayout({
         </style>
       </head>
       <body className={share_tech_mono.className}>
-        <ColorModeScript initialColorMode="dark" />
+        {/* Dynamically load ColorModeScriptWrapper */}
+        <ColorModeScriptWrapper />
         <Providers>
-          <Cursor />
-          <Flex justifyContent={"center"} id="layout" height={"100vh"}>
-            <Box className="hide-on-mobile">
+          <Flex justifyContent={"center"} id="layout" >
+            <div className="hide-on-mobile">
               <SidebarDesktop />
-            </Box>
+            </div>
             <div className="mobile-menu-button">
-              <MobileMenuButton />
+              <MobileNavbar />
             </div>
             {children}
           </Flex>

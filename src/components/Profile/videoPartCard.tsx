@@ -10,7 +10,7 @@ interface VideoCardProps {
         year: number;
         url: string;
     };
-    onRemove: () => void; 
+    onRemove: () => void;
 }
 
 const VideoCard = ({ videoPart, onRemove }: VideoCardProps) => {
@@ -49,11 +49,12 @@ const VideoCard = ({ videoPart, onRemove }: VideoCardProps) => {
             borderWidth="1px"
             borderRadius="lg"
             overflow="hidden"
-            p={6} 
+            p={6}
             mb={4}
-            boxShadow="md" 
-            width="100%" 
-            position="relative" 
+            boxShadow="md"
+            width="100%"
+            color={"white"}
+            position="relative"
             _hover={{
                 '& button': {
                     display: 'block'
@@ -67,7 +68,7 @@ const VideoCard = ({ videoPart, onRemove }: VideoCardProps) => {
                 top={2}
                 right={2}
                 size="sm"
-                display="none" 
+                display="none"
                 onClick={onRemove}
             />
             {embedUrl && (
@@ -88,7 +89,7 @@ const VideoCard = ({ videoPart, onRemove }: VideoCardProps) => {
                     ></iframe>
                 </Box>
             )}
-            <Text fontWeight="bold" fontSize="xl" mb={2}>{videoPart.name}</Text> 
+            <Text fontWeight="bold" fontSize="xl" mb={2}>{videoPart.name}</Text>
             <Text mb={1}>Filmmakers: {videoPart.filmmaker.join(", ")}</Text>
             <Text mb={1}>Friends: {videoPart.friends.join(", ")}</Text>
             <Text mb={1}>Year: {videoPart.year}</Text>

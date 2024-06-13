@@ -1,4 +1,6 @@
 import { usePostContext } from "@/contexts/PostContext";
+import { useHiveUser } from "@/contexts/UserContext";
+import getSummary from "@/lib/getSummaryAI";
 import {
   Button,
   CardHeader,
@@ -28,6 +30,8 @@ import Link from "next/link";
 import { FaDiscord } from "react-icons/fa";
 import AuthorAvatar from "../AuthorAvatar";
 import PostModal from "../PostModal";
+import EditButton from "../PostModal/editButton";
+
 type Variant = "preview" | "open";
 interface HeaderInterface {
   variant?: Variant;
@@ -38,7 +42,8 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isSmallerThan400] = useMediaQuery("(max-width: 400px)");
   const postFullUrl = `${window.location.origin}/post/${post.url}`;
-  const postSummary = `Check out this awesome post on SkateHive by @${post.author} \n\n`;
+
+  const user = useHiveUser()
 
   const handleCopyPostLink = () => {
     try {
@@ -67,6 +72,7 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
 
   const handleShareWarpCast = async () => {
     try {
+      const postSummary = await getSummary(post.body).then((summary) => summary);
       const warptext = `${postSummary} ${postFullUrl}`;
       const postPageUrl = encodeURI(warptext);
       window.open(
@@ -80,6 +86,7 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
 
   const handleShareTwitter = async () => {
     try {
+      const postSummary = await getSummary(post.body).then((summary) => summary);
       const tweetText = `${postSummary} ${postFullUrl}`;
       const postPageUrl = encodeURI(tweetText);
       window.open(
@@ -93,6 +100,7 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
 
   const handleShareDiscord = async () => {
     try {
+      const postSummary = getSummary(post.body).then((summary) => summary);
       const postPageUrl = encodeURI(postFullUrl);
       const discordText = `${postSummary} ${postPageUrl}`;
       navigator.clipboard.writeText(discordText);
@@ -104,6 +112,8 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
       console.error("Failed to share in Discord:", error);
     }
   };
+
+
   return (
     <CardHeader p={2} pb={0}>
       {isOpen && <PostModal isOpen={isOpen} onClose={onClose} />}
@@ -161,7 +171,9 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
           </Tooltip>
         ) : (
           <>
-
+            {user.hiveUser?.name === post.author && (
+              <EditButton username={user.hiveUser.name} post={post} />
+            )}
 
             <Menu
               placement={

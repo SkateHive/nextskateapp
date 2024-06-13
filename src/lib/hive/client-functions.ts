@@ -1,21 +1,13 @@
 'use client';
-import { Operation } from "@hiveio/dhive";
 import { Broadcast, KeychainKeyTypes, KeychainRequestResponse, KeychainSDK, Login, Post, Transfer, Vote } from "keychain-sdk";
-import { HiveAccount } from "../models/user";
-
-interface VideoPart {
-  name: string;
-  filmmaker: string[];
-  friends: string[];
-  year: number;
-  url: string;
-}
+import { VideoPart } from "../models/user";
 
 interface HiveKeychainResponse {
   success: boolean
   publicKey: string
 }
 
+/*
 export async function claimRewards(hiveUser: HiveAccount) {
   console.log('claimRewards', hiveUser)
   const rewardHiveBalance = hiveUser.reward_hive_balance
@@ -51,6 +43,7 @@ export async function claimRewards(hiveUser: HiveAccount) {
   }
 
 }
+*/
 
 export async function vote(props: Vote): Promise<KeychainRequestResponse> {
   const keychain = new KeychainSDK(window)
@@ -84,7 +77,7 @@ export async function commentWithKeychain(formParamsAsObject: any): Promise<Hive
 
 export async function loginWithKeychain(username: string) {
   try {
-    const memo = `${username} signed up with ${process.env.NEXT_PUBLIC_WEBSITE_URL} app at ${Date.now()}`
+    const memo = `${username} signed up with skatehive app at ${Date.now()}`
     const keychain = new KeychainSDK(window);
     undefined
     const formParamsAsObject = {
@@ -146,12 +139,15 @@ export async function updateProfile(username: string, name: string, about: strin
         cover_image: coverImageUrl,
         profile_image: avatarUrl,
         website: website,
-      },
+      }
+    };
+
+    const extMetadata = {
       extensions: {
         eth_address: ethAddress,
         video_parts: videoParts,
-      },
-    };
+      }
+    }
 
     const formParamsAsObject = {
       data: {
@@ -161,8 +157,8 @@ export async function updateProfile(username: string, name: string, about: strin
             'account_update2',
             {
               account: username,
-              json_metadata: JSON.stringify(profileMetadata),
-              posting_json_metadata: JSON.stringify(profileMetadata.profile),
+              json_metadata: JSON.stringify(extMetadata),
+              posting_json_metadata: JSON.stringify(profileMetadata),
               extensions: [],
             },
           ],

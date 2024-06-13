@@ -45,7 +45,7 @@ function useAuthHiveUser(): AuthUser {
       }
     } catch (error) {
       console.error("Error parsing json_metadata:", error)
-      userAccount.metadata = {} 
+      userAccount.metadata = {}
     }
 
     if (
@@ -58,7 +58,7 @@ function useAuthHiveUser(): AuthUser {
         }
       } catch (error) {
         console.error("Error parsing posting_json_metadata:", error)
-        userAccount.metadata = {} 
+        userAccount.metadata = {}
       }
     }
 
@@ -104,13 +104,12 @@ function useAuthHiveUser(): AuthUser {
         }
       }
 
-     
+
       if (privateKey) {
         return
       }
 
-      const memo = `${username} signed up with ${process.env.NEXT_PUBLIC_WEBSITE_URL
-        } app at ${Date.now()}`
+      const memo = `${username} signed up with skatehive app at ${Date.now()}`
 
         ; (window as any).hive_keychain.requestSignBuffer(
           username,

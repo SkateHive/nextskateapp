@@ -1,5 +1,5 @@
-import { usePostContext } from "@/contexts/PostContext"
-import { useUserData } from "@/hooks/useUserData"
+import { usePostContext } from "@/contexts/PostContext";
+import HiveClient from "@/lib/hive/hiveclient";
 import {
     Button,
     Image,
@@ -7,63 +7,78 @@ import {
     MenuButton,
     MenuItem,
     MenuList
-} from "@chakra-ui/react"
-import { useEffect, useState } from "react"
-import HiveTipModal from "./HiveTipModal"
-import TipModal from "./TipModal"
-
+} from "@chakra-ui/react";
+import { useState } from "react";
+import HiveTipModal from "./HiveTipModal";
+import TipModal from "./TipModal";
+import { Tooltip } from "@chakra-ui/react";
 interface TipButtonProps {
-    author: string
+    author: string;
 }
 
+interface UserData {
+    json_metadata: string;
+}
+export const getUserData = async (username: string) => {
+    const response = await HiveClient.database.call('get_accounts', [[username]]);
+    const userData = response[0];
+    return userData;
+};
 export default function TipButton({ author }: TipButtonProps) {
-    const [isTipModalOpen, setIsTipModalOpen] = useState(false)
-    const [token, setToken] = useState("")
-    const { post } = usePostContext()
-    const userData = useUserData(author)
-    const [authorETHwallet, setAuthorETHwallet] = useState("")
-    const [isHiveTipModalOpen, setIsHiveTipModalOpen] = useState(false)
-    const [isUserEthWalletSet, setIsUserEthWalletSet] = useState(false)
-    
-    useEffect(() => {
-        if (userData?.json_metadata) {
-            const eth_address = JSON.parse(userData.json_metadata).extensions?.eth_address;
+    const [isTipModalOpen, setIsTipModalOpen] = useState(false);
+    const [token, setToken] = useState<string>("");
+    const { post } = usePostContext();
+    const [userData, setUserData] = useState<UserData | null>(null);
+    const [authorETHwallet, setAuthorETHwallet] = useState<string>("");
+    const [isHiveTipModalOpen, setIsHiveTipModalOpen] = useState(false);
+    const [isUserEthWalletSet, setIsUserEthWalletSet] = useState(false);
+
+    const fetchUserData = async () => {
+        const data = await getUserData(author); // Use the new getUserData function
+        setUserData(data);
+        handleCheckUserEthWallet(data);
+    };
+
+    const handleCheckUserEthWallet = (data: UserData) => {
+        if (data?.json_metadata) {
+            const eth_address = JSON.parse(data.json_metadata).extensions?.eth_address;
             setIsUserEthWalletSet(!!eth_address);
         }
-    }, [userData]);
-
-
+    };
 
     const openBaseTipModal = (token: string) => {
-        setToken(token)
-        setIsTipModalOpen(true)
-        if (isUserEthWalletSet) {
-            setAuthorETHwallet(JSON.parse(userData.json_metadata).extensions.eth_address)
+        setToken(token);
+        setIsTipModalOpen(true);
+        if (isUserEthWalletSet && userData) {
+            setAuthorETHwallet(JSON.parse(userData.json_metadata).extensions.eth_address);
+        } else {
+            setAuthorETHwallet("");
         }
-        else {
-            setAuthorETHwallet("")
-        }
-
-
-    }
+    };
 
     const handleHiveTipClick = () => {
-        setIsHiveTipModalOpen(true)
-    }
+        setIsHiveTipModalOpen(true);
+    };
 
     return (
-        <Menu >
-            <MenuButton w={"auto"} as={Button} color="green.200" variant={"ghost"} size="sm">
-                ⌐◨-◨
-            </MenuButton>
-            <MenuList bg="black" >
+        <Menu>
+            <Tooltip
+            label = 'Spend Money 💸'
+            bg={'black'}
+            color={"limegreen"}
+            border={"1px dashed #A5D6A7"}
+            >
+                <MenuButton onClick={fetchUserData} w={"auto"} as={Button} color="green.200" variant={"ghost"} _hover={{
+                    background: "none",
+                }} size="sm">
+                    ⌐◨-◨
+                </MenuButton>
+            </Tooltip>
+            <MenuList bg="black">
                 <MenuItem
                     bg="black"
                     _hover={{ bg: "red.500", color: "black" }}
-
-                    onClick={
-                        () => handleHiveTipClick()
-                    }
+                    onClick={handleHiveTipClick}
                 >
                     <Image alt="hive-logo" mr={3} boxSize={"20px"} src="https://cryptologos.cc/logos/hive-blockchain-hive-logo.png" />
                     $HIVE
@@ -111,7 +126,5 @@ export default function TipButton({ author }: TipButtonProps) {
                 author={author}
             />
         </Menu>
-
-    )
+    );
 }
-

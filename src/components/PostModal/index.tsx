@@ -1,16 +1,26 @@
+'use client'
 import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
 import { usePostContext } from "@/contexts/PostContext";
 import { useComments } from "@/hooks/comments";
+import getTranslation from "@/lib/getTranslation";
 import HiveClient from "@/lib/hive/hiveclient";
 import { transform3SpeakContent, transformEcencyImages, transformIPFSContent, transformNormalYoutubeLinksinIframes, transformShortYoutubeLinksinIframes } from "@/lib/utils";
 import {
   Box,
   Center,
   Flex,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Modal, ModalBody, ModalCloseButton, ModalContent,
-  ModalFooter, ModalHeader, ModalOverlay, Text
+  ModalFooter, ModalHeader, ModalOverlay,
+  Spinner,
+  Text
 } from "@chakra-ui/react";
-import { useEffect } from 'react';
+import debounce from 'lodash.debounce';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { FaGlobe } from "react-icons/fa";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
@@ -28,7 +38,29 @@ export function PostModal({ isOpen, onClose }: PostModalInterface) {
   const { post } = usePostContext();
   const { comments, addComment } = useComments(post.author, post.permlink, true);
   const postBody = transform3SpeakContent(post.body);
-  const transformedPostBody = transformEcencyImages(postBody);
+  const transformedPostBody = useMemo(() => transformEcencyImages(postBody), [postBody]);
+
+  const [isTranslated, setIsTranslated] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState("english");
+  const [translatedPost, setTranslatedPost] = useState("");
+  const [translationsCache, setTranslationsCache] = useState<{ [key: string]: string }>({});
+  const [isLoadingTranslation, setIsLoadingTranslation] = useState(false);
+
+  const translate = useCallback(
+    debounce(async (language: string) => {
+      setIsLoadingTranslation(true);
+      if (translationsCache[language]) {
+        setTranslatedPost(translationsCache[language]);
+      } else {
+        const translated = await getTranslation(post.body, language);
+        setTranslatedPost(translated);
+        setTranslationsCache((prev) => ({ ...prev, [language]: translated }));
+      }
+      setIsLoadingTranslation(false);
+    }, 300),
+    [post.body, translationsCache]
+  );
+
   useEffect(() => {
     const fetchPosts = async (username: string) => {
       try {
@@ -41,6 +73,12 @@ export function PostModal({ isOpen, onClose }: PostModalInterface) {
     fetchPosts(post.author);
   }, [post.author]);
 
+  const handleTranslation = (language: string) => {
+    setSelectedLanguage(language);
+    setIsTranslated(true);
+    translate(language);
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} size={{ base: "lg", md: "2xl", lg: "6xl" }}>
       <ModalOverlay style={{ backdropFilter: "blur(5px)" }} />
@@ -49,13 +87,27 @@ export function PostModal({ isOpen, onClose }: PostModalInterface) {
         <ModalCloseButton mr={4} mt={2} color="red" />
         <ModalBody display="flex" flexDir={{ base: "column", lg: "row" }} minH="60vh" gap={6}>
           <Box bg="black" flex={0} p={0} border="0px solid #A5D6A7" borderRadius={0} minW="50%">
-            <ReactMarkdown components={MarkdownRenderers} rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
-              {transformNormalYoutubeLinksinIframes(transformShortYoutubeLinksinIframes(transformIPFSContent(transformedPostBody)))}
-            </ReactMarkdown>
+            <Menu>
+              <MenuButton><FaGlobe /> </MenuButton>
+              <MenuList bg={'black'}>
+                <MenuItem onClick={() => handleTranslation("english")} bg={'black'} color={"white"}>English</MenuItem>
+                <MenuItem onClick={() => handleTranslation("portuguese")} bg={'black'} color={"white"}>Portuguese</MenuItem>
+                <MenuItem onClick={() => handleTranslation("spanish")} bg={'black'} color={"white"}>Spanish</MenuItem>
+                <MenuItem onClick={() => handleTranslation("french")} bg={'black'} color={"white"}>French</MenuItem>
+                <MenuItem onClick={() => handleTranslation("greek")} bg={'black'} color={"white"}>Greek</MenuItem>
+              </MenuList>
+            </Menu>
+
+            {isLoadingTranslation ? (
+              <Center><Spinner size="xl" color="white" /></Center>
+            ) : (
+              <ReactMarkdown components={MarkdownRenderers} rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
+                {transformNormalYoutubeLinksinIframes(transformShortYoutubeLinksinIframes(transformIPFSContent(isTranslated ? translatedPost : transformedPostBody)))}
+              </ReactMarkdown>
+            )}
           </Box>
           <Box minW="50%">
             <Flex mr={"35px"} justifyContent={"right"}>
-
               <Vote />
             </Flex>
             <CommandPrompt post={post} addComment={addComment} />

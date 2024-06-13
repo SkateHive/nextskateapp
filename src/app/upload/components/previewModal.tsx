@@ -81,7 +81,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
 
         if (!user || !title || !user.name) {
             if (loginMethod === 'keychain') {
-                alert('You have to log in with Hive Keychain to use this feature...');
+                alert('Something wrong is not right...');
             }
             return;
         }
@@ -143,7 +143,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
                                         <Box width={"100%"}>
                                             <PostPreview postData={postDataForPreview} />
                                         </Box>
-                                        <Box border={'1px solid white'} w="sm" maxWidth="sm">
+                                        <Box border={'1px solid white'} w="432px">
                                             <BeneficiariesTable beneficiariesArray={beneficiariesArray} />
                                             <TagsTable tags={tags} />
                                         </Box>

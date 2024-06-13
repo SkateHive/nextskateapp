@@ -28,7 +28,6 @@ const CommentList = ({
         dataLength={visiblePosts}
         next={() => {
           setVisiblePosts(visiblePosts + 1);
-          console.log("Visible", visiblePosts);
         }}
         hasMore={visiblePosts < (comments?.length ?? 0)}
         loader={
