@@ -1,4 +1,6 @@
 import { usePostContext } from "@/contexts/PostContext";
+import { useHiveUser } from "@/contexts/UserContext";
+import getSummary from "@/lib/getSummaryAI";
 import {
   Button,
   CardHeader,
@@ -28,9 +30,7 @@ import Link from "next/link";
 import { FaDiscord } from "react-icons/fa";
 import AuthorAvatar from "../AuthorAvatar";
 import PostModal from "../PostModal";
-import { useHiveUser } from "@/contexts/UserContext";
 import EditButton from "../PostModal/editButton";
-import getSummary from "@/lib/getSummaryAI";
 
 type Variant = "preview" | "open";
 interface HeaderInterface {
@@ -86,7 +86,7 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
 
   const handleShareTwitter = async () => {
     try {
-      const postSummary = getSummary(post.body).then((summary) => summary);
+      const postSummary = await getSummary(post.body).then((summary) => summary);
       const tweetText = `${postSummary} ${postFullUrl}`;
       const postPageUrl = encodeURI(tweetText);
       window.open(
