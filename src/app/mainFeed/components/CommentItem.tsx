@@ -157,17 +157,20 @@ const CommentItem = ({
 
           </HStack>
           {/* Post Content */}
+          <Box w={"100%"}>
 
-          <ReactMarkdown
-            components={MarkdownRenderers}
-            rehypePlugins={[rehypeRaw]}
-            remarkPlugins={[remarkGfm]}
+            <ReactMarkdown
+              components={MarkdownRenderers}
+              rehypePlugins={[rehypeRaw]}
+              remarkPlugins={[remarkGfm]}
 
-          >
-            {transformIPFSContent(
-              transformShortYoutubeLinksinIframes(comment.body),
-            )}
-          </ReactMarkdown>
+            >
+              {transformIPFSContent(
+                transformShortYoutubeLinksinIframes(comment.body),
+              )}
+            </ReactMarkdown>
+          </Box>
+
         </VStack>
       </Flex>
 
