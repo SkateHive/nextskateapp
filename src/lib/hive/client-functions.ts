@@ -1,7 +1,7 @@
 'use client';
-import { Broadcast, KeychainKeyTypes, KeychainRequestResponse, KeychainSDK, Login, Post, Transfer, Vote, Custom } from "keychain-sdk";
+import { Broadcast, Custom, KeychainKeyTypes, KeychainRequestResponse, KeychainSDK, Login, Post, Transfer, Vote } from "keychain-sdk";
 import { VideoPart } from "../models/user";
-import HiveClient from "./hiveclient"
+import HiveClient from "./hiveclient";
 
 interface HiveKeychainResponse {
   success: boolean
@@ -180,7 +180,7 @@ export async function updateProfile(username: string, name: string, about: strin
 }
 
 export async function checkCommunitySubscription(username: string) {
-  
+
   const parameters = {
     account: username
   }
@@ -221,22 +221,16 @@ export async function communitySubscribeKeyChain(username: string) {
 
 export async function checkFollow(follower: string, following: string): Promise<boolean> {
   try {
-    const status = await HiveClient.call('follow_api', 'get_following', [
+    const status = await HiveClient.call('bridge', 'get_relationship_between_accounts', [
       follower,
-      following,
-      'blog',
-      1,
-  ]);
-    console.log({ status: status });
+      following
+    ]);
 
-    if (status.length > 0 && status[0].following == following) {
-      console.log("following!")
+    if (status.follows) {
       return true
     } else {
-      console.log("NOT following!")
       return false
     }
-    return status[0]
   } catch (error) {
     console.log(error)
     return false
@@ -255,9 +249,9 @@ export async function changeFollow(follower: string, following: string) {
   const json = JSON.stringify([
     'follow',
     {
-        follower: follower,
-        following: following,
-        what: [type], //null value for unfollow, 'blog' for follow
+      follower: follower,
+      following: following,
+      what: [type], //null value for unfollow, 'blog' for follow
     },
   ]);
 

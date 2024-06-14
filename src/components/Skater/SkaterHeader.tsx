@@ -1,10 +1,13 @@
 'use client'
 
 import { useHiveUser } from "@/contexts/UserContext"
+import { changeFollow, checkFollow } from "@/lib/hive/client-functions"
+import { changeFollowWithPassword } from "@/lib/hive/server-functions"
 import { HiveAccount } from "@/lib/models/user"
 import { Button, Center, Flex, HStack, Image, Text, VStack, useDisclosure, useMediaQuery } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
 import AuthorAvatar from "../AuthorAvatar"
+
 interface ProfileProps {
     user: HiveAccount
 }
@@ -19,6 +22,7 @@ export default function SkaterHeader({ user }: ProfileProps) {
     const profileName = metadata?.profile?.name || user.name;
     const [isSmallerThan400] = useMediaQuery("(max-width: 400px)");
     const [boxSize, setBoxSize] = useState(20)
+    const [isFollowing, setIsFollowing] = useState(false)
     // if mobile show smaller image
     useEffect(() => {
         if (isSmallerThan400) {
@@ -29,9 +33,41 @@ export default function SkaterHeader({ user }: ProfileProps) {
         }
     }, [isSmallerThan400])
 
+
+    const onStart = async () => {
+        if (hiveUser.hiveUser?.name && user.name) {
+            console.log("checking follow")
+            console.log(hiveUser.hiveUser?.name)
+            console.log(user.name)
+            const isFollowing = await checkFollow(hiveUser.hiveUser?.name, user.name)
+            setIsFollowing(isFollowing)
+            console.log(isFollowing)
+        }
+    }
+    useEffect(() => {
+        onStart()
+    }, [hiveUser.hiveUser?.name, user.name])
+
+    const handleFollowButton = async () => {
+        console.log("follow button clicked")
+        const loginMethod = localStorage.getItem("LoginMethod")
+        console.log(loginMethod)
+        if (hiveUser.hiveUser?.name && user.name) {
+
+            if (loginMethod === "keychain") {
+                await changeFollow(hiveUser.hiveUser?.name, user.name)
+                setIsFollowing(!isFollowing)
+            }
+            else if (loginMethod === "privateKey") {
+                const encKey = localStorage.getItem("encryptedPrivateKey")
+                await changeFollowWithPassword(encKey, hiveUser.hiveUser?.name, user.name)
+                setIsFollowing(!isFollowing)
+            }
+        }
+    }
+
     return (
         <>
-
             <VStack align={"center"} mb={"-40px"}>
                 <Image
                     w={{ base: "100%", lg: "100%" }}
@@ -72,8 +108,9 @@ export default function SkaterHeader({ user }: ProfileProps) {
                         variant={"outline"}
                         colorScheme="green"
                         _hover={{ bg: "black", color: 'white' }}
+                        onClick={() => handleFollowButton()}
                     >
-                        Follow
+                        {isFollowing ? "Unfollow" : "Follow"}
                     </Button>
                 </Flex >
             }
