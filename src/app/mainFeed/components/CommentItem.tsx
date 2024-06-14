@@ -157,7 +157,7 @@ const CommentItem = ({
 
           </HStack>
           {/* Post Content */}
-          <Box w={"100%"}>
+          <Box w={"80%"}>
 
             <ReactMarkdown
               components={MarkdownRenderers}
