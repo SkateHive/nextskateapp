@@ -25,7 +25,6 @@ import {
 import { ChangeEvent, useState } from "react";
 import { FaUpload } from 'react-icons/fa';
 import { useAccount } from "wagmi";
-
 interface EditModalProps {
   isOpen: boolean
   onClose(): void
