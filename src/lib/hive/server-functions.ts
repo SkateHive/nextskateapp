@@ -162,6 +162,7 @@ export async function updateProfileWithPrivateKey(
   username: string,
   name: string,
   about: string,
+  location: string,
   coverImageUrl: string,
   avatarUrl: string,
   website: string,
@@ -176,9 +177,11 @@ export async function updateProfileWithPrivateKey(
     profile: {
       name: name,
       about: about,
+      location: location,
       cover_image: coverImageUrl,
       profile_image: avatarUrl,
       website: website,
+      version: 2
     }
   };
 
