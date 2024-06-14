@@ -2,10 +2,10 @@
 
 import { useHiveUser } from "@/contexts/UserContext"
 import { HiveAccount } from "@/lib/models/user"
-import { Avatar, Box, Center, HStack, Image, Text, VStack, useDisclosure } from "@chakra-ui/react"
-import { FaGear, FaPencil } from "react-icons/fa6"
-import EditInfoModal from "./EditInfoModal"
+import { Center, HStack, Image, Text, VStack, useDisclosure } from "@chakra-ui/react"
+import { FaPencil } from "react-icons/fa6"
 import AuthorAvatar from "../AuthorAvatar"
+import EditInfoModal from "./EditInfoModal"
 
 interface ProfileProps {
   user: HiveAccount
@@ -31,14 +31,14 @@ export default function ProfileHeader({ user }: ProfileProps) {
     <VStack >
       {isOpen && <EditInfoModal isOpen={isOpen} onClose={onClose} user={user} />}
       <Image
-        w="100%"
+        w={{ base: "100%", lg: "80%" }}
         src={coverImageUrl}
         height={"200px"}
         objectFit="cover"
         borderRadius="md"
         alt={"Profile thumbnail"}
         loading="lazy"
-        mt={5}
+        mt={{ base: "0px", lg: 5 }}
         border={"1px solid limegreen"}
       />
       <Center border={"3px solid limegreen"} borderRadius={7} mt={'-80px'}>
