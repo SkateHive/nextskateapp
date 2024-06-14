@@ -136,7 +136,7 @@ const ReplyModal = ({ isOpen, onClose, comment }: ReplyModalProps) => {
     return (
         <Modal isOpen={isOpen} onClose={onClose} size="lg" isCentered>
             <ModalOverlay style={{ backdropFilter: "blur(5px)" }} />
-            <ModalContent w={{ base: "100%", md: "75%" }} bg="black" border="0.6px solid grey" borderRadius="md" mx={4}>
+            <ModalContent color={"white"} w={{ base: "100%", md: "75%" }} bg="black" border="0.6px solid grey" borderRadius="20px" mx={4}>
                 <ModalHeader>
                     <ModalCloseButton />
                 </ModalHeader>

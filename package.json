@@ -26,6 +26,7 @@
     "@types/lodash.debounce": "^4.0.9",
     "@uiw/react-md-editor": "^4.0.4",
     "@wagmi/core": "^2.6.16",
+    "@zoralabs/zdk": "^2.4.0",
     "alchemy-sdk": "^3.2.1",
     "axios": "^1.6.8",
     "crypto-js": "^4.2.0",

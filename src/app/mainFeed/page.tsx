@@ -4,34 +4,34 @@ import { useComments } from "@/hooks/comments";
 import { vote } from "@/lib/hive/client-functions";
 import { commentWithPrivateKey } from "@/lib/hive/server-functions";
 import {
+  Avatar,
+  Box,
+  Button,
+  Divider,
+  Flex,
   HStack,
+  IconButton,
+  Image,
+  Input,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
   Text,
-  VStack,
   Textarea,
-  Button,
-  Box,
-  Flex,
-  Avatar,
-  Image,
-  IconButton,
-  Input,
-  Divider,
+  VStack,
 } from "@chakra-ui/react";
-import { FaImage, FaTimes, FaHistory, FaMoneyBill } from "react-icons/fa";
-import { FaArrowRightArrowLeft } from "react-icons/fa6";
-import { IoFilter } from "react-icons/io5";
 import * as dhive from "@hiveio/dhive";
 import { useMemo, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import { FaHistory, FaImage, FaMoneyBill, FaTimes } from "react-icons/fa";
+import { FaArrowRightArrowLeft } from "react-icons/fa6";
+import { IoFilter } from "react-icons/io5";
+import { uploadFileToIPFS } from "../upload/utils/uploadToIPFS";
 import AvatarList from "./components/AvatarList";
 import CommentList from "./components/CommentsList";
 import LoadingComponent from "./components/loadingComponent";
 import AvatarMediaModal from "./components/mediaModal";
-import { uploadFileToIPFS } from "../upload/utils/uploadToIPFS";
 
 const parent_author = "skatehacker";
 const parent_permlink = "test-advance-mode-post";
@@ -122,7 +122,7 @@ const SkateCast = () => {
       alert("Please write something before posting");
       return;
     }
-    else if (markdownString.length > 10000) {
+    else if (markdownString.length > 2000) {
       alert("Post is too long. To make longform content use our /mag section");
       return;
     }
@@ -292,12 +292,13 @@ const SkateCast = () => {
       />
       <AvatarList sortedComments={sortedComments} />
 
-      <Box p={2} width={"100%"} bg="black" color="white" {...getRootProps()}>
+      <Box p={4} width={"100%"} bg="black" color="white" {...getRootProps()}>
         <div>
           <Flex>
             <Avatar
-              borderRadius={10}
+              borderRadius={6}
               boxSize={12}
+              marginRight={2}
               src={`https://images.ecency.com/webp/u/${username}/avatar/small`}
             />
             <Flex flexDir="column" w="100%">
@@ -310,7 +311,7 @@ const SkateCast = () => {
                 overflow={"hidden"}
                 resize={"vertical"}
                 ref={postBodyRef}
-                placeholder="Write your comment..."
+                placeholder="Write your stuff..."
               />
               <HStack>
                 {imageList.map((item, index) => (
@@ -351,7 +352,7 @@ const SkateCast = () => {
               </HStack>
             </Flex>
           </Flex>
-          <HStack justifyContent="space-between" m={2}>
+          <HStack justifyContent="space-between" marginTop={2}>
             <Input
               id="md-image-upload"
               type="file"

@@ -128,7 +128,7 @@ export async function transferWithKeychain(username: string, destination: string
   }
 }
 
-export async function updateProfile(username: string, name: string, about: string, coverImageUrl: string, avatarUrl: string, website: string, ethAddress: string, videoParts: VideoPart[]) {
+export async function updateProfile(username: string, name: string, about: string, location: string, coverImageUrl: string, avatarUrl: string, website: string, ethAddress: string, videoParts: VideoPart[]) {
   try {
     const keychain = new KeychainSDK(window);
 
@@ -136,15 +136,20 @@ export async function updateProfile(username: string, name: string, about: strin
       profile: {
         name: name,
         about: about,
+        location: location,
         cover_image: coverImageUrl,
         profile_image: avatarUrl,
         website: website,
-      },
+        version: 2
+      }
+    };
+
+    const extMetadata = {
       extensions: {
         eth_address: ethAddress,
-        video_parts: videoParts,
-      },
-    };
+        video_parts: videoParts
+      }
+    }
 
     const formParamsAsObject = {
       data: {
@@ -154,11 +159,11 @@ export async function updateProfile(username: string, name: string, about: strin
             'account_update2',
             {
               account: username,
-              json_metadata: "",
+              json_metadata: JSON.stringify(extMetadata),
               posting_json_metadata: JSON.stringify(profileMetadata),
-              extensions: [],
-            },
-          ],
+              extensions: []
+            }
+          ]
         ],
         method: KeychainKeyTypes.active,
       },

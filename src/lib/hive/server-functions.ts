@@ -162,6 +162,7 @@ export async function updateProfileWithPrivateKey(
   username: string,
   name: string,
   about: string,
+  location: string,
   coverImageUrl: string,
   avatarUrl: string,
   website: string,
@@ -176,22 +177,28 @@ export async function updateProfileWithPrivateKey(
     profile: {
       name: name,
       about: about,
+      location: location,
       cover_image: coverImageUrl,
       profile_image: avatarUrl,
       website: website,
-    },
+      version: 2
+    }
+  };
+
+  const extMetadata = {
     extensions: {
       eth_address: ethAddress,
       video_parts: videoParts,
-    },
-  };
+    }
+  }
 
   const updateInfo: dhive.Operation = [
     "account_update2",
     {
       account: username,
-      extensions: [],
-      posting_json_metadata: JSON.stringify(profileMetadata)
+      json_metadata: JSON.stringify(extMetadata),
+      posting_json_metadata: JSON.stringify(profileMetadata),
+      extensions: []
     }
   ]
 

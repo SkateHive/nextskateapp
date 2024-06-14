@@ -12,7 +12,6 @@ import {
 import {
   Box,
   Button,
-  Divider,
   Flex,
   HStack,
   Text,
@@ -158,17 +157,20 @@ const CommentItem = ({
 
           </HStack>
           {/* Post Content */}
+          <Box w={"100%"}>
 
-          <ReactMarkdown
-            components={MarkdownRenderers}
-            rehypePlugins={[rehypeRaw]}
-            remarkPlugins={[remarkGfm]}
+            <ReactMarkdown
+              components={MarkdownRenderers}
+              rehypePlugins={[rehypeRaw]}
+              remarkPlugins={[remarkGfm]}
 
-          >
-            {transformIPFSContent(
-              transformShortYoutubeLinksinIframes(comment.body),
-            )}
-          </ReactMarkdown>
+            >
+              {transformIPFSContent(
+                transformShortYoutubeLinksinIframes(comment.body),
+              )}
+            </ReactMarkdown>
+          </Box>
+
         </VStack>
       </Flex>
 
@@ -201,7 +203,6 @@ const CommentItem = ({
           ${getTotalPayout(comment)}
         </Text>
       </Flex>
-      <Divider color={"grey"} mt={4} />
       {isEyeClicked && (
         <Box ml={10} mt={4} pl={4} borderLeft="2px solid gray">
 

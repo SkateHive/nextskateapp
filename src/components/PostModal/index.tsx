@@ -16,7 +16,8 @@ import {
   Modal, ModalBody, ModalCloseButton, ModalContent,
   ModalFooter, ModalHeader, ModalOverlay,
   Spinner,
-  Text
+  Text,
+  VStack
 } from "@chakra-ui/react";
 import debounce from 'lodash.debounce';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -82,7 +83,7 @@ export function PostModal({ isOpen, onClose }: PostModalInterface) {
   return (
     <Modal isOpen={isOpen} onClose={onClose} size={{ base: "lg", md: "2xl", lg: "6xl" }}>
       <ModalOverlay style={{ backdropFilter: "blur(5px)" }} />
-      <ModalContent bg="black" border="1.4px solid #A5D6A7" borderRadius={0} p={4} w="100%">
+      <ModalContent color={"white"} bg="black" border="1.4px solid #A5D6A7" borderRadius={0} p={4} w="100%">
         <ModalHeader><Header variant="open" /></ModalHeader>
         <ModalCloseButton mr={4} mt={2} color="red" />
         <ModalBody display="flex" flexDir={{ base: "column", lg: "row" }} minH="60vh" gap={6}>
@@ -99,7 +100,15 @@ export function PostModal({ isOpen, onClose }: PostModalInterface) {
             </Menu>
 
             {isLoadingTranslation ? (
-              <Center><Spinner size="xl" color="white" /></Center>
+              <Center>
+                <VStack>
+
+                  <Text> Translation Loading </Text>
+
+                  <Spinner size="xl" color="white" />
+                </VStack>
+
+              </Center>
             ) : (
               <ReactMarkdown components={MarkdownRenderers} rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
                 {transformNormalYoutubeLinksinIframes(transformShortYoutubeLinksinIframes(transformIPFSContent(isTranslated ? translatedPost : transformedPostBody)))}

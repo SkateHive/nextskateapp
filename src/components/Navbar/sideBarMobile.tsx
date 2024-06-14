@@ -1,6 +1,7 @@
 import NotificationsPage from "@/components/notifications/page";
 import { useHiveUser } from "@/contexts/UserContext";
-import { claimRewards } from "./utils/claimRewards";
+import HiveClient from "@/lib/hive/hiveclient";
+import { HiveAccount } from "@/lib/models/user";
 import { formatETHaddress } from "@/lib/utils";
 import { Link } from "@chakra-ui/next-js";
 import {
@@ -25,8 +26,7 @@ import { useAccount } from "wagmi";
 import LoginModal from "../Hive/Login/LoginModal";
 import CommunityTotalPayout from "../communityTotalPayout";
 import checkRewards from "./utils/checkReward";
-import { HiveAccount } from "@/lib/models/user";
-import HiveClient from "@/lib/hive/hiveclient";
+import { claimRewards } from "./utils/claimRewards";
 const blink = keyframes`
   0% { opacity: 1; }
   50% { opacity: 0.1; }
@@ -53,7 +53,7 @@ const SideBarMobile = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
 
 
     useEffect(() => {
-        if (hiveUser?.name) {
+        if (hiveUser?.metadata?.profile?.name && !hiveAccount) {
             const getUserAccount = async () => {
                 try {
                     const userAccount = await client.database.getAccounts([hiveUser.name]);
@@ -186,7 +186,7 @@ const SideBarMobile = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
                                 justifyContent={"center"}
                                 fontSize={"14px"}
                                 variant={"outline"}
-                                borderColor={"red.400"}
+                                colorScheme="red"
                                 width={"100%"}
                                 bg="black"
                                 leftIcon={
@@ -203,6 +203,8 @@ const SideBarMobile = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
                                 borderColor={"blue.400"}
                                 width={"100%"}
                                 bg="black"
+                                colorScheme="blue"
+
                                 leftIcon={
                                     <Icon
                                         color={ethAccount.address ? "blue.400" : "white"}

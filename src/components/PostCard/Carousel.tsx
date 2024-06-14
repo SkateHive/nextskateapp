@@ -35,12 +35,15 @@ function PostCarousel() {
     videoLinks = [...iframeLinks, ...tSpeakLinks]
   }
 
-  const filteredImages = imageLinks.length
-    ? imageLinks.filter(
-      (image) =>
-        ![SKATEHIVE_DISCORD_IMAGE, SKATEHIVE_LOGO].includes(image.url)
-    )
-    : [{ url: SKATEHIVE_LOGO }]
+  const filteredImages = imageLinks.filter(
+    (image) =>
+      ![SKATEHIVE_DISCORD_IMAGE, SKATEHIVE_LOGO].includes(image.url)
+  )
+
+  // Add a placeholder image if filteredImages is empty
+  if (filteredImages.length === 0) {
+    filteredImages.push({ domain: 'skatehive.app', url: 'http://skatehive.app/skatehive_square_green.png' })
+  }
 
   const carouselRef = useRef<any>(null);
 
