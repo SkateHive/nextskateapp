@@ -204,8 +204,6 @@ export async function updateProfileWithPrivateKey(
     }
   ]
 
-  // const client = new dhive.Client("https://api.hive.blog")
-
   HiveClient.broadcast
     .sendOperations([updateInfo], dhive.PrivateKey.from(privateKey))
     .then((result) => {
@@ -252,4 +250,59 @@ export async function communitySubscribePassword(encryptedPrivateKey: string | n
 
   sendHiveOperation(encryptedPrivateKey, [operation])
 
+}
+
+async function checkFollow(follower: string, following: string): Promise<boolean> {
+  try {
+    const status = await HiveClient.call('follow_api', 'get_following', [
+      follower,
+      following,
+      'blog',
+      1,
+  ]);
+    console.log({ status: status });
+
+    if (status.length > 0 && status[0].following == following) {
+      console.log("following!")
+      return true
+    } else {
+      console.log("NOT following!")
+      return false
+    }
+    return status[0]
+  } catch (error) {
+    console.log(error)
+    return false
+  }
+}
+
+export async function changeFollowWithPassword(encryptedPrivateKey: string | null, follower: string, following: string) {
+  const status = await checkFollow(follower, following)
+  let type = ''
+  if (status) {
+    type = ''
+  } else {
+    type = 'blog'
+  }
+  const json = JSON.stringify([
+    'follow',
+    {
+        follower: follower,
+        following: following,
+        what: [type], //null value for unfollow, 'blog' for follow
+    },
+  ]);
+  const data = {
+    id: 'follow',
+    json: json,
+    required_auths: [],
+    required_posting_auths: [follower],
+  };
+  const operation: dhive.Operation = 
+        [
+          'custom_json',
+          data
+        ]
+
+  sendHiveOperation(encryptedPrivateKey, [operation])
 }
