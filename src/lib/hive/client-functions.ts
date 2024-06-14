@@ -218,3 +218,63 @@ export async function communitySubscribeKeyChain(username: string) {
     console.error('Profile update failed:', error);
   }
 }
+
+export async function checkFollow(follower: string, following: string): Promise<boolean> {
+  try {
+    const status = await HiveClient.call('follow_api', 'get_following', [
+      follower,
+      following,
+      'blog',
+      1,
+  ]);
+    console.log({ status: status });
+
+    if (status.length > 0 && status[0].following == following) {
+      console.log("following!")
+      return true
+    } else {
+      console.log("NOT following!")
+      return false
+    }
+    return status[0]
+  } catch (error) {
+    console.log(error)
+    return false
+  }
+}
+
+export async function changeFollow(follower: string, following: string) {
+  const keychain = new KeychainSDK(window);
+  const status = await checkFollow(follower, following)
+  let type = ''
+  if (status) {
+    type = ''
+  } else {
+    type = 'blog'
+  }
+  const json = JSON.stringify([
+    'follow',
+    {
+        follower: follower,
+        following: following,
+        what: [type], //null value for unfollow, 'blog' for follow
+    },
+  ]);
+
+  const formParamsAsObject = {
+    data: {
+      username: follower,
+      id: "follow",
+      method: KeychainKeyTypes.posting,
+      json: JSON.stringify(json)
+    },
+  };
+  try {
+    const custom = await keychain.custom(formParamsAsObject.data as unknown as Custom);
+    //const broadcast = await keychain.broadcast(formParamsAsObject.data as unknown as Broadcast);
+    console.log('Broadcast success:', custom);
+  } catch (error) {
+    console.error('Profile update failed:', error);
+  }
+
+}
