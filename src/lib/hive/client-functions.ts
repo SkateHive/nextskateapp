@@ -1,11 +1,14 @@
 'use client';
-import { Broadcast, KeychainKeyTypes, KeychainRequestResponse, KeychainSDK, Login, Post, Transfer, Vote } from "keychain-sdk";
+import { Broadcast, KeychainKeyTypes, KeychainRequestResponse, KeychainSDK, Login, Post, Transfer, Vote, Custom } from "keychain-sdk";
 import { VideoPart } from "../models/user";
+import HiveClient from "./hiveclient"
 
 interface HiveKeychainResponse {
   success: boolean
   publicKey: string
 }
+
+const communityTag = process.env.NEXT_PUBLIC_HIVE_COMMUNITY_TAG;
 
 /*
 export async function claimRewards(hiveUser: HiveAccount) {
@@ -128,7 +131,7 @@ export async function transferWithKeychain(username: string, destination: string
   }
 }
 
-export async function updateProfile(username: string, name: string, about: string, coverImageUrl: string, avatarUrl: string, website: string, ethAddress: string, videoParts: VideoPart[]) {
+export async function updateProfile(username: string, name: string, about: string, location: string, coverImageUrl: string, avatarUrl: string, website: string, ethAddress: string, videoParts: VideoPart[]) {
   try {
     const keychain = new KeychainSDK(window);
 
@@ -136,16 +139,18 @@ export async function updateProfile(username: string, name: string, about: strin
       profile: {
         name: name,
         about: about,
+        location: location,
         cover_image: coverImageUrl,
         profile_image: avatarUrl,
         website: website,
+        version: 2
       }
     };
 
     const extMetadata = {
       extensions: {
         eth_address: ethAddress,
-        video_parts: videoParts,
+        video_parts: videoParts
       }
     }
 
@@ -159,9 +164,9 @@ export async function updateProfile(username: string, name: string, about: strin
               account: username,
               json_metadata: JSON.stringify(extMetadata),
               posting_json_metadata: JSON.stringify(profileMetadata),
-              extensions: [],
-            },
-          ],
+              extensions: []
+            }
+          ]
         ],
         method: KeychainKeyTypes.active,
       },
@@ -169,6 +174,46 @@ export async function updateProfile(username: string, name: string, about: strin
 
     const broadcast = await keychain.broadcast(formParamsAsObject.data as unknown as Broadcast);
     console.log('Broadcast success:', broadcast);
+  } catch (error) {
+    console.error('Profile update failed:', error);
+  }
+}
+
+export async function checkCommunitySubscription(username: string) {
+  
+  const parameters = {
+    account: username
+  }
+  try {
+    const subscriptions = await HiveClient.call('bridge', 'list_all_subscriptions', parameters);
+    return subscriptions.some((subscription: any) => subscription[0] === communityTag);
+  } catch (error) {
+    console.error('Error fetching subscriptions:', error);
+    return false; // Returning false in case of an error
+  }
+}
+
+export async function communitySubscribeKeyChain(username: string) {
+
+  const keychain = new KeychainSDK(window);
+  const json = [
+    'subscribe',
+    {
+      community: communityTag
+    }
+  ]
+  const formParamsAsObject = {
+    data: {
+      username: username,
+      id: "community",
+      method: KeychainKeyTypes.posting,
+      json: JSON.stringify(json)
+    },
+  };
+  try {
+    const custom = await keychain.custom(formParamsAsObject.data as unknown as Custom);
+    //const broadcast = await keychain.broadcast(formParamsAsObject.data as unknown as Broadcast);
+    console.log('Broadcast success:', custom);
   } catch (error) {
     console.error('Profile update failed:', error);
   }

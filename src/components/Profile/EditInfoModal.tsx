@@ -25,7 +25,6 @@ import {
 import { ChangeEvent, useState } from "react";
 import { FaUpload } from 'react-icons/fa';
 import { useAccount } from "wagmi";
-
 interface EditModalProps {
   isOpen: boolean
   onClose(): void
@@ -40,6 +39,7 @@ export default function EditInfoModal({ isOpen, onClose, user }: EditModalProps)
   const extMetadata = JSON.parse(user.json_metadata).extensions ? JSON.parse(user.json_metadata) : {};
   const [name, setName] = useState<string>(metadata?.profile.name || '');
   const [about, setAbout] = useState<string>(metadata?.profile.about || '');
+  const [location, setLocation] = useState<string>(metadata?.profile.location || '');
   const [avatarUrl, setAvatarUrl] = useState<string>(metadata?.profile.profile_image || '');
   const [coverImageUrl, setCoverImageUrl] = useState<string>(metadata?.profile.cover_image || '');
   const [extensions, setExtensions] = useState<any>(
@@ -88,10 +88,10 @@ export default function EditInfoModal({ isOpen, onClose, user }: EditModalProps)
       return
     }
     if (loginMethod === "keychain") {
-      await updateProfile(user.name, name, about, coverImageUrl, avatarUrl, website, ethAddress, videoParts);
+      await updateProfile(user.name, name, about, location, coverImageUrl, avatarUrl, website, ethAddress, videoParts);
     } else if (loginMethod === "privateKey") {
       const encryptedPrivateKey = localStorage.getItem("EncPrivateKey");
-      await updateProfileWithPrivateKey(encryptedPrivateKey, user.name, name, about, coverImageUrl, avatarUrl, website, ethAddress, videoParts)
+      await updateProfileWithPrivateKey(encryptedPrivateKey, user.name, name, about, location, coverImageUrl, avatarUrl, website, ethAddress, videoParts)
     }
   }
 
@@ -141,6 +141,13 @@ export default function EditInfoModal({ isOpen, onClose, user }: EditModalProps)
             placeholder="About"
             value={about}
             onChange={(e) => setAbout(e.target.value)}
+
+          />
+          <Text> Location</Text>
+          <Input
+            placeholder="Location"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
 
           />
           <Text> Avatar URL</Text>
