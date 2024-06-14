@@ -7,6 +7,8 @@ import { HiveAccount } from "../useHiveAuth"
 import HiveClient from "./hiveclient"
 import { VideoPart } from "../models/user"
 
+const communityTag = process.env.NEXT_PUBLIC_HIVE_COMMUNITY_TAG;
+
 interface ServerLoginResponse {
   validation: Validation
   key?: string
@@ -230,3 +232,24 @@ export async function sendHiveOperation (encryptedPrivateKey: string | null, op:
   
 }
 
+export async function communitySubscribePassword(encryptedPrivateKey: string | null, username: string) {
+  const json = [
+    'subscribe',
+    {
+      community: communityTag
+    }
+  ]
+  const operation: dhive.Operation = 
+        [
+          'custom_json',
+          {
+            required_auths: [],
+            required_posting_auths: [username],
+            id: "community",
+            json: JSON.stringify(json)
+          }
+        ]
+
+  sendHiveOperation(encryptedPrivateKey, [operation])
+
+}

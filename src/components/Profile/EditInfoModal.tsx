@@ -1,7 +1,7 @@
 'use client'
 
 import { uploadFileToIPFS } from "@/app/upload/utils/uploadToIPFS";
-import { updateProfile } from "@/lib/hive/client-functions";
+import { updateProfile, checkCommunitySubscription } from "@/lib/hive/client-functions";
 import { HiveAccount, VideoPart } from "@/lib/models/user";
 import {
   Badge,
