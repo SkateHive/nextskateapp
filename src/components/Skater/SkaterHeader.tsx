@@ -4,7 +4,6 @@ import { useHiveUser } from "@/contexts/UserContext"
 import { HiveAccount } from "@/lib/models/user"
 import { Box, HStack, Image, Text, VStack, useDisclosure, useMediaQuery } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
-import { FaGear } from "react-icons/fa6"
 import AuthorAvatar from "../AuthorAvatar"
 interface ProfileProps {
     user: HiveAccount
@@ -51,9 +50,6 @@ export default function SkateHeader({ user }: ProfileProps) {
                 <Text top={5} fontSize={{ base: "sm", lg: "3xl" }} fontWeight={"bold"}>
                     {profileName} <br />
                 </Text>
-                {user.name === hiveUser.hiveUser?.name && (
-                    <FaGear onClick={onOpen} color="white" size="1em" />
-                )}
             </HStack>
         </VStack>
     )

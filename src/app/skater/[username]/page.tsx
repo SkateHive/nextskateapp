@@ -15,7 +15,7 @@ export default function SkaterPage({ params }: ProfilePageProps) {
   const { hiveAccount } = useHiveAccount(params.username)
   if (!hiveAccount) return <Box w={"100%"}>Loading...</Box>
   return (
-    <Box w={"100%"}>
+    <Box color={"white"} w={"100%"}>
       <SkateHeader user={hiveAccount} />
       <ProfileTabs user={hiveAccount} />
     </Box>

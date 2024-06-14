@@ -150,7 +150,13 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
                     .utc(post.created)
                     .fromNow()
                     .replace("minutes", "m")
-                    .replace("hours", "h")}
+                    .replace("hours", "h")
+                    .replace("days", "d")
+                    .replace("months", "m")
+                    .replace("ago", "")
+                    .replace(" ", "")
+                  }
+
                 </Text>
                 <Spacer />
 
