@@ -29,7 +29,7 @@ function Wallet() {
           <TabPanel>
             <Flex direction={{ base: "column", md: "row" }}>
 
-              <Box w={'100%'} >
+              <Box w={'100%'} h={'80%'}>
 
                 <iframe
                   id="swapWidgetkeychain"
@@ -37,15 +37,15 @@ function Wallet() {
                   src={`https://swapwidget.hive-keychain.com/?username=${username}&to=WEED&partnerUsername=steemskate&partnerFee=0.5&from=HIVE`}
                   allow="clipboard-write"
                   width="100%"
-                  height="600px"
+                  height="500px"
                 />
               </Box>
-              <Box w={'100%'}>
+              <Box mb={10} w={'100%'}>
                 <iframe
                   id="simpleswap-frame"
                   name="SimpleSwap Widget"
                   width="100%"
-                  height="600px"
+                  height="500px"
                   src="https://simpleswap.io/widget/df29d743-6c03-4c7e-a745-4a0bfd19c656" ></iframe>
               </Box>
             </Flex>
