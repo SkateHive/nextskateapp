@@ -18,24 +18,31 @@ import { mainnet } from 'viem/chains';
 import { useBalance } from 'wagmi';
 
 const HOT_ADDRESS = '0xB4964e1ecA55Db36a94e8aeFfBFBAb48529a2f6c';
-const MULTISIG_ADDRESS = '0x5501838d869B125EFd90daCf45cDFAC4ea192c12' as `0x${string}`;
+const OLD_MULTISIG_ADDRESS = '0x5501838d869B125EFd90daCf45cDFAC4ea192c12' as `0x${string}`;
+const NEW_MULTISIG_ADDRESS = '0xc1afa4c0a70b622d7b71d42241bb4d52b6f3e218' as `0x${string}`;
 const DaoTreasure = () => {
 
     const multisigBalance = useBalance({
-        address: MULTISIG_ADDRESS,
+        address: OLD_MULTISIG_ADDRESS,
         chainId: mainnet.id,
     });
-    console.log(multisigBalance)
-    const balance = useBalance({ address: MULTISIG_ADDRESS });
+    const old_multisig_balance = useBalance({ address: OLD_MULTISIG_ADDRESS });
+    const new_multisig_balance = useBalance({ address: NEW_MULTISIG_ADDRESS });
     const [hotWalletbalance, setWalletbalance] = useState("0")
     const ethprice = useETHPrice() || 3400;
     const multiSigETHvalue = Number(multisigBalance.data?.formatted) * ethprice;
-    const totalJazz = Number(hotWalletbalance) + multiSigETHvalue;
+    const totalJazz = Number(hotWalletbalance) + multiSigETHvalue + Number(old_multisig_balance.data?.formatted) + Number(new_multisig_balance.data?.formatted);
 
     useEffect(() => {
         const fetchData = async () => {
             const Portfolio = await axios.get(`https://pioneers.dev/api/v1/portfolio/${HOT_ADDRESS}`);
             setWalletbalance(Portfolio.data.totalNetWorth);
+            console.log(Portfolio.data.totalNetWorth)
+            console.log(new_multisig_balance)
+            console.log(old_multisig_balance)
+            console.log(multisigBalance)
+
+
         };
 
         fetchData();
@@ -73,7 +80,7 @@ const DaoTreasure = () => {
                                 </VStack>
                             </center>
                         }>
-                        <Badge ml={2} border={"1px solid #A5D6A7"} color='#A5D6A7' fontSize={"24px"} > {totalJazz.toFixed(2)} USD </Badge>
+                        <Badge ml={2} bg={"black"} border={"1px solid #A5D6A7"} color='#A5D6A7' fontSize={"24px"} > {totalJazz.toFixed(2)} USD </Badge>
                     </Tooltip></CardHeader>
             </Center>
 
