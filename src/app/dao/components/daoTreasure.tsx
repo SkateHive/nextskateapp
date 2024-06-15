@@ -50,6 +50,7 @@ const DaoTreasure = () => {
             borderBottomRadius={'10px'}
             borderTopRadius={'0px'}
             borderTop={"0px"}
+            color={"white"}
         >
             <Center>
                 <CardHeader>DAO Treasure
