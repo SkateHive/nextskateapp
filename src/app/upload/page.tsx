@@ -3,7 +3,7 @@ import useAuthHiveUser from "@/lib/useHiveAuth";
 import { transformIPFSContent } from "@/lib/utils";
 import { Avatar, Badge, Box, Button, Center, Checkbox, Divider, Flex, HStack, Image, Input, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Spinner, Text, Tooltip, VStack } from "@chakra-ui/react";
 import MDEditor, { commands } from '@uiw/react-md-editor';
-import React, { RefObject, useRef, useState } from "react";
+import React, { RefObject, useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { FaImage, FaSave } from "react-icons/fa";
 import ReactMarkdown from 'react-markdown';
@@ -46,6 +46,12 @@ export default function Upload() {
     const [beneficiaries, setBeneficiaries] = useState<Beneficiary[]>([]);
     const [showPreview, setShowPreview] = useState(false);
     const [isChecked, setIsChecked] = useState(true);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            setValue(localStorage.getItem('draft') || '');
+        }
+    }, []);
 
     const { getRootProps, getInputProps } = useDropzone({
         noClick: true,
@@ -199,6 +205,13 @@ export default function Upload() {
         updatedDefaultBeneficiaries[index].percentage = newPercentage;
     }
 
+    const handleChange = (value: string) => {
+        localStorage.setItem('draft', value);
+        setValue(value || localStorage.getItem('draft') || '');
+    }
+
+
+
     return (
         <Box width="100%" overflow="hidden">
             {showPreview &&
@@ -238,7 +251,7 @@ export default function Upload() {
 
                         <MDEditor
                             value={value}
-                            onChange={(value) => setValue(value || "")}
+                            onChange={(value) => handleChange(value || '')}
                             commands={[
                                 commands.bold, commands.italic, commands.strikethrough, commands.hr, commands.code, commands.table, commands.link, commands.quote, commands.unorderedListCommand, commands.orderedListCommand, commands.codeBlock, commands.fullscreen
                             ]
