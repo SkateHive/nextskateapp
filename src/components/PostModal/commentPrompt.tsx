@@ -87,7 +87,7 @@ const CommandPrompt = ({ post, addComment }: CommandPromptProps) => {
         if (ipfsData !== undefined) {
           const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}?pinataGatewayToken=${PINATA_GATEWAY_TOKEN}`
           const markdownLink = file.type.startsWith("video/")
-            ? `<iframe src="${ipfsUrl}" allowfullscreen autoplay={false}></iframe>`
+            ? `<iframe src="${ipfsUrl}" allowFullScreen autoplay={false}></iframe>`
             : `![Image](${ipfsUrl})`
           setValue((prevMarkdown) => `${prevMarkdown}\n${markdownLink}\n`)
         }
