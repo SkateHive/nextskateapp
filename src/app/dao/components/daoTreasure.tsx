@@ -14,6 +14,7 @@ import {
 } from "@chakra-ui/react";
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import { FaEthereum } from 'react-icons/fa';
 import { mainnet } from 'viem/chains';
 import { useBalance } from 'wagmi';
 
@@ -66,25 +67,31 @@ const DaoTreasure = () => {
             borderTopRadius={'0px'}
             borderTop={"0px"}
             color={"white"}
+            mb={2}
         >
             <Center>
-                <CardHeader>DAO Treasure
-                    <Tooltip
-                        bg={"black"}
-                        color={"white"}
-                        border={"1px solid white"}
-                        label={
-                            <Center>
-                                <VStack >
-                                    <Text> {HOT_ADDRESS}</Text>
-                                    <Text> {OLD_MULTISIG_ADDRESS}</Text>
-                                    <Text>{NEW_MULTISIG_ADDRESS}</Text>
-                                </VStack>
+                <CardHeader>
+                    <HStack>
+                        <FaEthereum />
+                        <Text> SkateHive Treasure </Text>
+                        <Tooltip
+                            bg={"black"}
+                            color={"white"}
+                            border={"1px solid white"}
+                            label={
+                                <Center>
+                                    <VStack >
+                                        <Text> {HOT_ADDRESS}</Text>
+                                        <Text> {OLD_MULTISIG_ADDRESS}</Text>
+                                        <Text>{NEW_MULTISIG_ADDRESS}</Text>
+                                    </VStack>
+                                </Center>
+                            }>
+                            <Badge ml={2} bg={"black"} border={"1px solid #A5D6A7"} color='#A5D6A7' fontSize={"22px"} > {totalJazz.toFixed(2)} USD </Badge>
+                        </Tooltip>
+                    </HStack>
 
-                            </Center>
-                        }>
-                        <Badge ml={2} bg={"black"} border={"1px solid #A5D6A7"} color='#A5D6A7' fontSize={"24px"} > {totalJazz.toFixed(2)} USD </Badge>
-                    </Tooltip></CardHeader>
+                </CardHeader>
             </Center>
 
             <Divider border={"1px solid grey"} />
@@ -93,23 +100,23 @@ const DaoTreasure = () => {
                 flexDirection="column"
                 alignItems="center"
             >
-                <HStack width={"100%"}
+                <HStack
                     justifyContent={"space-between"}
                 >
                     <VStack m={5}>
-                        <Text fontSize={"18px"} color={"white"}> For DIY </Text>
+                        <Text fontSize={"12px"} color={"white"}> For DIY </Text>
                         <Divider />
-                        <Badge colorScheme='green' bg={"black"} border={"1px solid #A5D6A7"} color='#A5D6A7' fontWeight={"bold"} fontSize={"18px"}>{(totalJazz / 4).toFixed(2)} USD</Badge>
+                        <Badge colorScheme='green' bg={"black"} border={"1px solid #A5D6A7"} color='#A5D6A7' fontWeight={"bold"} fontSize={"12px"}>{(totalJazz / 4).toFixed(2)} USD</Badge>
                     </VStack>
                     <VStack m={5}>
-                        <Text fontSize={"18px"} color={"white"}>For Dev</Text>
+                        <Text fontSize={"12px"} color={"white"}>For Dev</Text>
                         <Divider />
-                        <Badge colorScheme='green' bg={"black"} border={"1px solid #A5D6A7"} color='#A5D6A7' fontWeight={"bold"} fontSize={"18px"}>{(totalJazz / 2).toFixed(2)} USD</Badge>
+                        <Badge colorScheme='green' bg={"black"} border={"1px solid #A5D6A7"} color='#A5D6A7' fontWeight={"bold"} fontSize={"12px"}>{(totalJazz / 2).toFixed(2)} USD</Badge>
                     </VStack>
                     <VStack m={5}>
-                        <Text fontSize={"18px"} color={"white"}> Sponsors</Text>
+                        <Text fontSize={"12px"} color={"white"}> Sponsors</Text>
                         <Divider />
-                        <Badge colorScheme='green' bg={"black"} border={"1px solid #A5D6A7"} color='#A5D6A7' fontWeight={"bold"} fontSize={"18px"}>{(totalJazz / 4).toFixed(2)} USD </Badge>
+                        <Badge colorScheme='green' bg={"black"} border={"1px solid #A5D6A7"} color='#A5D6A7' fontWeight={"bold"} fontSize={"12px"}>{(totalJazz / 4).toFixed(2)} USD </Badge>
                     </VStack>
                 </HStack>
             </CardBody>

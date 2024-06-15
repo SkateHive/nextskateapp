@@ -16,7 +16,7 @@ const ProposalPreview: React.FC<ProposalPreviewProps> = ({ value }) => {
             width="100%"
             height="100%"
             border="1px solid limegreen"
-            minHeight="100%"
+            minHeight="60vh"
         >
             <ReactMarkdown
                 components={MarkdownRenderers}
