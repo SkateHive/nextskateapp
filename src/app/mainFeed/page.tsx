@@ -295,10 +295,8 @@ const SkateCast = () => {
       <Box p={4} width={"100%"} bg="black" color="white" {...getRootProps()}>
         <div>
           <Flex>
-            {user.hiveUser && (
-
-              <UserAvatar hiveAccount={user.hiveUser} borderRadius={5} boxSize={12} />
-            )}
+            {/* @ts-ignore */}
+            <UserAvatar hiveAccount={user.hiveUser || {}} boxSize={12} borderRadius={5} />
             <Flex flexDir="column" w="100%">
               <Textarea
                 border="none"

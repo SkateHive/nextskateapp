@@ -37,7 +37,7 @@ const SocialModal: React.FC<SocialModalProps> = ({ isOpen, onClose, postUrl, con
             const postPageUrl = encodeURI(generatePostUrl());
             const warptext = `${aiSummary} ${postPageUrl}`;
 
-            window.open(`https://warpcast.com/~/compose?text=${warptext}`, '_blank');
+            window.open(`https://warpcast.com/~/compose?text=${warptext}`, "_blank", "noreferrer noopener");
         }
         catch (error) {
             console.error('Failed to share in WarpCast:', error);
@@ -47,7 +47,7 @@ const SocialModal: React.FC<SocialModalProps> = ({ isOpen, onClose, postUrl, con
         try {
             const postPageUrl = encodeURI(generatePostUrl());
             const tweetText = `${aiSummary} ${postPageUrl}`;
-            window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, '_blank');
+            window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, "_blank", "noreferrer noopener");
 
         }
         catch (error) {
@@ -60,7 +60,7 @@ const SocialModal: React.FC<SocialModalProps> = ({ isOpen, onClose, postUrl, con
             const tweetText = `${aiSummary} ${postPageUrl}`;
             navigator.clipboard.writeText(tweetText);
 
-            window.open('https://discord.com/channels/631777256234156033/631778823716864011', '_blank');
+            window.open('https://discord.com/channels/631777256234156033/631778823716864011', "_blank", "noreferrer noopener");
         }
         catch (error) {
             console.error('Failed to share in Discord:', error);

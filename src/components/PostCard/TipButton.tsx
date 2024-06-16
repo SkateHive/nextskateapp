@@ -68,13 +68,13 @@ export default function TipButton({ author }: TipButtonProps) {
                 color={"limegreen"}
                 border={"1px dashed #A5D6A7"}
             >
-                <MenuButton onClick={fetchUserData} w={"auto"} as={Button} color="green.200" variant={"ghost"} _hover={{
+                <MenuButton _active={{ bg: 'transparent' }} onClick={fetchUserData} w={"auto"} as={Button} color="green.200" variant={"ghost"} _hover={{
                     background: "none",
                 }} size="sm">
                     ⌐◨-◨
                 </MenuButton>
             </Tooltip>
-            <MenuList bg="black">
+            <MenuList color={'white'} bg="black">
                 <MenuItem
                     bg="black"
                     _hover={{ bg: "red.500", color: "black" }}
