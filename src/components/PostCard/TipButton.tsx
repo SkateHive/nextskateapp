@@ -63,7 +63,7 @@ export default function TipButton({ author }: TipButtonProps) {
     return (
         <Menu>
             <Tooltip
-                label='Send Money 💸'
+                label='Support !'
                 bg={'black'}
                 color={"limegreen"}
                 border={"1px dashed #A5D6A7"}

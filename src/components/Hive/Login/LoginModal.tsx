@@ -4,6 +4,7 @@ import UserAvatar from "@/components/UserAvatar"
 import { useHiveUser } from "@/contexts/UserContext"
 import useAuthHiveUser from "@/lib/useHiveAuth"
 import {
+  Box,
   Button,
   Center,
   FormControl,
@@ -19,8 +20,18 @@ import {
   ModalHeader,
   ModalOverlay,
   Spinner,
+  Step,
+  StepDescription,
+  StepIcon,
+  StepIndicator,
+  StepNumber,
+  StepSeparator,
+  StepStatus,
+  StepTitle,
+  Stepper,
   Text,
-  VStack
+  VStack,
+  useSteps
 } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
 import { FaHive } from "react-icons/fa"
@@ -66,6 +77,50 @@ function LoginModal({
       doLogin();
     }
   };
+
+  const steps = [
+    { title: 'Add Profile Pic', description: 'Done' },
+    { title: 'Edit Profile', description: 'If you want, but its cool' },
+    { title: 'Make your first Post', description: 'Introduce yourself, bro' },
+    { title: 'Vote For SkateHive Witness', description: 'Complicated Shit. Just do it' }
+  ]
+
+  function StepByStep() {
+    const { activeStep } = useSteps({
+      index: 1,
+      count: steps.length,
+    })
+    const [isStep1Completed, setStep1Completed] = useState(false)
+    const [isStep2Completed, setStep2Completed] = useState(false)
+    const [isStep3Completed, setStep3Completed] = useState(false)
+    const [isStep4Completed, setStep4Completed] = useState(false)
+    return (
+      <Stepper index={activeStep} orientation='vertical' height='300px' gap='0' mt={5} mb={5}>
+        {steps.map((step, index) => (
+          <Step key={index}>
+            <StepIndicator>
+              <StepStatus
+                complete={<StepIcon />}
+                incomplete={<StepNumber />}
+                active={<StepNumber />}
+              />
+            </StepIndicator>
+
+            <Box flexShrink='0'>
+              <StepTitle>{step.title}</StepTitle>
+              <StepDescription>{step.description}</StepDescription>
+            </Box>
+
+            <StepSeparator />
+          </Step>
+        ))}
+      </Stepper>
+    )
+  }
+
+
+
+
   return (
     <Modal isOpen={isOpen} isCentered onClose={onClose}>
       <ModalOverlay />
@@ -78,13 +133,13 @@ function LoginModal({
       >
         {hiveUser ? (
           <>
-            <ModalHeader>Connected as {hiveUser.name}</ModalHeader>
+            <ModalHeader> <Center>Connected as {hiveUser.name}</Center></ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <VStack align={"normal"}>
                 <HStack>
                   <UserAvatar hiveAccount={hiveUser} borderRadius={5} boxSize={16} />
-                  <Text>{hiveUser.name}</Text>
+                  <StepByStep />
                 </HStack>
                 <Button
                   w={"100%"}
