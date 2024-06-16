@@ -256,10 +256,12 @@ export default function Upload() {
                                 commands.bold, commands.italic, commands.strikethrough, commands.hr, commands.code, commands.table, commands.link, commands.quote, commands.unorderedListCommand, commands.orderedListCommand, commands.codeBlock, commands.fullscreen
                             ]
                             }
+
                             extraCommands={extraCommands}
                             height="700px"
                             preview="edit"
                             style={{
+                                color: "#A5D6A7",
                                 border: "1px solid #A5D6A7",
                                 padding: "10px",
                                 backgroundColor: "black",
