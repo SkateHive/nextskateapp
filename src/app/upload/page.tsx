@@ -213,7 +213,7 @@ export default function Upload() {
 
 
     return (
-        <Box width="100%" overflow="hidden">
+        <Box width="100%" overflow="hidden" color={"white"}>
             {showPreview &&
                 <PreviewModal
                     isOpen={showPreview}
