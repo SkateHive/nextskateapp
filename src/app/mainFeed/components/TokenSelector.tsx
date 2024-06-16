@@ -222,7 +222,7 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                                 <Image src={tokenDictionary[token]?.tokenLogo} alt={`${token} Logo`} width="50px" mx="auto" my={4} />
                             </MenuButton>
                             <Portal>
-                                <MenuList bg="black" zIndex="9999">
+                                <MenuList color={'white'} bg="black" zIndex="9999">
                                     <MenuItem
                                         bg="black"
                                         _hover={{ bg: "green.500", color: "black" }}
@@ -286,6 +286,7 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                 </InputLeftElement>
                 <InputRightElement>
                     <Button
+                        bg={'green.200'}
                         size="xs"
                         onClick={() => {
                             setAmount((prev) => String(Number(prev) + 1));
@@ -295,6 +296,7 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                     </Button>
                 </InputRightElement>
                 <Input
+                    color={"white"}
                     type="number"
                     variant={"outline"}
                     placeholder="Amount"
@@ -304,6 +306,7 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
             </InputGroup>
             {isCustomToken && (
                 <Input
+                    color={"white"}
                     placeholder="Enter token address"
                     value={customTokenContract}
                     fontSize={"48px"}
