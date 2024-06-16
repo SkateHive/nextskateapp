@@ -61,7 +61,7 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
         NOGS: {
             address: '0x13741C5dF9aB03E7Aa9Fb3Bf1f714551dD5A5F8a',
             abi: nogsABI as unknown as any[],
-            tokenLogo: "/logos/nog.svg"
+            tokenLogo: "/logos/nog.png"
         },
         MEMBER: {
             address: '0x7d89e05c0b93b24b5cb23a073e60d008fed1acf9',
@@ -242,7 +242,7 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                                             setIsCustomToken(false);
                                         }}
                                     >
-                                        <Image alt="nogs" mr={3} boxSize="20px" src="https://app.noggles.com/svg/moon-logo.svg" />
+                                        <Image alt="nogs" mr={3} boxSize="20px" src="/logos/nog.png" />
                                         $NOGS
                                     </MenuItem>
                                     <MenuItem

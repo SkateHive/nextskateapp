@@ -50,7 +50,7 @@ const TipModal: React.FC<TipModalProps> = ({ isOpen, onClose, token, author, aut
         NOGS: {
             address: '0x13741C5dF9aB03E7Aa9Fb3Bf1f714551dD5A5F8a',
             abi: nogsABI as unknown as any[],
-            tokenLogo: "https://app.noggles.com/svg/moon-logo.svg"
+            tokenLogo: "/logos/nogs.png"
         },
         MEMBER: {
             address: '0x7d89e05c0b93b24b5cb23a073e60d008fed1acf9',

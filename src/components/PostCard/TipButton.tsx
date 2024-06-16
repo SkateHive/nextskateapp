@@ -98,7 +98,7 @@ export default function TipButton({ author }: TipButtonProps) {
                             _hover={{ bg: "yellow.500" }}
                             onClick={() => openBaseTipModal('NOGS')}
                         >
-                            <Image alt="nogs" mr={3} boxSize={"20px"} src="https://app.noggles.com/svg/moon-logo.svg" />
+                            <Image alt="nogs" mr={3} boxSize={"20px"} src="/logos/nog.png" />
                             $NOGS
                         </MenuItem>
                         <MenuItem
