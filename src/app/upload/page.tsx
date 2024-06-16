@@ -40,7 +40,7 @@ export default function Upload() {
     const defaultTags = ["skatehive", "skateboarding", "leofinance", "sportstalk", "hive-engine"];
     const [tags, setTags] = useState([...defaultTags]);
     const [showAdvanced, setShowAdvanced] = useState(false);
-    const [thumbnailUrl, setThumbnailUrl] = useState<string | null>("https://ipfs.skatehive.app/ipfs/QmYkb6yq2nXSccdMwmyNWXND8T1exqUW1uUiMAQcV4nfVP?pinataGatewayToken=nxHSFa1jQsiF7IHeXWH-gXCY3LDLlZ7Run3aZXZc8DRCfQz4J4a94z9DmVftXyFE");
+    const [thumbnailUrl, setThumbnailUrl] = useState<string | null>("https://ipfs.skatehive.app/ipfs/QmWgkeX38hgWNh7cj2mTvk8ckgGK3HSB5VeNn2yn9BEnt7?pinataGatewayToken=nxHSFa1jQsiF7IHeXWH-gXCY3LDLlZ7Run3aZXZc8DRCfQz4J4a94z9DmVftXyFE");
     const [newTagInputs, setNewTagInputs] = useState(Array(5).fill(""));
     const searchBarRef: RefObject<HTMLDivElement> = useRef(null);
     const [beneficiaries, setBeneficiaries] = useState<Beneficiary[]>([]);

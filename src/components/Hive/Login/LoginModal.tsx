@@ -1,5 +1,6 @@
 "use client"
 
+import UserAvatar from "@/components/UserAvatar"
 import { useHiveUser } from "@/contexts/UserContext"
 import useAuthHiveUser from "@/lib/useHiveAuth"
 import {
@@ -7,6 +8,7 @@ import {
   Center,
   FormControl,
   FormErrorMessage,
+  HStack,
   Image,
   Input,
   Modal,
@@ -17,9 +19,11 @@ import {
   ModalHeader,
   ModalOverlay,
   Spinner,
+  Text,
   VStack
 } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
+import { FaHive } from "react-icons/fa"
 const environment = process.env.NODE_ENV
 
 function LoginModal({
@@ -70,6 +74,7 @@ function LoginModal({
         mx={4}
         border={"1.2px solid #A5D6A7"}
         boxShadow={"0 0 20px #A5D6A7"}
+        color={"#A5D6A7"}
       >
         {hiveUser ? (
           <>
@@ -77,10 +82,10 @@ function LoginModal({
             <ModalCloseButton />
             <ModalBody>
               <VStack align={"normal"}>
-                <Center>
-                  <Image border={"1.2px solid #A5D6A7"}
-                    boxShadow={"0 0 20px #A5D6A7"} mb={2} borderRadius={"10px"} boxSize={"120px"} src={`https://images.ecency.com/webp/u/${hiveUser.name}/avatar/small`} alt="Hive Logo" />
-                </Center>
+                <HStack>
+                  <UserAvatar hiveAccount={hiveUser} borderRadius={5} boxSize={16} />
+                  <Text>{hiveUser.name}</Text>
+                </HStack>
                 <Button
                   w={"100%"}
                   onClick={() => {
@@ -98,7 +103,7 @@ function LoginModal({
           </>
         ) : (
           <>
-            <ModalHeader>Hive Log In</ModalHeader>
+            <ModalHeader><Center><Text mr={2}>Connect with HIVE </Text><FaHive color="red" /> </Center></ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <Image mb={2} src="/pepe-login.png" alt="Hive Logo" />

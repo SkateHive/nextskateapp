@@ -1,10 +1,10 @@
 "use client";
+import UserAvatar from "@/components/UserAvatar";
 import { useHiveUser } from "@/contexts/UserContext";
 import { useComments } from "@/hooks/comments";
 import { vote } from "@/lib/hive/client-functions";
 import { commentWithPrivateKey } from "@/lib/hive/server-functions";
 import {
-  Avatar,
   Box,
   Button,
   Divider,
@@ -19,7 +19,7 @@ import {
   MenuList,
   Text,
   Textarea,
-  VStack,
+  VStack
 } from "@chakra-ui/react";
 import * as dhive from "@hiveio/dhive";
 import { useMemo, useRef, useState } from "react";
@@ -295,12 +295,10 @@ const SkateCast = () => {
       <Box p={4} width={"100%"} bg="black" color="white" {...getRootProps()}>
         <div>
           <Flex>
-            <Avatar
-              borderRadius={6}
-              boxSize={12}
-              marginRight={2}
-              src={`https://images.ecency.com/webp/u/${username}/avatar/small`}
-            />
+            {user.hiveUser && (
+
+              <UserAvatar hiveAccount={user.hiveUser} borderRadius={5} boxSize={12} />
+            )}
             <Flex flexDir="column" w="100%">
               <Textarea
                 border="none"
