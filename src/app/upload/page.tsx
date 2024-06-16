@@ -253,7 +253,7 @@ export default function Upload() {
                             value={value}
                             onChange={(value) => handleChange(value || '')}
                             commands={[
-                                commands.bold, commands.italic, commands.strikethrough, commands.hr, commands.code, commands.table, commands.link, commands.quote, commands.unorderedListCommand, commands.orderedListCommand, commands.codeBlock, commands.fullscreen
+                                commands.bold, commands.italic, commands.strikethrough, commands.table, commands.link, commands.quote, commands.unorderedListCommand, commands.fullscreen
                             ]
                             }
 
