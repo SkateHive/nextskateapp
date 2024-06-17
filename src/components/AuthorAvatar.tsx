@@ -57,7 +57,7 @@ export default function AuthorAvatar({ username, borderRadius, hover, boxSize }:
     return (
         <Avatar
             ref={ref}
-            onClick={() => window.open(`/skater/${username}`, "_blank")}
+            onClick={() => window.open(`/skater/${username}`, "_blank", "noreferrer noopener")}
             name={username}
             src={inView ? profileImage : "/loading.gif"}
             boxSize={boxSize || 12}

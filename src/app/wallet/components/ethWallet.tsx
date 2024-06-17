@@ -1,6 +1,7 @@
 'use client'
 import { getENSavatar } from "@/app/dao/utils/getENSavatar";
 import { getENSnamefromAddress } from "@/app/dao/utils/getENSfromAddress";
+import { CustomConnectWallet } from "@/components/customConnectWallet";
 import {
     Accordion,
     AccordionButton,
@@ -12,7 +13,6 @@ import {
     Badge,
     Box,
     Center,
-    Divider,
     Flex,
     HStack,
     Image,
@@ -31,7 +31,6 @@ import { useEffect, useState } from "react";
 import { FaEthereum, FaEye } from "react-icons/fa";
 import { useAccount } from "wagmi";
 import * as Types from "../types";
-import { CustomConnectWallet } from "@/components/customConnectWallet";
 
 interface EthBoxProps {
     onNetWorthChange: (value: number) => void;
@@ -191,14 +190,14 @@ const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
                                 </Flex>
                                 <AccordionIcon />
                             </AccordionButton>
-                            <AccordionPanel pb={4}>
+                            <AccordionPanel color={"white"} pb={4}>
                                 <TableContainer>
                                     <Table variant="simple" size="sm">
                                         <Thead>
                                             <Tr color="red">
-                                                <Th>Token</Th>
+                                                <Th></Th>
                                                 <Th>Balance</Th>
-                                                <Th isNumeric>USD Value</Th>
+                                                <Th isNumeric>in USD</Th>
                                             </Tr>
                                         </Thead>
                                         <Tbody>

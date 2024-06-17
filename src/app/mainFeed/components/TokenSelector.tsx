@@ -61,7 +61,7 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
         NOGS: {
             address: '0x13741C5dF9aB03E7Aa9Fb3Bf1f714551dD5A5F8a',
             abi: nogsABI as unknown as any[],
-            tokenLogo: "/logos/nog.svg"
+            tokenLogo: "/logos/nog.png"
         },
         MEMBER: {
             address: '0x7d89e05c0b93b24b5cb23a073e60d008fed1acf9',
@@ -222,7 +222,7 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                                 <Image src={tokenDictionary[token]?.tokenLogo} alt={`${token} Logo`} width="50px" mx="auto" my={4} />
                             </MenuButton>
                             <Portal>
-                                <MenuList bg="black" zIndex="9999">
+                                <MenuList color={'white'} bg="black" zIndex="9999">
                                     <MenuItem
                                         bg="black"
                                         _hover={{ bg: "green.500", color: "black" }}
@@ -242,7 +242,7 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                                             setIsCustomToken(false);
                                         }}
                                     >
-                                        <Image alt="nogs" mr={3} boxSize="20px" src="https://app.noggles.com/svg/moon-logo.svg" />
+                                        <Image alt="nogs" mr={3} boxSize="20px" src="/logos/nog.png" />
                                         $NOGS
                                     </MenuItem>
                                     <MenuItem
@@ -286,6 +286,7 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                 </InputLeftElement>
                 <InputRightElement>
                     <Button
+                        bg={'green.200'}
                         size="xs"
                         onClick={() => {
                             setAmount((prev) => String(Number(prev) + 1));
@@ -295,6 +296,7 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                     </Button>
                 </InputRightElement>
                 <Input
+                    color={"white"}
                     type="number"
                     variant={"outline"}
                     placeholder="Amount"
@@ -304,6 +306,7 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
             </InputGroup>
             {isCustomToken && (
                 <Input
+                    color={"white"}
                     placeholder="Enter token address"
                     value={customTokenContract}
                     fontSize={"48px"}

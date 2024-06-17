@@ -1,5 +1,5 @@
 'use client'
-import { Box, Center, Flex, Image, Stack, Text, VStack } from '@chakra-ui/react';
+import { Box, Center, Flex, Image, Text, VStack } from '@chakra-ui/react';
 import { useState } from 'react';
 
 import EthBox from './ethWallet';

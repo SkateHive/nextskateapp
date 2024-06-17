@@ -128,13 +128,19 @@ export const MarkdownRenderers = {
   ),
   video: ({ src, ...props }: RendererProps) => (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingTop: '10px', minWidth: '100%', minHeight: 'auto' }}>
-      <video
-        {...props}
-        autoPlay={true}
-        muted={true}
-        src={src}
-        style={{ background: 'transparent', borderRadius: '10px', marginBottom: '20px', border: '0px grey solid', width: '100%', minHeight: '50%', maxHeight: '420px' }}
-      />
+      <picture>
+
+        <video
+          {...props}
+          muted={true}
+          src={src}
+          poster='/home_animation_body.gif'
+          autoPlay={true}
+          loop={true}
+          playsInline={true}
+          style={{ background: 'transparent', borderRadius: '10px', marginBottom: '20px', border: '0px grey solid', width: '100%', minHeight: '50%', maxHeight: '420px' }}
+        />
+      </picture>
     </div>
   ),
   table: ({ children, ...props }: RendererProps) => (

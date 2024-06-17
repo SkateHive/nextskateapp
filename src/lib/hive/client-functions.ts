@@ -1,11 +1,14 @@
 'use client';
-import { Broadcast, KeychainKeyTypes, KeychainRequestResponse, KeychainSDK, Login, Post, Transfer, Vote } from "keychain-sdk";
+import { Broadcast, Custom, KeychainKeyTypes, KeychainRequestResponse, KeychainSDK, Login, Post, Transfer, Vote } from "keychain-sdk";
 import { VideoPart } from "../models/user";
+import HiveClient from "./hiveclient";
 
 interface HiveKeychainResponse {
   success: boolean
   publicKey: string
 }
+
+const communityTag = process.env.NEXT_PUBLIC_HIVE_COMMUNITY_TAG;
 
 /*
 export async function claimRewards(hiveUser: HiveAccount) {
@@ -174,4 +177,98 @@ export async function updateProfile(username: string, name: string, about: strin
   } catch (error) {
     console.error('Profile update failed:', error);
   }
+}
+
+export async function checkCommunitySubscription(username: string) {
+
+  const parameters = {
+    account: username
+  }
+  try {
+    const subscriptions = await HiveClient.call('bridge', 'list_all_subscriptions', parameters);
+    return subscriptions.some((subscription: any) => subscription[0] === communityTag);
+  } catch (error) {
+    console.error('Error fetching subscriptions:', error);
+    return false; // Returning false in case of an error
+  }
+}
+
+export async function communitySubscribeKeyChain(username: string) {
+
+  const keychain = new KeychainSDK(window);
+  const json = [
+    'subscribe',
+    {
+      community: communityTag
+    }
+  ]
+  const formParamsAsObject = {
+    data: {
+      username: username,
+      id: "community",
+      method: KeychainKeyTypes.posting,
+      json: JSON.stringify(json)
+    },
+  };
+  try {
+    const custom = await keychain.custom(formParamsAsObject.data as unknown as Custom);
+    //const broadcast = await keychain.broadcast(formParamsAsObject.data as unknown as Broadcast);
+    console.log('Broadcast success:', custom);
+  } catch (error) {
+    console.error('Profile update failed:', error);
+  }
+}
+
+export async function checkFollow(follower: string, following: string): Promise<boolean> {
+  try {
+    const status = await HiveClient.call('bridge', 'get_relationship_between_accounts', [
+      follower,
+      following
+    ]);
+
+    if (status.follows) {
+      return true
+    } else {
+      return false
+    }
+  } catch (error) {
+    console.log(error)
+    return false
+  }
+}
+
+export async function changeFollow(follower: string, following: string) {
+  const keychain = new KeychainSDK(window);
+  const status = await checkFollow(follower, following)
+  let type = ''
+  if (status) {
+    type = ''
+  } else {
+    type = 'blog'
+  }
+  const json = JSON.stringify([
+    'follow',
+    {
+      follower: follower,
+      following: following,
+      what: [type], //null value for unfollow, 'blog' for follow
+    },
+  ]);
+
+  const formParamsAsObject = {
+    data: {
+      username: follower,
+      id: "follow",
+      method: KeychainKeyTypes.posting,
+      json: JSON.stringify(json)
+    },
+  };
+  try {
+    const custom = await keychain.custom(formParamsAsObject.data as unknown as Custom);
+    //const broadcast = await keychain.broadcast(formParamsAsObject.data as unknown as Broadcast);
+    console.log('Broadcast success:', custom);
+  } catch (error) {
+    console.error('Profile update failed:', error);
+  }
+
 }

@@ -61,7 +61,7 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
 
   const handleOpenPostLink = () => {
     try {
-      window.open(postFullUrl, "_blank");
+      window.open(postFullUrl, "_blank", "noreferrer noopener");
     } catch (error) {
       console.error("Failed to open the link:", error);
     }
@@ -69,7 +69,7 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
 
   const handleOpenPostLinkPeakd = () => {
     try {
-      window.open(`https://peakd.com${post.url}`, "_blank");
+      window.open(`https://peakd.com${post.url}`, "_blank", "noreferrer noopener");
     } catch (error) {
       console.error("Failed to open the link:", error);
     }
@@ -82,8 +82,7 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
       const postPageUrl = encodeURI(warptext);
       window.open(
         `https://warpcast.com/~/compose?text=${postPageUrl}`,
-        "_blank",
-      );
+        "_blank", "noreferrer noopener");
     } catch (error) {
       console.error("Failed to share in WarpCast:", error);
     }
@@ -96,8 +95,7 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
       const postPageUrl = encodeURI(tweetText);
       window.open(
         `https://twitter.com/intent/tweet?text=${postPageUrl}`,
-        "_blank",
-      );
+        "_blank", "noreferrer noopener");
     } catch (error) {
       console.error("Failed to share in Twitter:", error);
     }
@@ -111,7 +109,7 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
       navigator.clipboard.writeText(discordText);
       window.open(
         "https://discord.com/channels/631777256234156033/631778823716864011",
-        "_blank",
+        "_blank", "noreferrer noopener"
       );
     } catch (error) {
       console.error("Failed to share in Discord:", error);
@@ -150,7 +148,13 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
                     .utc(post.created)
                     .fromNow()
                     .replace("minutes", "m")
-                    .replace("hours", "h")}
+                    .replace("hours", "h")
+                    .replace("days", "d")
+                    .replace("months", "m")
+                    .replace("ago", "")
+                    .replace(" ", "")
+                  }
+
                 </Text>
                 <Spacer />
 
