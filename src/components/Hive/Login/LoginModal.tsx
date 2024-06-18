@@ -23,12 +23,13 @@ function LoginModal({
   const [username, setUsername] = useState("")
   const [privateKey, setPrivateKey] = useState("")
   const { loginWithHive } = useAuthHiveUser()
-  const { hiveUser } = useHiveUser()
+  const { hiveUser, refreshUser } = useHiveUser()
 
   async function doLogin(useLoginAs: boolean = false) {
     try {
       setIsLogginIn(true)
       await loginWithHive(username, useLoginAs, privateKey)
+      refreshUser() // Refresh user data after login
       onClose()
       console.log(hiveUser)
     } catch (error) {

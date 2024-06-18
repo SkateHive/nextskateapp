@@ -11,54 +11,80 @@ import {
     StepSeparator,
     StepStatus,
     StepTitle,
-    Stepper,
-    useSteps
+    Stepper
 } from "@chakra-ui/react"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 
 interface StepByStepProps {
     hiveAccount: HiveAccount
+    activeStep: number
+    setActiveStep: (step: number) => void
+    setStep1Completed: (completed: boolean) => void
+    setStep2Completed: (completed: boolean) => void
+    setStep3Completed: (completed: boolean) => void
+    setStep4Completed: (completed: boolean) => void
 }
 
-const StepByStep = ({ hiveAccount }: StepByStepProps) => {
+const StepByStep = ({
+    hiveAccount,
+    activeStep,
+    setActiveStep,
+    setStep1Completed,
+    setStep2Completed,
+    setStep3Completed,
+    setStep4Completed
+}: StepByStepProps) => {
     let userAvatar = ""
+    let userMetadata: any
+    let userProfileName = ""
+    let userLocation = ""
+    let userBio = ""
+    let userETHwallet = ""
+    let postCount = 0
+    let witnessVotes: string[] = []
+
     try {
-        const userMetadata = JSON.parse(hiveAccount.posting_json_metadata)
+        userMetadata = JSON.parse(hiveAccount.posting_json_metadata)
         userAvatar = userMetadata?.profile?.profile_image || ""
+        userProfileName = userMetadata?.profile?.name || ""
+        userLocation = userMetadata?.profile?.location || ""
+        userBio = userMetadata?.profile?.about || ""
+        postCount = hiveAccount.post_count
+        witnessVotes = hiveAccount.witness_votes || []
     } catch (error) {
         console.error("Error parsing user metadata:", error)
     }
 
-    let userMetadata = {}
-
-    const [isStep1Completed, setStep1Completed] = useState(false)
-    const [isStep2Completed, setStep2Completed] = useState(false)
-    const [isStep3Completed, setStep3Completed] = useState(false)
-    const [isStep4Completed, setStep4Completed] = useState(false)
-
-    const steps = [
-        { title: "Add Profile Pic", description: isStep1Completed ? "You look good" : "You look better with a profile pic" },
-        { title: "Edit Profile", description: isStep2Completed ? "All set!" : "Complete your profile, bro" },
-        { title: "Make your first Post", description: isStep3Completed ? "You're all set!" : "Introduce yourself to the OGs" },
-        { title: "Vote For SkateHive Witness", description: isStep4Completed ? "You're done!" : "Support the community by voting" },
-    ]
-
-    const { activeStep, setActiveStep } = useSteps({
-        index: 0,
-        count: steps.length,
-    })
-
     useEffect(() => {
-        if (userAvatar) {
+        if (userAvatar !== "" && activeStep === 0) {
             setStep1Completed(true)
         }
-    }, [userAvatar])
+    }, [userAvatar, activeStep, setStep1Completed])
 
     useEffect(() => {
-        if (isStep1Completed) {
-            setActiveStep(1) // Set active step to the next step if step 1 is completed
+        if (userProfileName !== "" && userBio !== "" && activeStep === 1) {
+            setStep2Completed(true);
         }
-    }, [isStep1Completed, setActiveStep])
+    }, [userProfileName, userBio, activeStep, setStep2Completed]);
+
+    useEffect(() => {
+        if (postCount > 0 && activeStep === 2) {
+            setStep3Completed(true);
+        }
+    }, [postCount, activeStep, setStep3Completed]);
+
+    useEffect(() => {
+        if (Array.isArray(witnessVotes) && witnessVotes.includes("skatehive") && activeStep === 3) {
+            setStep4Completed(true);
+        }
+    }, [witnessVotes, activeStep, setStep4Completed]);
+
+    const steps = [
+        { title: "Add Profile Pic", description: activeStep > 0 ? "You look good" : "You look better with a profile pic" },
+        { title: "Edit Profile", description: activeStep > 1 ? "All set!" : "Complete your profile, bro" },
+        { title: "Make your first Post", description: activeStep > 2 ? "You're all set!" : "Introduce yourself to the OGs" },
+        { title: "Vote For SkateHive Witness", description: activeStep > 3 ? "You're ready to level 2!" : "Support the community by voting" },
+    ]
 
     return (
         <Stepper index={activeStep} orientation="vertical" height="300px" gap="0" mt={5} mb={5} colorScheme="green">
@@ -66,7 +92,7 @@ const StepByStep = ({ hiveAccount }: StepByStepProps) => {
                 <Step key={index}>
                     <StepIndicator>
                         <StepStatus
-                            complete={index === 0 ? isStep1Completed && <StepIcon /> : <StepIcon />}
+                            complete={<StepIcon />}
                             incomplete={<StepNumber />}
                             active={<StepNumber />}
                         />
