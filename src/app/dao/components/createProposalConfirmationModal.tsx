@@ -35,12 +35,12 @@ const CreateProposalConfirmationModal: React.FC<CreateProposalConfirmationModalP
 
     const fetchCurrentBlockNumber = useCallback(async () => {
         const blockNumber = await web3.getBlockNumber();
-        return blockNumber; 
+        return blockNumber;
     }, [web3]);
 
     const handleCreateProposal = useCallback(async () => {
         try {
-            const currentBlockNumber = await fetchCurrentBlockNumber(); 
+            const currentBlockNumber = await fetchCurrentBlockNumber();
 
             if (currentBlockNumber <= 0) {
                 throw new Error('Invalid block number, please try again');
@@ -48,7 +48,7 @@ const CreateProposalConfirmationModal: React.FC<CreateProposalConfirmationModalP
             const proPostPermlink = generatePermlink(title);
             const currentTimeInSeconds = Math.floor(Date.now() / 1000);
             const start = currentTimeInSeconds;
-            const end = start + 172800; 
+            const end = start + 172800;
 
             const propostBody = `
             ---
@@ -121,7 +121,7 @@ const CreateProposalConfirmationModal: React.FC<CreateProposalConfirmationModalP
             {state.confetti && <Confetti />}
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
-                <ModalContent>
+                <ModalContent minH={"60vh"} color={"white"} border={'1px solid limegreen'} bg={'black'}>
                     <ModalHeader>Proposal Preview</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
@@ -134,10 +134,10 @@ const CreateProposalConfirmationModal: React.FC<CreateProposalConfirmationModalP
                         </ReactMarkdown>
                     </ModalBody>
                     <ModalFooter>
-                        <Button colorScheme="blue" mr={3} onClick={handleCreateProposal}>
+                        <Button variant="outline" colorScheme="green" mr={3} onClick={handleCreateProposal}>
                             Confirm
                         </Button>
-                        <Button colorScheme="green" mr={3} onClick={onClose}>
+                        <Button variant="outline" colorScheme="red" mr={3} onClick={onClose}>
                             Close
                         </Button>
                     </ModalFooter>

@@ -62,7 +62,7 @@ function ProposalListItem({
                     <HStack ml={2} justifyContent={'flex-end'}>
                         <Center>
                             <ProposerAvatar authorAddress={proposal.author} />
-                            <Text ml={2}>{result.data || formatEthAddress(proposal.author)}</Text>
+                            <Text color={'blue.200'} ml={2}>{result.data || formatEthAddress(proposal.author)}</Text>
                         </Center>
                     </HStack>
                 </>

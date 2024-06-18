@@ -25,6 +25,7 @@ export const MarkdownRenderers = {
         style={{
           display: 'inline-block',
           maxWidth: '100%',
+          width: '100%',
           height: 'auto',
           borderRadius: '10px',
           marginTop: '20px',
@@ -39,7 +40,7 @@ export const MarkdownRenderers = {
     </div>
   ),
   a: ({ href, children, ...props }: RendererProps) => (
-    <a style={{ color: "yellow" }} href={href} {...props}>{children}</a>
+    <a style={{ color: "yellow", textWrap: "wrap", wordBreak: "break-all" }} href={href} {...props}>{children}</a>
   ),
   h1: ({ children, ...props }: RendererProps) => (
     <h1 {...props} style={{ fontWeight: 'bold', color: '#A5D6A7', fontSize: '28px', paddingBottom: '10px', paddingTop: "10px", paddingLeft: '8px' }}>{children}</h1>
@@ -127,13 +128,19 @@ export const MarkdownRenderers = {
   ),
   video: ({ src, ...props }: RendererProps) => (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingTop: '10px', minWidth: '100%', minHeight: 'auto' }}>
-      <video
-        {...props}
-        autoPlay={true}
-        muted={true}
-        src={src}
-        style={{ background: 'transparent', borderRadius: '10px', marginBottom: '20px', border: '0px grey solid', minWidth: '480px', minHeight: '50%', maxHeight: '420px' }}
-      />
+      <picture>
+
+        <video
+          {...props}
+          muted={true}
+          src={src}
+          poster='/home_animation_body.gif'
+          autoPlay={true}
+          loop={true}
+          playsInline={true}
+          style={{ background: 'transparent', borderRadius: '10px', marginBottom: '20px', border: '0px grey solid', width: '100%', minHeight: '50%', maxHeight: '420px' }}
+        />
+      </picture>
     </div>
   ),
   table: ({ children, ...props }: RendererProps) => (
@@ -142,6 +149,7 @@ export const MarkdownRenderers = {
       border: '1px solid none',
       borderRadius: '10px',
       padding: '10px',
+      overflowX: 'auto',
     }}>
       <table
         {...props}

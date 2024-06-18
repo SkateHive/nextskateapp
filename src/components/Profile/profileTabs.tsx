@@ -11,12 +11,14 @@ interface ProfilePageProps {
 export default function ProfileTabs({ user }: ProfilePageProps) {
     return (
         <Box h={"100vh"} >
-            <Tabs isLazy isFitted variant="enclosed">
+            <Tabs isLazy isFitted variant="enclosed-colored">
                 <TabList color={"white"} mb="1em">
-                    <Tab >Blog</Tab>
-                    <Tab>Posts</Tab>
-                    <Tab>VideoParts</Tab>
-                    <Tab>Comments</Tab>
+                    <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Blog</Tab>
+                    <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Posts</Tab>
+                    <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>VideoParts</Tab>
+                    <Tab bg={"black"}
+                        _selected={{ bg: "limegreen", color: "black" }}
+                    >Comments</Tab>
 
                 </TabList>
                 <TabPanels>

@@ -3,9 +3,11 @@
 import { Validation } from "@/types"
 import * as dhive from "@hiveio/dhive"
 import CryptoJS from "crypto-js"
+import { VideoPart } from "../models/user"
 import { HiveAccount } from "../useHiveAuth"
 import HiveClient from "./hiveclient"
-import { VideoPart } from "../models/user"
+
+const communityTag = process.env.NEXT_PUBLIC_HIVE_COMMUNITY_TAG;
 
 interface ServerLoginResponse {
   validation: Validation
@@ -202,8 +204,6 @@ export async function updateProfileWithPrivateKey(
     }
   ]
 
-  // const client = new dhive.Client("https://api.hive.blog")
-
   HiveClient.broadcast
     .sendOperations([updateInfo], dhive.PrivateKey.from(privateKey))
     .then((result) => {
@@ -215,7 +215,7 @@ export async function updateProfileWithPrivateKey(
 
 }
 
-export async function sendHiveOperation (encryptedPrivateKey: string | null, op: dhive.Operation[]) {
+export async function sendHiveOperation(encryptedPrivateKey: string | null, op: dhive.Operation[]) {
 
   if (encryptedPrivateKey === null) throw new Error("Private key not found");
   const privateKey = decryptPrivateKey(encryptedPrivateKey)
@@ -227,6 +227,78 @@ export async function sendHiveOperation (encryptedPrivateKey: string | null, op:
     .catch((error) => {
       console.error(error)
     })
-  
+
 }
 
+export async function communitySubscribePassword(encryptedPrivateKey: string | null, username: string) {
+  const json = [
+    'subscribe',
+    {
+      community: communityTag
+    }
+  ]
+  const operation: dhive.Operation =
+    [
+      'custom_json',
+      {
+        required_auths: [],
+        required_posting_auths: [username],
+        id: "community",
+        json: JSON.stringify(json)
+      }
+    ]
+
+  sendHiveOperation(encryptedPrivateKey, [operation])
+
+}
+
+
+
+export async function changeFollowWithPassword(encryptedPrivateKey: string | null, follower: string, following: string) {
+  const status = await checkFollow(follower, following)
+  let type = ''
+  if (status) {
+    type = ''
+  } else {
+    type = 'blog'
+  }
+  const json = JSON.stringify([
+    'follow',
+    {
+      follower: follower,
+      following: following,
+      what: [type], //null value for unfollow, 'blog' for follow
+    },
+  ]);
+  const data = {
+    id: 'follow',
+    json: json,
+    required_auths: [],
+    required_posting_auths: [follower],
+  };
+  const operation: dhive.Operation =
+    [
+      'custom_json',
+      data
+    ]
+
+  sendHiveOperation(encryptedPrivateKey, [operation])
+}
+
+async function checkFollow(follower: string, following: string): Promise<boolean> {
+  try {
+    const status = await HiveClient.call('bridge', 'get_relationship_between_accounts', [
+      follower,
+      following
+    ]);
+
+    if (status.follows) {
+      return true
+    } else {
+      return false
+    }
+  } catch (error) {
+    console.log(error)
+    return false
+  }
+}

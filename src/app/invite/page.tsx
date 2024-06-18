@@ -154,7 +154,7 @@ function AccountCreation() {
 
                 const formParamsAsObject = {
                     type: KeychainRequestTypes.broadcast,
-                    username: user.hiveUser?.name ?? '', 
+                    username: user.hiveUser?.name ?? '',
                     operations: ops,
                     method: KeychainKeyTypes.active,
                 };
@@ -169,7 +169,7 @@ function AccountCreation() {
     };
 
     useEffect(() => {
-        const intervalTime = 30; 
+        const intervalTime = 30;
         const timer = setInterval(() => {
             setCharactersToShow((prevChars) => {
                 if (prevChars >= downloadText.length) {
@@ -200,6 +200,7 @@ function AccountCreation() {
                 flexWrap: 'wrap',
                 width: '100%',
                 height: '100vh',
+                color: 'white',
             }}
         >
 
@@ -271,7 +272,7 @@ function AccountCreation() {
                                     const file = new Blob([downloadText], { type: 'text/plain' });
                                     element.href = URL.createObjectURL(file);
                                     element.download = `KEYS BACKUP - @${desiredUsername.toUpperCase()}.txt`;
-                                    document.body.appendChild(element); 
+                                    document.body.appendChild(element);
                                     element.click();
 
                                     setAreKeysDownloaded(true);

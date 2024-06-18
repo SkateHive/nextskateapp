@@ -73,7 +73,9 @@ export default function RootLayout({
         {/* Dynamically load ColorModeScriptWrapper */}
         <ColorModeScriptWrapper />
         <Providers>
-          <Flex justifyContent={"center"} id="layout" >
+          <Flex justifyContent={"center"} id="layout"
+
+          >
             <div className="hide-on-mobile">
               <SidebarDesktop />
             </div>

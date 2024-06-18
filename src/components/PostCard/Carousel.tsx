@@ -42,7 +42,7 @@ function PostCarousel() {
 
   // Add a placeholder image if filteredImages is empty
   if (filteredImages.length === 0) {
-    filteredImages.push({ domain: 'skatehive.app', url: 'http://skatehive.app/skatehive_square_green.png' })
+    filteredImages.push({ domain: 'skatehive.app', url: 'https://ipfs.skatehive.app/ipfs/QmWgkeX38hgWNh7cj2mTvk8ckgGK3HSB5VeNn2yn9BEnt7?pinataGatewayToken=nxHSFa1jQsiF7IHeXWH-gXCY3LDLlZ7Run3aZXZc8DRCfQz4J4a94z9DmVftXyFE' })
   }
 
   const carouselRef = useRef<any>(null);

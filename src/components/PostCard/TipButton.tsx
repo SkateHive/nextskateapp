@@ -63,18 +63,18 @@ export default function TipButton({ author }: TipButtonProps) {
     return (
         <Menu>
             <Tooltip
-                label='Send Money 💸'
+                label='Support !'
                 bg={'black'}
                 color={"limegreen"}
                 border={"1px dashed #A5D6A7"}
             >
-                <MenuButton onClick={fetchUserData} w={"auto"} as={Button} color="green.200" variant={"ghost"} _hover={{
+                <MenuButton _active={{ bg: 'transparent' }} onClick={fetchUserData} w={"auto"} as={Button} color="green.200" variant={"ghost"} _hover={{
                     background: "none",
                 }} size="sm">
                     ⌐◨-◨
                 </MenuButton>
             </Tooltip>
-            <MenuList bg="black">
+            <MenuList color={'white'} bg="black">
                 <MenuItem
                     bg="black"
                     _hover={{ bg: "red.500", color: "black" }}
@@ -98,7 +98,7 @@ export default function TipButton({ author }: TipButtonProps) {
                             _hover={{ bg: "yellow.500" }}
                             onClick={() => openBaseTipModal('NOGS')}
                         >
-                            <Image alt="nogs" mr={3} boxSize={"20px"} src="https://app.noggles.com/svg/moon-logo.svg" />
+                            <Image alt="nogs" mr={3} boxSize={"20px"} src="/logos/nog.png" />
                             $NOGS
                         </MenuItem>
                         <MenuItem

@@ -3,7 +3,7 @@ import useAuthHiveUser from "@/lib/useHiveAuth";
 import { transformIPFSContent } from "@/lib/utils";
 import { Avatar, Badge, Box, Button, Center, Checkbox, Divider, Flex, HStack, Image, Input, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Spinner, Text, Tooltip, VStack } from "@chakra-ui/react";
 import MDEditor, { commands } from '@uiw/react-md-editor';
-import React, { RefObject, useRef, useState } from "react";
+import React, { RefObject, useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { FaImage, FaSave } from "react-icons/fa";
 import ReactMarkdown from 'react-markdown';
@@ -40,12 +40,18 @@ export default function Upload() {
     const defaultTags = ["skatehive", "skateboarding", "leofinance", "sportstalk", "hive-engine"];
     const [tags, setTags] = useState([...defaultTags]);
     const [showAdvanced, setShowAdvanced] = useState(false);
-    const [thumbnailUrl, setThumbnailUrl] = useState<string | null>("https://ipfs.skatehive.app/ipfs/QmYkb6yq2nXSccdMwmyNWXND8T1exqUW1uUiMAQcV4nfVP?pinataGatewayToken=nxHSFa1jQsiF7IHeXWH-gXCY3LDLlZ7Run3aZXZc8DRCfQz4J4a94z9DmVftXyFE");
+    const [thumbnailUrl, setThumbnailUrl] = useState<string | null>("https://ipfs.skatehive.app/ipfs/QmWgkeX38hgWNh7cj2mTvk8ckgGK3HSB5VeNn2yn9BEnt7?pinataGatewayToken=nxHSFa1jQsiF7IHeXWH-gXCY3LDLlZ7Run3aZXZc8DRCfQz4J4a94z9DmVftXyFE");
     const [newTagInputs, setNewTagInputs] = useState(Array(5).fill(""));
     const searchBarRef: RefObject<HTMLDivElement> = useRef(null);
     const [beneficiaries, setBeneficiaries] = useState<Beneficiary[]>([]);
     const [showPreview, setShowPreview] = useState(false);
     const [isChecked, setIsChecked] = useState(true);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            setValue(localStorage.getItem('draft') || '');
+        }
+    }, []);
 
     const { getRootProps, getInputProps } = useDropzone({
         noClick: true,
@@ -199,8 +205,15 @@ export default function Upload() {
         updatedDefaultBeneficiaries[index].percentage = newPercentage;
     }
 
+    const handleChange = (value: string) => {
+        localStorage.setItem('draft', value);
+        setValue(value || localStorage.getItem('draft') || '');
+    }
+
+
+
     return (
-        <Box width="100%" overflow="hidden">
+        <Box width="100%" overflow="hidden" color={"white"}>
             {showPreview &&
                 <PreviewModal
                     isOpen={showPreview}
@@ -238,15 +251,17 @@ export default function Upload() {
 
                         <MDEditor
                             value={value}
-                            onChange={(value) => setValue(value || "")}
+                            onChange={(value) => handleChange(value || '')}
                             commands={[
-                                commands.bold, commands.italic, commands.strikethrough, commands.hr, commands.code, commands.table, commands.link, commands.quote, commands.unorderedListCommand, commands.orderedListCommand, commands.codeBlock, commands.fullscreen
+                                commands.bold, commands.italic, commands.strikethrough, commands.table, commands.link, commands.quote, commands.unorderedListCommand, commands.fullscreen
                             ]
                             }
+
                             extraCommands={extraCommands}
                             height="700px"
                             preview="edit"
                             style={{
+                                color: "#A5D6A7",
                                 border: "1px solid #A5D6A7",
                                 padding: "10px",
                                 backgroundColor: "black",
