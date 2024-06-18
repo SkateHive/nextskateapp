@@ -254,22 +254,16 @@ export async function communitySubscribePassword(encryptedPrivateKey: string | n
 
 async function checkFollow(follower: string, following: string): Promise<boolean> {
   try {
-    const status = await HiveClient.call('follow_api', 'get_following', [
+    const status = await HiveClient.call('bridge', 'get_relationship_between_accounts', [
       follower,
-      following,
-      'blog',
-      1,
+      following
   ]);
-    console.log({ status: status });
 
-    if (status.length > 0 && status[0].following == following) {
-      console.log("following!")
+    if (status.follows) {
       return true
     } else {
-      console.log("NOT following!")
       return false
     }
-    return status[0]
   } catch (error) {
     console.log(error)
     return false
