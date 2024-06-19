@@ -1,69 +1,6 @@
-import pinataSDK from '@pinata/sdk';
-
-const NEXT_PUBLIC_PINATA_API_KEY = process.env.NEXT_PUBLIC_PINATA_API_KEY;
-const NEXT_PUBLIC_PINATA_SECRET = process.env.NEXT_PUBLIC_PINATA_SECRET;
-const NEXT_PUBLIC_PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN;
-
-if (!NEXT_PUBLIC_PINATA_API_KEY || !NEXT_PUBLIC_PINATA_SECRET || !NEXT_PUBLIC_PINATA_GATEWAY_TOKEN) {
-    throw new Error('Missing Pinata API key, secret, or gateway token');
-}
-
-const pinata = new pinataSDK(NEXT_PUBLIC_PINATA_API_KEY, NEXT_PUBLIC_PINATA_SECRET);
-
-async function checkIfPinned(cid: string): Promise<boolean> {
-    try {
-        const result = await pinata.pinList({
-            hashContains: cid,
-        });
-
-        return result.rows.some((pin: any) => pin.ipfs_pin_hash === cid);
-    } catch (error) {
-        console.error('Error checking if CID is pinned:', error);
-        return false;
-    }
-}
-
-//?pinataGatewayToken=${NEXT_PUBLIC_PINATA_GATEWAY_TOKEN}
-async function fetchAndRenderFile(cid: string): Promise<JSX.Element | null> {
-    if (await checkIfPinned(cid)) {
-        const privateGatewayUrl = `https://ipfs.skatehive.app/ipfs/${cid}`;
-        try {
-            const response = await fetch(privateGatewayUrl, {
-                headers: {
-                    Authorization: `Bearer your-private-gateway-token`
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-
-            const blob = await response.blob();
-            console.log('Fetched file from IPFS:', blob);
-            const fileType = blob.type;
-            console.log('File type:', fileType);
-            if (fileType.startsWith('image/')) {
-                return <img src={URL.createObjectURL(blob)} alt="Fetched from IPFS" />;
-            } else if (fileType.startsWith('video/')) {
-                return (
-                    <video controls>
-                        <source src={URL.createObjectURL(blob)} type={fileType} />
-                        Your browser does not support the video tag.
-                    </video>
-                );
-            } else {
-                console.log('File is neither an image nor a video.');
-                return null;
-            }
-        } catch (error) {
-            console.error('Error fetching file from IPFS:', error);
-            return null;
-        }
-    } else {
-        console.log('CID is not pinned by your account.');
-        return null;
-    }
-}
+'use client'
+import { useEffect, useState } from 'react';
+import { fetchIPFSFile } from "@/lib/pinata/server-functions";
 
 interface PageProps {
     params: {
@@ -71,9 +8,52 @@ interface PageProps {
     };
 }
 
-const Page = async ({ params }: PageProps) => {
-    const cid = params.slug.join('/');
-    const fileElement = await fetchAndRenderFile(cid);
+const fetchAndRenderFile = async (cid: string): Promise<JSX.Element | null> => {
+    const result = await fetchIPFSFile(cid);
+
+    if (result) {
+        const { base64String, fileType } = result;
+        const byteCharacters = atob(base64String);
+        const byteNumbers = new Array(byteCharacters.length).fill(0).map((_, i) => byteCharacters.charCodeAt(i));
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray]);
+        console.log('Fetched file from IPFS:', blob);
+        console.log('File type:', fileType);
+
+        if (fileType.startsWith('image/')) {
+            const imageUrl = URL.createObjectURL(blob);
+            console.log('Image URL:', imageUrl);
+            return <img src={imageUrl} alt="Fetched from IPFS" />;
+        } else if (fileType.startsWith('video/')) {
+            return (
+                <video controls>
+                    <source src={URL.createObjectURL(blob)} type={fileType} />
+                    Your browser does not support the video tag.
+                </video>
+            );
+        } else {
+            console.log('File is neither an image nor a video.');
+            return null;
+        }
+    } else {
+        console.log('CID is not pinned by your account.');
+        return null;
+    }
+};
+
+const Page = ({ params }: PageProps) => {
+    const [fileElement, setFileElement] = useState<JSX.Element | null>(null);
+
+    useEffect(() => {
+        const cid = params.slug.join('/');
+
+        fetchAndRenderFile(cid).then(element => {
+            setFileElement(element);
+        }).catch(error => {
+            console.error('Error fetching and rendering file:', error);
+            setFileElement(null); // Handle error state
+        });
+    }, [params.slug]);
 
     return (
         <div>
