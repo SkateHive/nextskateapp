@@ -29,7 +29,6 @@ export default function ProfileHeader({ user }: ProfileProps) {
     // Logic to handle the profile update
     console.log("Profile updated");
   };
-
   return (
     <VStack >
       {isOpen && <EditInfoModal onUpdate={handleProfileUpdate} isOpen={isOpen} onClose={onClose} user={user} />}
