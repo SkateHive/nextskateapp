@@ -25,11 +25,14 @@ export default function ProfileHeader({ user }: ProfileProps) {
   const profileImageUrl = metadata?.profile.profile_image || "/loading.gif"
   const profileName = metadata?.profile.name || user.name
   const profileAbout = metadata?.profile.about || "No bio available"
-
+  const handleProfileUpdate = () => {
+    // Logic to handle the profile update
+    console.log("Profile updated");
+  };
 
   return (
     <VStack >
-      {isOpen && <EditInfoModal isOpen={isOpen} onClose={onClose} user={user} />}
+      {isOpen && <EditInfoModal onUpdate={handleProfileUpdate} isOpen={isOpen} onClose={onClose} user={user} />}
       <Image
         w={{ base: "100%", lg: "80%" }}
         src={coverImageUrl}
