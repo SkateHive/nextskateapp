@@ -50,9 +50,7 @@ const StepByStep = ({
         userLocation = userMetadata?.profile?.location || ""
         userBio = userMetadata?.profile?.about || ""
         postCount = hiveAccount.post_count
-        if (hiveAccount.json_metadata && hiveAccount.json_metadata !== "") {
-            witnessVotes = hiveAccount.witness_votes || []
-        }
+
     } catch (error) {
         console.error("Error parsing user metadata:", error)
     }
