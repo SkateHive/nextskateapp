@@ -65,7 +65,7 @@ export default function Vote() {
   }
 
   return (
-    <Tooltip color={"white"} background={"blakc"} border={"1px dashed #A5D6A7"} label="Vote fo this">
+    <Tooltip color={"limegreen"} background={"black"} border={"1px dashed #A5D6A7"} label="Vote fo this">
       <Button
         variant={"link"}
         disabled={isAnimating}

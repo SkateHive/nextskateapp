@@ -1,7 +1,7 @@
 import { Image, VStack } from "@chakra-ui/react";
 
 const LoadingComponent = () => (
-    <VStack overflowY="auto"
+    <VStack bg={"black"} overflowY="auto"
         css={{ "&::-webkit-scrollbar": { display: "none" } }}
         maxW={"740px"}
         width={"100%"}

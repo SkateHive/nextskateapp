@@ -139,7 +139,7 @@ const CommentItem = ({
 
       <Flex>
         <AuthorAvatar username={comment.author} />
-        <VStack ml={4} gap={0} alignItems={"start"} width={"full"} marginRight={"16px"}>
+        <VStack w={"100%"} ml={4} alignItems={"start"} marginRight={"16px"}>
           <HStack justify={"space-between"} width={"full"}>
             <HStack cursor={"pointer"} onClick={() =>
               window.open(
@@ -157,17 +157,18 @@ const CommentItem = ({
 
           </HStack>
           {/* Post Content */}
+          <Box w={"100%"} bg="black" color="white">
+            <ReactMarkdown
+              components={MarkdownRenderers}
+              rehypePlugins={[rehypeRaw]}
+              remarkPlugins={[remarkGfm]}
 
-          <ReactMarkdown
-            components={MarkdownRenderers}
-            rehypePlugins={[rehypeRaw]}
-            remarkPlugins={[remarkGfm]}
-
-          >
-            {transformIPFSContent(
-              transformShortYoutubeLinksinIframes(comment.body),
-            )}
-          </ReactMarkdown>
+            >
+              {transformIPFSContent(
+                transformShortYoutubeLinksinIframes(comment.body),
+              )}
+            </ReactMarkdown>
+          </Box>
         </VStack>
       </Flex>
 

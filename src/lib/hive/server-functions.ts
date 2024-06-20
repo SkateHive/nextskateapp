@@ -3,9 +3,9 @@
 import { Validation } from "@/types"
 import * as dhive from "@hiveio/dhive"
 import CryptoJS from "crypto-js"
+import { VideoPart } from "../models/user"
 import { HiveAccount } from "../useHiveAuth"
 import HiveClient from "./hiveclient"
-import { VideoPart } from "../models/user"
 
 const communityTag = process.env.NEXT_PUBLIC_HIVE_COMMUNITY_TAG;
 
@@ -215,7 +215,7 @@ export async function updateProfileWithPrivateKey(
 
 }
 
-export async function sendHiveOperation (encryptedPrivateKey: string | null, op: dhive.Operation[]) {
+export async function sendHiveOperation(encryptedPrivateKey: string | null, op: dhive.Operation[]) {
 
   if (encryptedPrivateKey === null) throw new Error("Private key not found");
   const privateKey = decryptPrivateKey(encryptedPrivateKey)
@@ -227,7 +227,7 @@ export async function sendHiveOperation (encryptedPrivateKey: string | null, op:
     .catch((error) => {
       console.error(error)
     })
-  
+
 }
 
 export async function communitySubscribePassword(encryptedPrivateKey: string | null, username: string) {
@@ -237,16 +237,16 @@ export async function communitySubscribePassword(encryptedPrivateKey: string | n
       community: communityTag
     }
   ]
-  const operation: dhive.Operation = 
-        [
-          'custom_json',
-          {
-            required_auths: [],
-            required_posting_auths: [username],
-            id: "community",
-            json: JSON.stringify(json)
-          }
-        ]
+  const operation: dhive.Operation =
+    [
+      'custom_json',
+      {
+        required_auths: [],
+        required_posting_auths: [username],
+        id: "community",
+        json: JSON.stringify(json)
+      }
+    ]
 
   sendHiveOperation(encryptedPrivateKey, [operation])
 
@@ -281,9 +281,9 @@ export async function changeFollowWithPassword(encryptedPrivateKey: string | nul
   const json = JSON.stringify([
     'follow',
     {
-        follower: follower,
-        following: following,
-        what: [type], //null value for unfollow, 'blog' for follow
+      follower: follower,
+      following: following,
+      what: [type], //null value for unfollow, 'blog' for follow
     },
   ]);
   const data = {
@@ -292,11 +292,11 @@ export async function changeFollowWithPassword(encryptedPrivateKey: string | nul
     required_auths: [],
     required_posting_auths: [follower],
   };
-  const operation: dhive.Operation = 
-        [
-          'custom_json',
-          data
-        ]
+  const operation: dhive.Operation =
+    [
+      'custom_json',
+      data
+    ]
 
   sendHiveOperation(encryptedPrivateKey, [operation])
 }

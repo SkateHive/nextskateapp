@@ -1,13 +1,11 @@
 'use client'
 import { useHiveUser } from "@/contexts/UserContext"
 import { useHivePrice } from "@/hooks/useHivePrice"
-import { claimRewards } from "@/components/Navbar/utils/claimRewards"
 import {
     Avatar,
     Box,
     Button,
     Center,
-    Divider,
     HStack,
     Menu,
     MenuButton,
@@ -21,7 +19,7 @@ import { SendIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 import { AiOutlineThunderbolt } from "react-icons/ai"
 import { BsArrowDownCircleFill } from "react-icons/bs"
-import { FaEye, FaGift, FaHive } from "react-icons/fa"
+import { FaEye, FaHive } from "react-icons/fa"
 import { convertVestingSharesToHivePower } from "../utils/calculateHP"
 const HIVE_LOGO_URL = "https://cryptologos.cc/logos/hive-blockchain-hive-logo.png";
 const HBD_LOGO_URL = "https://i.ibb.co/C6TPhs3/HBD.png";
@@ -93,6 +91,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
             borderRadius="10px"
             border="1px solid red"
             m={2}
+            color={"white"}
         >
             <Center onClick={() => setIsOpened(!isModalOpened)}>
 
@@ -112,7 +111,8 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
 
 
             {hiveUser ? (
-                <VStack align="normal">
+                <VStack color={"white"}
+                    align="normal">
                     <Center>
                         <Box w="100%" paddingBottom={4}>
                             <HStack
@@ -154,8 +154,9 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                     {isModalOpened && (
                         <Box>
                             <Center>
-                                <VStack width="100%">
-                                    <Menu>
+                                <VStack
+                                    width="100%">
+                                    <Menu >
                                         <MenuButton
                                             width="full"
                                             p={8}
@@ -163,8 +164,9 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                             as={Button}
                                             leftIcon={<Avatar boxSize="30px" src={HIVE_LOGO_URL} />}
                                             variant="outline"
+                                            color={'white'}
                                         >
-                                            <Center>
+                                            <Center >
                                                 <VStack>
                                                     <Text fontSize={{ base: 18, md: 24 }}>{String(hiveUser.balance)}</Text>
                                                     <Text fontSize={{ base: 10, md: 12 }}> (~${hiveUsdValue.toFixed(2)})</Text>
@@ -188,6 +190,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                             as={Button}
                                             leftIcon={<Avatar borderRadius="none" boxSize="30px" src={HBD_LOGO_URL} />}
                                             variant="outline"
+                                            color={'white'}
                                         >
                                             <Center>
                                                 <VStack>
@@ -213,6 +216,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                             as={Button}
                                             leftIcon={<Avatar borderRadius="none" boxSize="30px" src={SAVINGS_LOGO_URL} />}
                                             variant="outline"
+                                            color={'white'}
                                         >
                                             <Center>
                                                 <Tooltip label="20% APR">
@@ -240,6 +244,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                             as={Button}
                                             leftIcon={<Avatar boxSize="30px" src={HIVE_POWER_LOGO_URL} />}
                                             variant="outline"
+                                            color={'white'}
                                         >
                                             <Center>
                                                 <VStack>

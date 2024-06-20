@@ -147,7 +147,7 @@ function useAuthHiveUser(): AuthUser {
                         userAccount.metadata &&
                         !userAccount.metadata.hasOwnProperty("profile")
                       )
-                        userAccount.metadata = JSON.parse(
+                        if (userAccount.posting_json_metadata) userAccount.metadata = JSON.parse(
                           userAccount.posting_json_metadata
                         )
                     }

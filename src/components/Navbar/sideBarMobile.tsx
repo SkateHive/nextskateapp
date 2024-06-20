@@ -186,7 +186,7 @@ const SideBarMobile = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
                                 justifyContent={"center"}
                                 fontSize={"14px"}
                                 variant={"outline"}
-                                borderColor={"red.400"}
+                                colorScheme="red"
                                 width={"100%"}
                                 bg="black"
                                 leftIcon={
@@ -203,6 +203,8 @@ const SideBarMobile = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
                                 borderColor={"blue.400"}
                                 width={"100%"}
                                 bg="black"
+                                colorScheme="blue"
+
                                 leftIcon={
                                     <Icon
                                         color={ethAccount.address ? "blue.400" : "white"}

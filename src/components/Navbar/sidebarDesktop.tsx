@@ -104,6 +104,7 @@ const SidebarDesktop = () => {
         h="100vh"
         display="flex"
         flexDirection="column"
+        color={"white"}
       >
         <Heading size="md">
           <Image
