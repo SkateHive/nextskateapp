@@ -252,7 +252,23 @@ export async function communitySubscribePassword(encryptedPrivateKey: string | n
 
 }
 
+async function checkFollow(follower: string, following: string): Promise<boolean> {
+  try {
+    const status = await HiveClient.call('bridge', 'get_relationship_between_accounts', [
+      follower,
+      following
+  ]);
 
+    if (status.follows) {
+      return true
+    } else {
+      return false
+    }
+  } catch (error) {
+    console.log(error)
+    return false
+  }
+}
 
 export async function changeFollowWithPassword(encryptedPrivateKey: string | null, follower: string, following: string) {
   const status = await checkFollow(follower, following)
@@ -283,22 +299,4 @@ export async function changeFollowWithPassword(encryptedPrivateKey: string | nul
     ]
 
   sendHiveOperation(encryptedPrivateKey, [operation])
-}
-
-async function checkFollow(follower: string, following: string): Promise<boolean> {
-  try {
-    const status = await HiveClient.call('bridge', 'get_relationship_between_accounts', [
-      follower,
-      following
-    ]);
-
-    if (status.follows) {
-      return true
-    } else {
-      return false
-    }
-  } catch (error) {
-    console.log(error)
-    return false
-  }
 }

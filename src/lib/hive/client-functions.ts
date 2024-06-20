@@ -224,8 +224,7 @@ export async function checkFollow(follower: string, following: string): Promise<
     const status = await HiveClient.call('bridge', 'get_relationship_between_accounts', [
       follower,
       following
-    ]);
-
+  ]);
     if (status.follows) {
       return true
     } else {
