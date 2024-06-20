@@ -1,9 +1,7 @@
 'use client'
-import { Button } from '@chakra-ui/react';
-import React, { useState } from 'react';
 import PostModel from '@/lib/models/post';
-import { diff_match_patch } from 'diff-match-patch';
-import { useMediaQuery } from '@chakra-ui/react';
+import { Button } from '@chakra-ui/react';
+import { useState } from 'react';
 import { EditModal } from './editMagPostModal';
 
 interface EditButtonProps {

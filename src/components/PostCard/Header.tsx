@@ -3,28 +3,28 @@ import { usePostContext } from "@/contexts/PostContext";
 import { useHiveUser } from "@/contexts/UserContext";
 import getSummary from "@/lib/getSummaryAI";
 import {
-  Button,
-  CardHeader,
-  Flex,
-  HStack,
-  Icon,
-  Menu,
-  MenuButton,
-  MenuDivider,
-  MenuItem,
-  MenuList,
-  Spacer,
-  Text,
-  Tooltip,
-  useDisclosure,
-  useMediaQuery
+    Button,
+    CardHeader,
+    Flex,
+    HStack,
+    Icon,
+    Menu,
+    MenuButton,
+    MenuDivider,
+    MenuItem,
+    MenuList,
+    Spacer,
+    Text,
+    Tooltip,
+    useDisclosure,
+    useMediaQuery
 } from "@chakra-ui/react";
 import {
-  ChevronDownIcon,
-  Copy,
-  ExternalLink,
-  Eye,
-  Twitter
+    ChevronDownIcon,
+    Copy,
+    ExternalLink,
+    Eye,
+    Twitter
 } from "lucide-react";
 import moment from "moment-timezone";
 import Link from "next/link";
@@ -32,7 +32,7 @@ import { useState } from "react";
 import { FaDiscord } from "react-icons/fa";
 import AuthorAvatar from "../AuthorAvatar";
 import PostModal from "../PostModal";
-import EditButton from "../PostModal/editButton";
+import EditButton from "../PostModal/EditMagPost/editButton";
 import MintOnZoraModal from "../PostModal/mintOnZoraModal";
 
 
