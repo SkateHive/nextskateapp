@@ -4,6 +4,7 @@ import { useHiveUser } from "@/contexts/UserContext";
 import { useComments } from "@/hooks/comments";
 import { vote } from "@/lib/hive/client-functions";
 import { commentWithPrivateKey } from "@/lib/hive/server-functions";
+import { getTotalPayout } from "@/lib/utils";
 import {
   Box,
   Button,
@@ -37,7 +38,7 @@ const parent_author = "skatehacker";
 const parent_permlink = "test-advance-mode-post";
 const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN;
 
-interface Comment {
+export interface Comment {
   id: number;
   author: string;
   permlink: string;
@@ -47,17 +48,6 @@ interface Comment {
   pending_payout_value?: string;
   curator_payout_value?: string;
 }
-
-const getTotalPayout = (comment: Comment): number => {
-  const payout = parseFloat(comment.total_payout_value?.split(" ")[0] || "0");
-  const pendingPayout = parseFloat(
-    comment.pending_payout_value?.split(" ")[0] || "0"
-  );
-  const curatorPayout = parseFloat(
-    comment.curator_payout_value?.split(" ")[0] || "0"
-  );
-  return payout + pendingPayout + curatorPayout;
-};
 
 const SkateCast = () => {
   const { comments, addComment, isLoading } = useComments(
@@ -426,7 +416,6 @@ const SkateCast = () => {
         setVisiblePosts={setVisiblePosts}
         username={username}
         handleVote={handleVote}
-        getTotalPayout={getTotalPayout}
       />
     </VStack>
   );

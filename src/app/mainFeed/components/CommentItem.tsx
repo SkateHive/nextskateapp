@@ -6,6 +6,7 @@ import TipButton from "@/components/PostCard/TipButton";
 import { useComments } from "@/hooks/comments";
 import {
   formatDate,
+  getTotalPayout,
   transformIPFSContent,
   transformShortYoutubeLinksinIframes,
 } from "@/lib/utils";
@@ -31,7 +32,6 @@ interface CommentItemProps {
   comment: any;
   username: string;
   handleVote: (author: string, permlink: string) => void;
-  getTotalPayout: (comment: any) => number;
 }
 
 const VotingButton = ({
@@ -104,7 +104,6 @@ const CommentItem = ({
   comment,
   username,
   handleVote,
-  getTotalPayout,
 }: CommentItemProps) => {
   const rewardId = comment.id ? "postReward" + comment.id : "";
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -210,7 +209,6 @@ const CommentItem = ({
             setVisiblePosts={() => { }}
             username={username}
             handleVote={handleVote}
-            getTotalPayout={getTotalPayout}
           />
           {visiblePosts < numberOfComments &&
             <Button
