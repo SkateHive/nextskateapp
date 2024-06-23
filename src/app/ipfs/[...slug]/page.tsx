@@ -26,8 +26,7 @@ const fetchAndRenderFile = async (cid: string): Promise<JSX.Element | null> => {
             return <img src={imageUrl} alt="Fetched from IPFS" />;
         } else if (fileType.startsWith('video/')) {
             return (
-                <video controls src={URL.createObjectURL(blob)}   >
-
+                <video controls src={URL.createObjectURL(blob)}>
                     Your browser does not support the video tag.
                 </video>
             );
