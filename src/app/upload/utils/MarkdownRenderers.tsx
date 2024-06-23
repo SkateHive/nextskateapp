@@ -20,6 +20,7 @@ export const MarkdownRenderers = {
       <Image
         {...props}
         alt={alt}
+        // crossOrigin='anonymous' it broke a picture in DavieSk8 post http://localhost:3000/post//hive-173115/@davixesk8/spending-skate-day-with-a-group-of-friends-esping
         src={src}
         title={title}
         style={{
@@ -136,6 +137,7 @@ export const MarkdownRenderers = {
           src={src}
           poster='/home_animation_body.gif'
           autoPlay={true}
+          crossOrigin='anonymous'
           loop={true}
           playsInline={true}
           style={{ background: 'transparent', borderRadius: '10px', marginBottom: '20px', border: '0px grey solid', width: '100%', minHeight: '50%', maxHeight: '420px' }}
