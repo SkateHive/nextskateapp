@@ -46,7 +46,7 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
   const { post } = usePostContext();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isSmallerThan400] = useMediaQuery("(max-width: 400px)");
-  const postFullUrl = `${window.location.origin}/post/${post.url}`;
+  const postFullUrl = `${window.location.origin}/post${post.url}`;
 
   const user = useHiveUser()
 
