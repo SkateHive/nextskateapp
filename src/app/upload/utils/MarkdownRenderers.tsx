@@ -196,11 +196,13 @@ export const MarkdownRenderers = {
           <video
             {...props}
             muted={true}
+            loop={false}
             ref={videoRef}
             src={src}
             poster={poster}
             crossOrigin='anonymous'
             playsInline={true}
+            onEnded={() => setIsPlaying(false)}
             style={{ background: 'transparent', borderRadius: '10px', marginBottom: '20px', border: '0px grey solid', width: '100%', minHeight: '50%', maxHeight: '420px' }}
           />
         </picture>
