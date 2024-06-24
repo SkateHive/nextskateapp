@@ -70,8 +70,8 @@ function PostCarousel() {
             <Image
               key={i}
               border={"0"}
-              w={"350px"}
-              h={"240px"}
+              w={"100%"}
+              h={"100%"}
               src={image.url}
               aspectRatio={16 / 9}
               objectFit="cover"
