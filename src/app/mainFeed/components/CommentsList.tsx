@@ -11,7 +11,6 @@ interface CommentListProps {
   setVisiblePosts: (posts: number) => void;
   username?: string;
   handleVote: (author: string, permlink: string) => void;
-  getTotalPayout: (comment: any) => number;
 }
 
 const CommentList = ({
@@ -20,7 +19,6 @@ const CommentList = ({
   setVisiblePosts,
   username,
   handleVote,
-  getTotalPayout,
 }: CommentListProps) => {
   return (
     <Box width={"full"}>
@@ -45,7 +43,6 @@ const CommentList = ({
               comment={comment}
               username={username || ""}
               handleVote={handleVote}
-              getTotalPayout={getTotalPayout}
             />
           ))}
       </InfiniteScroll>

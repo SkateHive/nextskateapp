@@ -1,3 +1,4 @@
+import { Comment } from "@/app/mainFeed/page"
 import { isNaN } from "lodash"
 
 export function getWebsiteURL() {
@@ -124,3 +125,13 @@ export function formatDate(date: string) {
   }
 }
 
+export const getTotalPayout = (comment: Comment): number => {
+  const payout = parseFloat(comment.total_payout_value?.split(" ")[0] || "0");
+  const pendingPayout = parseFloat(
+    comment.pending_payout_value?.split(" ")[0] || "0"
+  );
+  const curatorPayout = parseFloat(
+    comment.curator_payout_value?.split(" ")[0] || "0"
+  );
+  return payout + pendingPayout + curatorPayout;
+};
