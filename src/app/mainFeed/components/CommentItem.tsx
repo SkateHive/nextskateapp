@@ -3,6 +3,7 @@ import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
 import AuthorAvatar from "@/components/AuthorAvatar";
 import LoginModal from "@/components/Hive/Login/LoginModal";
 import TipButton from "@/components/PostCard/TipButton";
+import { useHiveUser } from "@/contexts/UserContext";
 import { useComments } from "@/hooks/comments";
 import {
   formatDate,
@@ -133,6 +134,8 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
 
   const [visiblePosts, setVisiblePosts] = useState(5);
 
+  const {voteValue} = useHiveUser();
+
   return (
     <Box key={comment.id} p={4} width="100%" bg="black" color="white">
       <ReplyModal
@@ -197,7 +200,7 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
           toggleValueTooltip={toggleValueTooltip}
         />
         <Tooltip
-          label="+$0.0024"
+          label={`+$${voteValue.toFixed(6)}`}
           placement="top"
           isOpen={isValueTooltipOpen}
           hasArrow
