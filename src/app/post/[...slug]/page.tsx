@@ -77,7 +77,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
 
   return (
     <Box>
-      <Box display="flex" flexDir={{ base: "column", lg: "row" }} minH="60vh" gap={6} >
+      <Box color='white' display="flex" flexDir={{ base: "column", lg: "row" }} minH="60vh" gap={6} >
         <Box width={{ base: "100%", md: "60%" }}>
           <Heading mt={8} size="md" border={"1px solid grey"} borderRadius={5}>
             <Box bg="#201d21" borderRadius={5}>

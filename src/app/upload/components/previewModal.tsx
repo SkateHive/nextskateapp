@@ -134,7 +134,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
     return (
         <Modal isOpen={isOpen} onClose={onClose} size="xl">
             <ModalOverlay style={{ backdropFilter: "blur(5px)" }} />
-            <ModalContent color={"white"} backgroundColor={"black"} border={'1px solid #A5D6A7'}>
+            <ModalContent position={'absolute'} color={"white"} backgroundColor={"black"} border={'1px solid #A5D6A7'}>
                 {hasPosted ? (
                     <SocialsModal isOpen={hasPosted} onClose={onClose} postUrl={postLink} content={body} aiSummary={AiSummary} />
                 ) : (
@@ -159,10 +159,10 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
                             <Box>
                                 <Center>
                                     <VStack>
-                                        <Box width={"100%"}>
+                                        <Box maxWidth={"90%"}>
                                             <PostPreview postData={postDataForPreview} />
                                         </Box>
-                                        <Box border={'1px solid white'} w="432px">
+                                        <Box border={'1px solid white'} w="80%">
                                             <BeneficiariesTable beneficiariesArray={beneficiariesArray} />
                                             <TagsTable tags={tags} />
                                         </Box>

@@ -54,7 +54,7 @@ function PostCarousel() {
   };
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div style={{ justifyContent: 'center' }}>
       <Box m={2} height={"auto"}>
         <Carousel ref={carouselRef} responsive={responsive}>
           {videoLinks.map((video, i) => (
@@ -70,7 +70,8 @@ function PostCarousel() {
             <Image
               key={i}
               border={"0"}
-              w="100%"
+              w={"350px"}
+              h={"240px"}
               src={image.url}
               aspectRatio={16 / 9}
               objectFit="cover"
