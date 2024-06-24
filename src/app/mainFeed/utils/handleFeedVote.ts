@@ -1,5 +1,4 @@
 import { vote } from "@/lib/hive/client-functions"
-import { use } from "react"
 import { voteWithPrivateKey } from "@/lib/hive/server-functions"
 import { VoteOperation } from "@hiveio/dhive"
 export const handleVote = async (author: string, permlink: string, username: string) => {
@@ -16,6 +15,7 @@ export const handleVote = async (author: string, permlink: string, username: str
       weight: 10000,
     })
   } else if (loginMethod === "privateKey") {
+    console.log('trying to vote with private key')
     const vote: VoteOperation = [
       "vote",
       {
