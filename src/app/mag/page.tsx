@@ -12,7 +12,7 @@ import { BeatLoader } from "react-spinners"
 
 
 export default function Mag() {
-  const SKATEHIVE_TAG = [{ tag: "hive-173115", limit: 100 }]
+  const SKATEHIVE_TAG = [{ tag: "hive-173115", limit: 60 }]
   const [tag, setTag] = useState(SKATEHIVE_TAG)
   const [query, setQuery] = useState("trending")
   const { posts, error, isLoading, setQueryCategory, setDiscussionQuery } =
@@ -62,7 +62,7 @@ export default function Mag() {
 
   return (
     <Box
-      height={"100%"}
+      height={"101vh"}
       overflow={"auto"}
       sx={{
         "::-webkit-scrollbar": {
