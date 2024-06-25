@@ -1,3 +1,4 @@
+'use client'
 import { vote } from "@/lib/hive/client-functions"
 import { voteWithPrivateKey } from "@/lib/hive/server-functions"
 import { VoteOperation } from "@hiveio/dhive"
