@@ -59,6 +59,11 @@ export default function Upload() {
         onDrop: async (acceptedFiles) => {
             setIsUploading(true);
             for (const file of acceptedFiles) {
+                if (file.type !== "image/png" && file.type !== "image/jpeg" && file.type !== "image/gif" && file.type !== "video/mp4") {
+                    alert("Invalid file type. Only images and videos are allowed. To use .mov files upload in Feed");
+                    setIsUploading(false);
+                    return;
+                }
                 const ipfsData = await uploadFileToIPFS(file);
                 if (ipfsData !== undefined) {
                     const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}`;
@@ -70,7 +75,7 @@ export default function Upload() {
         },
         accept: {
             'image/*': ['.png', '.gif', '.jpeg', '.jpg'],
-            'video/*': [".mp4", ".mov"],
+            'video/*': [".mp4"],
         },
         multiple: false
     }

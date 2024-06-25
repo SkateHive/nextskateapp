@@ -34,9 +34,8 @@ import CommentList from "./components/CommentsList";
 import LoadingComponent from "./components/loadingComponent";
 import AvatarMediaModal from "./components/mediaModal";
 
-const parent_author = "skatehacker";
-const parent_permlink = "test-advance-mode-post";
-const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN;
+const parent_author = process.env.NEXT_PUBLIC_MAINFEED_AUTHOR || "skatehacker";
+const parent_permlink = process.env.NEXT_PUBLIC_MAINFEED_PERMLINK || "test-advance-mode-post";
 
 export interface Comment {
   id: number;
@@ -54,7 +53,7 @@ const SkateCast = () => {
     parent_author,
     parent_permlink
   );
-  const [visiblePosts, setVisiblePosts] = useState<number>(10);
+  const [visiblePosts, setVisiblePosts] = useState<number>(3);
   const postBodyRef = useRef<HTMLTextAreaElement>(null);
   const user = useHiveUser();
   const username = user?.hiveUser?.name;
