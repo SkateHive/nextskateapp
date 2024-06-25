@@ -69,7 +69,7 @@ export default function EditInfoModal({ isOpen, onClose, user, onUpdate }: EditM
     if (file) {
       setSelectedProfileFile(file);
       const data = await uploadFileToIPFS(file);
-      const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${data.IpfsHash}?pinataGatewayToken=${PINATA_GATEWAY_TOKEN}`;
+      const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${data.IpfsHash}`;
       setAvatarUrl(ipfsUrl);
     }
   }
@@ -79,7 +79,7 @@ export default function EditInfoModal({ isOpen, onClose, user, onUpdate }: EditM
     if (file) {
       setSelectedCoverFile(file);
       const data = await uploadFileToIPFS(file);
-      const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${data.IpfsHash}?pinataGatewayToken=${PINATA_GATEWAY_TOKEN}`;
+      const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${data.IpfsHash}`;
       setCoverImageUrl(ipfsUrl);
     }
   }

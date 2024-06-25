@@ -61,7 +61,7 @@ export default function Upload() {
             for (const file of acceptedFiles) {
                 const ipfsData = await uploadFileToIPFS(file);
                 if (ipfsData !== undefined) {
-                    const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}?pinataGatewayToken=${PINATA_GATEWAY_TOKEN}`;
+                    const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}`;
                     const markdownLink = file.type.startsWith("video/") ? `<iframe src="${ipfsUrl}" allowfullscreen></iframe>` : `![Image](${ipfsUrl})`;
                     setValue(prevMarkdown => `${prevMarkdown}\n${markdownLink}\n`);
                 }
@@ -209,8 +209,6 @@ export default function Upload() {
         localStorage.setItem('draft', value);
         setValue(value || localStorage.getItem('draft') || '');
     }
-
-
 
     return (
         <Box width="100%" overflow="hidden" color={"white"}>
