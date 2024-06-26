@@ -63,7 +63,7 @@ export default function EditInfoModal({ isOpen, onClose, user, onUpdate }: EditM
   const [isEthSetupModalOpen, setIsEthSetupModalOpen] = useState(false);
   const [ethAddress, setEthAddress] = useState<string>(extensions?.eth_address || '');
   const [videoParts, setVideoParts] = useState<VideoPart[]>(extensions?.video_parts || '');
-
+  const [level, setLevel] = useState<number>(extensions?.level || 0);
   async function handleProfileFileInputChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (file) {
@@ -91,7 +91,7 @@ export default function EditInfoModal({ isOpen, onClose, user, onUpdate }: EditM
       return;
     }
     if (loginMethod === "keychain") {
-      await updateProfile(user.name, name, about, location, coverImageUrl, avatarUrl, website, ethAddress, videoParts);
+      await updateProfile(user.name, name, about, location, coverImageUrl, avatarUrl, website, ethAddress, videoParts, level);
       if (window) {
         window.location.reload();
       }
@@ -99,7 +99,7 @@ export default function EditInfoModal({ isOpen, onClose, user, onUpdate }: EditM
       onUpdate(); // Call onUpdate after closing the modal
     } else if (loginMethod === "privateKey") {
       const encryptedPrivateKey = localStorage.getItem("EncPrivateKey");
-      await updateProfileWithPrivateKey(encryptedPrivateKey, user.name, name, about, location, coverImageUrl, avatarUrl, website, ethAddress, videoParts);
+      await updateProfileWithPrivateKey(encryptedPrivateKey, user.name, name, about, location, coverImageUrl, avatarUrl, website, ethAddress, videoParts, level);
       if (window) {
         window.location.reload();
       }

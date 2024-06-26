@@ -171,7 +171,9 @@ export async function updateProfileWithPrivateKey(
   avatarUrl: string,
   website: string,
   ethAddress: string,
-  videoParts: VideoPart[]) {
+  videoParts: VideoPart[],
+  level: number
+) {
 
   if (encryptedPrivateKey === null) throw new Error("Private key not found");
 
@@ -193,6 +195,7 @@ export async function updateProfileWithPrivateKey(
     extensions: {
       eth_address: ethAddress,
       video_parts: videoParts,
+      level: level
     }
   }
 

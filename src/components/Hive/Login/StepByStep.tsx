@@ -1,8 +1,12 @@
 "use client"
 
+import AuthorAvatar from "@/components/AuthorAvatar"
 import { HiveAccount } from "@/lib/models/user"
 import {
     Box,
+    Center,
+    Divider,
+    HStack,
     Step,
     StepDescription,
     StepIcon,
@@ -11,7 +15,13 @@ import {
     StepSeparator,
     StepStatus,
     StepTitle,
-    Stepper
+    Stepper,
+    Table,
+    TableContainer,
+    Tbody,
+    Text,
+    Thead,
+    Tr
 } from "@chakra-ui/react"
 import { useEffect } from "react"
 
@@ -42,6 +52,7 @@ const StepByStep = ({
     let userETHwallet = ""
     let postCount = 0
     let witnessVotes: string[] = []
+    let userLevel = 0
 
     try {
         userMetadata = JSON.parse(hiveAccount.posting_json_metadata)
@@ -50,9 +61,7 @@ const StepByStep = ({
         userLocation = userMetadata?.profile?.location || ""
         userBio = userMetadata?.profile?.about || ""
         postCount = hiveAccount.post_count
-        // if (hiveAccount.json_metadata && hiveAccount.json_metadata !== "") {
-        //     witnessVotes = hiveAccount.witness_votes || []
-        // }
+        userLevel = JSON.parse(hiveAccount.json_metadata)?.extensions?.level
     } catch (error) {
         console.error("Error parsing user metadata:", error)
     }
@@ -84,32 +93,114 @@ const StepByStep = ({
     const steps = [
         { title: "Add Profile Pic", description: activeStep > 0 ? "You look good" : "You look better with a profile pic" },
         { title: "Edit Profile", description: activeStep > 1 ? "All set!" : "Complete your profile, bro" },
-        { title: "Make your first Post", description: activeStep > 2 ? "You're all set!" : "Introduce yourself to the OGs" },
-        { title: "Vote For SkateHive Witness", description: activeStep > 3 ? "You're ready to level 2!" : "Support the community by voting" },
+        { title: "Make your first Post", description: activeStep > 2 ? "You're Level 1!" : "Introduce yourself to the OGs" },
     ]
 
-    return (
-        <Stepper index={activeStep} orientation="vertical" height="300px" gap="0" mt={5} mb={5} colorScheme="green">
-            {steps.map((step, index) => (
-                <Step key={index}>
-                    <StepIndicator>
-                        <StepStatus
-                            complete={<StepIcon />}
-                            incomplete={<StepNumber />}
-                            active={<StepNumber />}
-                        />
-                    </StepIndicator>
+    const renderContent = () => {
+        switch (userLevel) {
+            case 0:
+                return (
+                    <Stepper index={activeStep} orientation="vertical" height="300px" gap="0" mt={5} mb={5} colorScheme="green">
+                        {steps.map((step, index) => (
+                            <Step key={index}>
+                                <StepIndicator>
+                                    <StepStatus
+                                        complete={<StepIcon />}
+                                        incomplete={<StepNumber />}
+                                        active={<StepNumber />}
+                                    />
+                                </StepIndicator>
 
-                    <Box flexShrink="0">
-                        <StepTitle>{step.title}</StepTitle>
-                        <StepDescription>{step.description}</StepDescription>
+                                <Box flexShrink="0">
+                                    <StepTitle>{step.title}</StepTitle>
+                                    <StepDescription>{step.description}</StepDescription>
+                                </Box>
+
+                                <StepSeparator />
+                            </Step>
+                        ))}
+                    </Stepper>
+                )
+            case 1:
+                return (
+                    <Box >
+
+                        <TableContainer w={'100%'}>
+                            <Table w={'100%'} variant={'striped'}>
+                                <Thead >
+                                    <Center>
+
+                                        <Text fontSize={'26px'}>Current Perks</Text>
+                                    </Center>
+                                </Thead>
+                                <Tbody justifyContent={'center'} w={'100%'}>
+                                    <Tr>- Post texts and images!</Tr>
+                                    <Tr>- Use Mag Section</Tr>
+                                    <Tr>- Upload up to 720p video files</Tr>
+                                    <Tr>- Upload videos up to 30 seconds</Tr>
+                                </Tbody>
+                            </Table>
+                        </TableContainer>
+                        <Divider mt='15px' mb={'15px'} />
+                        <TableContainer w={'100%'}>
+                            <Table color={'red.200'} w={'100%'} variant={'striped'}>
+                                <Thead >
+                                    <Center>
+
+                                        <Text fontSize={'26px'}>Next Level</Text>
+                                    </Center>
+                                </Thead>
+                                <Tbody justifyContent={'center'} w={'100%'}>
+                                    <Tr>- Get eligible to $Airdrops</Tr>
+                                    <Tr>- Upload over 20Mb images</Tr>
+                                    <Tr>- Upload up to 1080p video files</Tr>
+                                    <Tr>- Upload videos up to 60 seconds</Tr>
+                                </Tbody>
+                            </Table>
+                        </TableContainer>
                     </Box>
+                )
+            case 2:
+                return (
+                    <Box>
+                        <Text>Welcome to Level 2! Youre dope!</Text>
+                        {/* Add more content specific to Level 2 */}
+                    </Box>
+                )
+            default:
+                return (
+                    <Stepper index={activeStep} orientation="vertical" height="300px" gap="0" mt={5} mb={5} colorScheme="green">
+                        {steps.map((step, index) => (
+                            <Step key={index}>
+                                <StepIndicator>
+                                    <StepStatus
+                                        complete={<StepIcon />}
+                                        incomplete={<StepNumber />}
+                                        active={<StepNumber />}
+                                    />
+                                </StepIndicator>
 
-                    <StepSeparator />
-                </Step>
-            ))}
-        </Stepper>
-    )
+                                <Box flexShrink="0">
+                                    <StepTitle>{step.title}</StepTitle>
+                                    <StepDescription>{step.description}</StepDescription>
+                                </Box>
+
+                                <StepSeparator />
+                            </Step>
+                        ))}
+                    </Stepper>
+                )
+        }
+    }
+
+    return (
+        <Box w={"100%"}>
+            <HStack>
+                <AuthorAvatar username={hiveAccount.name} borderRadius={5} boxSize={16} />
+                {renderContent()}
+            </HStack>
+        </Box>
+    );
 }
 
 export default StepByStep

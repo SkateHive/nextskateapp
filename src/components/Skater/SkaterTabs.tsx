@@ -1,20 +1,19 @@
 import { HiveAccount } from "@/lib/models/user";
 import { Box, Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
-import ProfileBlog from "./ProfileBlog";
-import ProfilePosts from "./ProfilePosts";
-import ProfileDashboard from "./profileDashboard";
-import VideoParts from "./profileVideos";
+import ProfileBlog from "../Profile/ProfileBlog";
+import ProfilePosts from "../Profile/ProfilePosts";
+import VideoParts from "../Profile/profileVideos";
 
 interface ProfilePageProps {
     user: HiveAccount
 }
 
-export default function ProfileTabs({ user }: ProfilePageProps) {
+export default function SkaterTabs({ user }: ProfilePageProps) {
     return (
-        <Box h={"100vh"} justifyContent={'center'} >
+        <Box h={"100vh"} >
             <Tabs isLazy isFitted variant="enclosed-colored">
                 <TabList color={"white"} mb="1em">
-                    <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Level</Tab>
+                    {/* <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>DashBoard</Tab> */}
                     <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Blog</Tab>
                     <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Posts</Tab>
                     <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>VideoParts</Tab>
@@ -22,9 +21,9 @@ export default function ProfileTabs({ user }: ProfilePageProps) {
 
                 </TabList>
                 <TabPanels>
-                    <TabPanel>
+                    {/* <TabPanel>
                         <ProfileDashboard user={user} />
-                    </TabPanel>
+                    </TabPanel> */}
                     <TabPanel>
                         <ProfileBlog user={user} />
                     </TabPanel>

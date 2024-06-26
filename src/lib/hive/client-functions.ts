@@ -1,5 +1,5 @@
 'use client';
-import { Broadcast, Custom, KeychainKeyTypes, KeychainRequestResponse, KeychainSDK, Login, Post, Transfer, Vote } from "keychain-sdk";
+import { Broadcast, Custom, KeychainKeyTypes, KeychainRequestResponse, KeychainSDK, Login, Post, Transfer, Vote, WitnessVote } from "keychain-sdk";
 import { VideoPart } from "../models/user";
 import HiveClient from "./hiveclient";
 
@@ -77,7 +77,6 @@ export async function commentWithKeychain(formParamsAsObject: any): Promise<Hive
 
   }
 }
-
 export async function loginWithKeychain(username: string) {
   try {
     const memo = `${username} signed up with skatehive app at ${Date.now()}`
@@ -100,13 +99,11 @@ export async function loginWithKeychain(username: string) {
     console.log({ error });
   }
 }
-
 export function getReputation(rep: number) {
   let out = ((Math.log10(Math.abs(rep)) - 9) * 9) + 25;
   out = Math.round(out);
   return out;
 }
-
 export async function transferWithKeychain(username: string, destination: string, amount: string, memo: string, currency: string) {
   try {
     const keychain = new KeychainSDK(window);
@@ -130,8 +127,7 @@ export async function transferWithKeychain(username: string, destination: string
     console.log({ error });
   }
 }
-
-export async function updateProfile(username: string, name: string, about: string, location: string, coverImageUrl: string, avatarUrl: string, website: string, ethAddress: string, videoParts: VideoPart[]) {
+export async function updateProfile(username: string, name: string, about: string, location: string, coverImageUrl: string, avatarUrl: string, website: string, ethAddress: string, videoParts: VideoPart[], level: number) {
   try {
     const keychain = new KeychainSDK(window);
 
@@ -150,7 +146,8 @@ export async function updateProfile(username: string, name: string, about: strin
     const extMetadata = {
       extensions: {
         eth_address: ethAddress,
-        video_parts: videoParts
+        video_parts: videoParts,
+        level: level
       }
     }
 
@@ -178,7 +175,6 @@ export async function updateProfile(username: string, name: string, about: strin
     console.error('Profile update failed:', error);
   }
 }
-
 export async function checkCommunitySubscription(username: string) {
 
   const parameters = {
@@ -192,7 +188,6 @@ export async function checkCommunitySubscription(username: string) {
     return false; // Returning false in case of an error
   }
 }
-
 export async function communitySubscribeKeyChain(username: string) {
 
   const keychain = new KeychainSDK(window);
@@ -218,13 +213,12 @@ export async function communitySubscribeKeyChain(username: string) {
     console.error('Profile update failed:', error);
   }
 }
-
 export async function checkFollow(follower: string, following: string): Promise<boolean> {
   try {
     const status = await HiveClient.call('bridge', 'get_relationship_between_accounts', [
       follower,
       following
-  ]);
+    ]);
     if (status.follows) {
       return true
     } else {
@@ -235,7 +229,6 @@ export async function checkFollow(follower: string, following: string): Promise<
     return false
   }
 }
-
 export async function changeFollow(follower: string, following: string) {
   const keychain = new KeychainSDK(window);
   const status = await checkFollow(follower, following)
@@ -268,6 +261,26 @@ export async function changeFollow(follower: string, following: string) {
     console.log('Broadcast success:', custom);
   } catch (error) {
     console.error('Profile update failed:', error);
+  }
+
+}
+
+export async function witnessVoteWithKeychain(username: string, witness: string) {
+  const keychain = new KeychainSDK(window);
+  try {
+    const formParamsAsObject = {
+      "data": {
+        "username": username,
+        "witness": "skatehive",
+        "vote": true
+      }
+    };
+    const witnessvote = await keychain
+      .witnessVote(
+        formParamsAsObject.data as WitnessVote);
+    console.log({ witnessvote });
+  } catch (error) {
+    console.log({ error });
   }
 
 }

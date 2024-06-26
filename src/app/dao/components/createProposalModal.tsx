@@ -32,10 +32,6 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
         const blockNumber = await web3.getBlockNumber();
         setCurrentBlockNumber(blockNumber);
     };
-    useEffect(() => {
-        fetchSpaceInfo();
-        fetchCurrentBlockNumber();
-    }, []);
 
 
 
@@ -52,6 +48,10 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
             alert('Failed to fetch space settings.');
         }
     };
+    useEffect(() => {
+        fetchSpaceInfo();
+        fetchCurrentBlockNumber();
+    }, []);
 
     return (
         <Box

@@ -29,12 +29,12 @@ const VideoParts = ({ skater }: VideoPartsProps) => {
                 return parsedExtensions;
             } catch (error) {
                 console.error("Error parsing JSON metadata:", error);
-                return { video_parts: [] };  
+                return { video_parts: [] };
             }
         })()
     );
 
-    const { isOpen, onOpen, onClose } = useDisclosure(); 
+    const { isOpen, onOpen, onClose } = useDisclosure();
     const user = useHiveUser();
     const handleNewVideoPart = (videoPart: VideoPart) => {
         const newExtensions = {
@@ -52,7 +52,8 @@ const VideoParts = ({ skater }: VideoPartsProps) => {
             JSON.parse(skater?.posting_json_metadata)?.profile?.profile_image,
             JSON.parse(skater?.posting_json_metadata)?.profile?.website,
             newExtensions.eth_address,
-            newExtensions.video_parts
+            newExtensions.video_parts,
+            newExtensions.level
         );
     };
 
@@ -73,7 +74,8 @@ const VideoParts = ({ skater }: VideoPartsProps) => {
             JSON.parse(skater?.posting_json_metadata)?.profile?.profile_image,
             JSON.parse(skater?.posting_json_metadata)?.profile?.website,
             newExtensions.eth_address,
-            newExtensions.video_parts
+            newExtensions.video_parts,
+            newExtensions.level
         );
     };
 

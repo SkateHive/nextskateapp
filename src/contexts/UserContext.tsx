@@ -22,7 +22,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const loadVoteValue = async () => {
     if (voteValue === 0) {
       const value = await voting_value2(user);
-      console.log("Teste value", value)
       setVoteValue(value);
     }
   };
@@ -61,7 +60,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export const useHiveUser = (): HiveUserContextProps => {
+export const useHiveUser: () => HiveUserContextProps = () => {
   const context = useContext(HiveUserContext);
   if (!context) {
     throw new Error("useHiveUser must be used within a UserProvider");
