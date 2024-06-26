@@ -1,4 +1,3 @@
-'use client'
 import { vote } from "@/lib/hive/client-functions"
 import { voteWithPrivateKey } from "@/lib/hive/server-functions"
 import { VoteOperation } from "@hiveio/dhive"
@@ -27,6 +26,7 @@ export const handleVote = async (author: string, permlink: string, username: str
       }
     ]
     const encryptedPrivateKey = localStorage.getItem("EncPrivateKey");
+    console.log(encryptedPrivateKey)
     voteWithPrivateKey(encryptedPrivateKey, vote)
   }
 }

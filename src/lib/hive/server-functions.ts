@@ -119,9 +119,11 @@ export async function voteWithPrivateKey(
   vote: dhive.VoteOperation
 ) {
   if (encryptedPrivateKey === null) throw new Error("Private key not found")
+  console.log(encryptedPrivateKey)
   const privateKey = decryptPrivateKey(encryptedPrivateKey)
-
+  console.log(privateKey)
   //const client = new dhive.Client("https://api.hive.blog")
+  console.log(HiveClient)
   HiveClient.broadcast
     .vote(vote[1], dhive.PrivateKey.from(privateKey))
     .then((result) => {
@@ -257,7 +259,7 @@ async function checkFollow(follower: string, following: string): Promise<boolean
     const status = await HiveClient.call('bridge', 'get_relationship_between_accounts', [
       follower,
       following
-  ]);
+    ]);
 
     if (status.follows) {
       return true

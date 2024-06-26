@@ -80,74 +80,72 @@ export default async function Page({ params }: { params: { slug: string } }) {
   };
 
   return (
-    <Box>
-      <Box color="white" display="flex" flexDir={{ base: 'column', lg: 'row' }} minH="60vh" gap={6}>
-        <Box width={{ base: '100%', md: '60%' }}>
-          <Heading mt={8} size="md" border="1px solid grey" borderRadius={5}>
-            <Box bg="#201d21" borderRadius={5}>
-              <HStack>
-                <Box minW="20%">
-                  <Center p={2}>
-                    <AuthorAvatar username={post?.author} />
-                  </Center>
-                </Box>
-                <Text fontSize="18px">{post?.title}</Text>
-              </HStack>
-            </Box>
-          </Heading>
-
-          <Container p={4}>
-            <ClientMarkdownRenderer content={transformIPFSContent(transform3SpeakContent(post.body))} />
-            <Divider mt={5} />
-            <Center>
-              <Text fontSize="12px">{transformDate(post?.created)}</Text>
-            </Center>
-          </Container>
-        </Box>
-
-        <Box width={{ base: '100%', md: '40%' }} mt={5}>
-          <Center>
-            <VStack width="90%">
-              <Badge
-                border="1px solid grey"
-                width="100%"
-                m="10px"
-                fontSize="38px"
-                bg="#201d21"
-                color="white"
-              >
-                <Center>
-                  <Text>{getTotalPayout(post).toFixed(2)} USD</Text>
+    <Box width={{ base: '100%', md: '60%' }} color="white" display="flex" flexDir={{ base: 'column', lg: 'row' }} minH="60vh" gap={6}>
+      <Box width={{ base: '100%', md: '60%' }}>
+        <Heading mt={8} size="md" border="1px solid grey" borderRadius={5}>
+          <Box bg="#201d21" borderRadius={5}>
+            <HStack>
+              <Box minW="20%">
+                <Center p={2}>
+                  <AuthorAvatar username={post?.author} />
                 </Center>
-              </Badge>
-              {post.beneficiaries.length > 0 && (
-                <Table border="1px solid grey" width="100%" borderRadius="10px">
-                  <Thead borderRadius="10px">
-                    <Tr borderRadius="10px">
-                      <Th>Beneficiaries</Th>
-                      <Th>Weight</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody maxW="85%" borderRadius="10px">
-                    {post.beneficiaries.map((beneficiary: any) => (
-                      <Tr key={beneficiary.account}>
-                        <Td>{beneficiary.account}</Td>
-                        <Td>{beneficiary.weight / 100}%</Td>
-                      </Tr>
-                    ))}
-                  </Tbody>
-                </Table>
-              )}
-            </VStack>
-          </Center>
-          <Center>
-            <Text mt={5} fontSize="18px">
-              Comments
-            </Text>
-          </Center>
+              </Box>
+              <Text fontSize="18px">{post?.title}</Text>
+            </HStack>
+          </Box>
+        </Heading>
 
-          <CommentsComponent author={user.substring(3)} permlink={postId} />
-        </Box>
+        <Container p={4}>
+          <ClientMarkdownRenderer content={transformIPFSContent(transform3SpeakContent(post.body))} />
+          <Divider mt={5} />
+          <Center>
+            <Text fontSize="12px">{transformDate(post?.created)}</Text>
+          </Center>
+        </Container>
+      </Box>
+
+      <Box width={{ base: '100%', md: '40%' }} mt={5}>
+        <Center>
+          <VStack width="90%">
+            <Badge
+              border="1px solid grey"
+              width="100%"
+              m="10px"
+              fontSize="38px"
+              bg="#201d21"
+              color="white"
+            >
+              <Center>
+                <Text>{getTotalPayout(post).toFixed(2)} USD</Text>
+              </Center>
+            </Badge>
+            {post.beneficiaries.length > 0 && (
+              <Table border="1px solid grey" width="100%" borderRadius="10px">
+                <Thead borderRadius="10px">
+                  <Tr borderRadius="10px">
+                    <Th>Beneficiaries</Th>
+                    <Th>Weight</Th>
+                  </Tr>
+                </Thead>
+                <Tbody maxW="85%" borderRadius="10px">
+                  {post.beneficiaries.map((beneficiary: any) => (
+                    <Tr key={beneficiary.account}>
+                      <Td>{beneficiary.account}</Td>
+                      <Td>{beneficiary.weight / 100}%</Td>
+                    </Tr>
+                  ))}
+                </Tbody>
+              </Table>
+            )}
+          </VStack>
+        </Center>
+        <Center>
+          <Text mt={5} fontSize="18px">
+            Comments
+          </Text>
+        </Center>
+
+        <CommentsComponent author={user.substring(3)} permlink={postId} />
       </Box>
     </Box>
   );
