@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import useAuthHiveUser from "@/lib/useHiveAuth";
 import { transformIPFSContent } from "@/lib/utils";
 import { Avatar, Badge, Box, Button, Center, Checkbox, Divider, Flex, HStack, Image, Input, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Spinner, Text, Tooltip, VStack } from "@chakra-ui/react";
@@ -11,26 +11,11 @@ import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import PreviewModal from "./components/previewModal";
 import AuthorSearchBar from "./components/searchBar";
+import { Beneficiary, BeneficiaryForBroadcast, defaultBeneficiaries } from "./page";
 import { MarkdownRenderers } from "./utils/MarkdownRenderers";
 import { extractImageUrls } from "./utils/extractImages";
 import { uploadFileToIPFS } from "./utils/uploadToIPFS";
 
-const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN;
-
-
-interface Beneficiary {
-    name: string;
-    percentage: number;
-}
-interface BeneficiaryForBroadcast {
-    account: string;
-    weight: string;
-}
-
-const defaultBeneficiaries: Beneficiary[] = [
-    { name: 'skatedev', percentage: 2 },
-    { name: 'steemskate', percentage: 3 },
-];
 
 export default function Upload() {
     const [title, setTitle] = useState('');
@@ -99,7 +84,7 @@ export default function Upload() {
             name: 'saveDraftInTxt',
             keyCommand: 'saveDraftInTxt',
             buttonProps: { 'aria-label': 'Save Draft' },
-            icon: (<Tooltip label="Save Draft" ><span><FaSave color="#A5D6A7" /></span></Tooltip>),
+            icon: (<Tooltip label="Save Draft"><span><FaSave color="#A5D6A7" /></span></Tooltip>),
             execute: (state: any, api: any) => {
                 const element = document.createElement('a');
                 const file = new Blob([value], { type: 'text/plain' });
@@ -109,7 +94,6 @@ export default function Upload() {
                 element.click();
             }
         }
-
     ];
 
     const renderThumbnailOptions = () => {
@@ -133,13 +117,12 @@ export default function Upload() {
                     onClick={() => {
                         setThumbnailUrl(imageUrl);
                     }}
-                    style={imageUrl === thumbnailUrl ? selectedThumbnailStyle : { opacity: '0.3' }}
+                    style={imageUrl === thumbnailUrl ? selectedThumbnailStyle : {}}
                 >
                     <Image
                         src={imageUrl}
                         alt={`Thumbnail ${index}`}
-                        style={{ maxWidth: "100%", maxHeight: "100%" }}
-                    />
+                        style={{ maxWidth: "100%", maxHeight: "100%" }} />
                 </Box>
             </HStack>
         ));
@@ -160,7 +143,7 @@ export default function Upload() {
         setTags(combinedTags);
 
         setShowPreview(true);
-    }
+    };
 
     const handleAuthorSearch = (searchUsername: string) => {
         const percentage = 10;
@@ -200,7 +183,7 @@ export default function Upload() {
 
     const handleCheckMark = () => {
         setIsChecked(!isChecked);
-    }
+    };
     const handleDefaultBeneficiaryPercentageChange = (index: number, newPercentage: number) => {
         if (index < 0 || index >= defaultBeneficiaries.length) {
             console.error('Invalid index for default beneficiaries:', index);
@@ -209,33 +192,31 @@ export default function Upload() {
 
         const updatedDefaultBeneficiaries = [...defaultBeneficiaries];
         updatedDefaultBeneficiaries[index].percentage = newPercentage;
-    }
+    };
 
     const handleChange = (value: string) => {
         localStorage.setItem('draft', value);
         setValue(value || localStorage.getItem('draft') || '');
-    }
-    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    };
+
     return (
         <Box width="100%" overflow="hidden" color={"white"}>
             {showPreview &&
                 <PreviewModal
                     isOpen={showPreview}
                     onClose={() => {
-                        setShowPreview(false)
-                    }
-                    }
+                        setShowPreview(false);
+                    }}
                     title={title}
                     body={value}
                     thumbnailUrl={thumbnailUrl || "https://ipfs.skatehive.app/ipfs/QmYkb6yq2nXSccdMwmyNWXND8T1exqUW1uUiMAQcV4nfVP?pinataGatewayToken=nxHSFa1jQsiF7IHeXWH-gXCY3LDLlZ7Run3aZXZc8DRCfQz4J4a94z9DmVftXyFE"}
                     user={hiveUser!}
                     beneficiariesArray={beneficiariesArray}
-                    tags={tags}
-                />}
+                    tags={tags} />}
 
             <Input {...getInputProps()} id="md-image-upload" style={{ display: 'none' }} size="md" />
 
-            <Flex direction={{ base: 'column', md: 'row' }} >
+            <Flex direction={{ base: 'column', md: 'row' }}>
                 <Box width={{ base: '100%', md: '50%' }} p="4">
                     <HStack>
                         <Input
@@ -250,7 +231,7 @@ export default function Upload() {
                             onChange={(e) => setTitle(e.target.value)} />
                     </HStack>
 
-                    <Box marginTop="3" {...getRootProps()} >
+                    <Box marginTop="3" {...getRootProps()}>
                         {isUploading && <Center m={3}><Spinner color="#A5D6A7" /></Center>}
 
                         <MDEditor
@@ -258,8 +239,7 @@ export default function Upload() {
                             onChange={(value) => handleChange(value || '')}
                             commands={[
                                 commands.bold, commands.italic, commands.strikethrough, commands.table, commands.link, commands.quote, commands.unorderedListCommand, commands.fullscreen
-                            ]
-                            }
+                            ]}
 
                             extraCommands={extraCommands}
                             height="700px"
@@ -269,8 +249,7 @@ export default function Upload() {
                                 border: "1px solid #A5D6A7",
                                 padding: "10px",
                                 backgroundColor: "black",
-                            }}
-                        />
+                            }} />
                     </Box>
                     <VStack>
                         <Badge width={"100%"} mt={5} size="24px" color="#A5D6A7" backgroundColor={"#1e2021"}
@@ -283,8 +262,7 @@ export default function Upload() {
                                             {...getInputProps()}
                                             id="md-image-upload"
                                             style={{ display: 'none' }}
-                                            size="md"
-                                        />
+                                            size="md" />
                                         <Box
                                             cursor="pointer"
                                             width="100px"
@@ -324,7 +302,7 @@ export default function Upload() {
                             <Center>
 
                                 <Badge
-                                    color="#A5D6A7" background={"green.600"} marginBottom={3} >
+                                    color="#A5D6A7" background={"green.600"} marginBottom={3}>
                                     <Text fontSize={"22px"} color="#A5D6A7">Tags</Text>
                                 </Badge>
                             </Center>
@@ -340,8 +318,7 @@ export default function Upload() {
                                         borderColor={"green.600"}
                                         color={"#A5D6A7"}
                                         _placeholder={{ color: "#A5D6A7", opacity: 0.4 }}
-                                        focusBorderColor="#A5D6A7"
-                                    />
+                                        focusBorderColor="#A5D6A7" />
                                 ))}
                             </Flex>
                             <Center>
@@ -354,7 +331,7 @@ export default function Upload() {
                                 </Badge>
                             </Center>
                             <AuthorSearchBar onSearch={handleAuthorSearch} />
-                            <Checkbox defaultChecked colorScheme="green" size="lg" onChange={handleCheckMark} >Support Devs</Checkbox>
+                            <Checkbox defaultChecked colorScheme="green" size="lg" onChange={handleCheckMark}>Support Devs</Checkbox>
 
                             {isChecked &&
                                 defaultBeneficiaries.map((beneficiary, index) => (
@@ -363,8 +340,7 @@ export default function Upload() {
                                             <Avatar
                                                 size="sm"
                                                 src={`https://images.ecency.com/webp/u/${beneficiary.name}/avatar/small`}
-                                                mr={2}
-                                            />
+                                                mr={2} />
                                             <Text>
                                                 {beneficiary.name} - {beneficiary.percentage}%
                                             </Text>
@@ -394,8 +370,7 @@ export default function Upload() {
                                             </Tooltip>
                                         </Slider>
                                     </Box>
-                                ))
-                            }
+                                ))}
 
                             <Box marginTop={4}>
                                 <Box ref={searchBarRef}>
@@ -406,8 +381,7 @@ export default function Upload() {
                                                 <Avatar
                                                     size="sm"
                                                     src={`https://images.ecency.com/webp/u/${beneficiary.name}/avatar/small`}
-                                                    mr={2}
-                                                />
+                                                    mr={2} />
                                                 <Text>
                                                     {beneficiary.name} - {beneficiary.percentage}%
                                                 </Text>
@@ -442,34 +416,20 @@ export default function Upload() {
                             </Box>
                         </Box>
                     </Box>}
+                    <Center>
 
-                    {/* Floating button */}
-                    {/* <Box
-                        position="fixed"
-                        bottom="100px"
-                        right="20px"
-                        zIndex="999"
-                    >
                         <Button
-                            colorScheme="blue"
-                            size="lg"
+                            mt={5}
                             onClick={() => handlePost()}
                             isDisabled={isUploading}
-                        >
-                            {isMobile ? <ArrowRightIcon /> : "Submit"}
-                        </Button>
-                    </Box> */}
-                    <Button
-                        mt={5}
-                        onClick={() => handlePost()}
-                        isDisabled={isUploading}
-                        w={"100%"}
-                        colorScheme="blue"
-                        variant={"outline"}
+                            w={"100%"}
+                            colorScheme="blue"
+                            variant={"outline"}
 
-                    >
-                        Submit
-                    </Button>
+                        >
+                            Submit
+                        </Button>
+                    </Center>
                 </Box>
                 <Box h={"100vh"} mt={4} width={{ base: '100%', md: '50%' }} p="4" borderRadius="2px" border="1px solid #A5D6A7">
                     <HStack>
