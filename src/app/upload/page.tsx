@@ -3,6 +3,7 @@ import useAuthHiveUser from "@/lib/useHiveAuth";
 import { transformIPFSContent } from "@/lib/utils";
 import { Avatar, Badge, Box, Button, Center, Checkbox, Divider, Flex, HStack, Image, Input, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Spinner, Text, Tooltip, VStack } from "@chakra-ui/react";
 import MDEditor, { commands } from '@uiw/react-md-editor';
+import { ArrowRightIcon } from "lucide-react";
 import React, { RefObject, useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { FaImage, FaSave } from "react-icons/fa";
@@ -46,13 +47,32 @@ export default function Upload() {
     const [beneficiaries, setBeneficiaries] = useState<Beneficiary[]>([]);
     const [showPreview, setShowPreview] = useState(false);
     const [isChecked, setIsChecked] = useState(true);
+    const [isButtonVisible, setIsButtonVisible] = useState(true);
+    const buttonRef = useRef(null);
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
             setValue(localStorage.getItem('draft') || '');
         }
     }, []);
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                setIsButtonVisible(entry.isIntersecting);
+            },
+            { threshold: 0.1 }
+        );
 
+        if (buttonRef.current) {
+            observer.observe(buttonRef.current);
+        }
+
+        return () => {
+            if (buttonRef.current) {
+                observer.unobserve(buttonRef.current);
+            }
+        };
+    }, []);
     const { getRootProps, getInputProps } = useDropzone({
         noClick: true,
         noKeyboard: true,
@@ -215,9 +235,17 @@ export default function Upload() {
         localStorage.setItem('draft', value);
         setValue(value || localStorage.getItem('draft') || '');
     }
-    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    const [isMobile, setIsMobile] = useState(false)
+    useEffect(() => {
+        if (window) {
+            const isMobile = window.innerWidth < 768
+            setIsMobile(isMobile)
+        }
+    }, [])
+    const isButtonDisabled = isUploading || !title || !value;
+
     return (
-        <Box width="100%" overflow="hidden" color={"white"}>
+        <Box width="100%" overflow="hidden" color={"white"} >
             {showPreview &&
                 <PreviewModal
                     isOpen={showPreview}
@@ -236,7 +264,18 @@ export default function Upload() {
             <Input {...getInputProps()} id="md-image-upload" style={{ display: 'none' }} size="md" />
 
             <Flex direction={{ base: 'column', md: 'row' }} >
-                <Box width={{ base: '100%', md: '50%' }} p="4">
+                <Box h={"100vh"} width={{ base: '100%', md: '50%' }} p="4" overflow={'auto'}
+                    sx={{
+                        "&::-webkit-scrollbar": {
+                            display: "none",
+                        },
+                        "&::-webkit-scrollbar-thumb": {
+                            display: "none",
+                        }
+                    }}
+                >
+
+
                     <HStack>
                         <Input
                             borderColor={"green.600"}
@@ -262,7 +301,7 @@ export default function Upload() {
                             }
 
                             extraCommands={extraCommands}
-                            height="700px"
+                            height={isMobile ? "500px" : "700px"}
                             preview="edit"
                             style={{
                                 color: "#A5D6A7",
@@ -442,36 +481,51 @@ export default function Upload() {
                             </Box>
                         </Box>
                     </Box>}
-
-                    {/* Floating button */}
-                    {/* <Box
-                        position="fixed"
-                        bottom="100px"
-                        right="20px"
-                        zIndex="999"
-                    >
-                        <Button
-                            colorScheme="blue"
-                            size="lg"
-                            onClick={() => handlePost()}
-                            isDisabled={isUploading}
-                        >
-                            {isMobile ? <ArrowRightIcon /> : "Submit"}
-                        </Button>
-                    </Box> */}
                     <Button
                         mt={5}
+                        ref={buttonRef} // Attach the ref to the button we want to observe
                         onClick={() => handlePost()}
-                        isDisabled={isUploading}
+                        isDisabled={isButtonDisabled}
                         w={"100%"}
-                        colorScheme="blue"
-                        variant={"outline"}
-
+                        bg="black"
+                        color={"limegreen"}
+                        border={"1px solid #A5D6A7"}
+                        _hover={{ bg: "limegreen", color: 'black' }}
                     >
-                        Submit
+                        Send it !
                     </Button>
+
+                    {!isButtonVisible && (
+                        <Box
+                            position="fixed"
+                            bottom={isMobile ? "100px" : "10px"}
+                            right="20px"
+                            zIndex="999"
+                        >
+                            <Button
+                                leftIcon={<ArrowRightIcon />}
+                                bg="black"
+                                color={"limegreen"}
+                                border={"1px solid #A5D6A7"}
+                                size="lg"
+                                isDisabled={isButtonDisabled}
+                                borderRadius={"full"}
+                                onClick={() => handlePost()}
+                                _hover={{ bg: "limegreen", color: 'black' }}
+                            >
+                                {"Send it !"}
+                            </Button>
+                        </Box>
+                    )}
                 </Box>
-                <Box h={"100vh"} mt={4} width={{ base: '100%', md: '50%' }} p="4" borderRadius="2px" border="1px solid #A5D6A7">
+                <Box h={"100vh"} mt={4} width={{ base: '100%', md: '50%' }} p="4" borderRadius="2px" border="1px solid #A5D6A7" sx={{
+                    "&::-webkit-scrollbar": {
+                        display: "none",
+                    },
+                    "&::-webkit-scrollbar-thumb": {
+                        display: "none",
+                    }
+                }}>
                     <HStack>
                         <Avatar name={hiveUser?.name} src={hiveUser?.metadata?.profile?.profile_image} boxSize="58px" borderRadius={'10px'} />
                         <Box borderRadius="4px" width="100%">
@@ -479,7 +533,14 @@ export default function Upload() {
                         </Box>
                     </HStack>
                     <Divider my={5} />
-                    <Box maxH="90vh" overflow="auto" p={1} borderRadius="md">
+                    <Box maxH="90vh" overflow="auto" p={1} borderRadius="md" sx={{
+                        "&::-webkit-scrollbar": {
+                            display: "none",
+                        },
+                        "&::-webkit-scrollbar-thumb": {
+                            display: "none",
+                        }
+                    }}>
                         <ReactMarkdown components={MarkdownRenderers} rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
                             {(transformIPFSContent(value))}
                         </ReactMarkdown>

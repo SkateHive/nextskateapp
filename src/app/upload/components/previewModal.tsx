@@ -3,6 +3,7 @@ import { commentWithPrivateKey } from '@/lib/hive/server-functions';
 import { HiveAccount } from '@/lib/useHiveAuth';
 import {
     Box,
+    Button,
     Center,
     Divider,
     Modal,
@@ -19,7 +20,6 @@ import React, { useState } from 'react';
 import slugify from '../utils/slugify';
 import BeneficiariesTable from './BeneficiariesTable';
 import { createCommentOptions, createPostOperation } from './formatPostData';
-import ModalFooterButtons from './ModalFooterButton';
 import PostPreview from './PostPreview';
 import SocialsModal from './socialsModal';
 import TagsTable from './TagsTable';
@@ -171,7 +171,10 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
                             </Box>
                         </ModalBody>
                         <ModalFooter>
-                            <ModalFooterButtons onClose={onClose} handlePost={handlePost} />
+                            <VStack width={'100%'}>
+                                <Button width={'100%'} colorScheme='red' onClick={onClose}>Let me try again, I am high  </Button>
+                                <Button width={'100%'} colorScheme='green' onClick={handlePost}>Looks dope, confirm!</Button>
+                            </VStack>
                         </ModalFooter>
                     </>
                 )}
