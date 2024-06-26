@@ -25,51 +25,32 @@ function ConnectedUserModal({ onClose }: { onClose: () => void }) {
     const [isStep3Completed, setStep3Completed] = useState(false)
     const [isStep4Completed, setStep4Completed] = useState(false)
     const [isEditInfoModalOpen, setIsEditInfoModalOpen] = useState(false)
-    const [userLevel, setUserLevel] = useState(0)
-
-    useEffect(() => {
-        const recalibrateLevel = () => {
-            if (hiveUser?.json_metadata) {
-                const parsedMetadata = JSON.parse(hiveUser.json_metadata)
-                const level = parsedMetadata?.extensions?.level
-                setUserLevel(level ?? 0)
-            } else {
-                setUserLevel(0)
-            }
-        }
-
-        recalibrateLevel()
-    }, [hiveUser])
-
-    useEffect(() => {
-        let newActiveStep = activeStep
-        if (isStep1Completed && newActiveStep === 0) {
-            newActiveStep = 1
-        }
-        if (isStep2Completed && newActiveStep === 1) {
-            newActiveStep = 2
-        }
-        if (isStep3Completed && newActiveStep === 2) {
-            newActiveStep = 3
-        }
-        if (isStep4Completed && newActiveStep === 3) {
-            newActiveStep = 4
-        }
-        if (userLevel === 1) {
-            newActiveStep = 4
-        }
-        if (newActiveStep !== activeStep) {
-            setActiveStep(newActiveStep)
-        }
-    }, [isStep1Completed, isStep2Completed, isStep3Completed, isStep4Completed, activeStep, userLevel])
-
-    useEffect(() => {
-        refreshUser()
-    }, [isEditInfoModalOpen, refreshUser])
-
     if (!hiveUser) {
         return null // or handle the case when hiveUser is null
     }
+    const metadata = hiveUser?.json_metadata
+    const userLevel = JSON.parse(metadata ?? "")?.extensions?.level
+
+
+
+    useEffect(() => {
+        if (isStep1Completed && activeStep === 0) {
+            setActiveStep(1)
+        }
+        if (isStep2Completed && activeStep === 1) {
+            setActiveStep(2)
+        }
+        if (isStep3Completed && activeStep === 2) {
+            setActiveStep(3)
+        }
+        if (isStep4Completed && activeStep === 3) {
+            setActiveStep(4)
+        }
+        if (userLevel === 1) {
+            setActiveStep(4)
+        }
+    }, [isStep1Completed, isStep2Completed, isStep3Completed, isStep4Completed, activeStep])
+
 
     const handleButtonClick = () => {
         switch (activeStep) {
@@ -101,6 +82,7 @@ function ConnectedUserModal({ onClose }: { onClose: () => void }) {
                         1
                     );
                     window.location.href = `/profile/${hiveUser?.name}`
+
                 } else if (loginMethod === "privateKey") {
                     console.log("write level 2 in profile with privatekey")
                     window.location.href = `/profile/${hiveUser?.name}`
@@ -114,7 +96,13 @@ function ConnectedUserModal({ onClose }: { onClose: () => void }) {
                 break
         }
     }
+    useEffect(() => {
+        refreshUser()
+    }, [isEditInfoModalOpen])
 
+    if (!hiveUser) {
+        return null // or handle the case when hiveUser is null
+    }
     return (
         <>
             {isEditInfoModalOpen && (
@@ -157,6 +145,7 @@ function ConnectedUserModal({ onClose }: { onClose: () => void }) {
                             if (window) {
                                 window.location.reload()
                             }
+
                         }}
                         colorScheme="red"
                         variant={"outline"}
