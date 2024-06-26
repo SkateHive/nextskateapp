@@ -25,13 +25,9 @@ function ConnectedUserModal({ onClose }: { onClose: () => void }) {
     const [isStep3Completed, setStep3Completed] = useState(false)
     const [isStep4Completed, setStep4Completed] = useState(false)
     const [isEditInfoModalOpen, setIsEditInfoModalOpen] = useState(false)
-    if (!hiveUser) {
-        return null // or handle the case when hiveUser is null
-    }
+
     const metadata = hiveUser?.json_metadata
-    const userLevel = JSON.parse(metadata ?? "")?.extensions?.level
-
-
+    const userLevel = metadata ? JSON.parse(metadata)?.extensions?.level : 0
 
     useEffect(() => {
         if (isStep1Completed && activeStep === 0) {
@@ -46,8 +42,14 @@ function ConnectedUserModal({ onClose }: { onClose: () => void }) {
         if (isStep4Completed && activeStep === 3) {
             setActiveStep(4)
         }
-    }, [isStep1Completed, isStep2Completed, isStep3Completed, isStep4Completed, activeStep])
+        if (userLevel === 1) {
+            setActiveStep(4)
+        }
+    }, [isStep1Completed, isStep2Completed, isStep3Completed, isStep4Completed, activeStep, userLevel])
 
+    useEffect(() => {
+        refreshUser()
+    }, [isEditInfoModalOpen, refreshUser])
 
     const handleButtonClick = () => {
         switch (activeStep) {
@@ -93,13 +95,11 @@ function ConnectedUserModal({ onClose }: { onClose: () => void }) {
                 break
         }
     }
-    useEffect(() => {
-        refreshUser()
-    }, [isEditInfoModalOpen])
 
     if (!hiveUser) {
         return null // or handle the case when hiveUser is null
     }
+
     return (
         <>
             {isEditInfoModalOpen && (
@@ -142,7 +142,6 @@ function ConnectedUserModal({ onClose }: { onClose: () => void }) {
                             if (window) {
                                 window.location.reload()
                             }
-
                         }}
                         colorScheme="red"
                         variant={"outline"}
