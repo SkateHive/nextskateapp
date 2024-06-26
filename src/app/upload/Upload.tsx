@@ -11,11 +11,23 @@ import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import PreviewModal from "./components/previewModal";
 import AuthorSearchBar from "./components/searchBar";
-import { Beneficiary, BeneficiaryForBroadcast, defaultBeneficiaries } from "./page";
 import { MarkdownRenderers } from "./utils/MarkdownRenderers";
 import { extractImageUrls } from "./utils/extractImages";
 import { uploadFileToIPFS } from "./utils/uploadToIPFS";
 
+interface Beneficiary {
+    name: string;
+    percentage: number;
+}
+interface BeneficiaryForBroadcast {
+    account: string;
+    weight: string;
+}
+
+const defaultBeneficiaries: Beneficiary[] = [
+    { name: 'skatedev', percentage: 2 },
+    { name: 'steemskate', percentage: 3 },
+];
 
 export default function Upload() {
     const [title, setTitle] = useState('');
