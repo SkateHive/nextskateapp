@@ -23,7 +23,6 @@ import ModalFooterButtons from './ModalFooterButton';
 import PostPreview from './PostPreview';
 import SocialsModal from './socialsModal';
 import TagsTable from './TagsTable';
-import usePostLink from './usePostLink';
 import useSummary from './useSummary';
 
 
@@ -41,7 +40,8 @@ interface PreviewModalProps {
 const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, body, thumbnailUrl, user, beneficiariesArray, tags }) => {
     const [hasPosted, setHasPosted] = useState(false);
     const AiSummary = useSummary(body);
-    const postLink = usePostLink(title, user);
+    const permlink = slugify(title.toLowerCase());
+    const postLink = `${window.location.origin}/post/hive-173115/@${user.name}/${permlink}`;
     const characterCount = body.length;
     const [isMinCarcterCountReached, setIsMinCarcterCountReached] = useState(characterCount >= 350);
 
