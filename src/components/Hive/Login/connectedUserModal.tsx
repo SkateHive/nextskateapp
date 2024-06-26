@@ -46,9 +46,6 @@ function ConnectedUserModal({ onClose }: { onClose: () => void }) {
         if (isStep4Completed && activeStep === 3) {
             setActiveStep(4)
         }
-        if (userLevel === 1) {
-            setActiveStep(4)
-        }
     }, [isStep1Completed, isStep2Completed, isStep3Completed, isStep4Completed, activeStep])
 
 
