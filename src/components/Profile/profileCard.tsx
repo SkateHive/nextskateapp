@@ -56,9 +56,9 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
     const handleClick = () => {
         setIsFlipped(!isFlipped)
     }
-    const user_metadata = JSON.parse(user.json_metadata);
+    const user_metadata = JSON.parse(user.json_metadata || '{}');
     const [isLoginModalOpen, setIsLoginModalOpen] = React.useState(false);
-    const userLevel = user_metadata.extensions['level'] || 0;
+    const userLevel = user_metadata.extensions?.level || 0;
 
     const handleUpdateXPClick = () => {
         console.log(userLevel);

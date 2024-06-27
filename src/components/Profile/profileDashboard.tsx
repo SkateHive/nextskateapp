@@ -9,9 +9,9 @@ interface ProfileDashboardProps {
 }
 
 const ProfileDashboard = ({ user }: ProfileDashboardProps) => {
-    const user_metadata = JSON.parse(user.json_metadata);
+    const user_metadata = JSON.parse(user.json_metadata || '{}');
     const extensions = user_metadata.extensions;
-    const userLevel = extensions['level'];
+    const userLevel = extensions && extensions['level'] || 0;
     const steps = [
         { title: 'Level 1', description: 'current' },
         { title: 'Level 2', description: 'min. 180 xp' },
@@ -55,7 +55,6 @@ const ProfileDashboard = ({ user }: ProfileDashboardProps) => {
         );
     }
 
-    console.log(extensions['eth_address']);
     return (
         <Box >
 
