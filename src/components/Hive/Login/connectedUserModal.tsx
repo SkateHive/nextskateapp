@@ -30,25 +30,24 @@ function ConnectedUserModal({ onClose }: { onClose: () => void }) {
     const userLevel = metadata ? JSON.parse(metadata)?.extensions?.level : 0
 
     useEffect(() => {
-        if (isStep1Completed && activeStep === 0) {
-            setActiveStep(1)
-        }
-        if (isStep2Completed && activeStep === 1) {
-            setActiveStep(2)
-        }
-        if (isStep3Completed && activeStep === 2) {
-            setActiveStep(3)
-        }
-        if (isStep4Completed && activeStep === 3) {
-            setActiveStep(4)
-        }
-        if (userLevel === 1) {
-            setActiveStep(4)
+        const newActiveStep = (() => {
+            if (userLevel === 1) return 4
+            if (isStep4Completed) return 4
+            if (isStep3Completed) return 3
+            if (isStep2Completed) return 2
+            if (isStep1Completed) return 1
+            return 0
+        })()
+
+        if (newActiveStep !== activeStep) {
+            setActiveStep(newActiveStep)
         }
     }, [isStep1Completed, isStep2Completed, isStep3Completed, isStep4Completed, activeStep, userLevel])
 
     useEffect(() => {
-        refreshUser()
+        if (isEditInfoModalOpen) {
+            refreshUser()
+        }
     }, [isEditInfoModalOpen, refreshUser])
 
     const handleButtonClick = () => {
@@ -81,7 +80,6 @@ function ConnectedUserModal({ onClose }: { onClose: () => void }) {
                         1
                     );
                     window.location.href = `/profile/${hiveUser?.name}`
-
                 } else if (loginMethod === "privateKey") {
                     console.log("write level 2 in profile with privatekey")
                     window.location.href = `/profile/${hiveUser?.name}`
