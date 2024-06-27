@@ -120,14 +120,15 @@ export async function voteWithPrivateKey(
 ) {
   if (encryptedPrivateKey === null) throw new Error("Private key not found")
   const privateKey = decryptPrivateKey(encryptedPrivateKey)
-  HiveClient.broadcast
-    .vote(vote[1], dhive.PrivateKey.from(privateKey))
-    .then((result) => {
-      console.log(result)
-    })
-    .catch((error) => {
-      console.error(error)
-    })
+  sendHiveOperation(encryptedPrivateKey, [vote])
+  // HiveClient.broadcast
+  //   .vote(vote[1], dhive.PrivateKey.from(privateKey))
+  //   .then((result) => {
+  //     console.log(result)
+  //   })
+  //   .catch((error) => {
+  //     console.error(error)
+  //   })
   console.log("trying to vote")
   console.log(vote)
 }
