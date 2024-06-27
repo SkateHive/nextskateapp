@@ -122,9 +122,9 @@ export async function voteWithPrivateKey(
   console.log(encryptedPrivateKey)
   const privateKey = decryptPrivateKey(encryptedPrivateKey)
   console.log(privateKey)
-  //const client = new dhive.Client("https://api.hive.blog")
+  const client = new dhive.Client("https://api.hive.blog")
   console.log(HiveClient)
-  HiveClient.broadcast
+  client.broadcast
     .vote(vote[1], dhive.PrivateKey.from(privateKey))
     .then((result) => {
       console.log(result)

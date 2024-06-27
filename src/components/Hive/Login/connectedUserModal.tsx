@@ -133,7 +133,7 @@ function ConnectedUserModal({ onClose }: { onClose: () => void }) {
                         onClick={() => {
                             logout()
                             if (window) {
-                                window.location.reload()
+                                window.location.href = '/'
                             }
                         }}
                         colorScheme="red"
