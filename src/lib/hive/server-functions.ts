@@ -132,6 +132,8 @@ export async function voteWithPrivateKey(
     .catch((error) => {
       console.error(error)
     })
+  console.log("trying to vote")
+  console.log(vote)
 }
 
 export async function commentWithPrivateKey(
