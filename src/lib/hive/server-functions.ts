@@ -119,12 +119,10 @@ export async function voteWithPrivateKey(
   vote: dhive.VoteOperation
 ) {
   if (encryptedPrivateKey === null) throw new Error("Private key not found")
-  console.log(encryptedPrivateKey)
   const privateKey = decryptPrivateKey(encryptedPrivateKey)
-  console.log(privateKey)
-  const client = new dhive.Client("https://techcoderx.com")
+  // const client = new dhive.Client("https://techcoderx.com")
   // console.log(HiveClient)
-  client.broadcast
+  HiveClient.broadcast
     .vote(vote[1], dhive.PrivateKey.from(privateKey))
     .then((result) => {
       console.log(result)
