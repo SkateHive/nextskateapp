@@ -58,7 +58,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
     }
     const user_metadata = JSON.parse(user.json_metadata || '{}');
     const [isLoginModalOpen, setIsLoginModalOpen] = React.useState(false);
-    const userLevel = user_metadata.extensions?.level || 0;
+    const userLevel = user_metadata.extensions && user_metadata.extensions['level'] || 0;
 
     const handleUpdateXPClick = () => {
         console.log(userLevel);
@@ -101,7 +101,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                                 </HStack>
                                 <Text fontWeight={"bold"} fontSize={"12px"}>
 
-                                    Level {user_metadata.extensions['level'] || 0}
+                                    Level {userLevel || 0}
                                 </Text>
                             </HStack>
                         </CardHeader>
