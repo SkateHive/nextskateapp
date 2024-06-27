@@ -61,7 +61,8 @@ const StepByStep = ({
         userLocation = userMetadata?.profile?.location || ""
         userBio = userMetadata?.profile?.about || ""
         postCount = hiveAccount.post_count
-        userLevel = JSON.parse(hiveAccount.json_metadata)?.extensions?.level
+        // witnessVotes = hiveAccount.witness_votes || []
+        userLevel = JSON.parse(hiveAccount.json_metadata)?.extensions?.level || 0
     } catch (error) {
         console.error("Error parsing user metadata:", error)
     }
@@ -74,21 +75,21 @@ const StepByStep = ({
 
     useEffect(() => {
         if (userProfileName !== "" && userBio !== "" && activeStep === 1) {
-            setStep2Completed(true);
+            setStep2Completed(true)
         }
-    }, [userProfileName, userBio, activeStep, setStep2Completed]);
+    }, [userProfileName, userBio, activeStep, setStep2Completed])
 
     useEffect(() => {
         if (postCount > 0 && activeStep === 2) {
-            setStep3Completed(true);
+            setStep3Completed(true)
         }
-    }, [postCount, activeStep, setStep3Completed]);
+    }, [postCount, activeStep, setStep3Completed])
 
     useEffect(() => {
         if (Array.isArray(witnessVotes) && witnessVotes.includes("skatehive") && activeStep === 3) {
-            setStep4Completed(true);
+            setStep4Completed(true)
         }
-    }, [witnessVotes, activeStep, setStep4Completed]);
+    }, [witnessVotes, activeStep, setStep4Completed])
 
     const steps = [
         { title: "Add Profile Pic", description: activeStep > 0 ? "You look good" : "You look better with a profile pic" },
@@ -129,7 +130,6 @@ const StepByStep = ({
                             <Table w={'100%'} variant={'striped'}>
                                 <Thead >
                                     <Center>
-
                                         <Text fontSize={'26px'}>Current Perks</Text>
                                     </Center>
                                 </Thead>
@@ -146,7 +146,6 @@ const StepByStep = ({
                             <Table color={'red.200'} w={'100%'} variant={'striped'}>
                                 <Thead >
                                     <Center>
-
                                         <Text fontSize={'26px'}>Next Level</Text>
                                     </Center>
                                 </Thead>
@@ -163,7 +162,7 @@ const StepByStep = ({
             case 2:
                 return (
                     <Box>
-                        <Text>Welcome to Level 2! Youre dope!</Text>
+                        <Text>Welcome to Level 2! You're dope!</Text>
                         {/* Add more content specific to Level 2 */}
                     </Box>
                 )
@@ -200,7 +199,7 @@ const StepByStep = ({
                 {renderContent()}
             </HStack>
         </Box>
-    );
+    )
 }
 
 export default StepByStep

@@ -38,17 +38,15 @@ function ConnectedUserModal({ onClose }: { onClose: () => void }) {
             if (isStep1Completed) return 1
             return 0
         })()
+        console.log("newActiveStep", newActiveStep)
 
         if (newActiveStep !== activeStep) {
             setActiveStep(newActiveStep)
+            console.log("activeStep", activeStep)
         }
     }, [isStep1Completed, isStep2Completed, isStep3Completed, isStep4Completed, activeStep, userLevel])
 
-    useEffect(() => {
-        if (isEditInfoModalOpen) {
-            refreshUser()
-        }
-    }, [isEditInfoModalOpen, refreshUser])
+
 
     const handleButtonClick = () => {
         switch (activeStep) {
@@ -57,11 +55,9 @@ function ConnectedUserModal({ onClose }: { onClose: () => void }) {
                 break
             case 1: // user has profile incomplete
                 setIsEditInfoModalOpen(true)
-                refreshUser()
                 break
             case 2: // user never made its first post
                 window.location.reload()
-                refreshUser()
                 break
             case 3:
                 console.log("activeStep 3")
@@ -84,7 +80,6 @@ function ConnectedUserModal({ onClose }: { onClose: () => void }) {
                     console.log("write level 2 in profile with privatekey")
                     window.location.href = `/profile/${hiveUser?.name}`
                 }
-                refreshUser()
                 break
             case 4:
                 window.location.href = `/profile/${hiveUser?.name}`
@@ -105,7 +100,7 @@ function ConnectedUserModal({ onClose }: { onClose: () => void }) {
                     user={hiveUser}
                     isOpen={isEditInfoModalOpen}
                     onClose={() => setIsEditInfoModalOpen(false)}
-                    onUpdate={refreshUser} // Refresh user data after closing the modal
+                    onUpdate={refreshUser}
                 />
             )}
             <ModalHeader>
