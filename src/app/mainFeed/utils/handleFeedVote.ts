@@ -19,9 +19,9 @@ export const handleVote = async (author: string, permlink: string, username: str
     const vote: VoteOperation = [
       "vote",
       {
-        author: author,
-        permlink: permlink,
         voter: username,
+        permlink: permlink,
+        author: author,
         weight: 10000,
       }
     ]

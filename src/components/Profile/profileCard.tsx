@@ -59,13 +59,16 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
     const user_metadata = JSON.parse(user.json_metadata);
     const [isLoginModalOpen, setIsLoginModalOpen] = React.useState(false);
     const userLevel = user_metadata.extensions['level'] || 0;
-    const handleLevelUpClick = () => {
+
+    const handleUpdateXPClick = () => {
         console.log(userLevel);
         if (userLevel < 1) {
             setIsLoginModalOpen(true);
         }
         else {
-            setIsFlipped(true);
+            console.log("Update XP")
+            console.log("User Level: ", userLevel)
+            console.log(user_metadata)
         };
     }
 
@@ -88,15 +91,15 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                         height="430px"
                         backgroundImage='https://i.pinimg.com/originals/18/9f/db/189fdb5d2fc52eac4fa2a6de6edaf222.gif'
                     >
-                        <CardHeader borderBottom={"1px solid white"} borderTopRadius="10px" textAlign="center" bg="green.300" p={2}>
+                        <CardHeader color={'white'} borderBottom={"1px solid white"} borderTopRadius="10px" textAlign="center" bg="transparent" p={2}>
                             <HStack justifyContent={'space-between'}>
                                 <HStack justifyContent={"flex-start"}>
                                     <Image src="/skatehive_square_green.png" alt="Logo" boxSize="36px" />
-                                    <Text fontWeight={"bold"} fontSize={"18px"} color="black">
+                                    <Text fontWeight={"bold"} fontSize={"18px"} >
                                         {user.name}
                                     </Text>
                                 </HStack>
-                                <Text fontWeight={"bold"} fontSize={"12px"} color="black">
+                                <Text fontWeight={"bold"} fontSize={"12px"}>
 
                                     Level {user_metadata.extensions['level'] || 0}
                                 </Text>
@@ -106,7 +109,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                             <CardBody bg={"transparent"}>
                                 <VStack>
                                     <Center>
-                                        <Box borderRadius={14} border={'3px solid limegreen'}>
+                                        <Box borderRadius={14} border={'3px solid black'}>
                                             <UserAvatar hiveAccount={user} borderRadius={10} boxSize={200} />
                                         </Box>
                                     </Center>
@@ -152,15 +155,17 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                                         <Flex justify={"right"}>
 
                                             <Button
+                                                _hover={{ background: "transparent" }}
                                                 leftIcon={<FaHive size={"22px"} />}
-                                                colorScheme="yellow"
+                                                color="yellow.200"
+                                                border={"1px solid white"}
                                                 width={"100%"}
                                                 mt={2}
                                                 variant={"outline"}
                                                 w={"auto"}
-                                                onClick={() => handleLevelUpClick()}
+                                                onClick={() => handleUpdateXPClick()}
                                             >
-                                                Level Up
+                                                Update XP
                                             </Button>
                                         </Flex>
                                     </CardFooter>

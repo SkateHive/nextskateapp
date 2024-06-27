@@ -29,13 +29,12 @@ const ProfileDashboard = ({ user }: ProfileDashboardProps) => {
         });
 
         return (
-            <Box whiteSpace="nowrap">
+            <Box m={10} whiteSpace="nowrap">
                 <Stepper sx={{
                     "&::-webkit-scrollbar": {
                         display: "none",
                     }
                 }}
-
                     overflowX="auto" size='lg' colorScheme='green' index={activeStep}>
                     {steps.map((step, index) => (
                         <Step key={index}>
@@ -60,26 +59,28 @@ const ProfileDashboard = ({ user }: ProfileDashboardProps) => {
     return (
         <Box >
 
-            <Levels />
-            <Center mt={10}>
+            <Center mt={5} mb={8}>
                 <VStack gap={5}>
                     <Flex gap={20} flexDirection={{ base: 'column', lg: 'row' }}>
                         <Box>
-
-                            <ProfileCard user={user} />
-                            <HStack>
-                                <Text fontSize={'26px'}>
-                                    You are in
-                                </Text>
-                                <Tag bg={'limegreen'} color={'black'} fontSize={'26px'}> Level {extensions['level'] || 0}</Tag>
-                            </HStack>
+                            <Center mb={3}>
+                                <VStack>
+                                    <HStack>
+                                        <Text fontSize={'26px'}>
+                                            Total XP:
+                                        </Text>
+                                        <Tag bg={'limegreen'} color={'black'} fontSize={'26px'}> 666 </Tag>
+                                    </HStack>
+                                    <ProfileCard user={user} />
+                                </VStack>
+                            </Center>
                         </Box>
-
                         <LevelMissions user={user} level={userLevel + 1} missions={[]} />
                     </Flex>
-
                 </VStack>
             </Center>
+            <Levels />
+
         </Box>
     );
 }

@@ -50,9 +50,9 @@ export default function Vote() {
       const vote: VoteOperation = [
         "vote",
         {
-          author: post.author,
-          permlink: post.permlink,
           voter: hiveUser.name,
+          permlink: post.permlink,
+          author: post.author,
           weight: voteWeight,
         }
       ]

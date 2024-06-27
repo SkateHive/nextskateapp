@@ -46,3 +46,11 @@ export const dummyMissions: { [key: number]: Mission[] } = {
         { name: "Vote on SkateHive Proposal", xp: 450 }
     ]
 };
+
+
+export const recurringTasks: { [key: number]: Mission[] } = {
+    1: [
+        { name: "Post on Feed", xp: 5 },
+        { name: "Comment on 3 posts", xp: 250 },
+    ]
+};

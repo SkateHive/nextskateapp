@@ -15,8 +15,9 @@ import {
     Tr,
     VStack
 } from "@chakra-ui/react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Mission, dummyMissions } from './missionsData';
+import { Mission, dummyMissions, recurringTasks } from './missionsData';
 
 interface LevelMissionsProps {
     level: number;
@@ -89,10 +90,28 @@ export default function LevelMissions({ level, missions = [], user }: LevelMissi
 
     return (
         <VStack w="100%">
-            <Center>
-                <Tag fontSize="24px">{`Level ${activeLevel}`}</Tag>
-            </Center>
 
+            <HStack>
+                <Button
+                    _hover={{ background: "transparent" }}
+                    variant="ghost"
+                    onClick={handlePrevLevel}
+                    isDisabled={activeLevel <= 1}
+                >
+                    <ArrowLeft color="white" />
+                </Button>
+                <Center>
+                    <Tag fontSize="24px">Missions #{activeLevel}</Tag>
+                </Center>
+                <Button
+                    _hover={{ background: "transparent" }}
+                    variant="ghost"
+                    onClick={handleNextLevel}
+                    isDisabled={activeLevel >= 7}
+                >
+                    <ArrowRight color="white" />
+                </Button>
+            </HStack>
             <TableContainer w="100%">
                 <Box borderRadius="15px" border="1px solid white" minW="100%">
                     <Table variant="unstyled" mt={2} color="white" w="100%">
@@ -128,25 +147,44 @@ export default function LevelMissions({ level, missions = [], user }: LevelMissi
                 </Box>
             </TableContainer>
 
-            <HStack>
-                <Button
-                    _hover={{ background: "transparent" }}
-                    variant="outline"
-                    colorScheme="green"
-                    onClick={handlePrevLevel}
-                    isDisabled={activeLevel <= 1}
-                >
-                    Previous Level
-                </Button>
-                <Button
-                    _hover={{ background: "transparent" }}
-                    variant="outline"
-                    colorScheme="green"
-                    onClick={handleNextLevel}
-                >
-                    Next Level
-                </Button>
-            </HStack>
+            <Center mt={3}>
+                <Tag fontSize="24px">Recurring Tasks</Tag>
+            </Center>
+
+            <TableContainer w="100%">
+                <Box borderRadius="15px" border="1px solid white" minW="100%">
+                    <Table variant="unstyled" mt={2} color="white" w="100%">
+                        <Thead>
+                            <Tr>
+                                <Th w="50%">Task</Th>
+                                <Th w="20%">XP</Th>
+                                <Th w="30%">Action</Th>
+                            </Tr>
+                        </Thead>
+                        <Tbody>
+                            {recurringTasks['1'].map((task, index) => (
+                                <Tr key={index}>
+                                    <Td minWidth="200px" maxWidth="400px">
+                                        <Text as={isMissionCompleted(task.name) ? "s" : "span"}>
+                                            {task.name}
+                                        </Text>
+                                    </Td>
+                                    <Td minWidth="100px" maxWidth="150px">{task.xp}</Td>
+                                    <Td minWidth="150px" maxWidth="200px">
+                                        {isMissionCompleted(task.name) ? (
+                                            <Tag colorScheme="green">Completed</Tag>
+                                        ) : (
+                                            <Button colorScheme="green" h="24px" w="100%">
+                                                Complete
+                                            </Button>
+                                        )}
+                                    </Td>
+                                </Tr>
+                            ))}
+                        </Tbody>
+                    </Table>
+                </Box>
+            </TableContainer>
         </VStack>
     );
 }
