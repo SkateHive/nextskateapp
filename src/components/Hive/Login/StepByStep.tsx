@@ -94,7 +94,7 @@ const StepByStep = ({
     const steps = [
         { title: "Add Profile Pic", description: activeStep > 0 ? "You look good" : "You look better with a profile pic" },
         { title: "Edit Profile", description: activeStep > 1 ? "All set!" : "Complete your profile, bro" },
-        { title: "Make your first Post", description: activeStep > 2 ? "You're Level 1!" : "Introduce yourself to the OGs" },
+        { title: "Make your first Post", description: activeStep > 2 ? "Youre Level 1!" : "Introduce yourself to the OGs" },
     ]
 
     const renderContent = () => {
@@ -162,7 +162,7 @@ const StepByStep = ({
             case 2:
                 return (
                     <Box>
-                        <Text>Welcome to Level 2! You're dope!</Text>
+                        <Text>Welcome to Level 2! Youre dope!</Text>
                         {/* Add more content specific to Level 2 */}
                     </Box>
                 )
