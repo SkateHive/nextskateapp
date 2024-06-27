@@ -1,6 +1,7 @@
 'use client'
 import { HiveAccount } from '@/lib/useHiveAuth';
-import { Box, Center, HStack, Step, StepDescription, StepIndicator, StepSeparator, StepStatus, StepTitle, Stepper, Tag, Text, VStack, useSteps } from '@chakra-ui/react';
+import { Box, Center, Flex, HStack, Step, StepDescription, StepIndicator, StepSeparator, StepStatus, StepTitle, Stepper, Tag, Text, VStack, useSteps } from '@chakra-ui/react';
+import LevelMissions from './levelMissions';
 import ProfileCard from './profileCard';
 
 interface ProfileDashboardProps {
@@ -62,13 +63,21 @@ const ProfileDashboard = ({ user }: ProfileDashboardProps) => {
             <Levels />
             <Center mt={10}>
                 <VStack gap={5}>
-                    <ProfileCard user={user} />
-                    <HStack>
-                        <Text fontSize={'26px'}>
-                            You are in
-                        </Text>
-                        <Tag bg={'limegreen'} color={'black'} fontSize={'26px'}> Level {extensions['level'] || 0}</Tag>
-                    </HStack>
+                    <Flex gap={20} flexDirection={{ base: 'column', lg: 'row' }}>
+                        <Box>
+
+                            <ProfileCard user={user} />
+                            <HStack>
+                                <Text fontSize={'26px'}>
+                                    You are in
+                                </Text>
+                                <Tag bg={'limegreen'} color={'black'} fontSize={'26px'}> Level {extensions['level'] || 0}</Tag>
+                            </HStack>
+                        </Box>
+
+                        <LevelMissions user={user} level={userLevel + 1} missions={[]} />
+                    </Flex>
+
                 </VStack>
             </Center>
         </Box>

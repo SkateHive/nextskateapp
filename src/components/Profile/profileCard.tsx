@@ -86,6 +86,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                         borderRadius="20px"
                         width="100%"
                         height="430px"
+                        backgroundImage='https://i.pinimg.com/originals/18/9f/db/189fdb5d2fc52eac4fa2a6de6edaf222.gif'
                     >
                         <CardHeader borderBottom={"1px solid white"} borderTopRadius="10px" textAlign="center" bg="green.300" p={2}>
                             <HStack justifyContent={'space-between'}>
@@ -111,38 +112,38 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                                     </Center>
                                 </VStack>
                             </CardBody>
-                            <CardFooter mb={-5}>
+                            <CardFooter fontSize={'16px'} fontWeight={'bold'} color={'white'} mb={-5}>
                                 <VStack m={0} w={"100%"}>
                                     <Box border={'1px solid white'} w={200} borderRadius="10px" p={3}>
                                         <HStack justify={"space-between"}>
-                                            <Text color={"white"} fontSize="md">
+                                            <Text >
                                                 Power:
                                             </Text>
-                                            <Text color={"white"} fontSize="md">
+                                            <Text >
                                                 100
                                             </Text>
                                         </HStack>
                                         <HStack justify={"space-between"}>
-                                            <Text cursor={"pointer"} color={"white"} fontSize="md">
+                                            <Text cursor={"pointer"} >
                                                 Gnars: {" "}
                                             </Text>
-                                            <Text cursor={"pointer"} color={"white"} fontSize="md">
+                                            <Text cursor={"pointer"} >
                                                 soon
                                             </Text>
                                         </HStack>
                                         <HStack justify={"space-between"}>
-                                            <Text cursor={"pointer"} color={"white"} fontSize="md">
+                                            <Text cursor={"pointer"} >
                                                 Xp: {" "}
                                             </Text>
-                                            <Text cursor={"pointer"} color={"white"} fontSize="md">
+                                            <Text cursor={"pointer"} >
                                                 soon
                                             </Text>
                                         </HStack>
                                         <HStack justify={"space-between"}>
-                                            <Text cursor={"pointer"} color={"white"} fontSize="md">
+                                            <Text cursor={"pointer"} >
                                                 Video Parts: {" "}
                                             </Text>
-                                            <Text cursor={"pointer"} color={"white"} fontSize="md">
+                                            <Text cursor={"pointer"}>
                                                 soon
                                             </Text>
                                         </HStack>
@@ -176,9 +177,11 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                         size="sm"
                         color={"white"}
                         p={2}
+                        boxShadow="inset 0 0 30px #333, inset 10px 0 40px black, inset -10px 0 40px #003366, inset 10px 0 150px black, inset -10px 0 150px green, 0 0 30px #333, -5px 0 300px limegreen, 5px 0 40px #004d00"
                         borderRadius="20px"
                         width="100%"
                         height="100%"
+                        backgroundImage='https://i.pinimg.com/originals/18/9f/db/189fdb5d2fc52eac4fa2a6de6edaf222.gif'
                     >
                         <CardHeader borderBottom={"1px solid white"} borderTopRadius="10px" textAlign="center" bg="gray.900" p={2}>
                             <HStack justify={"center"}>
@@ -191,7 +194,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                             SOON !
                         </CardBody>
                         <CardFooter>
-                            <Button leftIcon={<FaArrowDown />} colorScheme="yellow" size="sm" variant={"outline"} w={"auto"} onClick={() => setIsFlipped(false)}>
+                            <Button leftIcon={<FaArrowDown />} size="sm" variant={"outline"} w={"auto"} onClick={() => setIsFlipped(false)}>
                                 Back
                             </Button>
                         </CardFooter>
