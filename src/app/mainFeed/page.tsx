@@ -268,11 +268,14 @@ const SkateCast = () => {
     <VStack
       id="scrollableDiv"
       overflowY="auto"
-      css={{ "&::-webkit-scrollbar": { display: "none" } }}
+      css={{
+        "&::-webkit-scrollbar": { display: "none" },
+        scrollbarWidth: "none", // For Firefox
+      }}
       maxW={"740px"}
       width={"100%"}
       borderInline={"1px solid rgb(255,255,255,0.2)"}
-      height={"100vh"}
+      height={"101vh"}
     >
       <AvatarMediaModal
         isOpen={mediaModalOpen}

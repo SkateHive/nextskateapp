@@ -22,6 +22,7 @@ export default function PostSkeleton() {
       }}
       bg={"black"}
       p={2}
+      m={2}
     >
       <CardHeader pb={0}>
         <Flex gap="4" align={"end"}>
