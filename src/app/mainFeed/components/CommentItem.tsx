@@ -18,10 +18,11 @@ import {
   HStack,
   Text,
   Tooltip,
-  VStack,
+  VStack
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { FaEye, FaHeart, FaRegComment, FaRegHeart } from "react-icons/fa";
+import { FaPencil } from "react-icons/fa6";
 import ReactMarkdown from "react-markdown";
 import { useReward } from "react-rewards";
 import rehypeRaw from "rehype-raw";
@@ -134,7 +135,7 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
 
   const [visiblePosts, setVisiblePosts] = useState(5);
 
-  const {voteValue} = useHiveUser();
+  const { voteValue } = useHiveUser();
 
   return (
     <Box key={comment.id} p={4} width="100%" bg="black" color="white">
@@ -183,8 +184,27 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
 
       {/* Buttons */}
       <Flex ml={14} justifyContent={"space-between"}>
-        <TipButton author={comment.author} />
+        {comment.author === username ? (
+          <Button
+            _hover={{
+              background: "transparent",
+              color: "green.200",
+            }}
+            colorScheme="green"
+            variant="ghost"
+            leftIcon={<FaPencil />}
+            onClick={() => window.alert('soon')}
+            aria-label="Comments"
+          >
+          </Button>
+        ) : (
+          <TipButton author={comment.author} />
+        )}
         <Button
+          _hover={{
+            background: "transparent",
+            color: "green.200",
+          }}
           colorScheme="green"
           variant="ghost"
           leftIcon={<FaRegComment />}
@@ -226,7 +246,7 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
           <CommentList
             comments={commentReplies.comments}
             visiblePosts={visiblePosts}
-            setVisiblePosts={() => {}}
+            setVisiblePosts={() => { }}
             username={username}
             handleVote={handleVote}
           />

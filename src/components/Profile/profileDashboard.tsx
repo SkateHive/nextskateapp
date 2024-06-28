@@ -1,17 +1,22 @@
-'use client'
+'use client';
 import { HiveAccount } from '@/lib/useHiveAuth';
 import { Box, Center, Flex, HStack, Step, StepDescription, StepIndicator, StepSeparator, StepStatus, StepTitle, Stepper, Tag, Text, VStack, useSteps } from '@chakra-ui/react';
+import { useCallback, useState } from 'react';
 import LevelMissions from './levelMissions';
 import ProfileCard from './profileCard';
 
 interface ProfileDashboardProps {
-    user: HiveAccount
+    user: HiveAccount;
 }
 
 const ProfileDashboard = ({ user }: ProfileDashboardProps) => {
     const user_metadata = JSON.parse(user.json_metadata || '{}');
     const extensions = user_metadata.extensions;
-    const userLevel = extensions && extensions['level'] || 0;
+    const userLevel = extensions?.level || 0;
+    const userXp = extensions?.xp || 0;
+
+    const [availableXp, setAvailableXp] = useState(userXp);
+
     const steps = [
         { title: 'Level 1', description: 'current' },
         { title: 'Level 2', description: 'min. 180 xp' },
@@ -22,9 +27,14 @@ const ProfileDashboard = ({ user }: ProfileDashboardProps) => {
         { title: 'Level 7', description: 'min. 1080 xp' },
     ];
 
+    const updateAvailableXp = useCallback((xp: number) => {
+        console.log(`Updating available XP to: ${xp}`);
+        setAvailableXp(xp);
+    }, []);
+
     function Levels() {
         const { activeStep } = useSteps({
-            index: userLevel - 1 || 0, // Make sure the active step matches the user level
+            index: userLevel - 1 || 0,
             count: steps.length,
         });
 
@@ -56,8 +66,7 @@ const ProfileDashboard = ({ user }: ProfileDashboardProps) => {
     }
 
     return (
-        <Box >
-
+        <Box>
             <Center mt={5} mb={8}>
                 <VStack gap={5}>
                     <Flex gap={20} flexDirection={{ base: 'column', lg: 'row' }}>
@@ -68,18 +77,19 @@ const ProfileDashboard = ({ user }: ProfileDashboardProps) => {
                                         <Text fontSize={'26px'}>
                                             Total XP:
                                         </Text>
-                                        <Tag bg={'limegreen'} color={'black'} fontSize={'26px'}> 666 </Tag>
+                                        <Tag bg={'limegreen'} color={'black'} fontSize={'26px'}>{availableXp}</Tag>
                                     </HStack>
                                     <ProfileCard user={user} />
                                 </VStack>
                             </Center>
                         </Box>
-                        <LevelMissions user={user} level={userLevel + 1} missions={[]} />
+                        <Box>
+                            <LevelMissions user={user} initialLevel={userLevel + 1} updateAvailableXp={updateAvailableXp} />
+                        </Box>
                     </Flex>
                 </VStack>
             </Center>
             <Levels />
-
         </Box>
     );
 }

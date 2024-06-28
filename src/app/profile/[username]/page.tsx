@@ -20,7 +20,7 @@ export default function ProfilePage({ params }: ProfilePageProps) {
     </Center>
   </Box>
   return (
-    <Box h={'101vh'} color={"white"} w={{ base: "100%", lg: "80%" }}
+    <Box h={'101vh'} color={"white"} w={{ base: "100%", lg: "80vh" }}
     >
       <ProfileHeader user={hiveAccount} />
       <ProfileTabs user={hiveAccount} />

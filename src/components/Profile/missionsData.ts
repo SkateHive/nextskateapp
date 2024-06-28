@@ -5,9 +5,9 @@ export interface Mission {
 
 export const dummyMissions: { [key: number]: Mission[] } = {
     1: [
-        { name: "Add Profile Picture", xp: 100 },
-        { name: "Complete Profile", xp: 200 },
-        { name: "Make your first post", xp: 300 }
+        { name: "Add Profile Picture", xp: 30 },
+        { name: "Complete Profile", xp: 60 },
+        { name: "Make your first post", xp: 90 }
     ],
     2: [
         { name: "Vote on Skatehive Witness", xp: 150 },
@@ -16,7 +16,7 @@ export const dummyMissions: { [key: number]: Mission[] } = {
         { name: "Vote on SkateHive Proposal", xp: 450 }
     ],
     3: [
-        { name: "Vote on Skatehive Witness", xp: 150 },
+        { name: "Do a kickflip", xp: 150 },
         { name: "Sink Daryls Boat", xp: 250 },
         { name: "Make web gnar cry", xp: 350 },
         { name: "Fart in KnowHows Face", xp: 450 }
@@ -40,7 +40,7 @@ export const dummyMissions: { [key: number]: Mission[] } = {
         { name: "Vote on SkateHive Proposal", xp: 450 }
     ],
     7: [
-        { name: "Vote on Skatehive Witness", xp: 150 },
+        { name: "Vote on Skatehisdve Witness", xp: 150 },
         { name: "Add Ethereum Address", xp: 250 },
         { name: "More than 5 Posts", xp: 350 },
         { name: "Vote on SkateHive Proposal", xp: 450 }

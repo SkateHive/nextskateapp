@@ -16,54 +16,91 @@ import {
     VStack
 } from "@chakra-ui/react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Mission, dummyMissions, recurringTasks } from './missionsData';
 
 interface LevelMissionsProps {
-    level: number;
-    missions?: Mission[];
+    initialLevel: number;
     user: HiveAccount;
+    updateAvailableXp: (xp: number) => void;
 }
 
-export default function LevelMissions({ level, missions = [], user }: LevelMissionsProps) {
-    const [activeLevel, setActiveLevel] = useState(level);
+export default function LevelMissions({ initialLevel, user, updateAvailableXp }: LevelMissionsProps) {
+    const [activeLevel, setActiveLevel] = useState(initialLevel);
     const [activeMissions, setActiveMissions] = useState<Mission[]>([]);
     const user_posting_metadata = JSON.parse(user.posting_json_metadata);
+    const user_has_voted_in_skatehive_witness = user.witness_votes.includes("skatehive");
+    const [user_has_ethereum_address, setUserHasEthereumAddress] = useState(false);
 
     const [completedMissions, setCompletedMissions] = useState({
         hasProfilePic: false,
         hasCompletedProfile: false,
         hasPosted: false,
-        hasCompletedLevel1: false
+        hasCompletedLevel1: false,
+        hasVotedForSkateHiveWitness: false,
+        hasAddedEthereumAddress: false,
+        hasMoreThanFivePosts: false,
+        hasVotedOnSkateHiveProposal: false,
     });
 
+    const calculateTotalXp = useCallback(() => {
+        let totalXp = 0;
+        const completedMissionSet = new Set<string>();
+
+        for (let level in dummyMissions) {
+            const missions = dummyMissions[level];
+            missions.forEach(mission => {
+                if (isMissionCompleted(mission.name) && !completedMissionSet.has(mission.name)) {
+                    completedMissionSet.add(mission.name);
+                    totalXp += mission.xp;
+                    console.log(`Adding ${mission.xp} XP for ${mission.name}`);
+                }
+            });
+        }
+        console.log(`Calculated Total XP: ${totalXp}`);
+        return totalXp;
+    }, [completedMissions]);
+
     useEffect(() => {
+        console.log("Setting initial completed missions based on user data");
+        const newCompletedMissions = { ...completedMissions };
+
         if (user_posting_metadata) {
-            console.log("Profile Pic", user_posting_metadata);
-            setCompletedMissions(prev => ({ ...prev, hasProfilePic: true }));
+            newCompletedMissions.hasProfilePic = !!user_posting_metadata.profile?.profile_image;
         }
         if (user_posting_metadata?.profile?.name && user_posting_metadata?.profile?.about) {
-            console.log("Profile", user_posting_metadata?.profile);
-            setCompletedMissions(prev => ({ ...prev, hasCompletedProfile: true }));
+            newCompletedMissions.hasCompletedProfile = true;
         }
         if (user?.last_post) {
-            console.log("Last Post", user?.last_post);
-            setCompletedMissions(prev => ({ ...prev, hasPosted: true }));
+            newCompletedMissions.hasPosted = true;
         }
         if (user_posting_metadata?.extensions?.level >= 1) {
-            console.log("Level 1", user_posting_metadata?.extensions?.level);
-            setCompletedMissions(prev => ({ ...prev, hasCompletedLevel1: true }));
+            newCompletedMissions.hasCompletedLevel1 = true;
         }
-    }, []);
+        if (user_has_voted_in_skatehive_witness) {
+            newCompletedMissions.hasVotedForSkateHiveWitness = true;
+        }
+        if (user.json_metadata && JSON.parse(user.json_metadata).extensions && JSON.parse(user.json_metadata).extensions.eth_address) {
+            setUserHasEthereumAddress(true);
+            newCompletedMissions.hasAddedEthereumAddress = true;
+        }
+
+        setCompletedMissions(newCompletedMissions);
+        console.log(newCompletedMissions);
+    }, [user]);
 
     useEffect(() => {
-        setActiveLevel(level);
-        setActiveMissions(missions.length > 0 ? missions : dummyMissions[level] || []);
-    }, [level, missions]);
-
-    useEffect(() => {
+        console.log(`Active Level Changed: ${activeLevel}`);
         setActiveMissions(dummyMissions[activeLevel] || []);
     }, [activeLevel]);
+
+    useEffect(() => {
+        const calculateTotalXpAsync = async () => {
+            const totalXp = await calculateTotalXp();
+            updateAvailableXp(totalXp);
+        };
+        calculateTotalXpAsync();
+    }, [completedMissions, calculateTotalXp, updateAvailableXp]);
 
     const handlePrevLevel = () => {
         if (activeLevel > 1) {
@@ -78,11 +115,20 @@ export default function LevelMissions({ level, missions = [], user }: LevelMissi
     const isMissionCompleted = (missionName: string) => {
         switch (missionName) {
             case "Add Profile Picture":
+                console.log(`Checking if hasProfilePic is true: ${completedMissions.hasProfilePic}`);
                 return completedMissions.hasProfilePic;
             case "Complete Profile":
                 return completedMissions.hasCompletedProfile;
             case "Make your first post":
                 return completedMissions.hasPosted;
+            case "Vote on Skatehive Witness":
+                return completedMissions.hasVotedForSkateHiveWitness;
+            case "Add Ethereum Address":
+                return completedMissions.hasAddedEthereumAddress;
+            case "More than 5 Posts":
+                return completedMissions.hasMoreThanFivePosts;
+            case "Vote on SkateHive Proposal":
+                return completedMissions.hasVotedOnSkateHiveProposal;
             default:
                 return false;
         }
@@ -90,7 +136,6 @@ export default function LevelMissions({ level, missions = [], user }: LevelMissi
 
     return (
         <VStack w="100%">
-
             <HStack>
                 <Button
                     _hover={{ background: "transparent" }}
@@ -101,7 +146,7 @@ export default function LevelMissions({ level, missions = [], user }: LevelMissi
                     <ArrowLeft color="white" />
                 </Button>
                 <Center>
-                    <Tag fontSize="24px">Missions #{activeLevel}</Tag>
+                    <Tag colorScheme="green" fontSize="24px">Missions #{activeLevel}</Tag>
                 </Center>
                 <Button
                     _hover={{ background: "transparent" }}
@@ -117,26 +162,24 @@ export default function LevelMissions({ level, missions = [], user }: LevelMissi
                     <Table variant="unstyled" mt={2} color="white" w="100%">
                         <Thead>
                             <Tr>
-                                <Th w="50%">Mission</Th>
-                                <Th w="20%">XP</Th>
-                                <Th w="30%">Action</Th>
+                                <Th w="50%"><Center>Mission</Center></Th>
+                                <Th w="30%"><Center> Reward</Center></Th>
                             </Tr>
                         </Thead>
-                        <Tbody>
+                        <Tbody overflowX={'auto'}>
                             {activeMissions.map((mission, index) => (
                                 <Tr key={index}>
-                                    <Td minWidth="200px" maxWidth="400px">
+                                    <Td minWidth="150px" maxWidth="200px">
                                         <Text as={isMissionCompleted(mission.name) ? "s" : "span"}>
                                             {mission.name}
                                         </Text>
                                     </Td>
-                                    <Td minWidth="100px" maxWidth="150px">{mission.xp}</Td>
                                     <Td minWidth="150px" maxWidth="200px">
                                         {isMissionCompleted(mission.name) ? (
                                             <Tag colorScheme="green">Completed</Tag>
                                         ) : (
                                             <Button colorScheme="green" h="24px" w="100%">
-                                                Complete
+                                                {mission.xp} XP
                                             </Button>
                                         )}
                                     </Td>
@@ -148,7 +191,7 @@ export default function LevelMissions({ level, missions = [], user }: LevelMissi
             </TableContainer>
 
             <Center mt={3}>
-                <Tag fontSize="24px">Recurring Tasks</Tag>
+                <Tag colorScheme="green" fontSize="24px">Recurring Tasks</Tag>
             </Center>
 
             <TableContainer w="100%">
@@ -156,9 +199,8 @@ export default function LevelMissions({ level, missions = [], user }: LevelMissi
                     <Table variant="unstyled" mt={2} color="white" w="100%">
                         <Thead>
                             <Tr>
-                                <Th w="50%">Task</Th>
-                                <Th w="20%">XP</Th>
-                                <Th w="30%">Action</Th>
+                                <Th w="50%"> <Center> Task</Center></Th>
+                                <Th w="30%"> <Center> Action</Center></Th>
                             </Tr>
                         </Thead>
                         <Tbody>
@@ -169,13 +211,12 @@ export default function LevelMissions({ level, missions = [], user }: LevelMissi
                                             {task.name}
                                         </Text>
                                     </Td>
-                                    <Td minWidth="100px" maxWidth="150px">{task.xp}</Td>
                                     <Td minWidth="150px" maxWidth="200px">
                                         {isMissionCompleted(task.name) ? (
                                             <Tag colorScheme="green">Completed</Tag>
                                         ) : (
                                             <Button colorScheme="green" h="24px" w="100%">
-                                                Complete
+                                                {task.xp} XP
                                             </Button>
                                         )}
                                     </Td>
