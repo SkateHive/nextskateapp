@@ -1,8 +1,8 @@
 import { useHiveUser } from "@/contexts/UserContext"
 import * as dhive from "@hiveio/dhive"
-import HiveClient from "./hive/hiveclient"
-import { hiveServerLoginWithPassword, communitySubscribePassword } from "./hive/server-functions"
 import { checkCommunitySubscription, communitySubscribeKeyChain } from "./hive/client-functions"
+import HiveClient from "./hive/hiveclient"
+import { communitySubscribePassword, hiveServerLoginWithPassword } from "./hive/server-functions"
 
 interface HiveKeychainResponse {
   success: boolean
@@ -15,7 +15,7 @@ interface MetadataProps {
 }
 
 export interface HiveAccount extends dhive.Account {
-
+  witness_votes: string[]
   metadata?: MetadataProps
 }
 
@@ -103,7 +103,7 @@ function useAuthHiveUser(): AuthUser {
           if (!isSubscribed && key) {
             //console.log("not subscribed!!")
             await communitySubscribePassword(key, username)
-          } 
+          }
         } else {
           console.error(validation.message)
           return reject(validation.message)
@@ -158,7 +158,7 @@ function useAuthHiveUser(): AuthUser {
                     if (!isSubscribed) {
                       //console.log("not subscribed!!")
                       await communitySubscribeKeyChain(username)
-                    } 
+                    }
                     resolve()
                   } else {
                     reject("Verification failed: signature mismatch.")
