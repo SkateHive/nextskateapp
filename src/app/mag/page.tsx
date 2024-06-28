@@ -35,6 +35,7 @@ export default function Mag() {
   if (isLoading || !posts) {
     return (
       <Box
+        w={"100%"}
         height={"101vh"}
         overflow={"auto"}
         sx={{
