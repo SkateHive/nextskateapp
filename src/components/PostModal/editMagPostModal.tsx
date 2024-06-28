@@ -1,21 +1,16 @@
 'use client'
-import { Flex, Button, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Textarea, Input, ModalFooter, Image, Box, Center, HStack, Text, Divider } from '@chakra-ui/react';
-import { diff_match_patch } from 'diff-match-patch';
-import { useMediaQuery } from '@chakra-ui/react';
-import React, { Fragment, useState } from 'react';
+import PostPreview from '@/app/upload/components/PostPreview';
+import { MarkdownRenderers } from '@/app/upload/utils/MarkdownRenderers';
+import { sendHiveOperation } from '@/lib/hive/server-functions';
 import PostModel from '@/lib/models/post';
-import { useEffect } from 'react';
+import { Box, Button, Center, Flex, HStack, Image, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, Textarea, useMediaQuery } from '@chakra-ui/react';
+import { Operation } from '@hiveio/dhive';
+import { diff_match_patch } from 'diff-match-patch';
+import { Fragment, useEffect, useState } from 'react';
 import { FaEye } from 'react-icons/fa';
 import ReactMarkdown from 'react-markdown';
-import { MarkdownRenderers } from '@/app/upload/utils/MarkdownRenderers';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
-import Post from '../PostCard';
-import PostPreview from '@/app/upload/components/PostPreview';
-import { set } from 'lodash';
-import { on } from 'events';
-import { Operation } from '@hiveio/dhive';
-import { sendHiveOperation } from '@/lib/hive/server-functions';
 
 interface editModalProps {
     isOpen: boolean;
@@ -106,7 +101,7 @@ export const EditModal = ({ isOpen, onClose, post, username }: editModalProps) =
                     : editedContent;
             console.log('patchedContent', patchedContent);
             const user_name = String(username)
-            const operation: Operation = 
+            const operation: Operation =
                 [
                     'comment',
                     {
@@ -125,8 +120,8 @@ export const EditModal = ({ isOpen, onClose, post, username }: editModalProps) =
 
             const loginMethod = localStorage.getItem("LoginMethod")
             if (!user_name) {
-              console.error("Username is missing")
-              return
+                console.error("Username is missing")
+                return
             }
             if (loginMethod === "keychain") {
                 window.hive_keychain.requestBroadcast(username, operations, 'posting', (response: any) => {
@@ -139,8 +134,8 @@ export const EditModal = ({ isOpen, onClose, post, username }: editModalProps) =
                     }
                 });
             } else if (loginMethod === "privateKey") {
-              const encryptedPrivateKey = localStorage.getItem("EncPrivateKey");
-              sendHiveOperation (encryptedPrivateKey, operations)
+                const encryptedPrivateKey = localStorage.getItem("EncPrivateKey");
+                sendHiveOperation(encryptedPrivateKey, operations)
             }
 
         } else {
@@ -153,7 +148,7 @@ export const EditModal = ({ isOpen, onClose, post, username }: editModalProps) =
     const handlePreview = () => {
         setIsPreview(!isPreview);
     }
-
+    const date = String(Date.now());
     let postDataForPreview = {
         post_id: Number(1),
         author: post.author || "skatehive",
@@ -161,7 +156,7 @@ export const EditModal = ({ isOpen, onClose, post, username }: editModalProps) =
         title: post.title,
         body: editedContent,
         json_metadata: JSON.stringify({ images: [selectedThumbnail] }),
-        created: String(Date.now()),
+        created: date,
         url: 'url',
         root_title: 'root_title',
         total_payout_value: '4.20',
@@ -176,12 +171,12 @@ export const EditModal = ({ isOpen, onClose, post, username }: editModalProps) =
 
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} size={{ base: "lg", md: "2xl", lg: "6xl" }} >
+        <Modal isOpen={isOpen} onClose={onClose} size={{ base: "lg", md: "2xl", lg: "6xl" }}  >
             <ModalOverlay />
             {isPreview ? (
-                <ModalContent bg={'black'} border={"1px solid limegreen"}>
+                <ModalContent bg={'black'} color={'white'} border={"1px solid limegreen"}>
                     <ModalHeader>
-                        <Center>Edit Preview</Center>
+                        <Center>Preview</Center>
                     </ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
@@ -192,8 +187,16 @@ export const EditModal = ({ isOpen, onClose, post, username }: editModalProps) =
 
                             <FaEye onClick={handlePreview} size={'28px'} />
                         </HStack>
-                        <Divider my={4} />
-                        <Box p={2} border={'2px dashed red'} overflow={'auto'} h={{ base: "200px", md: "400px", lg: "600px" }}
+                        <Box >
+                            <PostPreview postData={postDataForPreview} />
+                        </Box>
+                        <Box p={2} mb={2} borderRadius={'10px'} border={'2px solid white'} >
+                            <Center>
+
+                                <Text> {post.title}</Text>
+                            </Center>
+                        </Box>
+                        <Box p={2} borderRadius={'10px'} border={'2px solid white'} overflow={'auto'} h={{ base: "300px", md: "400px", lg: "600px" }}
                         >
                             <ReactMarkdown
                                 rehypePlugins={[rehypeRaw]}
@@ -201,28 +204,7 @@ export const EditModal = ({ isOpen, onClose, post, username }: editModalProps) =
                                 components={MarkdownRenderers}
                             >{editedContent}</ReactMarkdown>
                         </Box>
-                        <Divider my={4} />
-                        <HStack>
-                            <Box w={'100%'} textAlign={'center'}>
-                                <Text color={'green.200'} fontSize={'2xl'} mb={4}> Selected Thumbnail </Text>
-                                {postImages && postImages.length > 0 && (
-                                    <Center>
-                                        <Image
-                                            src={selectedThumbnail || postImages[0]}
-                                            alt="Thumbnail"
-                                            style={{
-                                                objectFit: 'cover',
-                                                width: '40%',
-                                                borderRadius: '5px',
-                                            }}
-                                        />
-                                    </Center>
-                                )}
-                            </Box>
-                            <Box w={'50%'}>
-                                <PostPreview postData={postDataForPreview} />
-                            </Box>
-                        </HStack>
+
                     </ModalBody>
                     <ModalFooter>
                         <Button onClick={handlePreview} colorScheme="blue">
@@ -234,7 +216,7 @@ export const EditModal = ({ isOpen, onClose, post, username }: editModalProps) =
                     </ModalFooter>
                 </ModalContent>
             ) : (
-                <ModalContent bg={'black'} border={"1px solid limegreen"}>
+                <ModalContent color={'white'} bg={'black'} border={"1px solid limegreen"}>
                     <ModalHeader>
                         <Center>Edit</Center>
                     </ModalHeader>

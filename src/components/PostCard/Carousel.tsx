@@ -35,26 +35,37 @@ function PostCarousel() {
     videoLinks = [...iframeLinks, ...tSpeakLinks]
   }
 
-  const filteredImages = imageLinks.filter(
-    (image) =>
-      ![SKATEHIVE_DISCORD_IMAGE, SKATEHIVE_LOGO].includes(image.url)
-  )
+  // Create a Set to filter out duplicate image URLs
+  const uniqueImageUrls = new Set()
+  const filteredImages = imageLinks.filter((image) => {
+    if (
+      ![SKATEHIVE_DISCORD_IMAGE, SKATEHIVE_LOGO].includes(image.url) &&
+      !uniqueImageUrls.has(image.url)
+    ) {
+      uniqueImageUrls.add(image.url)
+      return true
+    }
+    return false
+  })
 
   // Add a placeholder image if filteredImages is empty
   if (filteredImages.length === 0) {
-    filteredImages.push({ domain: 'skatehive.app', url: 'https://ipfs.skatehive.app/ipfs/QmWgkeX38hgWNh7cj2mTvk8ckgGK3HSB5VeNn2yn9BEnt7?pinataGatewayToken=nxHSFa1jQsiF7IHeXWH-gXCY3LDLlZ7Run3aZXZc8DRCfQz4J4a94z9DmVftXyFE' })
+    filteredImages.push({
+      domain: "skatehive.app",
+      url: "https://ipfs.skatehive.app/ipfs/QmWgkeX38hgWNh7cj2mTvk8ckgGK3HSB5VeNn2yn9BEnt7?pinataGatewayToken=nxHSFa1jQsiF7IHeXWH-gXCY3LDLlZ7Run3aZXZc8DRCfQz4J4a94z9DmVftXyFE",
+    })
   }
 
-  const carouselRef = useRef<any>(null);
+  const carouselRef = useRef<any>(null)
 
   const handleImageClick = () => {
     if (carouselRef.current) {
-      carouselRef.current.next();
+      carouselRef.current.next()
     }
-  };
+  }
 
   return (
-    <div style={{ justifyContent: 'center' }}>
+    <div style={{ justifyContent: "center" }}>
       <Box m={2} height={"auto"}>
         <Carousel ref={carouselRef} responsive={responsive}>
           {videoLinks.map((video, i) => (
