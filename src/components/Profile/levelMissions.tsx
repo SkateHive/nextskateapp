@@ -57,12 +57,12 @@ export default function LevelMissions({ initialLevel, user, updateAvailableXp }:
                 }
             });
         }
-        console.log(`Calculated Total XP: ${totalXp}`);
+        // console.log(`Calculated Total XP: ${totalXp}`);
         return totalXp;
     }, [completedMissions]);
 
     useEffect(() => {
-        console.log("Setting initial completed missions based on user data");
+        // console.log("Setting initial completed missions based on user data");
         const newCompletedMissions = { ...completedMissions };
 
         if (user_posting_metadata) {
@@ -86,11 +86,11 @@ export default function LevelMissions({ initialLevel, user, updateAvailableXp }:
         }
 
         setCompletedMissions(newCompletedMissions);
-        console.log(newCompletedMissions);
+        // console.log(newCompletedMissions);
     }, [user]);
 
     useEffect(() => {
-        console.log(`Active Level Changed: ${activeLevel}`);
+        // console.log(`Active Level Changed: ${activeLevel}`);
         setActiveMissions(dummyMissions[activeLevel] || []);
     }, [activeLevel]);
 
@@ -115,7 +115,7 @@ export default function LevelMissions({ initialLevel, user, updateAvailableXp }:
     const isMissionCompleted = (missionName: string) => {
         switch (missionName) {
             case "Add Profile Picture":
-                console.log(`Checking if hasProfilePic is true: ${completedMissions.hasProfilePic}`);
+                // console.log(`Checking if hasProfilePic is true: ${completedMissions.hasProfilePic}`);
                 return completedMissions.hasProfilePic;
             case "Complete Profile":
                 return completedMissions.hasCompletedProfile;

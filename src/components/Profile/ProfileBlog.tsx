@@ -8,6 +8,7 @@ import { Box, Flex, Grid } from "@chakra-ui/react"
 import { useState } from "react"
 import InfiniteScroll from "react-infinite-scroll-component"
 import { BeatLoader } from "react-spinners"
+import PostSkeleton from "../PostCard/Skeleton"
 
 
 interface ProfilePageProps {
@@ -18,7 +19,38 @@ export default function ProfileBlog({ user }: ProfilePageProps) {
   const [visiblePosts, setVisiblePosts] = useState(20)
   const { hiveAccount } = useHiveAccount(user.name)
   const { posts, queryCategory } = usePosts("blog", [{ tag: user.name, limit: 100 }])
-  if (!hiveAccount || !posts) return <div>Loading...</div>
+
+  if (!hiveAccount || !posts)
+    return (
+      <Box
+        w={"100%"}
+        height={"101vh"}
+        overflow={"auto"}
+        sx={{
+          "::-webkit-scrollbar": {
+            display: "none",
+          },
+        }}
+      >
+
+        <Grid
+          p={1}
+          templateColumns={{
+            base: "repeat(1, 1fr)",
+            md: "repeat(2, 1fr)",
+            lg: "repeat(3, 1fr)",
+            xl: "repeat(3, 1fr)",
+          }}
+          gap={0}
+          minHeight="100vh"
+          width={"100%"}
+        >
+          {Array.from({ length: visiblePosts }).map((_, i) => (
+            <PostSkeleton key={i} />
+          ))}
+        </Grid>
+      </Box>
+    )
 
   return (
     <Box width="100%" minHeight="100vh">

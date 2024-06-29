@@ -9,6 +9,7 @@ import {
   formatDate,
   getTotalPayout,
   transformIPFSContent,
+  transformNormalYoutubeLinksinIframes,
   transformShortYoutubeLinksinIframes,
 } from "@/lib/utils";
 import {
@@ -174,9 +175,9 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
               rehypePlugins={[rehypeRaw]}
               remarkPlugins={[remarkGfm]}
             >
-              {transformIPFSContent(
+              {transformNormalYoutubeLinksinIframes(transformIPFSContent(
                 transformShortYoutubeLinksinIframes(comment.body),
-              )}
+              ))}
             </ReactMarkdown>
           </Box>
         </VStack>

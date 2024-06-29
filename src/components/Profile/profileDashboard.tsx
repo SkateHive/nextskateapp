@@ -1,7 +1,9 @@
 'use client';
+import { updateProfile } from '@/lib/hive/client-functions';
 import { HiveAccount } from '@/lib/useHiveAuth';
-import { Box, Center, Flex, HStack, Step, StepDescription, StepIndicator, StepSeparator, StepStatus, StepTitle, Stepper, Tag, Text, VStack, useSteps } from '@chakra-ui/react';
+import { Box, Button, Center, Flex, HStack, Step, StepDescription, StepIndicator, StepSeparator, StepStatus, StepTitle, Stepper, Tag, Text, VStack, useSteps } from '@chakra-ui/react';
 import { useCallback, useState } from 'react';
+import { FaHive } from 'react-icons/fa';
 import LevelMissions from './levelMissions';
 import ProfileCard from './profileCard';
 
@@ -11,10 +13,11 @@ interface ProfileDashboardProps {
 
 const ProfileDashboard = ({ user }: ProfileDashboardProps) => {
     const user_metadata = JSON.parse(user.json_metadata || '{}');
+    const user_posting_metadata = JSON.parse(user.posting_json_metadata || '{}');
     const extensions = user_metadata.extensions;
     const userLevel = extensions?.level || 0;
-    const userXp = extensions?.xp || 0;
-
+    const userXp = extensions?.staticXp || 0;
+    console.log(userXp)
     const [availableXp, setAvailableXp] = useState(userXp);
 
     const steps = [
@@ -64,6 +67,26 @@ const ProfileDashboard = ({ user }: ProfileDashboardProps) => {
             </Box>
         );
     }
+    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+    const handleUpdateXPClick = () => {
+        const loginMethod = localStorage.getItem('LoginMethod');
+
+        if (userLevel < 1) {
+            setIsLoginModalOpen(true);
+        }
+        else {
+            console.log("User Level: ", userLevel)
+            console.log(user_posting_metadata)
+            if (loginMethod === 'keychain') {
+
+                updateProfile(String(user.name), user_posting_metadata.profile.name, user_posting_metadata.profile.about, user_posting_metadata.profile.location, user_posting_metadata.profile.cover_image, user_posting_metadata.profile.profile_image, user_posting_metadata.profile.website, user_metadata.extensions.eth_address, user_metadata.extensions.video_parts, userLevel, availableXp, user_metadata.extensions.cumulativeXp);
+            }
+            else if (loginMethod === 'privatekey') {
+                // updateAvailableXp(100);
+            }
+
+        };
+    }
 
     return (
         <Box>
@@ -77,9 +100,22 @@ const ProfileDashboard = ({ user }: ProfileDashboardProps) => {
                                         <Text fontSize={'26px'}>
                                             Total XP:
                                         </Text>
-                                        <Tag bg={'limegreen'} color={'black'} fontSize={'26px'}>{availableXp}</Tag>
+                                        <Tag bg={'limegreen'} color={'black'} fontSize={'26px'}> {userXp}/{availableXp}</Tag>
                                     </HStack>
                                     <ProfileCard user={user} />
+                                    <Button
+                                        _hover={{ background: "transparent" }}
+                                        leftIcon={<FaHive size={"22px"} />}
+                                        color="yellow.200"
+                                        border={"1px solid white"}
+                                        width={"100%"}
+                                        mt={2}
+                                        variant={"outline"}
+                                        w={"auto"}
+                                        onClick={handleUpdateXPClick}
+                                    >
+                                        Update XP
+                                    </Button>
                                 </VStack>
                             </Center>
                         </Box>

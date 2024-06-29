@@ -14,7 +14,7 @@ import {
     VStack
 } from '@chakra-ui/react';
 import React from 'react';
-import { FaArrowDown, FaHive } from 'react-icons/fa';
+import { FaArrowDown } from 'react-icons/fa';
 import LoginModal from '../Hive/Login/LoginModal';
 import UserAvatar from '../UserAvatar';
 interface ProfileCardProps {
@@ -57,20 +57,11 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
         setIsFlipped(!isFlipped)
     }
     const user_metadata = JSON.parse(user.json_metadata || '{}');
+    const user_posting_metadata = JSON.parse(user.posting_json_metadata || '{}');
     const [isLoginModalOpen, setIsLoginModalOpen] = React.useState(false);
     const userLevel = user_metadata.extensions && user_metadata.extensions['level'] || 0;
+    const username = user.name;
 
-    const handleUpdateXPClick = () => {
-        console.log(userLevel);
-        if (userLevel < 1) {
-            setIsLoginModalOpen(true);
-        }
-        else {
-            console.log("Update XP")
-            console.log("User Level: ", userLevel)
-            console.log(user_metadata)
-        };
-    }
 
     return (
         <>
@@ -156,16 +147,14 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
 
                                             <Button
                                                 _hover={{ background: "transparent" }}
-                                                leftIcon={<FaHive size={"22px"} />}
                                                 color="yellow.200"
                                                 border={"1px solid white"}
                                                 width={"100%"}
                                                 mt={2}
                                                 variant={"outline"}
                                                 w={"auto"}
-                                                onClick={() => handleUpdateXPClick()}
                                             >
-                                                Update XP
+                                                Do a kickflip
                                             </Button>
                                         </Flex>
                                     </CardFooter>

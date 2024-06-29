@@ -127,7 +127,7 @@ export async function transferWithKeychain(username: string, destination: string
     console.log({ error });
   }
 }
-export async function updateProfile(username: string, name: string, about: string, location: string, coverImageUrl: string, avatarUrl: string, website: string, ethAddress: string, videoParts: VideoPart[], level: number) {
+export async function updateProfile(username: string, name: string, about: string, location: string, coverImageUrl: string, avatarUrl: string, website: string, ethAddress: string, videoParts: VideoPart[], level: number, staticXp?: number, cumulativeXp?: number) {
   try {
     const keychain = new KeychainSDK(window);
 
@@ -147,7 +147,9 @@ export async function updateProfile(username: string, name: string, about: strin
       extensions: {
         eth_address: ethAddress,
         video_parts: videoParts,
-        level: level
+        level: level,
+        staticXp: staticXp,
+        cumulativeXp: cumulativeXp
       }
     }
 
