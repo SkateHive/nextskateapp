@@ -147,7 +147,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
 
                                             <Button
                                                 _hover={{ background: "transparent" }}
-                                                color="yellow.200"
+                                                color="white"
                                                 border={"1px solid white"}
                                                 width={"100%"}
                                                 mt={2}

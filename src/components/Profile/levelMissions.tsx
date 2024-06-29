@@ -31,6 +31,8 @@ export default function LevelMissions({ initialLevel, user, updateAvailableXp }:
     const user_posting_metadata = JSON.parse(user.posting_json_metadata);
     const user_has_voted_in_skatehive_witness = user.witness_votes.includes("skatehive");
     const [user_has_ethereum_address, setUserHasEthereumAddress] = useState(false);
+    const [user_posts, setUserPosts] = useState([]);
+    const userLatestPostDate = user.last_post;
 
     const [completedMissions, setCompletedMissions] = useState({
         hasProfilePic: false,
@@ -41,6 +43,8 @@ export default function LevelMissions({ initialLevel, user, updateAvailableXp }:
         hasAddedEthereumAddress: false,
         hasMoreThanFivePosts: false,
         hasVotedOnSkateHiveProposal: false,
+        hasMoraThanFivePosts: false,
+        hasUserPostedLastWeek: false
     });
 
     const calculateTotalXp = useCallback(() => {
@@ -53,7 +57,7 @@ export default function LevelMissions({ initialLevel, user, updateAvailableXp }:
                 if (isMissionCompleted(mission.name) && !completedMissionSet.has(mission.name)) {
                     completedMissionSet.add(mission.name);
                     totalXp += mission.xp;
-                    console.log(`Adding ${mission.xp} XP for ${mission.name}`);
+                    // console.log(`Adding ${mission.xp} XP for ${mission.name}`);
                 }
             });
         }
@@ -84,7 +88,12 @@ export default function LevelMissions({ initialLevel, user, updateAvailableXp }:
             setUserHasEthereumAddress(true);
             newCompletedMissions.hasAddedEthereumAddress = true;
         }
-
+        if (user.post_count > 5) {
+            newCompletedMissions.hasMoreThanFivePosts = true;
+        }
+        if (userLatestPostDate && new Date(userLatestPostDate).getTime() > Date.now() - 7 * 24 * 60 * 60 * 1000) {
+            newCompletedMissions.hasUserPostedLastWeek = true;
+        }
         setCompletedMissions(newCompletedMissions);
         // console.log(newCompletedMissions);
     }, [user]);
@@ -129,6 +138,10 @@ export default function LevelMissions({ initialLevel, user, updateAvailableXp }:
                 return completedMissions.hasMoreThanFivePosts;
             case "Vote on SkateHive Proposal":
                 return completedMissions.hasVotedOnSkateHiveProposal;
+            case "More than 5 Posts":
+                return completedMissions.hasMoraThanFivePosts;
+            case "Posted this week":
+                return completedMissions.hasUserPostedLastWeek;
             default:
                 return false;
         }

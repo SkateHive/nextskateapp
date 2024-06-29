@@ -10,6 +10,7 @@ import ProfileCard from './profileCard';
 interface ProfileDashboardProps {
     user: HiveAccount;
 }
+const xpThresholds = [0, 180, 270, 540, 720, 900, 1080];
 
 const ProfileDashboard = ({ user }: ProfileDashboardProps) => {
     const user_metadata = JSON.parse(user.json_metadata || '{}');
@@ -17,7 +18,6 @@ const ProfileDashboard = ({ user }: ProfileDashboardProps) => {
     const extensions = user_metadata.extensions;
     const userLevel = extensions?.level || 0;
     const userXp = extensions?.staticXp || 0;
-    console.log(userXp)
     const [availableXp, setAvailableXp] = useState(userXp);
 
     const steps = [
@@ -29,6 +29,17 @@ const ProfileDashboard = ({ user }: ProfileDashboardProps) => {
         { title: 'Level 6', description: 'min. 900 xp' },
         { title: 'Level 7', description: 'min. 1080 xp' },
     ];
+    function calculateLevel(xp: number): number {
+        let level = 0;
+        for (let i = 0; i < xpThresholds.length; i++) {
+            if (xp >= xpThresholds[i]) {
+                level = i + 1;
+            } else {
+                break;
+            }
+        }
+        return level;
+    }
 
     const updateAvailableXp = useCallback((xp: number) => {
         console.log(`Updating available XP to: ${xp}`);
@@ -73,20 +84,32 @@ const ProfileDashboard = ({ user }: ProfileDashboardProps) => {
 
         if (userLevel < 1) {
             setIsLoginModalOpen(true);
-        }
-        else {
+        } else {
             console.log("User Level: ", userLevel)
             console.log(user_posting_metadata)
             if (loginMethod === 'keychain') {
+                const newLevel = calculateLevel(availableXp);  // Calculate the new level based on available XP
 
-                updateProfile(String(user.name), user_posting_metadata.profile.name, user_posting_metadata.profile.about, user_posting_metadata.profile.location, user_posting_metadata.profile.cover_image, user_posting_metadata.profile.profile_image, user_posting_metadata.profile.website, user_metadata.extensions.eth_address, user_metadata.extensions.video_parts, userLevel, availableXp, user_metadata.extensions.cumulativeXp);
+                updateProfile(
+                    String(user.name),
+                    user_posting_metadata.profile.name,
+                    user_posting_metadata.profile.about,
+                    user_posting_metadata.profile.location,
+                    user_posting_metadata.profile.cover_image,
+                    user_posting_metadata.profile.profile_image,
+                    user_posting_metadata.profile.website,
+                    user_metadata.extensions.eth_address,
+                    user_metadata.extensions.video_parts,
+                    newLevel,         // Pass the new level
+                    availableXp,      // Pass the updated XP
+                    user_metadata.extensions.cumulativeXp
+                );
+            } else if (loginMethod === 'privatekey') {
+                // Handle the private key method if necessary
             }
-            else if (loginMethod === 'privatekey') {
-                // updateAvailableXp(100);
-            }
+        }
+    };
 
-        };
-    }
 
     return (
         <Box>

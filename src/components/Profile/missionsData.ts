@@ -10,40 +10,39 @@ export const dummyMissions: { [key: number]: Mission[] } = {
         { name: "Make your first post", xp: 90 }
     ],
     2: [
-        { name: "Vote on Skatehive Witness", xp: 150 },
-        { name: "Add Ethereum Address", xp: 250 },
-        { name: "More than 5 Posts", xp: 350 },
-        { name: "Vote on SkateHive Proposal", xp: 450 }
+        { name: "Vote on Skatehive Witness", xp: 50 },
+        { name: "Add Ethereum Address", xp: 30 },
+        { name: "More than 5 Posts", xp: 10 },
     ],
     3: [
-        { name: "Do a kickflip", xp: 150 },
-        { name: "Sink Daryls Boat", xp: 250 },
+        { name: "More than 50 HP", xp: 150 },
+        { name: "Posted this week", xp: 10 },
         { name: "Make web gnar cry", xp: 350 },
         { name: "Fart in KnowHows Face", xp: 450 }
     ],
     4: [
-        { name: "Vote on Skatehive Witness", xp: 150 },
-        { name: "Add Ethereum Address", xp: 250 },
-        { name: "More than 5 Posts", xp: 350 },
-        { name: "Vote on SkateHive Proposal", xp: 450 }
+        { name: "soon", xp: 150 },
+        { name: "soon", xp: 250 },
+        { name: "soon", xp: 350 },
+        { name: "soon", xp: 450 },
     ],
     5: [
-        { name: "Vote on Skatehive Witness", xp: 150 },
-        { name: "Add Ethereum Address", xp: 250 },
-        { name: "More than 5 Posts", xp: 350 },
-        { name: "Vote on SkateHive Proposal", xp: 450 }
+        { name: "soon", xp: 150 },
+        { name: "soon", xp: 250 },
+        { name: "soon", xp: 350 },
+        { name: "soon", xp: 450 }
     ],
     6: [
-        { name: "Vote on Skatehive Witness", xp: 150 },
-        { name: "Add Ethereum Address", xp: 250 },
-        { name: "More than 5 Posts", xp: 350 },
-        { name: "Vote on SkateHive Proposal", xp: 450 }
+        { name: "soon", xp: 150 },
+        { name: "soon", xp: 250 },
+        { name: "soon", xp: 350 },
+        { name: "soon", xp: 450 }
     ],
     7: [
-        { name: "Vote on Skatehisdve Witness", xp: 150 },
-        { name: "Add Ethereum Address", xp: 250 },
-        { name: "More than 5 Posts", xp: 350 },
-        { name: "Vote on SkateHive Proposal", xp: 450 }
+        { name: "soon", xp: 150 },
+        { name: "soon", xp: 250 },
+        { name: "soon", xp: 350 },
+        { name: "soon", xp: 450 }
     ]
 };
 
