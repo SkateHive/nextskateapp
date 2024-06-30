@@ -227,9 +227,11 @@ export async function sendHiveOperation(encryptedPrivateKey: string | null, op: 
     .sendOperations(op, dhive.PrivateKey.from(privateKey))
     .then((result) => {
       console.log(result)
+      console.log("look mom it worked!")
     })
     .catch((error) => {
       console.error(error)
+      console.log("I will get damn error")
     })
 
 }
