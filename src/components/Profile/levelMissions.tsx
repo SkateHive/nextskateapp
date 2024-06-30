@@ -1,3 +1,4 @@
+import useHiveBalance from "@/hooks/useHiveBalance";
 import { HiveAccount } from "@/lib/useHiveAuth";
 import {
     Box,
@@ -33,7 +34,7 @@ export default function LevelMissions({ initialLevel, user, updateAvailableXp }:
     const [user_has_ethereum_address, setUserHasEthereumAddress] = useState(false);
     const [user_posts, setUserPosts] = useState([]);
     const userLatestPostDate = user.last_post;
-
+    const { hivePower } = useHiveBalance();
     const [completedMissions, setCompletedMissions] = useState({
         hasProfilePic: false,
         hasCompletedProfile: false,
@@ -44,7 +45,8 @@ export default function LevelMissions({ initialLevel, user, updateAvailableXp }:
         hasMoreThanFivePosts: false,
         hasVotedOnSkateHiveProposal: false,
         hasMoraThanFivePosts: false,
-        hasUserPostedLastWeek: false
+        hasUserPostedLastWeek: false,
+        hasMoreThan50HP: false
     });
 
     const calculateTotalXp = useCallback(() => {
@@ -94,9 +96,12 @@ export default function LevelMissions({ initialLevel, user, updateAvailableXp }:
         if (userLatestPostDate && new Date(userLatestPostDate).getTime() > Date.now() - 7 * 24 * 60 * 60 * 1000) {
             newCompletedMissions.hasUserPostedLastWeek = true;
         }
+        if (hivePower > 50) {
+            newCompletedMissions.hasMoreThan50HP = true;
+        }
         setCompletedMissions(newCompletedMissions);
         // console.log(newCompletedMissions);
-    }, [user]);
+    }, [user, hivePower]);
 
     useEffect(() => {
         // console.log(`Active Level Changed: ${activeLevel}`);
@@ -142,6 +147,8 @@ export default function LevelMissions({ initialLevel, user, updateAvailableXp }:
                 return completedMissions.hasMoraThanFivePosts;
             case "Posted this week":
                 return completedMissions.hasUserPostedLastWeek;
+            case "More than 50 HP":
+                return completedMissions.hasMoreThan50HP;
             default:
                 return false;
         }

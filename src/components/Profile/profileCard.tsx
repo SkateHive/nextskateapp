@@ -1,3 +1,4 @@
+import useHiveBalance from '@/hooks/useHiveBalance';
 import { HiveAccount } from '@/lib/useHiveAuth';
 import {
     Box,
@@ -61,8 +62,9 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
     const [isLoginModalOpen, setIsLoginModalOpen] = React.useState(false);
     const userLevel = user_metadata.extensions && user_metadata.extensions['level'] || 0;
     const username = user.name;
-
-
+    const { hivePower } = useHiveBalance();
+    const [userXp, setUserXp] = React.useState(user_metadata.extensions && user_metadata.extensions['staticXp'] || 0);
+    const [userVideoParts, setUserVideoParts] = React.useState(user_metadata.extensions && user_metadata.extensions['video_parts']?.length || 0);
     return (
         <>
             {isLoginModalOpen && <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />}
@@ -114,7 +116,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                                                 Power:
                                             </Text>
                                             <Text >
-                                                100
+                                                {hivePower.toFixed(0)} HP
                                             </Text>
                                         </HStack>
                                         <HStack justify={"space-between"}>
@@ -127,18 +129,18 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                                         </HStack>
                                         <HStack justify={"space-between"}>
                                             <Text cursor={"pointer"} >
-                                                Xp: {" "}
+                                                Exp:
                                             </Text>
                                             <Text cursor={"pointer"} >
-                                                soon
+                                                {userXp} XP
                                             </Text>
                                         </HStack>
                                         <HStack justify={"space-between"}>
                                             <Text cursor={"pointer"} >
-                                                Video Parts: {" "}
+                                                Video Parts:
                                             </Text>
                                             <Text cursor={"pointer"}>
-                                                soon
+                                                {userVideoParts || 0}
                                             </Text>
                                         </HStack>
                                     </Box>

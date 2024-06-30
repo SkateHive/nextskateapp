@@ -8,7 +8,7 @@ export const convertVestingSharesToHivePower = async (
     const receivedVestingSharesFloat = parseFloat(receivedVestingShares.split(" ")[0]);
     const availableVESTS = vestingSharesFloat - delegatedVestingSharesFloat;
 
-    const response = await fetch('https://api.hive.blog', {
+    const response = await fetch('https://api.deathwing.me', {
         method: 'POST',
         body: JSON.stringify({
             jsonrpc: '2.0',
