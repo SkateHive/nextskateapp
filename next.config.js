@@ -7,11 +7,11 @@ module.exports = {
                 headers: [
                     {
                         key: 'X-Frame-Options',
-                        value: 'DENY',
+                        value: 'ALLOW-FROM https://www.nounspace.com/',
                     },
                     {
                         key: 'Content-Security-Policy',
-                        value: "frame-ancestors 'none'",
+                        value: "frame-ancestors 'self' https://www.nounspace.com;",
                     },
                 ],
             },
