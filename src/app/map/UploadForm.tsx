@@ -1,0 +1,286 @@
+"use client";
+import UserAvatar from "@/components/UserAvatar";
+import { useHiveUser } from "@/contexts/UserContext";
+import { useComments } from "@/hooks/comments";
+import { commentWithPrivateKey } from "@/lib/hive/server-functions";
+import {
+  Box,
+  Button,
+  Flex,
+  HStack,
+  IconButton,
+  Image,
+  Input,
+  Textarea
+} from "@chakra-ui/react";
+import * as dhive from "@hiveio/dhive";
+import { useRef, useState } from "react";
+import { useDropzone } from "react-dropzone";
+import { FaImage, FaTimes } from "react-icons/fa";
+import { uploadFileToIPFS } from "../upload/utils/uploadToIPFS";
+
+export interface Comment {
+  id: number;
+  author: string;
+  permlink: string;
+  created: string;
+  body: string;
+}
+
+export default function UploadForm() {
+  const parent_author = "web-gnar";
+  const parent_permlink = "about-the-skatehive-spotbook";
+  const { addComment } = useComments(parent_author, parent_permlink);
+  const postBodyRef = useRef<HTMLTextAreaElement>(null);
+  const user = useHiveUser();
+  const username = user?.hiveUser?.name;
+  const [hasPosted, setHasPosted] = useState<boolean>(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [imageList, setImageList] = useState<string[]>([]);
+
+  const { getRootProps, getInputProps } = useDropzone({
+    noClick: true,
+    noKeyboard: true,
+    onDrop: async (acceptedFiles) => {
+      setIsUploading(true);
+      const newImageList: string[] = [];
+      for (const file of acceptedFiles) {
+        const ipfsData = await uploadFileToIPFS(file);
+        if (ipfsData !== undefined) {
+          const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}`;
+          const markdownLink = file.type.startsWith("video/")
+            ? `<iframe src="${ipfsUrl}" allowfullscreen></iframe>`
+            : `![Image](${ipfsUrl})`;
+          newImageList.push(markdownLink);
+        }
+      }
+      setImageList((prevList) => [...prevList, ...newImageList]);
+      setIsUploading(false);
+    },
+    accept: {
+      "image/*": [".png", ".gif", ".jpeg", ".jpg"],
+      "video/*": [".mp4", ".mov"],
+    },
+    multiple: true,
+  });
+
+  const handlePostClick = () => {
+    const markdownString = (postBodyRef.current?.value + "\n" + imageList.join("\n")).trim();
+    if (markdownString === "") {
+      alert("Please write something before posting");
+      return;
+    } else if (markdownString.length > 2000) {
+      alert("Post is too long. To make longform content use our /mag section");
+      return;
+    } else {
+      handlePost(markdownString);
+    }
+  };
+
+  const handlePost = async (markdownString: string) => {
+    const permlink = new Date()
+      .toISOString()
+      .replace(/[^a-zA-Z0-9]/g, "")
+      .toLowerCase();
+
+    const loginMethod = localStorage.getItem("LoginMethod");
+
+    if (!username) {
+      console.error("Username is missing");
+      return;
+    }
+
+    const postData = {
+      parent_author: parent_author,
+      parent_permlink: parent_permlink,
+      author: username,
+      permlink: permlink,
+      title: "Cast",
+      body: markdownString,
+      json_metadata: JSON.stringify({
+        tags: ["skateboard"],
+        app: "skatehive",
+      }),
+    };
+
+    const operations = [["comment", postData]];
+
+    if (loginMethod === "keychain") {
+      if (typeof window !== "undefined") {
+        try {
+          const response = await new Promise<{
+            success: boolean;
+            message?: string;
+          }>((resolve, reject) => {
+            window.hive_keychain.requestBroadcast(
+              username,
+              operations,
+              "posting",
+              (response: any) => {
+                if (response.success) {
+                  resolve(response);
+                } else {
+                  reject(new Error(response.message));
+                }
+              }
+            );
+          });
+
+          if (response.success) {
+            if (postBodyRef.current) {
+              postBodyRef.current.value = "";
+            }
+            addComment(postData);
+            setImageList([]);
+          }
+        } catch (error) {
+          console.error("Error posting comment:", (error as Error).message);
+        }
+      }
+    } else if (loginMethod === "privateKey") {
+      const commentOptions: dhive.CommentOptionsOperation = [
+        "comment_options",
+        {
+          author: String(username),
+          permlink: permlink,
+          max_accepted_payout: "10000.000 HBD",
+          percent_hbd: 10000,
+          allow_votes: true,
+          allow_curation_rewards: true,
+          extensions: [
+            [
+              0,
+              {
+                beneficiaries: [
+                  {
+                    account: "skatehacker",
+                    weight: 1000,
+                  },
+                ],
+              },
+            ],
+          ],
+        },
+      ];
+
+      const postOperation: dhive.CommentOperation = [
+        "comment",
+        {
+          parent_author: parent_author,
+          parent_permlink: parent_permlink,
+          author: String(username),
+          permlink: permlink,
+          title: "Cast",
+          body: markdownString,
+          json_metadata: JSON.stringify({
+            tags: ["skateboard"],
+            app: "Skatehive App",
+            image: "/skatehive_square_green.png",
+          }),
+        },
+      ];
+
+      try {
+        await commentWithPrivateKey(
+          localStorage.getItem("EncPrivateKey")!,
+          postOperation,
+          commentOptions
+        );
+        if (postBodyRef.current) {
+          postBodyRef.current.value = "";
+        }
+        addComment(postData);
+        setHasPosted(true);
+        setImageList([]);
+      } catch (error) {
+        console.error("Error posting comment:", (error as Error).message);
+      }
+    }
+  };
+
+  const handleRemoveImage = (index: number) => {
+    setImageList((prevList) => prevList.filter((_, i) => i !== index));
+  };
+
+  return (
+    <Box p={4} width={"100%"} bg="black" color="white" {...getRootProps()}>
+      <div>
+        <Flex>
+          {/* @ts-ignore */}
+          <UserAvatar hiveAccount={user.hiveUser || {}} boxSize={12} borderRadius={5} />
+          <Flex flexDir="column" w="100%">
+            <Textarea
+              border="none"
+              _focus={{
+                border: "none",
+                boxShadow: "none",
+              }}
+              overflow={"hidden"}
+              resize={"vertical"}
+              ref={postBodyRef}
+            />
+            <HStack>
+              {imageList.map((item, index) => (
+                <Box key={index} position="relative" maxW={100} maxH={100}>
+                  <IconButton
+                    aria-label="Remover imagem"
+                    icon={<FaTimes style={{ color: "black", strokeWidth: 1 }} />}
+                    size="base"
+                    color="white"
+                    bg="white"
+                    _hover={{ bg: "white", color: "black" }}
+                    _active={{ bg: "white", color: "black" }}
+                    position="absolute"
+                    top="0"
+                    right="0"
+                    onClick={() => handleRemoveImage(index)}
+                    zIndex="1"
+                    borderRadius="full"
+                  />
+                  {item.includes("![Image](") ? (
+                    <Image
+                      src={item.match(/!\[Image\]\((.*?)\)/)?.[1] || ""}
+                      alt="markdown-image"
+                      maxW="100%"
+                      maxH="100%"
+                      objectFit="contain"
+                    />
+                  ) : (
+                    <video
+                      src={item.match(/<iframe src="(.*?)" allowfullscreen><\/iframe>/)?.[1]}
+                      controls
+                      muted
+                      width="100%"
+                    />
+                  )}
+                </Box>
+              ))}
+            </HStack>
+          </Flex>
+        </Flex>
+        <HStack justifyContent="space-between" marginTop={2}>
+          <Input
+            id="md-image-upload"
+            type="file"
+            style={{ display: "none" }}
+            {...getInputProps({ refKey: "ref" })}
+            ref={inputRef}
+          />
+          <Button
+            name="md-image-upload"
+            onClick={() => inputRef.current?.click()}
+            isLoading={isUploading}
+            spinnerPlacement="end"
+            leftIcon={<FaImage />}
+          >
+            Image/video
+          </Button>
+          <Button onClick={handlePostClick} isLoading={hasPosted}>
+            {hasPosted ? "Published" : "Publish"}
+          </Button>
+        </HStack>
+      </div>
+    </Box>
+  );
+}

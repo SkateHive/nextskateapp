@@ -21,14 +21,14 @@ import {
 } from "@chakra-ui/react";
 import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
 import { useEffect, useState } from "react";
-import { FaBell, FaBook, FaEthereum, FaHive, FaSpeakap, FaUser, FaWallet } from "react-icons/fa";
+import { FaBell, FaBook, FaEthereum, FaHive, FaMapMarkerAlt, FaSpeakap, FaUser, FaWallet } from "react-icons/fa";
 import { useAccount } from "wagmi";
 import LoginModal from "../Hive/Login/LoginModal";
 import CommunityTotalPayout from "../communityTotalPayout";
 import checkRewards from "./utils/checkReward";
 import { claimRewards } from "./utils/claimRewards";
 const blink = keyframes`
-  0% { color: gold, opacity: 1; }
+  0% { color: gold; opacity: 1; }
   50% { opacity: 0.1; }
   100% { opacity: 1; }
 `;
@@ -119,6 +119,10 @@ const SideBarMobile = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
                         <HStack onClick={() => setNotifications(false)} padding={0} mt={8} gap={3} fontSize={"22px"}>
                             <FaSpeakap size={"22px"} />
                             <Link href={"/"}>Feed</Link>
+                        </HStack>
+                        <HStack onClick={() => setNotifications(false)} padding={0} gap={3} fontSize={"22px"}>
+                            <FaMapMarkerAlt size={"22px"} />
+                            <Link href={"/map"}>Map</Link>
                         </HStack>
                         <HStack onClick={() => setNotifications(false)} padding={0} gap={3} fontSize={"22px"}>
                             <FaBook size={"22px"} />
