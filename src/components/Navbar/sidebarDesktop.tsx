@@ -24,6 +24,7 @@ import {
   FaDiscord,
   FaEthereum,
   FaHive,
+  FaMapMarkerAlt,
   FaSpeakap,
   FaUser,
   FaWallet,
@@ -33,8 +34,9 @@ import LoginModal from "../Hive/Login/LoginModal";
 import CommunityTotalPayout from "../communityTotalPayout";
 import checkRewards from "./utils/checkReward";
 import { claimRewards } from "./utils/claimRewards";
+
 const blink = keyframes`
-  0% { color: gold, opacity: 1; }
+  0% { color: gold; opacity: 1; }
   50% { opacity: 0.1; }
   100% { opacity: 1; }
 `;
@@ -137,6 +139,12 @@ const SidebarDesktop = () => {
           }}>Feed</Text>
         </HStack>
         <HStack padding={0} gap={3} fontSize={"22px"}>
+          <FaMapMarkerAlt color="white" size={"22px"} />
+          <Text color={"white"} cursor={"pointer"} onClick={() => {
+            window.location.href = "/map";
+          }}>Map</Text>
+        </HStack>
+        <HStack padding={0} gap={3} fontSize={"22px"}>
           <FaBook color="white" size={"22px"} />
           <Text color={"white"} cursor={"pointer"} onClick={() => {
             window.location.href = "/mag";
@@ -148,6 +156,7 @@ const SidebarDesktop = () => {
             window.location.href = "/dao";
           }}>Dao</Text>
         </HStack>
+
         {!hiveUser && (
           <HStack padding={0} gap={3} fontSize={"22px"}>
             <FaDiscord size={"22px"} />
