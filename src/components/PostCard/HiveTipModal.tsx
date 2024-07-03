@@ -54,7 +54,7 @@ const HiveTipModal: React.FC<HiveTipModalProps> = ({ isOpen, onClose, author }) 
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
-            <ModalContent bg={"black"} border={"1px solid red"}>
+            <ModalContent color={"white"} bg={"black"} border={"1px solid red"}>
                 <ModalHeader>Support @{author} with
                     <ButtonGroup ml={2} size="sm" isAttached variant="outline" colorScheme="red">
                         <Button

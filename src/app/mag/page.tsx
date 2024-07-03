@@ -5,14 +5,15 @@ import PostSkeleton from "@/components/PostCard/Skeleton"
 import { useHiveUser } from "@/contexts/UserContext"
 import usePosts from "@/hooks/usePosts"
 import PostModel from "@/lib/models/post"
-import { Box, Button, ButtonGroup, Flex, Grid, HStack } from "@chakra-ui/react"
+import { Box, Button, ButtonGroup, Center, Flex, Grid, HStack } from "@chakra-ui/react"
 import { useState } from "react"
 import InfiniteScroll from "react-infinite-scroll-component"
 import { BeatLoader } from "react-spinners"
+import AuthorSearchBar from "../upload/components/searchBar"
 
 
 export default function Mag() {
-  const SKATEHIVE_TAG = [{ tag: "hive-173115", limit: 100 }]
+  const SKATEHIVE_TAG = [{ tag: "hive-173115", limit: 60 }]
   const [tag, setTag] = useState(SKATEHIVE_TAG)
   const [query, setQuery] = useState("trending")
   const { posts, error, isLoading, setQueryCategory, setDiscussionQuery } =
@@ -33,22 +34,62 @@ export default function Mag() {
   }
   if (isLoading || !posts) {
     return (
-      <Grid
-        p={1}
-        templateColumns={{
-          base: "repeat(1, 1fr)",
-          md: "repeat(2, 1fr)",
-          lg: "repeat(3, 1fr)",
-          xl: "repeat(4, 1fr)",
+      <Box
+        w={"100%"}
+        height={"101vh"}
+        overflow={"auto"}
+        sx={{
+          "::-webkit-scrollbar": {
+            display: "none",
+          },
         }}
-        gap={0}
-        minHeight="100vh"
-        width={"100%"}
       >
-        {Array.from({ length: visiblePosts }).map((_, i) => (
-          <PostSkeleton key={i} />
-        ))}
-      </Grid>
+        <Center>
+          <ButtonGroup size="sm" isAttached variant="outline" colorScheme="green">
+            <Button
+              onClick={() => updateFeed("trending", SKATEHIVE_TAG)}
+              isActive={query === "trending"}
+            >
+              Trending
+            </Button>
+            <Button
+              onClick={() => updateFeed("created", SKATEHIVE_TAG)}
+              isActive={query === "created"}
+            >
+              Most Recent
+            </Button>
+            {hiveUser.hiveUser && (
+              <Button
+                onClick={() =>
+                  updateFeed("feed", [
+                    { tag: hiveUser?.hiveUser?.name, limit: 100 },
+                  ])
+                }
+                isActive={query === "feed"}
+              >
+                My Crew
+              </Button>
+            )}
+          </ButtonGroup>
+        </Center>
+
+        <Grid
+          p={1}
+          templateColumns={{
+            base: "repeat(1, 1fr)",
+            md: "repeat(2, 1fr)",
+            lg: "repeat(3, 1fr)",
+            xl: "repeat(4, 1fr)",
+          }}
+          gap={0}
+          minHeight="100vh"
+          width={"100%"}
+        >
+          {Array.from({ length: visiblePosts }).map((_, i) => (
+            <PostSkeleton key={i} />
+          ))}
+        </Grid>
+      </Box>
     )
   }
 
@@ -62,7 +103,8 @@ export default function Mag() {
 
   return (
     <Box
-      height={"100%"}
+      height={"101vh"}
+      w={"100%"}
       overflow={"auto"}
       sx={{
         "::-webkit-scrollbar": {
@@ -70,42 +112,46 @@ export default function Mag() {
         },
       }}
     >
-      <HStack justifyContent="center" marginBottom={"12px"}>
-        <ButtonGroup size="sm" isAttached variant="outline" colorScheme="green">
-          <Button
-            onClick={() => updateFeed("trending", SKATEHIVE_TAG)}
-            isActive={query === "trending"}
-          >
-            Trending
-          </Button>
-          <Button
-            onClick={() => updateFeed("created", SKATEHIVE_TAG)}
-            isActive={query === "created"}
-          >
-            Most Recent
-          </Button>
-          {hiveUser.hiveUser && (
+
+      <Flex flexDirection={{ base: 'column', md: 'row' }} justifyContent={'space-between'} >
+        <AuthorSearchBar onSearch={(author) => updateFeed("blog", [{ tag: author, limit: 10 }])} />
+        <HStack justifyContent={'center'}>
+          <ButtonGroup size="sm" isAttached variant="outline" colorScheme="green">
             <Button
-              onClick={() =>
-                updateFeed("feed", [
-                  { tag: hiveUser?.hiveUser?.name, limit: 100 },
-                ])
-              }
-              isActive={query === "feed"}
+              onClick={() => updateFeed("trending", SKATEHIVE_TAG)}
+              isActive={query === "trending"}
             >
-              My Crew
+              Trending
             </Button>
-          )}
-        </ButtonGroup>
-        <Button
-          size={"sm"}
-          onClick={handleCreateClick}
-          colorScheme="green"
-          variant={"outline"}
-        >
-          + Create 🛹
-        </Button>
-      </HStack>
+            <Button
+              onClick={() => updateFeed("created", SKATEHIVE_TAG)}
+              isActive={query === "created"}
+            >
+              Most Recent
+            </Button>
+            {hiveUser.hiveUser && (
+              <Button
+                onClick={() =>
+                  updateFeed("feed", [
+                    { tag: hiveUser?.hiveUser?.name, limit: 100 },
+                  ])
+                }
+                isActive={query === "feed"}
+              >
+                My Crew
+              </Button>
+            )}
+          </ButtonGroup>
+          <Button
+            size={"sm"}
+            onClick={handleCreateClick}
+            colorScheme="green"
+            variant={"outline"}
+          >
+            + Create 🛹
+          </Button>
+        </HStack>
+      </Flex>
       {isLoginModalOpen && (
         <LoginModal
           isOpen={isLoginModalOpen}
@@ -128,7 +174,7 @@ export default function Mag() {
             base: "repeat(1, 1fr)",
             md: "repeat(2, 1fr)",
             lg: "repeat(3, 1fr)",
-            xl: "repeat(3, 1fr)",
+            xl: "repeat(4, 1fr)",
           }}
           gap={0}
         >

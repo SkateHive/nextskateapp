@@ -8,9 +8,9 @@ import {
 } from "@chakra-ui/react";
 import { Web3Provider } from '@ethersproject/providers';
 import { useEffect, useMemo, useState } from "react";
-import CreateProposalConfirmationModal from "./createProposalConfirmationModal";
 import ProposalEditor from "./ProposalEditor";
 import ProposalPreview from "./ProposalPreview";
+import CreateProposalConfirmationModal from "./createProposalConfirmationModal";
 
 const hub = 'https://hub.snapshot.org';
 
@@ -32,10 +32,6 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
         const blockNumber = await web3.getBlockNumber();
         setCurrentBlockNumber(blockNumber);
     };
-    useEffect(() => {
-        fetchSpaceInfo();
-        fetchCurrentBlockNumber();
-    }, []);
 
 
 
@@ -52,9 +48,14 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
             alert('Failed to fetch space settings.');
         }
     };
+    useEffect(() => {
+        fetchSpaceInfo();
+        fetchCurrentBlockNumber();
+    }, []);
 
     return (
-        <Box>
+        <Box
+        >
             {useBreakpointValue({
                 base: (
                     <VStack spacing="4">
@@ -81,7 +82,8 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
                                 PINATA_GATEWAY_TOKEN={PINATA_GATEWAY_TOKEN}
                             />
                         </Box>
-                        <Box width="50%">
+                        <Box h={"100%"}
+                            width="50%">
                             <ProposalPreview value={value} />
                         </Box>
                     </HStack>

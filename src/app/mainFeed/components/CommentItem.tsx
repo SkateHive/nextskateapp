@@ -3,10 +3,13 @@ import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
 import AuthorAvatar from "@/components/AuthorAvatar";
 import LoginModal from "@/components/Hive/Login/LoginModal";
 import TipButton from "@/components/PostCard/TipButton";
+import { useHiveUser } from "@/contexts/UserContext";
 import { useComments } from "@/hooks/comments";
 import {
   formatDate,
+  getTotalPayout,
   transformIPFSContent,
+  transformNormalYoutubeLinksinIframes,
   transformShortYoutubeLinksinIframes,
 } from "@/lib/utils";
 import {
@@ -15,10 +18,12 @@ import {
   Flex,
   HStack,
   Text,
+  Tooltip,
   VStack
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { FaEye, FaHeart, FaRegComment, FaRegHeart } from "react-icons/fa";
+import { FaPencil } from "react-icons/fa6";
 import ReactMarkdown from "react-markdown";
 import { useReward } from "react-rewards";
 import rehypeRaw from "rehype-raw";
@@ -31,15 +36,16 @@ interface CommentItemProps {
   comment: any;
   username: string;
   handleVote: (author: string, permlink: string) => void;
-  getTotalPayout: (comment: any) => number;
 }
 
 const VotingButton = ({
   comment,
   username,
+  toggleValueTooltip,
 }: {
   comment: any;
   username: any;
+  toggleValueTooltip: () => void;
 }) => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const initialIsVoted = comment.active_votes?.some(
@@ -53,7 +59,6 @@ const VotingButton = ({
     spread: 60,
   });
 
-
   const handleVoteClick = async () => {
     if (username === "") {
       setIsLoginModalOpen(true);
@@ -62,6 +67,7 @@ const VotingButton = ({
       const newIsVoted = !isVoted;
       await handleVote(comment.author, comment.permlink, username ?? "");
       setIsVoted(newIsVoted);
+      toggleValueTooltip();
       setVoteCount((prevVoteCount: number) =>
         newIsVoted ? prevVoteCount + 1 : prevVoteCount - 1,
       );
@@ -100,16 +106,19 @@ const VotingButton = ({
   );
 };
 
-const CommentItem = ({
-  comment,
-  username,
-  handleVote,
-  getTotalPayout,
-}: CommentItemProps) => {
+const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
   const rewardId = comment.id ? "postReward" + comment.id : "";
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleModal = () => {
     setIsModalOpen(!isModalOpen);
+  };
+
+  const [isValueTooltipOpen, setIsValueTooltipOpen] = useState(false);
+  const toggleValueTooltip = () => {
+    setIsValueTooltipOpen(true);
+    setTimeout(() => {
+      setIsValueTooltipOpen(false);
+    }, 3000);
   };
 
   const commentReplies = useComments(comment.author, comment.permlink);
@@ -118,16 +127,16 @@ const CommentItem = ({
 
   useEffect(() => {
     setNumberOfComments(comments_count);
-  }
-    , [numberOfComments, comments_count]);
+  }, [numberOfComments, comments_count]);
 
   const [isEyeClicked, setIsEyeClicked] = useState(false);
   const handleEyeClick = () => {
     setIsEyeClicked(!isEyeClicked);
-  }
-
+  };
 
   const [visiblePosts, setVisiblePosts] = useState(5);
+
+  const { voteValue } = useHiveUser();
 
   return (
     <Box key={comment.id} p={4} width="100%" bg="black" color="white">
@@ -139,14 +148,18 @@ const CommentItem = ({
 
       <Flex>
         <AuthorAvatar username={comment.author} />
-        <VStack ml={4} gap={0} alignItems={"start"} width={"full"} marginRight={"16px"}>
+        <VStack w={"100%"} ml={4} alignItems={"start"} marginRight={"16px"}>
           <HStack justify={"space-between"} width={"full"}>
-            <HStack cursor={"pointer"} onClick={() =>
-              window.open(
-                `/post/test/@${comment.author}/${comment.permlink}`,
-                "_self",
-              )
-            } gap={"2px"}>
+            <HStack
+              cursor={"pointer"}
+              onClick={() =>
+                window.open(
+                  `/post/test/@${comment.author}/${comment.permlink}`,
+                  "_self",
+                )
+              }
+              gap={"2px"}
+            >
               <Text fontWeight="bold">{comment.author}</Text>
               <Text ml={2} color="gray.400" fontSize={"14px"}>
                 · {formatDate(String(comment.created))}
@@ -154,27 +167,45 @@ const CommentItem = ({
             </HStack>
 
             <FaEye onClick={handleEyeClick} />
-
           </HStack>
           {/* Post Content */}
-
-          <ReactMarkdown
-            components={MarkdownRenderers}
-            rehypePlugins={[rehypeRaw]}
-            remarkPlugins={[remarkGfm]}
-
-          >
-            {transformIPFSContent(
-              transformShortYoutubeLinksinIframes(comment.body),
-            )}
-          </ReactMarkdown>
+          <Box w={"100%"} bg="black" color="white">
+            <ReactMarkdown
+              components={MarkdownRenderers}
+              rehypePlugins={[rehypeRaw]}
+              remarkPlugins={[remarkGfm]}
+            >
+              {transformNormalYoutubeLinksinIframes(transformIPFSContent(
+                transformShortYoutubeLinksinIframes(comment.body),
+              ))}
+            </ReactMarkdown>
+          </Box>
         </VStack>
       </Flex>
 
       {/* Buttons */}
       <Flex ml={14} justifyContent={"space-between"}>
-        <TipButton author={comment.author} />
+        {comment.author === username ? (
+          <Button
+            _hover={{
+              background: "transparent",
+              color: "green.200",
+            }}
+            colorScheme="green"
+            variant="ghost"
+            leftIcon={<FaPencil />}
+            onClick={() => window.alert('soon')}
+            aria-label="Comments"
+          >
+          </Button>
+        ) : (
+          <TipButton author={comment.author} />
+        )}
         <Button
+          _hover={{
+            background: "transparent",
+            color: "green.200",
+          }}
           colorScheme="green"
           variant="ghost"
           leftIcon={<FaRegComment />}
@@ -184,34 +215,43 @@ const CommentItem = ({
           {numberOfComments}
         </Button>
 
-        <VotingButton comment={comment} username={username} />
-        <Text
-          fontWeight={"bold"}
-          color={"green.400"}
-          onClick={() =>
-            window.open(
-              `/post/test/@${comment.author}/${comment.permlink}`,
-              "_self",
-            )
-          }
-          cursor={"pointer"}
-          mt={2}
+        <VotingButton
+          comment={comment}
+          username={username}
+          toggleValueTooltip={toggleValueTooltip}
+        />
+        <Tooltip
+          label={`+$${voteValue.toFixed(6)}`}
+          placement="top"
+          isOpen={isValueTooltipOpen}
+          hasArrow
         >
-          ${getTotalPayout(comment)}
-        </Text>
+          <Text
+            fontWeight={"bold"}
+            color={"green.400"}
+            onClick={() =>
+              window.open(
+                `/post/test/@${comment.author}/${comment.permlink}`,
+                "_self",
+              )
+            }
+            cursor={"pointer"}
+            mt={2}
+          >
+            ${getTotalPayout(comment)}
+          </Text>
+        </Tooltip>
       </Flex>
       {isEyeClicked && (
         <Box ml={10} mt={4} pl={4} borderLeft="2px solid gray">
-
           <CommentList
             comments={commentReplies.comments}
             visiblePosts={visiblePosts}
             setVisiblePosts={() => { }}
             username={username}
             handleVote={handleVote}
-            getTotalPayout={getTotalPayout}
           />
-          {visiblePosts < numberOfComments &&
+          {visiblePosts < numberOfComments && (
             <Button
               onClick={() => setVisiblePosts(visiblePosts + 5)}
               variant="outline"
@@ -221,7 +261,7 @@ const CommentItem = ({
             >
               Show More
             </Button>
-          }
+          )}
         </Box>
       )}
     </Box>

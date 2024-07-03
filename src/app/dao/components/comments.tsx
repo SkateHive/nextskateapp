@@ -11,7 +11,6 @@ interface CommentsProps {
 
 const CommentsComponent = (props: CommentsProps) => {
   const { author, permlink } = props
-  console.log("CommentsComponent", author, permlink)
   const { post } = usePostContext()
 
   const { comments, addComment } = useComments(author, permlink, true)

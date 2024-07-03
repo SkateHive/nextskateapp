@@ -9,6 +9,10 @@ const theme = extendTheme({
     },
     styles: {
         global: {
+            html: {
+                color: 'white',
+                bg: 'black',
+            },
             body: {
                 bg: 'black',
                 color: 'white',

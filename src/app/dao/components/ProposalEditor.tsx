@@ -27,7 +27,7 @@ const ProposalEditor: React.FC<ProposalEditorProps> = ({ value, setValue, title,
             for (const file of acceptedFiles) {
                 const ipfsData = await uploadFileToIPFS(file);
                 if (ipfsData !== undefined) {
-                    const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}?pinataGatewayToken=${PINATA_GATEWAY_TOKEN}`;
+                    const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}`;
                     const markdownLink = file.type.startsWith("video/") ? `<iframe src="${ipfsUrl}" allowfullscreen></iframe>` : `![Image](${ipfsUrl})`;
                     setValue(prevMarkdown => `${prevMarkdown}\n${markdownLink}\n`);
                 }
@@ -72,35 +72,35 @@ const ProposalEditor: React.FC<ProposalEditorProps> = ({ value, setValue, title,
 
     return (
         <Box {...getRootProps()}>
-        <Input
-            placeholder="Proposal Title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            borderColor={"green.600"}
-            border={"2px solid"}
-            color={"limegreen"}
-            _placeholder={{ color: "limegreen", opacity: 0.4 }}
-            focusBorderColor="limegreen"
-        />
-        <input {...getInputProps()} id="md-image-upload" style={{ display: 'none' }} />
-        {isUploading && <Center><Spinner /></Center>}
-        <MDEditor
-            value={value}
-            onChange={(value: any) => setValue(value || "")}
-            commands={[
-                commands.bold, commands.italic, commands.strikethrough, commands.hr, commands.code, commands.table, commands.link, commands.quote, commands.unorderedListCommand, commands.orderedListCommand, commands.codeBlock, commands.fullscreen
-            ]}
-            extraCommands={extraCommands}
-            previewOptions={{ rehypePlugins: [[rehypeSanitize]] }}
-            height="600px"
-            preview="edit"
-            style={{
-                border: "2px solid limegreen",
-                padding: "10px",
-                backgroundColor: "black",
-            }}
-        />
-    </Box>
+            <Input
+                placeholder="Proposal Title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                borderColor={"green.600"}
+                border={"2px solid"}
+                color={"limegreen"}
+                _placeholder={{ color: "limegreen", opacity: 0.4 }}
+                focusBorderColor="limegreen"
+            />
+            <input {...getInputProps()} id="md-image-upload" style={{ display: 'none' }} />
+            {isUploading && <Center><Spinner /></Center>}
+            <MDEditor
+                value={value}
+                onChange={(value: any) => setValue(value || "")}
+                commands={[
+                    commands.bold, commands.italic, commands.strikethrough, commands.hr, commands.code, commands.table, commands.link, commands.quote, commands.unorderedListCommand, commands.orderedListCommand, commands.codeBlock, commands.fullscreen
+                ]}
+                extraCommands={extraCommands}
+                previewOptions={{ rehypePlugins: [[rehypeSanitize]] }}
+                height="600px"
+                preview="edit"
+                style={{
+                    border: "2px solid limegreen",
+                    padding: "10px",
+                    backgroundColor: "black",
+                }}
+            />
+        </Box>
     );
 };
 

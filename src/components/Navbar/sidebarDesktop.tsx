@@ -34,7 +34,7 @@ import CommunityTotalPayout from "../communityTotalPayout";
 import checkRewards from "./utils/checkReward";
 import { claimRewards } from "./utils/claimRewards";
 const blink = keyframes`
-  0% { opacity: 1; }
+  0% { color: gold, opacity: 1; }
   50% { opacity: 0.1; }
   100% { opacity: 1; }
 `;
@@ -104,6 +104,7 @@ const SidebarDesktop = () => {
         h="100vh"
         display="flex"
         flexDirection="column"
+        color={"white"}
       >
         <Heading size="md">
           <Image
@@ -176,11 +177,15 @@ const SidebarDesktop = () => {
                   ml={-2}
                   p={2}
                   justifyContent={"center"}
-                  colorScheme="yellow"
+                  color="gold"
                   variant="outline"
                   border={"none"}
                   animation={`${blink} 1s linear infinite`}
                   onClick={handleClaimRewards}
+                  _hover={{
+                    animation: "none",
+                    border: "1px dashed yellow",
+                  }}
                 >
                   Rewards
                 </Button>

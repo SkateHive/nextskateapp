@@ -4,7 +4,7 @@ import Favicon from "@/components/FaviconLinks";
 import MobileNavbar from "@/components/Navbar/MobileNavbar";
 import SidebarDesktop from "@/components/Navbar/sidebarDesktop";
 import { getWebsiteURL } from "@/lib/utils";
-import { Flex } from "@chakra-ui/react"; // Remove ColorModeScript import from here
+import { Flex } from "@chakra-ui/react";
 import dynamic from 'next/dynamic';
 import { Share_Tech_Mono } from "next/font/google";
 import type { ReactNode } from "react";
@@ -12,7 +12,6 @@ import { Providers } from "./providers";
 
 const share_tech_mono = Share_Tech_Mono({ subsets: ["latin"], weight: "400" });
 
-// Dynamically import ColorModeScriptWrapper
 const ColorModeScriptWrapper = dynamic(() => import('./ColorModeScriptWrapper'), { ssr: false });
 
 export type Metadata = {
@@ -52,11 +51,11 @@ export default function RootLayout({
               .hide-on-mobile {
                 display: none;
               }
-              .mobile-menu-button {   
+              .mobile-menu-button {
                 z-index: 1000;
                 position: fixed;
                 left: 0px;
-                }
+              }
             }
             @media (min-width: 769px) {
               #layout {
@@ -66,14 +65,20 @@ export default function RootLayout({
                 display: none;
               }
             }
+            ::-webkit-scrollbar {
+              display: none;
+            }
+            body {
+              scrollbar-width: none; /* Firefox */
+            }
           `}
         </style>
       </head>
       <body className={share_tech_mono.className}>
-        {/* Dynamically load ColorModeScriptWrapper */}
         <ColorModeScriptWrapper />
         <Providers>
-          <Flex justifyContent={"center"} id="layout" >
+          <Flex w={"100%"}
+            justifyContent={"center"} id="layout">
             <div className="hide-on-mobile">
               <SidebarDesktop />
             </div>

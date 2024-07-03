@@ -1,10 +1,11 @@
 "use client";
+import UserAvatar from "@/components/UserAvatar";
 import { useHiveUser } from "@/contexts/UserContext";
 import { useComments } from "@/hooks/comments";
 import { vote } from "@/lib/hive/client-functions";
 import { commentWithPrivateKey } from "@/lib/hive/server-functions";
+import { getTotalPayout } from "@/lib/utils";
 import {
-  Avatar,
   Box,
   Button,
   Divider,
@@ -19,7 +20,7 @@ import {
   MenuList,
   Text,
   Textarea,
-  VStack,
+  VStack
 } from "@chakra-ui/react";
 import * as dhive from "@hiveio/dhive";
 import { useMemo, useRef, useState } from "react";
@@ -33,11 +34,10 @@ import CommentList from "./components/CommentsList";
 import LoadingComponent from "./components/loadingComponent";
 import AvatarMediaModal from "./components/mediaModal";
 
-const parent_author = "skatehacker";
-const parent_permlink = "test-advance-mode-post";
-const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN;
+const parent_author = process.env.NEXT_PUBLIC_MAINFEED_AUTHOR || "skatehacker";
+const parent_permlink = process.env.NEXT_PUBLIC_MAINFEED_PERMLINK || "test-advance-mode-post";
 
-interface Comment {
+export interface Comment {
   id: number;
   author: string;
   permlink: string;
@@ -48,23 +48,12 @@ interface Comment {
   curator_payout_value?: string;
 }
 
-const getTotalPayout = (comment: Comment): number => {
-  const payout = parseFloat(comment.total_payout_value?.split(" ")[0] || "0");
-  const pendingPayout = parseFloat(
-    comment.pending_payout_value?.split(" ")[0] || "0"
-  );
-  const curatorPayout = parseFloat(
-    comment.curator_payout_value?.split(" ")[0] || "0"
-  );
-  return payout + pendingPayout + curatorPayout;
-};
-
 const SkateCast = () => {
   const { comments, addComment, isLoading } = useComments(
     parent_author,
     parent_permlink
   );
-  const [visiblePosts, setVisiblePosts] = useState<number>(10);
+  const [visiblePosts, setVisiblePosts] = useState<number>(3);
   const postBodyRef = useRef<HTMLTextAreaElement>(null);
   const user = useHiveUser();
   const username = user?.hiveUser?.name;
@@ -85,7 +74,7 @@ const SkateCast = () => {
       for (const file of acceptedFiles) {
         const ipfsData = await uploadFileToIPFS(file);
         if (ipfsData !== undefined) {
-          const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}?pinataGatewayToken=${PINATA_GATEWAY_TOKEN}`;
+          const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}`;
           const markdownLink = file.type.startsWith("video/")
             ? `<iframe src="${ipfsUrl}" allowfullscreen></iframe>`
             : `![Image](${ipfsUrl})`;
@@ -122,7 +111,7 @@ const SkateCast = () => {
       alert("Please write something before posting");
       return;
     }
-    else if (markdownString.length > 10000) {
+    else if (markdownString.length > 2000) {
       alert("Post is too long. To make longform content use our /mag section");
       return;
     }
@@ -279,11 +268,14 @@ const SkateCast = () => {
     <VStack
       id="scrollableDiv"
       overflowY="auto"
-      css={{ "&::-webkit-scrollbar": { display: "none" } }}
+      css={{
+        "&::-webkit-scrollbar": { display: "none" },
+        scrollbarWidth: "none", // For Firefox
+      }}
       maxW={"740px"}
       width={"100%"}
       borderInline={"1px solid rgb(255,255,255,0.2)"}
-      height={"100vh"}
+      height={"101vh"}
     >
       <AvatarMediaModal
         isOpen={mediaModalOpen}
@@ -295,12 +287,8 @@ const SkateCast = () => {
       <Box p={4} width={"100%"} bg="black" color="white" {...getRootProps()}>
         <div>
           <Flex>
-            <Avatar
-              borderRadius={6}
-              boxSize={12}
-              marginRight={2}
-              src={`https://images.ecency.com/webp/u/${username}/avatar/small`}
-            />
+            {/* @ts-ignore */}
+            <UserAvatar hiveAccount={user.hiveUser || {}} boxSize={12} borderRadius={5} />
             <Flex flexDir="column" w="100%">
               <Textarea
                 border="none"
@@ -430,7 +418,6 @@ const SkateCast = () => {
         setVisiblePosts={setVisiblePosts}
         username={username}
         handleVote={handleVote}
-        getTotalPayout={getTotalPayout}
       />
     </VStack>
   );

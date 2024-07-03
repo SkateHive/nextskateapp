@@ -1,5 +1,6 @@
+'use client'
 import { Divider, Image } from '@chakra-ui/react';
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 type MarkdownProps = {
   node?: any;
@@ -14,6 +15,89 @@ type RendererProps = MarkdownProps & {
   href?: any;
 };
 
+const VideoRenderer = ({ src, ...props }: RendererProps) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [poster, setPoster] = useState<string>('/home_animation_body.gif');
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video) {
+      const captureThumbnail = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const context = canvas.getContext('2d');
+        if (context) {
+          video.currentTime = 2;
+          video.addEventListener('seeked', function capture() {
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            setPoster(canvas.toDataURL('image/jpeg'));
+            video.removeEventListener('seeked', capture);
+          });
+        }
+      };
+      if (video.readyState >= 2) {
+        captureThumbnail();
+      } else {
+        video.addEventListener('loadeddata', captureThumbnail);
+      }
+    }
+  }, [src]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const handlePlay = () => {
+      if (!videoRef.current) return;
+      videoRef.current.play();
+      setIsPlaying(true);
+    };
+
+    const handlePause = () => {
+      setIsPlaying(false);
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            handlePlay();
+          } else {
+            handlePause();
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    observer.observe(video);
+
+    return () => {
+      observer.unobserve(video);
+    };
+  }, [src]);
+
+  return (
+    <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', paddingTop: '10px', minWidth: '100%', minHeight: 'auto' }}>
+      <picture>
+        <video
+          {...props}
+          muted={true}
+          loop={false}
+          ref={videoRef}
+          src={src}
+          poster={poster}
+          crossOrigin='anonymous'
+          playsInline={true}
+          style={{ background: 'transparent', borderRadius: '10px', marginBottom: '20px', border: '0px grey solid', width: '100%', minHeight: '50%', maxHeight: '420px' }}
+        />
+      </picture>
+    </div>
+  );
+};
+
 export const MarkdownRenderers = {
   img: ({ alt, src, title, ...props }: RendererProps) => (
     <span style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -25,7 +109,8 @@ export const MarkdownRenderers = {
         style={{
           display: 'inline-block',
           maxWidth: '100%',
-          height: 'auto',
+          height: '100%',
+          maxHeight: '345px',
           borderRadius: '10px',
           marginTop: '20px',
           marginBottom: '20px',
@@ -39,7 +124,7 @@ export const MarkdownRenderers = {
     </div>
   ),
   a: ({ href, children, ...props }: RendererProps) => (
-    <a style={{ color: "yellow" }} href={href} {...props}>{children}</a>
+    <a style={{ color: "yellow", textWrap: "wrap", wordBreak: "break-all" }} href={href} {...props}>{children}</a>
   ),
   h1: ({ children, ...props }: RendererProps) => (
     <h1 {...props} style={{ fontWeight: 'bold', color: '#A5D6A7', fontSize: '28px', paddingBottom: '10px', paddingTop: "10px", paddingLeft: '8px' }}>{children}</h1>
@@ -125,23 +210,14 @@ export const MarkdownRenderers = {
       />
     </center>
   ),
-  video: ({ src, ...props }: RendererProps) => (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingTop: '10px', minWidth: '100%', minHeight: 'auto' }}>
-      <video
-        {...props}
-        autoPlay={true}
-        muted={true}
-        src={src}
-        style={{ background: 'transparent', borderRadius: '10px', marginBottom: '20px', border: '2px grey solid', minWidth: '70%', minHeight: '50%' }}
-      />
-    </div>
-  ),
+  video: VideoRenderer, // Use the new VideoRenderer component
   table: ({ children, ...props }: RendererProps) => (
     <div style={{
       display: 'flex', justifyContent: 'center',
       border: '1px solid none',
       borderRadius: '10px',
       padding: '10px',
+      overflowX: 'auto',
     }}>
       <table
         {...props}

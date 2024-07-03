@@ -16,6 +16,7 @@ import {
 } from "@chakra-ui/react"
 import { normalize } from "path"
 import { useEffect, useState } from "react"
+import { FaPencil } from "react-icons/fa6"
 import ReactMarkdown from "react-markdown"
 import rehypeRaw from "rehype-raw"
 import remarkGfm from "remark-gfm"
@@ -107,9 +108,22 @@ const DaoPage = () => {
       const permlink = body.split(" ")[body.split(" ").length - 1]
     }
   }
+
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+    if (window) {
+      const isMobile = window.innerWidth < 768
+      setIsMobile(isMobile)
+    }
+  }, [])
+
   return (
-    <Box width={"100%"}>
-      <br />
+    <Box mt={5}
+      w={"100%"}
+      overflowY={"auto"}
+      overflowX={"hidden"}>
+
+      {/* HEADER PANEL */}
       <Box
         bg="black"
         p={4}
@@ -126,7 +140,7 @@ const DaoPage = () => {
                   {connectedUserEnsName}
                 </Text>
                 <Text color={"white"} fontSize="10px" mb={2}>
-                  Voting Power: 123 Votes
+                  Voting Power: Loading...
                 </Text>
               </VStack>
             </HStack>
@@ -137,13 +151,23 @@ const DaoPage = () => {
             flexDirection="column"
             alignItems="flex-end"
           >
-            <Button
-              colorScheme="yellow"
-              variant="outline"
-              onClick={() => handleCreateProposalButton()}
-            >
-              {isCreateProposalModalOpen ? "Go Back" : "Create Proposal"}
-            </Button>
+            {isMobile ? (
+              <Button
+                bg={"black"}
+                leftIcon={<FaPencil />}
+                p={2}
+                borderRadius="full"
+                colorScheme="green"
+                variant="outline"
+                onClick={() => handleCreateProposalButton()}
+              >
+                {isCreateProposalModalOpen ? "Go Back" : "create"}
+              </Button>
+            ) : (
+              <Button colorScheme="yellow" variant="outline" onClick={() => handleCreateProposalButton()}>
+                {isCreateProposalModalOpen ? "Go Back" : "Create Proposal"}
+              </Button>
+            )}
           </GridItem>
         </Grid>
       </Box>
@@ -154,8 +178,15 @@ const DaoPage = () => {
 
       ) : (
         <Flex flexDirection={{ base: 'column', md: 'row' }} >
-          <Box minW={"50%"}>
-            <Stack>
+          <Box mt={2} minW={"50%"}>
+            <Stack
+              h={"60vh"}
+              overflow={"auto"}
+              sx={{
+                "&::-webkit-scrollbar": {
+                  display: "none",
+                },
+              }}>
               {loadingProposals ? (
                 <Center>
                   <Text fontSize="28px" color="#A5D6A7">
@@ -180,13 +211,29 @@ const DaoPage = () => {
             borderRadius="10px"
             minW={"50%"}
             minHeight={"100%"}
+            h={"60vh"}
+            mt={2}
+            overflow={"auto"}
+            sx={{
+              "&::-webkit-scrollbar": {
+                width: "8px",
+              },
+              "&::-webkit-scrollbar-track": {
+                width: "6px",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                background: "#A5D6A7",
+                borderRadius: "24px",
+              },
+            }}
+
           >
             {mainProposal?.author && (
               <>
                 <HStack justifyContent="space-between">
                   <Text color={"white"}>
                     Start:{" "}
-                    <Badge>
+                    <Badge bg={"black"} colorScheme="green" >
                       {new Date(
                         mainProposal?.start * 1000
                       ).toLocaleDateString()}
@@ -210,39 +257,35 @@ const DaoPage = () => {
               color={"green.200"}
             >
 
-              <Text fontSize={"28px"}> {mainProposal?.title}</Text>
+              <Text fontSize={"18px"}> {mainProposal?.title}</Text>
             </Box>
-            <Box
+            {/* <Box
               bg="#201d21"
               p={0}
               border="0.6px solid #A5D6A7"
+              borderBottom={"none"}
               borderRadius="none"
-            >
-              <HStack>
+            > */}
+            {/* <HStack>
                 {ensProposerAvatar.data ? (
                   <Image alt="" boxSize={"46px"} src={ensProposerAvatar.data} />
                 ) : (
                   <Image alt="" boxSize={"46px"} src={"/pepenation.gif"} />
                 )}
 
-                <Text>
-                  {/* {(ProposerName ?? "") ||
-                      formatEthAddress(mainProposal?.author)} */}
-                  {ensProposerName.data || ProposerName}
+                <Text color={"white"}>
+                  {(ProposerName ?? "") ||
+                    (mainProposal?.author)}
                 </Text>
-              </HStack>
-            </Box>
+              </HStack> */}
+            {/* </Box> */}
             <Box
               bg="#201d21"
               p={4}
               border="0.6px solid #A5D6A7"
               borderRadius="none"
+              borderTop={"none"}
             >
-              <Center>
-                <Badge fontSize="28px" color="#A5D6A7">
-                  Score
-                </Badge>
-              </Center>
               <Text fontSize="16px" color="#A5D6A7">
                 {mainProposal?.scores[0]} For
               </Text>
@@ -277,7 +320,7 @@ const DaoPage = () => {
                         checkProposalOutcome(mainProposal).totalVotes}{" "}
                       Votes)
                     </Text>
-                    <Badge fontSize="18px" color="#A5D6A7">
+                    <Badge variant={"outline"} bg={"black"} fontSize="12px" color={checkProposalOutcome(mainProposal).hasWon ? "green.200" : "red"}>
                       {mainProposal && checkProposalOutcome(mainProposal).hasWon
                         ? "Passed"
                         : "Failed"}
@@ -311,6 +354,8 @@ const DaoPage = () => {
             </Box>
             <Box
               mt={2}
+              h={"100%"}
+
             >
               <ReactMarkdown
                 components={MarkdownRenderers}

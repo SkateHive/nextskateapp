@@ -27,7 +27,7 @@ export default async function checkRewards(username: string): Promise<boolean> {
             const vestingHive = getBalance(account.reward_vesting_hive);
 
             const hasRewards = hbdBalance > 0 || hiveBalance > 0 || vestingHive > 0;
-            console.log(hasRewards ? "User has rewards" : "User has no rewards");
+            // console.log(hasRewards ? "User has rewards" : "User has no rewards");
             return hasRewards;
         } else {
             console.error("Account data not found.");

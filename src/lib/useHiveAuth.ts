@@ -1,7 +1,8 @@
 import { useHiveUser } from "@/contexts/UserContext"
 import * as dhive from "@hiveio/dhive"
+import { checkCommunitySubscription, communitySubscribeKeyChain } from "./hive/client-functions"
 import HiveClient from "./hive/hiveclient"
-import { hiveServerLoginWithPassword } from "./hive/server-functions"
+import { communitySubscribePassword, hiveServerLoginWithPassword } from "./hive/server-functions"
 
 interface HiveKeychainResponse {
   success: boolean
@@ -14,7 +15,7 @@ interface MetadataProps {
 }
 
 export interface HiveAccount extends dhive.Account {
-
+  witness_votes: string[]
   metadata?: MetadataProps
 }
 
@@ -98,6 +99,11 @@ function useAuthHiveUser(): AuthUser {
           }
           localStorage.setItem("hiveuser", JSON.stringify(userAccount))
           setHiveUser(userAccount)
+          const isSubscribed = await checkCommunitySubscription(username)
+          if (!isSubscribed && key) {
+            //console.log("not subscribed!!")
+            await communitySubscribePassword(key, username)
+          }
         } else {
           console.error(validation.message)
           return reject(validation.message)
@@ -141,13 +147,18 @@ function useAuthHiveUser(): AuthUser {
                         userAccount.metadata &&
                         !userAccount.metadata.hasOwnProperty("profile")
                       )
-                        userAccount.metadata = JSON.parse(
+                        if (userAccount.posting_json_metadata) userAccount.metadata = JSON.parse(
                           userAccount.posting_json_metadata
                         )
                     }
                     setHiveUser(userAccount)
                     localStorage.setItem("hiveuser", JSON.stringify(userAccount))
                     localStorage.setItem("LoginMethod", "keychain")
+                    const isSubscribed = await checkCommunitySubscription(username)
+                    if (!isSubscribed) {
+                      //console.log("not subscribed!!")
+                      await communitySubscribeKeyChain(username)
+                    }
                     resolve()
                   } else {
                     reject("Verification failed: signature mismatch.")

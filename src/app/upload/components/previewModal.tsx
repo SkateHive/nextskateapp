@@ -3,6 +3,7 @@ import { commentWithPrivateKey } from '@/lib/hive/server-functions';
 import { HiveAccount } from '@/lib/useHiveAuth';
 import {
     Box,
+    Button,
     Center,
     Divider,
     Modal,
@@ -19,11 +20,9 @@ import React, { useState } from 'react';
 import slugify from '../utils/slugify';
 import BeneficiariesTable from './BeneficiariesTable';
 import { createCommentOptions, createPostOperation } from './formatPostData';
-import ModalFooterButtons from './ModalFooterButton';
 import PostPreview from './PostPreview';
 import SocialsModal from './socialsModal';
 import TagsTable from './TagsTable';
-import usePostLink from './usePostLink';
 import useSummary from './useSummary';
 
 
@@ -41,7 +40,10 @@ interface PreviewModalProps {
 const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, body, thumbnailUrl, user, beneficiariesArray, tags }) => {
     const [hasPosted, setHasPosted] = useState(false);
     const AiSummary = useSummary(body);
-    const postLink = usePostLink(title, user);
+    const permlink = slugify(title.toLowerCase());
+    const postLink = `${window.location.origin}/post/hive-173115/@${user.name}/${permlink}`;
+    const characterCount = body.length;
+    const [isMinCarcterCountReached, setIsMinCarcterCountReached] = useState(characterCount >= 350);
 
     let postDataForPreview = {
         post_id: Number(1),
@@ -49,7 +51,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
         permlink: 'permlink',
         title: title,
         body: body,
-        json_metadata: JSON.stringify({ images: [thumbnailUrl] }),
+        json_metadata: JSON.stringify({ images: ['https://ipfs.skatehive.app/ipfs/QmWgkeX38hgWNh7cj2mTvk8ckgGK3HSB5VeNn2yn9BEnt7?pinataGatewayToken=nxHSFa1jQsiF7IHeXWH-gXCY3LDLlZ7Run3aZXZc8DRCfQz4J4a94z9DmVftXyFE'] }),
         created: String(Date.now()),
         url: 'url',
         root_title: 'root_title',
@@ -64,6 +66,10 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
     }
 
     const handlePost = async () => {
+        if (!isMinCarcterCountReached) {
+            alert('Your post is too short for the Magazine Section. Please add more content or post in the Main Feed.');
+            return;
+        }
         const formatBeneficiaries = (beneficiariesArray: any[]) => {
             let seen = new Set();
             return beneficiariesArray.filter(({ account }: { account: string }) => {
@@ -128,7 +134,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
     return (
         <Modal isOpen={isOpen} onClose={onClose} size="xl">
             <ModalOverlay style={{ backdropFilter: "blur(5px)" }} />
-            <ModalContent backgroundColor={"black"} border={'1px solid #A5D6A7'}>
+            <ModalContent position={'absolute'} color={"white"} backgroundColor={"black"} border={'1px solid #A5D6A7'}>
                 {hasPosted ? (
                     <SocialsModal isOpen={hasPosted} onClose={onClose} postUrl={postLink} content={body} aiSummary={AiSummary} />
                 ) : (
@@ -136,14 +142,27 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
                         <ModalHeader>Post Preview (Review details)</ModalHeader>
                         <Divider />
                         <ModalCloseButton />
+
+                        {characterCount < 350 && (
+
+                            <Box bg={"yellow"} color="red" textAlign="center" fontSize="sm" fontWeight="bold" p={2}>
+                                Your post is too short for the Magazine Section. Please add more content or post in the Main Feed.
+                            </Box>
+                        )}
+                        {characterCount > 350 && thumbnailUrl === "https://ipfs.skatehive.app/ipfs/QmWgkeX38hgWNh7cj2mTvk8ckgGK3HSB5VeNn2yn9BEnt7?pinataGatewayToken=nxHSFa1jQsiF7IHeXWH-gXCY3LDLlZ7Run3aZXZc8DRCfQz4J4a94z9DmVftXyFE" && (
+                            <Box mt={1} bg={"yellow"} color="red" textAlign="center" fontSize="sm" fontWeight="bold" p={2}>
+                                You are forgeting the thumbnail...again...you will be able to post, but everyone will laugh at you at the SkatePark
+                            </Box>
+                        )}
+
                         <ModalBody>
                             <Box>
                                 <Center>
                                     <VStack>
-                                        <Box width={"100%"}>
+                                        <Box maxWidth={"90%"}>
                                             <PostPreview postData={postDataForPreview} />
                                         </Box>
-                                        <Box border={'1px solid white'} w="432px">
+                                        <Box border={'1px solid white'} w="80%">
                                             <BeneficiariesTable beneficiariesArray={beneficiariesArray} />
                                             <TagsTable tags={tags} />
                                         </Box>
@@ -152,7 +171,10 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
                             </Box>
                         </ModalBody>
                         <ModalFooter>
-                            <ModalFooterButtons onClose={onClose} handlePost={handlePost} />
+                            <VStack width={'100%'}>
+                                <Button width={'100%'} colorScheme='red' onClick={onClose}>Let me try again, I am high  </Button>
+                                <Button width={'100%'} colorScheme='green' onClick={handlePost}>Looks dope, confirm!</Button>
+                            </VStack>
                         </ModalFooter>
                     </>
                 )}

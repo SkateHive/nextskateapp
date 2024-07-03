@@ -13,13 +13,12 @@ import {
     Image,
     Input,
     InputGroup,
-    InputLeftElement,
+    InputLeftAddon,
     InputRightElement,
     Menu,
     MenuButton,
     MenuItem,
     MenuList,
-    Portal,
     Text
 } from "@chakra-ui/react";
 import { Operation } from "@hiveio/dhive";
@@ -43,7 +42,7 @@ const SkateAirdropContract = '0x8bD8F0D46c84feCBFbF270bac4Ad28bFA2c78F05';
 
 const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => {
     const user = useHiveUser();
-    const [token, setToken] = useState("NOGS");
+    const [token, setToken] = useState("DEGEN");
     const [isCustomToken, setIsCustomToken] = useState(false);
     const [customTokenContract, setCustomTokenContract] = useState("");
     const account = useAccount();
@@ -61,7 +60,7 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
         NOGS: {
             address: '0x13741C5dF9aB03E7Aa9Fb3Bf1f714551dD5A5F8a',
             abi: nogsABI as unknown as any[],
-            tokenLogo: "/logos/nog.svg"
+            tokenLogo: "/logos/nog.png"
         },
         MEMBER: {
             address: '0x7d89e05c0b93b24b5cb23a073e60d008fed1acf9',
@@ -215,77 +214,81 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                 <Image src={tokenDictionary[token]?.tokenLogo} alt={`${token} Logo`} width="40px" mx="auto" my={4} />
             </HStack>
             <InputGroup zIndex="modal">
-                <InputLeftElement zIndex="dropdown">
+                <InputLeftAddon backgroundImage={'/pepenation.gif'} color={'white'} zIndex="dropdown">
                     <Box borderRadius={5} position="relative" zIndex="dropdown">
                         <Menu>
-                            <MenuButton as={Button} variant="ghost" size="sm">
-                                <Image src={tokenDictionary[token]?.tokenLogo} alt={`${token} Logo`} width="50px" mx="auto" my={4} />
+                            <MenuButton _active={{ bg: 'transparent' }} _hover={{ bg: 'transparent' }} as={Button} variant="ghost" size="sm">
+                                <HStack ml={-5}>
+
+                                    <Image src={tokenDictionary[token]?.tokenLogo} alt={`${token} Logo`} width="30px" />
+                                    <Text color="white">Select Token</Text>
+
+                                </HStack>
                             </MenuButton>
-                            <Portal>
-                                <MenuList bg="black" zIndex="9999">
-                                    <MenuItem
-                                        bg="black"
-                                        _hover={{ bg: "green.500", color: "black" }}
-                                        onClick={() => {
-                                            setToken("SENDIT");
-                                            setIsCustomToken(false);
-                                        }}
-                                    >
-                                        <Image alt="sendit" mr={3} boxSize="20px" src="https://sendit.city/assets/images/image03.jpg?v=c141f3fc" />
-                                        $SENDIT
-                                    </MenuItem>
-                                    <MenuItem
-                                        bg="black"
-                                        _hover={{ bg: "yellow.500" }}
-                                        onClick={() => {
-                                            setToken("NOGS");
-                                            setIsCustomToken(false);
-                                        }}
-                                    >
-                                        <Image alt="nogs" mr={3} boxSize="20px" src="https://app.noggles.com/svg/moon-logo.svg" />
-                                        $NOGS
-                                    </MenuItem>
-                                    <MenuItem
-                                        bg="black"
-                                        _hover={{ bg: "teal.500" }}
-                                        onClick={() => {
-                                            setToken("MEMBER");
-                                            setIsCustomToken(false);
-                                        }}
-                                    >
-                                        <Image alt="member" mr={3} boxSize="20px" src="https://member.clinic/images/01-1.jpg" />
-                                        $MEMBER
-                                    </MenuItem>
-                                    <MenuItem
-                                        bg="black"
-                                        _hover={{ bg: "purple.500" }}
-                                        onClick={() => {
-                                            setToken("DEGEN");
-                                            setIsCustomToken(false);
-                                        }}
-                                    >
-                                        <Image alt="degen" mr={3} boxSize="20px" src={tokenDictionary['DEGEN'].tokenLogo} />
-                                        $DEGEN
-                                    </MenuItem>
-                                    <MenuItem
-                                        bg="black"
-                                        _hover={{ bg: "red.500", color: "black" }}
-                                        //    onClick={() => alert("We said SOON! bitch!")}
-                                        onClick={() => {
-                                            setToken("HIVE");
-                                            setIsCustomToken(false);
-                                        }}
-                                    >
-                                        <Image alt="hive-logo" mr={3} boxSize="20px" src="https://cryptologos.cc/logos/hive-blockchain-hive-logo.png" />
-                                        $HIVE
-                                    </MenuItem>
-                                </MenuList>
-                            </Portal>
+                            <MenuList ml='-16px' color={'white'} bg="black" zIndex="9999">
+                                <MenuItem
+                                    bg="black"
+                                    _hover={{ bg: "green.500", color: "black" }}
+                                    onClick={() => {
+                                        setToken("SENDIT");
+                                        setIsCustomToken(false);
+                                    }}
+                                >
+                                    <Image alt="sendit" mr={3} boxSize="20px" src="https://sendit.city/assets/images/image03.jpg?v=c141f3fc" />
+                                    $SENDIT
+                                </MenuItem>
+                                <MenuItem
+                                    bg="black"
+                                    _hover={{ bg: "yellow.500" }}
+                                    onClick={() => {
+                                        setToken("NOGS");
+                                        setIsCustomToken(false);
+                                    }}
+                                >
+                                    <Image alt="nogs" mr={3} boxSize="20px" src="/logos/nog.png" />
+                                    $NOGS
+                                </MenuItem>
+                                <MenuItem
+                                    bg="black"
+                                    _hover={{ bg: "teal.500" }}
+                                    onClick={() => {
+                                        setToken("MEMBER");
+                                        setIsCustomToken(false);
+                                    }}
+                                >
+                                    <Image alt="member" mr={3} boxSize="20px" src="https://member.clinic/images/01-1.jpg" />
+                                    $MEMBER
+                                </MenuItem>
+                                <MenuItem
+                                    bg="black"
+                                    _hover={{ bg: "purple.500" }}
+                                    onClick={() => {
+                                        setToken("DEGEN");
+                                        setIsCustomToken(false);
+                                    }}
+                                >
+                                    <Image alt="degen" mr={3} boxSize="20px" src={tokenDictionary['DEGEN'].tokenLogo} />
+                                    $DEGEN
+                                </MenuItem>
+                                <MenuItem
+                                    bg="black"
+                                    _hover={{ bg: "red.500", color: "black" }}
+                                    //    onClick={() => alert("We said SOON! bitch!")}
+                                    onClick={() => {
+                                        setToken("HIVE");
+                                        setIsCustomToken(false);
+                                    }}
+                                >
+                                    <Image alt="hive-logo" mr={3} boxSize="20px" src="https://cryptologos.cc/logos/hive-blockchain-hive-logo.png" />
+                                    $HIVE
+                                </MenuItem>
+                            </MenuList>
                         </Menu>
                     </Box>
-                </InputLeftElement>
+                </InputLeftAddon>
                 <InputRightElement>
                     <Button
+                        bg={'green.200'}
                         size="xs"
                         onClick={() => {
                             setAmount((prev) => String(Number(prev) + 1));
@@ -295,6 +298,8 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                     </Button>
                 </InputRightElement>
                 <Input
+                    size={"md"}
+                    color={"white"}
                     type="number"
                     variant={"outline"}
                     placeholder="Amount"
@@ -304,6 +309,7 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
             </InputGroup>
             {isCustomToken && (
                 <Input
+                    color={"white"}
                     placeholder="Enter token address"
                     value={customTokenContract}
                     fontSize={"48px"}
@@ -311,6 +317,11 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                 />
             )}
             <Button
+                _hover={{
+                    color: 'black',
+                    backgroundImage: 'https://i.pinimg.com/originals/18/9f/db/189fdb5d2fc52eac4fa2a6de6edaf222.gif'
+                }}
+                w={'100%'}
                 colorScheme="green"
                 variant={"outline"}
                 onClick={() => {
@@ -325,8 +336,12 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                     }
                 }}
             >
-                Send {amount} {token} to {ethAddressList.length} vagabonds !!!
+                Send {amount} {token} to {ethAddressList.length} skaters !!!
             </Button>
+            <Text color="white" fontSize="sm">
+                {isConfirmed ? "Airdrop sent!" : isConfirming ? "Sending airdrop..." : ""}
+            </Text>
+
         </>
     )
 }

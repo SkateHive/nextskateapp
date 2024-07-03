@@ -16,14 +16,10 @@ const SocialModal: React.FC<SocialModalProps> = ({ isOpen, onClose, postUrl, con
 
     const [postLinkCopied, setPostLinkCopied] = React.useState(false);
 
-    const generatePostUrl = () => {
-        return `${postUrl}`;
-    }
-    const cleanUrl = generatePostUrl().replace(window.location.origin, '');
+
     const handleCopyPostLink = () => {
         try {
-            const postPageUrl = generatePostUrl();
-            navigator.clipboard.writeText(postPageUrl);
+            navigator.clipboard.writeText(postUrl);
             setPostLinkCopied(true);
             setTimeout(() => {
                 setPostLinkCopied(false);
@@ -34,10 +30,10 @@ const SocialModal: React.FC<SocialModalProps> = ({ isOpen, onClose, postUrl, con
     };
     const handleShareWarpCast = async () => {
         try {
-            const postPageUrl = encodeURI(generatePostUrl());
+            const postPageUrl = encodeURI(postUrl);
             const warptext = `${aiSummary} ${postPageUrl}`;
 
-            window.open(`https://warpcast.com/~/compose?text=${warptext}`, '_blank');
+            window.open(`https://warpcast.com/~/compose?text=${warptext}`, "_blank", "noreferrer noopener");
         }
         catch (error) {
             console.error('Failed to share in WarpCast:', error);
@@ -45,9 +41,9 @@ const SocialModal: React.FC<SocialModalProps> = ({ isOpen, onClose, postUrl, con
     }
     const handleShareTwitter = async () => {
         try {
-            const postPageUrl = encodeURI(generatePostUrl());
+            const postPageUrl = encodeURI(postUrl);
             const tweetText = `${aiSummary} ${postPageUrl}`;
-            window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, '_blank');
+            window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, "_blank", "noreferrer noopener");
 
         }
         catch (error) {
@@ -56,11 +52,11 @@ const SocialModal: React.FC<SocialModalProps> = ({ isOpen, onClose, postUrl, con
     }
     const handleShareDiscord = async () => {
         try {
-            const postPageUrl = encodeURI(generatePostUrl());
+            const postPageUrl = encodeURI(postUrl);
             const tweetText = `${aiSummary} ${postPageUrl}`;
             navigator.clipboard.writeText(tweetText);
 
-            window.open('https://discord.com/channels/631777256234156033/631778823716864011', '_blank');
+            window.open('https://discord.com/channels/631777256234156033/631778823716864011', "_blank", "noreferrer noopener");
         }
         catch (error) {
             console.error('Failed to share in Discord:', error);
@@ -83,7 +79,7 @@ const SocialModal: React.FC<SocialModalProps> = ({ isOpen, onClose, postUrl, con
 
                         </Flex>
                         <Flex align="center" justify="space-between" mt={4}>
-                            <Input value={cleanUrl} bg={"grey"} isReadOnly variant="filled" size="sm" />
+                            <Input value={postUrl} bg={"grey"} isReadOnly variant="filled" size="sm" />
                             <Button bg={"transparent"} border={"1px solid white"} color={"white"} onClick={handleCopyPostLink} leftIcon={<FaCopy />} size="sm">
                                 {postLinkCopied ? 'Copied!' : 'Copy'}
                             </Button>

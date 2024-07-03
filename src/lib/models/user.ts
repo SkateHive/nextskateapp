@@ -1,10 +1,10 @@
-import { Account } from "@hiveio/dhive"
+import { Account } from "@hiveio/dhive";
 
 interface HiveAccountMetadataProps {
   [key: string]: any
 }
 export interface HiveAccount extends Account {
-
+  witness_votes: string[];
   reputation?: number | string
   metadata?: HiveAccountMetadataProps
 }

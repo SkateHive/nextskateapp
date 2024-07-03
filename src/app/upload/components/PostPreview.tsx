@@ -23,7 +23,7 @@ const PostPreview: React.FC<PostPreviewProps> = ({ postData }) => {
         >
             <PostProvider postData={postData}>
                 <Header />
-                <Box m={2} w={"400px"} height={"240px"}>
+                <Box m={0} maxW={"350px"} maxH={"240px"}>
                     <PostCarousel />
                 </Box>
                 <Footer />

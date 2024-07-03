@@ -3,7 +3,8 @@ import useAuthHiveUser from "@/lib/useHiveAuth";
 import { transformIPFSContent } from "@/lib/utils";
 import { Avatar, Badge, Box, Button, Center, Checkbox, Divider, Flex, HStack, Image, Input, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Spinner, Text, Tooltip, VStack } from "@chakra-ui/react";
 import MDEditor, { commands } from '@uiw/react-md-editor';
-import React, { RefObject, useRef, useState } from "react";
+import { ArrowRightIcon } from "lucide-react";
+import React, { RefObject, useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { FaImage, FaSave } from "react-icons/fa";
 import ReactMarkdown from 'react-markdown';
@@ -40,31 +41,63 @@ export default function Upload() {
     const defaultTags = ["skatehive", "skateboarding", "leofinance", "sportstalk", "hive-engine"];
     const [tags, setTags] = useState([...defaultTags]);
     const [showAdvanced, setShowAdvanced] = useState(false);
-    const [thumbnailUrl, setThumbnailUrl] = useState<string | null>("https://ipfs.skatehive.app/ipfs/QmYkb6yq2nXSccdMwmyNWXND8T1exqUW1uUiMAQcV4nfVP?pinataGatewayToken=nxHSFa1jQsiF7IHeXWH-gXCY3LDLlZ7Run3aZXZc8DRCfQz4J4a94z9DmVftXyFE");
+    const [thumbnailUrl, setThumbnailUrl] = useState<string | null>("https://ipfs.skatehive.app/ipfs/QmWgkeX38hgWNh7cj2mTvk8ckgGK3HSB5VeNn2yn9BEnt7?pinataGatewayToken=nxHSFa1jQsiF7IHeXWH-gXCY3LDLlZ7Run3aZXZc8DRCfQz4J4a94z9DmVftXyFE");
     const [newTagInputs, setNewTagInputs] = useState(Array(5).fill(""));
     const searchBarRef: RefObject<HTMLDivElement> = useRef(null);
     const [beneficiaries, setBeneficiaries] = useState<Beneficiary[]>([]);
     const [showPreview, setShowPreview] = useState(false);
     const [isChecked, setIsChecked] = useState(true);
+    const [isButtonVisible, setIsButtonVisible] = useState(true);
+    const buttonRef = useRef(null);
 
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            setValue(localStorage.getItem('draft') || '');
+        }
+    }, []);
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                setIsButtonVisible(entry.isIntersecting);
+            },
+            { threshold: 0.1 }
+        );
+
+        if (buttonRef.current) {
+            observer.observe(buttonRef.current);
+        }
+
+        return () => {
+            if (buttonRef.current) {
+                observer.unobserve(buttonRef.current);
+            }
+        };
+    }, []);
     const { getRootProps, getInputProps } = useDropzone({
         noClick: true,
         noKeyboard: true,
         onDrop: async (acceptedFiles) => {
             setIsUploading(true);
             for (const file of acceptedFiles) {
+                if (file.type !== "image/png" && file.type !== "image/jpeg" && file.type !== "image/gif" && file.type !== "video/mp4") {
+                    alert("Invalid file type. Only images and videos are allowed. To use .mov files upload in Feed");
+                    setIsUploading(false);
+                    return;
+                }
                 const ipfsData = await uploadFileToIPFS(file);
                 if (ipfsData !== undefined) {
-                    const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}?pinataGatewayToken=${PINATA_GATEWAY_TOKEN}`;
+                    const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}`;
                     const markdownLink = file.type.startsWith("video/") ? `<iframe src="${ipfsUrl}" allowfullscreen></iframe>` : `![Image](${ipfsUrl})`;
                     setValue(prevMarkdown => `${prevMarkdown}\n${markdownLink}\n`);
+                    setThumbnailUrl(acceptedFiles[0].type.startsWith("video/") ? "https://ipfs.skatehive.app/ipfs/QmWgkeX38hgWNh7cj2mTvk8ckgGK3HSB5VeNn2yn9BEnt7" : `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}`);
+
                 }
             }
             setIsUploading(false);
         },
         accept: {
             'image/*': ['.png', '.gif', '.jpeg', '.jpg'],
-            'video/*': [".mp4", ".mov"],
+            'video/*': [".mp4"],
         },
         multiple: false
     }
@@ -101,11 +134,10 @@ export default function Upload() {
 
     const renderThumbnailOptions = () => {
         const selectedThumbnailStyle = {
-            border: '2px solid #A5D6A7',
+            border: '4px solid red',
         };
 
         const imageUrls = extractImageUrls(value);
-
 
         const options = imageUrls.map((imageUrl, index) => (
             <HStack
@@ -121,7 +153,7 @@ export default function Upload() {
                     onClick={() => {
                         setThumbnailUrl(imageUrl);
                     }}
-                    style={imageUrl === thumbnailUrl ? selectedThumbnailStyle : {}}
+                    style={imageUrl === thumbnailUrl ? selectedThumbnailStyle : { opacity: '0.3' }}
                 >
                     <Image
                         src={imageUrl}
@@ -199,8 +231,21 @@ export default function Upload() {
         updatedDefaultBeneficiaries[index].percentage = newPercentage;
     }
 
+    const handleChange = (value: string) => {
+        localStorage.setItem('draft', value);
+        setValue(value || localStorage.getItem('draft') || '');
+    }
+    const [isMobile, setIsMobile] = useState(false)
+    useEffect(() => {
+        if (window) {
+            const isMobile = window.innerWidth < 768
+            setIsMobile(isMobile)
+        }
+    }, [])
+    const isButtonDisabled = isUploading || !title || !value;
+
     return (
-        <Box width="100%" overflow="hidden">
+        <Box width="100%" overflow="hidden" color={"white"} >
             {showPreview &&
                 <PreviewModal
                     isOpen={showPreview}
@@ -219,7 +264,18 @@ export default function Upload() {
             <Input {...getInputProps()} id="md-image-upload" style={{ display: 'none' }} size="md" />
 
             <Flex direction={{ base: 'column', md: 'row' }} >
-                <Box width={{ base: '100%', md: '50%' }} p="4">
+                <Box h={"100vh"} width={{ base: '100%', md: '50%' }} p="4" overflow={'auto'}
+                    sx={{
+                        "&::-webkit-scrollbar": {
+                            display: "none",
+                        },
+                        "&::-webkit-scrollbar-thumb": {
+                            display: "none",
+                        }
+                    }}
+                >
+
+
                     <HStack>
                         <Input
                             borderColor={"green.600"}
@@ -238,15 +294,17 @@ export default function Upload() {
 
                         <MDEditor
                             value={value}
-                            onChange={(value) => setValue(value || "")}
+                            onChange={(value) => handleChange(value || '')}
                             commands={[
-                                commands.bold, commands.italic, commands.strikethrough, commands.hr, commands.code, commands.table, commands.link, commands.quote, commands.unorderedListCommand, commands.orderedListCommand, commands.codeBlock, commands.fullscreen
+                                commands.bold, commands.italic, commands.strikethrough, commands.table, commands.link, commands.quote, commands.unorderedListCommand, commands.fullscreen
                             ]
                             }
+
                             extraCommands={extraCommands}
-                            height="700px"
+                            height={isMobile ? "500px" : "700px"}
                             preview="edit"
                             style={{
+                                color: "#A5D6A7",
                                 border: "1px solid #A5D6A7",
                                 padding: "10px",
                                 backgroundColor: "black",
@@ -254,19 +312,41 @@ export default function Upload() {
                         />
                     </Box>
                     <VStack>
-
-                        <Badge width={"100%"} mt={5} size="24px" color="#A5D6A7" background={"green.600"}
+                        <Badge width={"100%"} mt={5} size="24px" color="#A5D6A7" backgroundColor={"#1e2021"}
                             border={"1px solid #A5D6A7"} {...getRootProps()}>
                             <Center>
                                 <VStack padding={5}>
+                                    <Text fontSize={"22px"} color="white">Select Thumbnail</Text>
+                                    <Flex flexWrap="wrap">
+                                        <Input
+                                            {...getInputProps()}
+                                            id="md-image-upload"
+                                            style={{ display: 'none' }}
+                                            size="md"
+                                        />
+                                        <Box
+                                            cursor="pointer"
+                                            width="100px"
+                                            height="100px"
+                                            display="flex"
+                                            border={"2px dashed #A5D6A7"}
+                                            justifyContent="center"
+                                            alignItems="center"
+                                            onClick={() => {
+                                                const element = document.getElementById('md-image-upload');
+                                                if (element) {
+                                                    element.click();
+                                                }
+                                            }}
+                                        >
+                                            +
+                                        </Box>
 
-                                    <Text fontSize={"22px"} color="black">Select Thumbnail</Text>
-                                    <Flex flexWrap="wrap">{renderThumbnailOptions()}</Flex>
+                                        {renderThumbnailOptions()}
+                                    </Flex>
                                 </VStack>
                             </Center>
-
                         </Badge>
-
                         <Badge width={"100%"} mt={5} cursor={"pointer"} size="24px" color="#A5D6A7"
                             background={"green.600"}
                             border={"1px solid #A5D6A7"}
@@ -401,23 +481,51 @@ export default function Upload() {
                             </Box>
                         </Box>
                     </Box>}
-                    <Center>
+                    <Button
+                        mt={5}
+                        ref={buttonRef} // Attach the ref to the button we want to observe
+                        onClick={() => handlePost()}
+                        isDisabled={isButtonDisabled}
+                        w={"100%"}
+                        bg="black"
+                        color={"limegreen"}
+                        border={"1px solid #A5D6A7"}
+                        _hover={{ bg: "limegreen", color: 'black' }}
+                    >
+                        Send it !
+                    </Button>
 
-                        <Button
-                            mt={5}
-                            onClick={() => handlePost()}
-                            isDisabled={isUploading}
-                            w={"100%"}
-                            colorScheme="blue"
-                            variant={"outline"}
-
+                    {!isButtonVisible && (
+                        <Box
+                            position="fixed"
+                            bottom={isMobile ? "100px" : "10px"}
+                            right="20px"
+                            zIndex="999"
                         >
-                            Submit
-                        </Button>
-                    </Center>
-
+                            <Button
+                                leftIcon={<ArrowRightIcon />}
+                                bg="black"
+                                color={"limegreen"}
+                                border={"1px solid #A5D6A7"}
+                                size="lg"
+                                isDisabled={isButtonDisabled}
+                                borderRadius={"full"}
+                                onClick={() => handlePost()}
+                                _hover={{ bg: "limegreen", color: 'black' }}
+                            >
+                                {"Send it !"}
+                            </Button>
+                        </Box>
+                    )}
                 </Box>
-                <Box h={"100vh"} mt={4} width={{ base: '100%', md: '50%' }} p="4" borderRadius="2px" border="1px solid #A5D6A7">
+                <Box h={"100vh"} mt={4} width={{ base: '100%', md: '50%' }} p="4" borderRadius="2px" border="1px solid #A5D6A7" sx={{
+                    "&::-webkit-scrollbar": {
+                        display: "none",
+                    },
+                    "&::-webkit-scrollbar-thumb": {
+                        display: "none",
+                    }
+                }}>
                     <HStack>
                         <Avatar name={hiveUser?.name} src={hiveUser?.metadata?.profile?.profile_image} boxSize="58px" borderRadius={'10px'} />
                         <Box borderRadius="4px" width="100%">
@@ -425,7 +533,14 @@ export default function Upload() {
                         </Box>
                     </HStack>
                     <Divider my={5} />
-                    <Box maxH="90vh" overflow="auto" p={1} borderRadius="md">
+                    <Box maxH="90vh" overflow="auto" p={1} borderRadius="md" sx={{
+                        "&::-webkit-scrollbar": {
+                            display: "none",
+                        },
+                        "&::-webkit-scrollbar-thumb": {
+                            display: "none",
+                        }
+                    }}>
                         <ReactMarkdown components={MarkdownRenderers} rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
                             {(transformIPFSContent(value))}
                         </ReactMarkdown>
