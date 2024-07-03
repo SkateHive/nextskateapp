@@ -1,21 +1,21 @@
+// src/app/landingpage/landingPage.tsx
+
+"use client";
+
 import { Box, Flex, Heading, Image, Input, Button, Text } from '@chakra-ui/react';
-import { initializeForms } from './utils'; // Adjust path as necessary
 
 const LandingPage = () => {
-  // Initialize forms on component mount
-  initializeForms();
-
   return (
     <Box bg="#000000" h="100vh" display="flex" justifyContent="center" alignItems="center">
       <Box maxW="800px" w="80%" bg="#000000" p="20px" borderRadius="8px" boxShadow="0 2px 4px rgba(0, 0, 0, 0.1)">
-        <Flex justifyContent="space-between" alignItems="flex-start" className="content">
-          <Box className="left" textAlign="center" mr="20px" flex="1">
+        <Flex direction="column" alignItems="center" className="content">
+          <Box className="left" textAlign="center" mb="20px">
             <Image src="https://beta.skatehive.app/skatehive_square_green.png" alt="Welcome Image" borderRadius="8px" maxW="100%" />
             <Text mt="10px" fontSize="16px" color="#c7c6c6">Decentralized skateboarding community.</Text>
           </Box>
-          <Box className="right" flex="1" mt="30px">
+          <Box className="right" w="100%">
+            <Heading as="h2" fontSize="20px" mb="10px" color="#00ff22">Log In</Heading>
             <form id="auth-form">
-              <Heading as="h2" fontSize="20px" mb="10px" color="#00ff22">Log In</Heading>
               <Flex alignItems="center" className="form-group" mb="15px">
                 <Text fontSize="14px" color="#919191">@</Text>
                 <Input type="text" id="login-hive" name="login-hive" placeholder="Hive Name" />
@@ -33,6 +33,6 @@ const LandingPage = () => {
       </Box>
     </Box>
   );
-}
+};
 
 export default LandingPage;

@@ -128,6 +128,10 @@ export default function Navbar() {
               <FaEthereum size={"22px"} />
               <Link href={"/dao"}>Dao</Link>
             </HStack>
+            <HStack padding={0} gap={3} fontSize={"22px"}>
+              <FaEthereum size={"22px"} />
+              <Link href={"/landingPage"}>landing</Link>
+            </HStack>
             {hiveUser ? (
               <>
                 <HStack padding={0} gap={3} fontSize={"22px"}>

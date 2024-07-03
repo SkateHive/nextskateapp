@@ -33,6 +33,7 @@ import LoginModal from "../Hive/Login/LoginModal";
 import CommunityTotalPayout from "../communityTotalPayout";
 import checkRewards from "./utils/checkReward";
 import { claimRewards } from "./utils/claimRewards";
+import Link from 'next/link';
 const blink = keyframes`
   0% { color: gold, opacity: 1; }
   50% { opacity: 0.1; }
@@ -148,6 +149,18 @@ const SidebarDesktop = () => {
             window.location.href = "/dao";
           }}>Dao</Text>
         </HStack>
+        
+        {/*
+        <HStack padding={0} gap={3} fontSize={"22px"}>
+          <FaEthereum color={'white'} size={"22px"} />
+          <Link href="/landing">
+        <Text color={"white"} cursor={"pointer"}>
+          landing
+        </Text>
+      </Link>
+        </HStack> 
+        */}
+
         {!hiveUser && (
           <HStack padding={0} gap={3} fontSize={"22px"}>
             <FaDiscord size={"22px"} />
