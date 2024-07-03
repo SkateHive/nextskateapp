@@ -22,7 +22,7 @@ function Wallet() {
       <Tabs variant={'soft-enclosed'}>
         <TabList color={"white"} justifyContent={"center"} fontFamily="pixelfont">
           <Tab _selected={{ bg: 'limegreen' }}>Wallet</Tab>
-          <Tab _selected={{ bg: 'limegreen' }}>Trade Tokens</Tab>
+          <Tab _selected={{ bg: 'limegreen' }}>Swap</Tab>
         </TabList>
         <TabPanels>
           <TabPanel>
