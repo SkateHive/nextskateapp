@@ -97,7 +97,7 @@ const SidebarDesktop = () => {
     }
   };
 
-  
+
   return (
     <>
       <LoginModal isOpen={isLoginOpen} onClose={onLoginClose} />
@@ -137,11 +137,11 @@ const SidebarDesktop = () => {
         />
         <CommunityTotalPayout />
 
-        
+
 
         <HStack padding={0} mt={8} gap={3} fontSize={"22px"} >
           <FaSpeakap color="white" size={"22px"} />
-          <Text color={"white"} cursor={"pointer"}  _hover={{ color: 'lime', fontFamily: "Joystix" }} onClick={() => {
+          <Text color={"white"} cursor={"pointer"} _hover={{ color: 'lime', fontFamily: "Joystix" }} onClick={() => {
             window.location.href = "/";
           }}>Feed</Text>
         </HStack>
@@ -163,7 +163,7 @@ const SidebarDesktop = () => {
             window.location.href = "/dao";
           }}>Dao</Text>
         </HStack>
-        
+
         {/*
         <HStack padding={0} gap={3} fontSize={"22px"}>
           <FaEthereum color={'white'} size={"22px"} />
@@ -193,7 +193,7 @@ const SidebarDesktop = () => {
               }}>Profile</Text>
             </HStack>
             <HStack padding={0} gap={3} fontSize={"22px"} _hover={{ color: 'lime' }}>
-              <FaWallet color="white" size={"22px"} _hover={{ color: 'lime' }}/>
+              <FaWallet color="white" size={"22px"} />
               <Text color={"white"} cursor={"pointer"} _hover={{ color: 'lime', fontFamily: "Joystix" }} onClick={() => {
                 window.location.href = `/wallet`;
               }}>Wallet</Text>
@@ -224,10 +224,10 @@ const SidebarDesktop = () => {
               padding={0}
               gap={3}
               fontSize={"22px"}
-              
-              
+
+
             >
-              <FaBell  size={"22px"} _hover={{ color: 'lime' }} />
+              <FaBell size={"22px"} />
               <Text color={"white"} _hover={{ color: 'lime', fontFamily: "Joystix" }} > Notifications</Text>
             </HStack>
             {notifications ? <NotificationsPage /> : null}
