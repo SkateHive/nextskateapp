@@ -57,16 +57,36 @@ function CommunityTotalPayout() {
         margin="0px"
         padding="4px"
         width={"100%"}
-        borderRadius="md"
+        borderBottomLeftRadius="20px"  // Example: Set a specific radius for the top-left corner
+        borderBottomRightRadius="20px"
         color="chartreuse"
         border={"1px solid #A5D6A7"}
+        position="relative" // Ensure relative positioning for absolute children
+        overflow="hidden" // Hide overflowing content
+        backgroundImage={`url('/moneyfalling.gif')`} // Replace with your background GIF path
+        backgroundRepeat="no-repeat"
+        backgroundPosition="center"
+        backgroundSize="cover"
+        zIndex={0}
+        
       >
+
+        <Box
+          position="absolute"
+          top="0"
+          left="0"
+          right="0"
+          bottom="0"
+          backgroundColor="rgba(0, 0, 0, 0.8)" // Adjust opacity as needed (0.5 for 50% opacity)
+          zIndex={1} // Ensure overlay is above background image
+        />
         {loading ? (
           <VStack>
             <Image
               alt="Loading..."
               boxSize={"24px"}
-              src='/spinning-joint.gif'
+              src='/spinning-joint-sm.gif'
+              
             />
 
             <Text fontSize={"12px"} color={"chartreuse"}>
@@ -88,6 +108,7 @@ function CommunityTotalPayout() {
               textShadow={"1px 1px 15px black"}
               gap={1}
               display={"flex"}
+              zIndex={2}
             >
               ${formattedNumber}
             </Text>
@@ -96,6 +117,7 @@ function CommunityTotalPayout() {
               fontSize="12px"
               fontWeight="bold"
               textShadow={"1px 1px 15px black"}
+              zIndex={2}
             >
               Paid to Skaters
             </Text>
