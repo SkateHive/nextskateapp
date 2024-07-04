@@ -128,6 +128,10 @@ export default function Navbar() {
               <FaEthereum size={"22px"} />
               <Link href={"/dao"}>Dao</Link>
             </HStack>
+            <HStack padding={0} gap={3} fontSize={"22px"}>
+              <FaEthereum size={"22px"} />
+              <Link href={"/landingPage"}>landing</Link>
+            </HStack>
             {hiveUser ? (
               <>
                 <HStack padding={0} gap={3} fontSize={"22px"}>
@@ -198,7 +202,9 @@ export default function Navbar() {
           </DrawerFooter>
         </DrawerContent>
       </Drawer>
-      <Flex m={3} align="center" justify="space-between">
+
+      
+      <Flex m={3} align="center" justify="space-between"  zIndex={999}>
         <Heading ml={3} size="2xl">
           <HStack>
             <Image
@@ -224,6 +230,7 @@ export default function Navbar() {
             )}
           </HStack>
         </Heading>
+
         <AuthorSearchBar
           onSearch={(selectedUsername: string) => {
             window.location.href = `/profile/${selectedUsername}`

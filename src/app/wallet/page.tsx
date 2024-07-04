@@ -8,9 +8,11 @@ import {
   TabList,
   TabPanel,
   TabPanels,
-  Tabs
+  Tabs,
+  Text
 } from "@chakra-ui/react";
 import TotalValueBox from "./components/TotalWalletPage";
+import '../../styles/fonts.css';
 function Wallet() {
   const user = useHiveUser();
   const username = user?.hiveUser?.name;
@@ -18,9 +20,9 @@ function Wallet() {
   return (
     <Box w="100%" p={4}>
       <Tabs variant={'soft-enclosed'}>
-        <TabList color={"white"} justifyContent={"center"}>
+        <TabList color={"white"} justifyContent={"center"} fontFamily="pixelfont">
           <Tab _selected={{ bg: 'limegreen' }}>Wallet</Tab>
-          <Tab _selected={{ bg: 'limegreen' }}>Trade Tokens</Tab>
+          <Tab _selected={{ bg: 'limegreen' }}>Swap</Tab>
         </TabList>
         <TabPanels>
           <TabPanel>
