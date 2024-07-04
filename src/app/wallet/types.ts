@@ -41,6 +41,27 @@ export interface PortfolioData {
     totalBalanceUsdTokens: number;
     totalNetWorth: number;
 }
+export type NFT = {
+    token: {
+        estimatedValueEth: string;
+        lastSale: {
+            price: string;
+        };
+        medias: {
+            originalUrl: string;
+        }[];
+        collection: {
+            floorPriceEth: string;
+            name: string;
+            address: string;
+        };
+        floorPriceEth: string;
+        lastSaleEth: string;
+        lastOffer?: {
+            price: string;
+        };
+    };
+};
 
 export interface BlockchainInfo {
     color: string;

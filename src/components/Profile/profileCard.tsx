@@ -18,6 +18,7 @@ import React from 'react';
 import { FaArrowDown } from 'react-icons/fa';
 import LoginModal from '../Hive/Login/LoginModal';
 import UserAvatar from '../UserAvatar';
+import useGnarsBalance from '@/hooks/useGnarsBalance';
 interface ProfileCardProps {
     user: HiveAccount
 }
@@ -61,10 +62,12 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
     const user_posting_metadata = JSON.parse(user.posting_json_metadata || '{}');
     const [isLoginModalOpen, setIsLoginModalOpen] = React.useState(false);
     const userLevel = user_metadata.extensions && user_metadata.extensions['level'] || 0;
+    const gnarsBalance = useGnarsBalance(user_metadata.extensions && user_metadata.extensions['eth_address'] || '');
     const username = user.name;
-    const { hivePower } = useHiveBalance();
+    const { hivePower } = useHiveBalance(user);
     const [userXp, setUserXp] = React.useState(user_metadata.extensions && user_metadata.extensions['staticXp'] || 0);
     const [userVideoParts, setUserVideoParts] = React.useState(user_metadata.extensions && user_metadata.extensions['video_parts']?.length || 0);
+    console.log(gnarsBalance.gnarsBalance)
     return (
         <>
             {isLoginModalOpen && <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />}
@@ -93,60 +96,67 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                                     </Text>
                                 </HStack>
                                 <Text fontWeight={"bold"} fontSize={"12px"}>
-
                                     Level {userLevel || 0}
                                 </Text>
                             </HStack>
                         </CardHeader>
-                        <Box p={4}>
+                        <Box p={3}>
                             <CardBody bg={"transparent"}>
                                 <VStack>
                                     <Center>
                                         <Box borderRadius={14} border={'3px solid black'}>
-                                            <UserAvatar hiveAccount={user} borderRadius={10} boxSize={200} />
+                                            <UserAvatar hiveAccount={user} borderRadius={10} boxSize={230} />
                                         </Box>
                                     </Center>
                                 </VStack>
                             </CardBody>
-                            <CardFooter fontSize={'16px'} fontWeight={'bold'} color={'white'} mb={-5}>
-                                <VStack m={0} w={"100%"}>
-                                    <Box border={'1px solid white'} w={200} borderRadius="10px" p={3}>
+                            <CardFooter fontSize={'16px'} fontWeight={'bold'} color={'white'} mb={-2}>
+                                <VStack w={"100%"}>
+                                    <Box border={'1px solid white'} w={230} borderRadius="10px" p={2}>
                                         <HStack justify={"space-between"}>
-                                            <Text >
-                                                Power:
-                                            </Text>
+                                            <HStack>
+                                                <Image src="/logos/hp_logo.png" alt="Logo" boxSize="20px" />
+                                                <Text >
+                                                    Power:
+                                                </Text>
+                                            </HStack>
                                             <Text >
                                                 {hivePower.toFixed(0)} HP
                                             </Text>
                                         </HStack>
                                         <HStack justify={"space-between"}>
+                                            <HStack>
+                                                <Image src="/logos/gnars_logo.png" alt="Logo" boxSize="18px" />
+                                                <Text cursor={"pointer"} >
+                                                    Gnars:
+                                                </Text>
+                                            </HStack>
                                             <Text cursor={"pointer"} >
-                                                Gnars: {" "}
-                                            </Text>
-                                            <Text cursor={"pointer"} >
-                                                soon
+                                                {String(gnarsBalance.gnarsBalance) || 0}
                                             </Text>
                                         </HStack>
                                         <HStack justify={"space-between"}>
-                                            <Text cursor={"pointer"} >
-                                                Exp:
-                                            </Text>
+                                            <HStack>
+                                                <Image src="/skatehive_square_green.png" alt="Logo" boxSize="20px" />
+                                                <Text cursor={"pointer"} >
+                                                    Exp:
+                                                </Text>
+                                            </HStack>
                                             <Text cursor={"pointer"} >
                                                 {userXp} XP
                                             </Text>
                                         </HStack>
                                         <HStack justify={"space-between"}>
                                             <Text cursor={"pointer"} >
-                                                Video Parts:
+                                                📹 VideoParts:
                                             </Text>
                                             <Text cursor={"pointer"}>
                                                 {userVideoParts || 0}
                                             </Text>
                                         </HStack>
                                     </Box>
-                                    <CardFooter mt={5}>
+                                    <CardFooter>
                                         <Flex justify={"right"}>
-
                                             <Button
                                                 _hover={{ background: "transparent" }}
                                                 color="white"
@@ -155,8 +165,9 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                                                 mt={2}
                                                 variant={"outline"}
                                                 w={"auto"}
+                                                onClick={() => window.location.href = `/skater/${username}`}
                                             >
-                                                Do a kickflip
+                                                Profile
                                             </Button>
                                         </Flex>
                                     </CardFooter>
