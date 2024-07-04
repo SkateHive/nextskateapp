@@ -11,7 +11,8 @@ import {
   IconButton,
   Image,
   Input,
-  Textarea
+  Textarea,
+  useBreakpointValue
 } from "@chakra-ui/react";
 import * as dhive from "@hiveio/dhive";
 import { useRef, useState } from "react";
@@ -38,6 +39,7 @@ export default function UploadForm() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [imageList, setImageList] = useState<string[]>([]);
+  const placeholderFontSize = useBreakpointValue({ base: "14px", md: "16px" });
 
   const { getRootProps, getInputProps } = useDropzone({
     noClick: true,
@@ -204,25 +206,50 @@ export default function UploadForm() {
   };
 
   return (
-    <Box p={4} width={"100%"} bg="black" color="white" {...getRootProps()}>
-      <div>
-        <Flex>
+
+    <Box
+    p={4}
+    width={"100%"}
+    maxWidth={{ base: "100vh", md: "100vw" }} 
+    bg="black"
+    color="white"
+    {...getRootProps()}
+    border="2px solid gray"
+    _focus={{
+      border: "2px solid gray",
+      boxShadow: "none",
+    }}
+    padding={"15px"} 
+    overflowY="auto"
+    >
+      <div>       
+        <Flex  >
           {/* @ts-ignore */}
-          <UserAvatar hiveAccount={user.hiveUser || {}} boxSize={12} borderRadius={5} />
-          <Flex flexDir="column" w="100%">
+          <UserAvatar hiveAccount={user.hiveUser || {}} boxSize={12} borderRadius={5}mr={4} />
+          <Flex flexDir="column" w="100%" mt={{ base: "auto", md: "auto" }} >
             <Textarea
-              border="none"
+            
+              border="1px solid gray"
               _focus={{
-                border: "none",
+                border: "2px solid gray",
                 boxShadow: "none",
+              }}
+              _placeholder={{
+                fontSize: placeholderFontSize,
+                color: "white",
               }}
               overflow={"hidden"}
               resize={"vertical"}
               ref={postBodyRef}
+              placeholder="Put your text here... What is the name of the spot?... Where is the location of the spot?"
+              ml={{ base: 2, md: 4 }}
+              mb={{ base: 1, md: 0 }}
+              width={{ base: "100%", md: "auto" }}
             />
-            <HStack>
+
+            <HStack spacing={4} mt={4} flexWrap="wrap" justifyContent="center">
               {imageList.map((item, index) => (
-                <Box key={index} position="relative" maxW={100} maxH={100}>
+                <Box key={index} position="relative" maxW={100} maxH={100} mb={4}>
                   <IconButton
                     aria-label="Remover imagem"
                     icon={<FaTimes style={{ color: "black", strokeWidth: 1 }} />}
@@ -257,7 +284,9 @@ export default function UploadForm() {
                 </Box>
               ))}
             </HStack>
+
           </Flex>
+
         </Flex>
         <HStack justifyContent="space-between" marginTop={2}>
           <Input
@@ -280,7 +309,10 @@ export default function UploadForm() {
             {hasPosted ? "Published" : "Publish"}
           </Button>
         </HStack>
+
       </div>
+
     </Box>
+
   );
 }
