@@ -77,8 +77,9 @@ function CommunityTotalPayout() {
           left="0"
           right="0"
           bottom="0"
-          backgroundColor="rgba(0, 0, 0, 0.8)" // Adjust opacity as needed (0.5 for 50% opacity)
-          zIndex={1} // Ensure overlay is above background image
+          backgroundColor="rgba(0, 0, 0, 1)"
+          _hover={{backgroundColor: "rgba(0, 0, 0, 0.5)",}} 
+          zIndex={1} 
         />
         {loading ? (
           <VStack>
@@ -86,10 +87,11 @@ function CommunityTotalPayout() {
               alt="Loading..."
               boxSize={"24px"}
               src='/spinning-joint-sm.gif'
+              zIndex={2}
               
             />
 
-            <Text fontSize={"12px"} color={"chartreuse"}>
+            <Text fontSize={"12px"} color={"chartreuse"} zIndex={2}>
               Loading...
             </Text>
           </VStack>

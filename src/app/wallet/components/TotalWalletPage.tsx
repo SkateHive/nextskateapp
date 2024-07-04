@@ -31,7 +31,7 @@ const TotalValueBox: React.FC = () => {
         >
             <Box w={{ base: "80%", md: "40%" }} textAlign="center">
                 <Text color={"black"} align="center" borderRadius={"md"} fontSize={{ base: 20, md: 20 }} mb={4} backgroundColor="white">
-                    Total Value
+                    Net Worth
                 </Text>
                 <Center>
                     <Image

@@ -1,7 +1,6 @@
 @font-face {
     font-family: 'pixelfont';
     src: url('/fonts/joystix.otf') format('otf'),
-         
          url('/fonts/joystix.otf') format('truetype');
-    /* Add additional font properties if needed */
+   
   }
