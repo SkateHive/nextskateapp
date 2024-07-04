@@ -78,7 +78,8 @@ function CommunityTotalPayout() {
           right="0"
           bottom="0"
           backgroundColor="rgba(0, 0, 0, 1)"
-          _hover={{backgroundColor: "rgba(0, 0, 0, 0.5)",}} 
+          transition="background-color 0.5s ease-in-out"
+          _hover={{backgroundColor: "rgba(0, 0, 0, 0.1)",}} 
           zIndex={1} 
         />
         {loading ? (
