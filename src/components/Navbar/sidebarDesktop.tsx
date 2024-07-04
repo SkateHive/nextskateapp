@@ -4,7 +4,7 @@ import { useHiveUser } from "@/contexts/UserContext";
 import HiveClient from "@/lib/hive/hiveclient";
 import { HiveAccount } from "@/lib/models/user";
 import { formatETHaddress } from "@/lib/utils";
-import '../../styles/fonts.css';
+import "../../styles/fonts.css";
 import {
   Box,
   Button,
@@ -36,6 +36,7 @@ import CommunityTotalPayout from "../communityTotalPayout";
 import checkRewards from "./utils/checkReward";
 import { claimRewards } from "./utils/claimRewards";
 import Link from 'next/link';
+
 const blink = keyframes`
   0% { color: gold; opacity: 1; }
   50% { opacity: 0.1; }
@@ -49,8 +50,8 @@ const SidebarDesktop = () => {
   const { openConnectModal } = useConnectModal();
   const { openAccountModal } = useAccountModal();
   const [hiveAccount, setHiveAccount] = useState<HiveAccount>();
-  // fix maluco, melhorar isso
   const client = HiveClient;
+  
   useEffect(() => {
     if (hiveUser?.name) {
       const getUserAccount = async () => {
@@ -68,7 +69,6 @@ const SidebarDesktop = () => {
     }
   }, [hiveUser?.name]);
 
-
   const {
     isOpen: isLoginOpen,
     onOpen: onLoginOpen,
@@ -77,6 +77,7 @@ const SidebarDesktop = () => {
 
   const [notifications, setNotifications] = useState(false);
   const [hasRewards, setHasRewards] = useState(false);
+
   useEffect(() => {
     const checkUserRewards = async () => {
       if (hiveUser) {
@@ -97,7 +98,6 @@ const SidebarDesktop = () => {
     }
   };
 
-  
   return (
     <>
       <LoginModal isOpen={isLoginOpen} onClose={onLoginClose} />
@@ -137,11 +137,9 @@ const SidebarDesktop = () => {
         />
         <CommunityTotalPayout />
 
-        
-
-        <HStack padding={0} mt={8} gap={3} fontSize={"22px"} >
+        <HStack padding={0} mt={8} gap={3} fontSize={"22px"}>
           <FaSpeakap color="white" size={"22px"} />
-          <Text color={"white"} cursor={"pointer"}  _hover={{ color: 'lime', fontFamily: "Joystix" }} onClick={() => {
+          <Text color={"white"} cursor={"pointer"} _hover={{ color: 'lime', fontFamily: "Joystix" }} onClick={() => {
             window.location.href = "/";
           }}>Feed</Text>
         </HStack>
@@ -163,17 +161,6 @@ const SidebarDesktop = () => {
             window.location.href = "/dao";
           }}>Dao</Text>
         </HStack>
-        
-        {/*
-        <HStack padding={0} gap={3} fontSize={"22px"}>
-          <FaEthereum color={'white'} size={"22px"} />
-          <Link href="/landing">
-        <Text color={"white"} cursor={"pointer"}>
-          landing
-        </Text>
-      </Link>
-        </HStack> 
-        */}
 
         {!hiveUser && (
           <HStack padding={0} gap={3} fontSize={"22px"}>
@@ -224,11 +211,9 @@ const SidebarDesktop = () => {
               padding={0}
               gap={3}
               fontSize={"22px"}
-              
-              
             >
-              <FaBell  size={"22px"} _hover={{ color: 'lime' }} />
-              <Text color={"white"} _hover={{ color: 'lime', fontFamily: "Joystix" }} > Notifications</Text>
+              <FaBell size={"22px"} _hover={{ color: 'lime' }} />
+              <Text color={"white"} _hover={{ color: 'lime', fontFamily: "Joystix" }}>Notifications</Text>
             </HStack>
             {notifications ? <NotificationsPage /> : null}
           </>
