@@ -117,6 +117,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                             textAlign="center"
                             bg="transparent"
                             p={2}
+                            cursor={'pointer'}
                             onClick={handleClick}
                         >
                             <HStack justifyContent="space-between">
@@ -132,7 +133,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                             </HStack>
                         </CardHeader>
                         <Box p={3}>
-                            <CardBody onClick={handleClick}
+                            <CardBody onClick={handleClick} cursor={'pointer'}
                                 bg="transparent">
                                 <VStack>
                                     <Center>
@@ -143,7 +144,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                                 </VStack>
                             </CardBody>
                             <CardFooter fontSize="16px" fontWeight="bold" color="white" mb={-2}>
-                                <VStack onClick={handleClick} w="100%">
+                                <VStack w="100%">
                                     <Box border="1px solid white" w={230} borderRadius="10px" p={2}>
                                         <HStack justify="space-between">
                                             <HStack>
@@ -208,11 +209,11 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                         p={2}
                         borderRadius="20px"
                     >
-                        <CardHeader onClick={handleClick} color="white"
+                        <CardHeader cursor={'pointer'} onClick={handleClick} color="white"
                             css={css`
-                                                        background-image: url(${userPostingMetadata?.profile?.cover_image || 'https://images.ecency.com/webp/u/' + user.name + '/cover/small'});
-                                                        background-size: cover;
-                                                    `}
+                                    background-image: url(${userPostingMetadata?.profile?.cover_image || 'https://images.ecency.com/webp/u/' + user.name + '/cover/small'});
+                                    background-size: cover;
+                                `}
                             borderBottom="1px solid white" borderTopRadius="10px" textAlign="center" bg="gray.900" p={2}>
                             <HStack justify="center">
                                 <UserAvatar hiveAccount={user} borderRadius={100} boxSize={20} />

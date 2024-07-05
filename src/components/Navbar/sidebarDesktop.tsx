@@ -51,7 +51,7 @@ const SidebarDesktop = () => {
   const { openAccountModal } = useAccountModal();
   const [hiveAccount, setHiveAccount] = useState<HiveAccount>();
   const client = HiveClient;
-  
+
   useEffect(() => {
     if (hiveUser?.name) {
       const getUserAccount = async () => {
@@ -212,7 +212,7 @@ const SidebarDesktop = () => {
               gap={3}
               fontSize={"22px"}
             >
-              <FaBell size={"22px"} _hover={{ color: 'lime' }} />
+              <FaBell size={"22px"} />
               <Text color={"white"} _hover={{ color: 'lime', fontFamily: "Joystix" }}>Notifications</Text>
             </HStack>
             {notifications ? <NotificationsPage /> : null}
