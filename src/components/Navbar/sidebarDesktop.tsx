@@ -51,7 +51,7 @@ const SidebarDesktop = () => {
   const { openAccountModal } = useAccountModal();
   const [hiveAccount, setHiveAccount] = useState<HiveAccount>();
   const client = HiveClient;
-  
+
   useEffect(() => {
     if (hiveUser?.name) {
       const getUserAccount = async () => {
@@ -180,7 +180,7 @@ const SidebarDesktop = () => {
               }}>Profile</Text>
             </HStack>
             <HStack padding={0} gap={3} fontSize={"22px"} _hover={{ color: 'lime' }}>
-              <FaWallet color="white" size={"22px"} _hover={{ color: 'lime' }}/>
+              <FaWallet color="white" size={"22px"} />
               <Text color={"white"} cursor={"pointer"} _hover={{ color: 'lime', fontFamily: "Joystix" }} onClick={() => {
                 window.location.href = `/wallet`;
               }}>Wallet</Text>
@@ -212,7 +212,7 @@ const SidebarDesktop = () => {
               gap={3}
               fontSize={"22px"}
             >
-              <FaBell size={"22px"} _hover={{ color: 'lime' }} />
+              <FaBell size={"22px"} />
               <Text color={"white"} _hover={{ color: 'lime', fontFamily: "Joystix" }}>Notifications</Text>
             </HStack>
             {notifications ? <NotificationsPage /> : null}

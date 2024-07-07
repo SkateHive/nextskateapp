@@ -53,7 +53,7 @@ const SkateCast = () => {
     parent_author,
     parent_permlink
   );
-  const [visiblePosts, setVisiblePosts] = useState<number>(5);
+  const [visiblePosts, setVisiblePosts] = useState<number>(6);
   const postBodyRef = useRef<HTMLTextAreaElement>(null);
   const user = useHiveUser();
   const username = user?.hiveUser?.name;

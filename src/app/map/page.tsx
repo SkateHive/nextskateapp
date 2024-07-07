@@ -40,12 +40,12 @@ const EmbeddedMap: React.FC = () => {
     comments: sortedComments || [],
     visiblePosts: visiblePosts,
     username: username,
-    parentPermlink: parent_permlink, 
+    parentPermlink: parent_permlink,
   };
 
   return (
     <>
-        <Global
+      <Global
         styles={`
           @property --a {
             syntax: "<angle>";
@@ -71,15 +71,15 @@ const EmbeddedMap: React.FC = () => {
           }
         `}
       />
-      <Flex   
-      flexDirection="column"
+      <Flex
+        flexDirection="column"
         align="center"
         justifyContent="center"
         p={4}
-       style={{ width: isMobile ? "auto" :  "70%"}}
+        style={{ width: isMobile ? "auto" : "70%" }}
         maxWidth="100%"
-        
-        >
+
+      >
         <Box
           id="animatedBox"
           borderRadius="10px"
@@ -97,22 +97,22 @@ const EmbeddedMap: React.FC = () => {
           <Box mb={4}>
             <iframe
               src={mapSrc}
-             
+
               style={{
                 border: "0",
-               
-               
+
+
                 height: isMobile ? "50vh" : "400px",
 
                 width: "100%",
                 padding: 0,
-              
+
                 margin: 0,
                 left: 0,
                 top: 0,
                 touchAction: "pan-x pan-y",
               }}
-              
+
               allowFullScreen
             ></iframe>
           </Box>

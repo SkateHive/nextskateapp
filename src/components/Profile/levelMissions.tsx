@@ -34,7 +34,7 @@ export default function LevelMissions({ initialLevel, user, updateAvailableXp }:
     const [user_has_ethereum_address, setUserHasEthereumAddress] = useState(false);
     const [user_posts, setUserPosts] = useState([]);
     const userLatestPostDate = user.last_post;
-    const { hivePower } = useHiveBalance();
+    const { hivePower } = useHiveBalance(user);
     const [completedMissions, setCompletedMissions] = useState({
         hasProfilePic: false,
         hasCompletedProfile: false,

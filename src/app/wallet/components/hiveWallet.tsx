@@ -42,7 +42,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
         HBDUsdValue,
         savingsUSDvalue,
         totalValue,
-    } = useHiveBalance();
+    } = useHiveBalance(hiveUser);
     const [isModalOpened, setIsOpened] = useState(false);
 
     useEffect(() => {
