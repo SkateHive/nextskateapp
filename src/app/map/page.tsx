@@ -2,7 +2,8 @@
 
 import { useHiveUser } from '@/contexts/UserContext';
 import { useComments } from '@/hooks/comments';
-import { Box, Divider, Flex, Image, Text, useBreakpointValue } from '@chakra-ui/react';
+import { Box, Center, Divider, Flex, Heading, Image, Text, useBreakpointValue } from '@chakra-ui/react';
+import Head from "next/head";
 import { Global } from '@emotion/react';
 import React, { useMemo, useState } from 'react';
 import EmbeddedCommentList, { EmbeddedCommentListProps } from './EmbeddedCommentList';
@@ -90,8 +91,15 @@ const EmbeddedMap: React.FC = () => {
           mb={6}
           boxShadow="xl"
         >
-          <Text fontSize="lg" fontWeight="bold" color="white" mb={2} align="center">
+          <Head>
+            <title>Skatehive Spot Map - A Global Skatespot Database</title>
+            <meta name="description" content="Discover the Skatehive Spot Map, a global database for finding and sharing skate spots. Join the community today!" />
+            <meta name="keywords" content="skateboarding, skate spots, skate map, global skate spots, skatehive" />
+          </Head>
+          <Heading as="h1" fontSize="2xl" fontWeight="bold" color="white" mb={2} textAlign="center">
             Skatehive Spot Map
+          </Heading>
+          <Text fontSize="lg" fontWeight="bold" color="white" mb={2} textAlign="center" paddingBottom={5}>
             A Global Skatespot Database
           </Text>
           <Box mb={4}>
@@ -102,15 +110,17 @@ const EmbeddedMap: React.FC = () => {
                 border: "0",
 
 
-                height: isMobile ? "50vh" : "400px",
+                height: isMobile ? "50vh" : "500px",
 
-                width: "100%",
+                width: "90%",
                 padding: 0,
 
-                margin: 0,
+               
+                margin: "auto",
                 left: 0,
                 top: 0,
                 touchAction: "pan-x pan-y",
+                boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)",
               }}
 
               allowFullScreen
@@ -121,34 +131,28 @@ const EmbeddedMap: React.FC = () => {
               <Image
                 src="https://i.ibb.co/yqr3KQR/image.png"
                 alt="Map thumbnail"
-                boxSize="300px"
+                boxSize="250px"
                 boxShadow="md"
+                margin="10%"
               />
             </Box>
-            <Box flex="2" p={paddingX}>
+            <Box flex="2" p={paddingX}
+           
+            >
               <Text fontSize="large" color="white" mb={3}>
-                The map above is a collection of skate spots from the SkateHive Spotbook.
+                This skatespoot database started in 2012. The dark blue pins are street spots. The light blue pins are skateparks. 
               </Text>
               <Text fontSize="large" color="white" mb={3}>
-                If you would like to add a spot, please follow these steps:
+                If you would like to add a spot, upload a photo of the spot below. When a mod approves your photo, it will be added to the spotbook. Some tips on submitting a spot:
               </Text>
-              <ol style={{ listStylePosition: "inside" }}>
-                <li>
-                  <Text fontSize="large" color="white">
-                    Take a photo of the spot. Try not to include people in the photo.
-                  </Text>
-                </li>
-                <li>
-                  <Text fontSize="large" color="white">
-                    Find the coordinates of the spot. Latitude, then Longitude. This can be found by turning location services on with your photos on your phone.
-                  </Text>
-                </li>
-                <li>
-                  <Text fontSize="large" color="white">
-                    Visit the SkateHive Spotbook and submit the spot.
-                  </Text>
-                </li>
-              </ol>
+           
+              <Text fontSize="large" color="white" mb={3}>
+              Take a photo of the spot. Try not to include people in the photo.
+
+              Find the coordinates of the spot. Latitude, then Longitude. Bake the GPS coordinates into the photo by turning location services on with Photos on your phone.
+  
+              Login and submit the spot.
+              </Text>
             </Box>
           </Flex>
         </Box>
