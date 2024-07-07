@@ -117,6 +117,7 @@ const EmbeddedMap: React.FC = () => {
 
                
                 margin: "auto",
+                
                 left: 0,
                 top: 0,
                 touchAction: "pan-x pan-y",
@@ -137,7 +138,9 @@ const EmbeddedMap: React.FC = () => {
               />
             </Box>
             <Box flex="2" p={paddingX} bg="black"
-            
+            style={{
+              backgroundImage: 'repeating-linear-gradient(var(--a), #000000, #444444 10vw)',
+            }}
             >
               <Text fontSize="large" color="white" mb={3}>
                 This skatespot database started in 2012. The <Box as="span" color="blue.600">dark blue</Box> pins are street spots. The <Box as="span" color="teal.300">light blue</Box> pins are skateparks. 
@@ -145,12 +148,9 @@ const EmbeddedMap: React.FC = () => {
               <Text fontSize="large" color="white" mb={3}>
                 If you would like to add a spot, upload a photo of the spot below. When a mod approves your photo, it will be added to the spotbook. Some tips on submitting a spot:
               </Text>
-           
               <Text fontSize="large" color="white" mb={3}>
               Take a photo of the spot. Try not to include people in the photo.
-
               Find the coordinates of the spot. Latitude, then Longitude. Bake the GPS coordinates into the photo by turning location services on with Photos on your phone.
-  
               Login and submit the spot.
               </Text>
             </Box>
