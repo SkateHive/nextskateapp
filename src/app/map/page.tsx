@@ -2,7 +2,7 @@
 
 import { useHiveUser } from '@/contexts/UserContext';
 import { useComments } from '@/hooks/comments';
-import { Box, Flex, Image, Text, useBreakpointValue } from '@chakra-ui/react';
+import { Box, Divider, Flex, Image, Text, useBreakpointValue } from '@chakra-ui/react';
 import { Global } from '@emotion/react';
 import React, { useMemo, useState } from 'react';
 import EmbeddedCommentList, { EmbeddedCommentListProps } from './EmbeddedCommentList';
@@ -154,9 +154,10 @@ const EmbeddedMap: React.FC = () => {
         </Box>
 
         <Box width={boxWidth} color="white">
+          
           <UploadForm />
         </Box>
-
+        <Divider mt={12}/>
         <Box width={boxWidth} mt={6}>
           <EmbeddedCommentList {...embeddedCommentListProps} />
         </Box>
