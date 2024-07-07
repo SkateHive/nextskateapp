@@ -3,11 +3,11 @@
 import { useHiveUser } from '@/contexts/UserContext';
 import { useComments } from '@/hooks/comments';
 import { Box, Center, Divider, Flex, Heading, Image, Text, useBreakpointValue } from '@chakra-ui/react';
-import Head from "next/head";
 import { Global } from '@emotion/react';
 import React, { useMemo, useState } from 'react';
 import EmbeddedCommentList, { EmbeddedCommentListProps } from './EmbeddedCommentList';
 import UploadForm from './UploadForm';
+import Head from "next/head";
 
 const EmbeddedMap: React.FC = () => {
   const parent_author = "web-gnar";
@@ -96,7 +96,7 @@ const EmbeddedMap: React.FC = () => {
             <meta name="description" content="Discover the Skatehive Spot Map, a global database for finding and sharing skate spots. Join the community today!" />
             <meta name="keywords" content="skateboarding, skate spots, skate map, global skate spots, skatehive" />
           </Head>
-          <Heading as="h1" fontSize="2xl" fontWeight="bold" color="white" mb={2} textAlign="center">
+          <Heading as="h1" fontSize="4xl" fontWeight="bold" color="white" mb={2} textAlign="center">
             Skatehive Spot Map
           </Heading>
           <Text fontSize="lg" fontWeight="bold" color="white" mb={2} textAlign="center" paddingBottom={5}>
@@ -136,11 +136,11 @@ const EmbeddedMap: React.FC = () => {
                 margin="10%"
               />
             </Box>
-            <Box flex="2" p={paddingX}
-           
+            <Box flex="2" p={paddingX} bg="black"
+            
             >
               <Text fontSize="large" color="white" mb={3}>
-                This skatespoot database started in 2012. The dark blue pins are street spots. The light blue pins are skateparks. 
+                This skatespot database started in 2012. The <Box as="span" color="blue.600">dark blue</Box> pins are street spots. The <Box as="span" color="teal.300">light blue</Box> pins are skateparks. 
               </Text>
               <Text fontSize="large" color="white" mb={3}>
                 If you would like to add a spot, upload a photo of the spot below. When a mod approves your photo, it will be added to the spotbook. Some tips on submitting a spot:
