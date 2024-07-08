@@ -1,4 +1,7 @@
 @font-face {
     font-family: 'pixelfont';
-    src: url('/fonts/joystix.otf') format('opentype');
+    src: 
+    url('/fonts/joystix.woff2') format('woff2'), 
+    url('/fonts/joystix.woff') format('woff');
+    font-display: swap;
   }
