@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect, useRef } from 'react';
-import { Box, Heading, Text, Divider, Flex } from '@chakra-ui/react';
+import { Box, Heading, Text, Divider, Flex, Image, Center, background, HStack, VStack } from '@chakra-ui/react';
 import usePosts from '@/hooks/usePosts';
 import { Discussion } from '@hiveio/dhive';
 import HTMLFlipBook from 'react-pageflip';
@@ -8,9 +8,12 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import { MarkdownRenderers } from '../upload/utils/MarkdownRenderers';
-import Header from '@/components/PostCard/Header';
+import AuthorAvatar from '@/components/AuthorAvatar';
+import { getTotalPayout, transform3SpeakContent, transformEcencyImages, transformIPFSContent, transformNormalYoutubeLinksinIframes, transformShortYoutubeLinksinIframes } from '@/lib/utils';
+import { Comment } from '../mainFeed/page';
+import TipButton from '@/components/PostCard/TipButton';
+import Head from 'next/head';
 
-// Define the type for a post
 interface Post extends Discussion {
     post_id: number;
     pending_payout_value: string;
@@ -32,14 +35,38 @@ const pageStyles = {
 };
 
 const flipbookStyles = {
-    margin: 'auto',
+    margin: '0',
     width: '100%',
     height: '100%',
     transition: 'none',
 };
 
+const coverStyles = {
+    ...pageStyles,
+    backgroundColor: 'darkblue',
+    color: 'white',
+    backgroundImage: 'url(https://media1.giphy.com/media/9ZsHm0z5QwSYpV7g01/giphy.gif?cid=6c09b952uxaerotyqa9vct5pkiwvar6l6knjgsctieeg0sh1&ep=v1_gifs_search&rid=giphy.gif&ct=g)',
+    backgroundSize: 'cover',
+    textAlign: 'center',
+};
+
+const backCoverStyles = {
+    ...pageStyles,
+    backgroundColor: 'darkred',
+    color: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+};
+const textStyles = {
+    position: 'absolute',
+    bottom: '20px',
+    width: '100%',
+    textAlign: 'center',
+    color: 'white',
+};
+
 export default function TestPage() {
-    const SKATEHIVE_TAG = [{ tag: 'hive-173115', limit: 20 }];
+    const SKATEHIVE_TAG = [{ tag: 'hive-173115', limit: 33 }];
     const [tag, setTag] = useState(SKATEHIVE_TAG);
     const [query, setQuery] = useState('created');
     const { posts, error, isLoading, setQueryCategory, setDiscussionQuery } = usePosts(query, tag);
@@ -87,7 +114,10 @@ export default function TestPage() {
     }
 
     return (
-        <Flex justify="center" align="center" w="100%" h="100vh" p={5}>
+
+
+        <VStack justify="center" align="center" w="100%" h="100vh" p={5}>
+            <Heading color={'white'}>Use your keyboard arrows ←→ to navigate</Heading>
             <HTMLFlipBook
                 width={600}
                 height={850}
@@ -120,11 +150,32 @@ export default function TestPage() {
                 style={flipbookStyles}
                 ref={flipBookRef}
             >
+                <Box sx={coverStyles}>
+                    <Flex direction="column" align="center">
+                        <Heading>
+                            <Image src="/skatehive-banner.png" alt="SkateHive Logo" />
+                        </Heading>
+                        <Center m={20}>
+                            <Image boxSize={'360px'} src="/skatehive_square_green.png" alt="SkateHive Logo" />
+                        </Center>
+                        <Box m={5} borderRadius={5} backgroundColor={'black'} sx={textStyles}>
+                            <Text fontSize={'22px'} color='white'>Welcome to the SkateHive Magazine</Text>
+                            <Text fontSize={'22px'} color='white'>A infinity mag created by skaters all over the world.</Text>
+                        </Box>
+                    </Flex>
+                </Box>
                 {posts.map((post: Discussion) => (
                     <Box key={post.id} sx={pageStyles}>
-                        <Heading color={'white'} fontSize="xl">{post.title}</Heading>
-                        <Text color={'white'} mt={4}>Author: {post.author}</Text>
-                        <Text color='white' mt={2}>{new Date(post.created).toLocaleDateString()}</Text>
+                        <Flex align="center">
+                            <AuthorAvatar username={post.author} boxSize={10} />
+                            <Heading color={'white'} fontSize="xl" ml={2}>{post.title}</Heading>
+                        </Flex>
+                        <HStack justifyContent={'space-between'}>
+                            <Text color={'white'} mt={4}>{post.author}</Text>
+                            <Text color='white' mt={2}>{new Date(post.created).toLocaleDateString()}</Text>
+                            <Text color='yellow' mt={2}>${getTotalPayout(post as Comment)} USD</Text>
+                            <TipButton author={post.author} />
+                        </HStack>
                         <Divider mt={4} mb={4} />
                         <ReactMarkdown
                             key={post.id}
@@ -133,15 +184,17 @@ export default function TestPage() {
                             rehypePlugins={[rehypeRaw]}
                             components={MarkdownRenderers}
                         >
-                            {post.body}
+                            {transform3SpeakContent(transformIPFSContent(transformEcencyImages(transformNormalYoutubeLinksinIframes(transformShortYoutubeLinksinIframes(post.body)))))}
                         </ReactMarkdown>
                         <Divider mt={4} mb={4} />
                         <Text>Pending Payout: {post.pending_payout_value.toString()}</Text>
-                        <Text>Category: {post.category}</Text>
-                        <Text>Tags: {JSON.parse(post.json_metadata).tags.join(', ')}</Text>
                     </Box>
                 ))}
+                <Box sx={backCoverStyles}>
+                    <Heading>Back Cover</Heading>
+                    <Text>Thrasher my ass!</Text>
+                </Box>
             </HTMLFlipBook>
-        </Flex>
+        </VStack>
     );
 }
