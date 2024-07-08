@@ -17,12 +17,12 @@ export default function SkaterHeader({ user }: ProfileProps) {
     const hiveUser = useHiveUser()
     const metadata = user.json_metadata ? JSON.parse(user.json_metadata) : (user.posting_json_metadata ? JSON.parse(user.posting_json_metadata) : {});
     const isMobile = useMediaQuery("(max-width: 400px)")[0];
-
     const coverImageUrl = metadata?.profile?.cover_image || "https://i.pinimg.com/originals/4b/c7/91/4bc7917beb4aac43d2d405b05911e35f.gif";
     const profileName = metadata?.profile?.name || user.name;
     const [isSmallerThan400] = useMediaQuery("(max-width: 400px)");
     const [boxSize, setBoxSize] = useState(20)
     const [isFollowing, setIsFollowing] = useState(false)
+
     // if mobile show smaller image
     useEffect(() => {
         if (isSmallerThan400) {
@@ -36,12 +36,8 @@ export default function SkaterHeader({ user }: ProfileProps) {
 
     const onStart = async () => {
         if (hiveUser.hiveUser?.name && user.name) {
-            console.log("checking follow")
-            console.log(hiveUser.hiveUser?.name)
-            console.log(user.name)
             const isFollowing = await checkFollow(hiveUser.hiveUser?.name, user.name)
             setIsFollowing(isFollowing)
-            console.log(isFollowing)
         }
     }
     useEffect(() => {
