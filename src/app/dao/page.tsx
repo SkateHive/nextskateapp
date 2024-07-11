@@ -177,7 +177,7 @@ const DaoPage = () => {
         <CreateProposalModal connectedUserAddress={formattedAddress} />
 
       ) : (
-        <Flex flexDirection={{ base: 'column', md: 'row' }} >
+        <Flex gap={1} flexDirection={{ base: 'column', md: 'row' }} >
           <Box mt={2} minW={"50%"}>
             <Stack
               h={"60vh"}
