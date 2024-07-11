@@ -113,7 +113,7 @@ const SidebarDesktop = () => {
       >
         <Heading size="md">
           <Image
-            boxSize={"58px"}
+            boxSize={"48px"}
             src="/skatehive_square_green.png"
             alt="SkateHive"
             borderRadius={"5px"}
