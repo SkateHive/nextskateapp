@@ -71,7 +71,8 @@ const ProposalEditor: React.FC<ProposalEditorProps> = ({ value, setValue, title,
     ];
 
     return (
-        <Box {...getRootProps()}>
+        <Box {...getRootProps()}
+        >
             <Input
                 placeholder="Proposal Title"
                 value={title}
@@ -88,16 +89,17 @@ const ProposalEditor: React.FC<ProposalEditorProps> = ({ value, setValue, title,
                 value={value}
                 onChange={(value: any) => setValue(value || "")}
                 commands={[
-                    commands.bold, commands.italic, commands.strikethrough, commands.hr, commands.code, commands.table, commands.link, commands.quote, commands.unorderedListCommand, commands.orderedListCommand, commands.codeBlock, commands.fullscreen
+                    commands.bold, commands.italic, commands.strikethrough, commands.hr, commands.code, commands.table, commands.link, commands.quote, commands.unorderedListCommand, commands.orderedListCommand, commands.fullscreen
                 ]}
                 extraCommands={extraCommands}
                 previewOptions={{ rehypePlugins: [[rehypeSanitize]] }}
-                height="600px"
+                height="50vh"
                 preview="edit"
                 style={{
                     border: "2px solid limegreen",
                     padding: "10px",
                     backgroundColor: "black",
+                    color: "white",
                 }}
             />
         </Box>

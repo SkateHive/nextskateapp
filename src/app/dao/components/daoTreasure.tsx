@@ -103,17 +103,17 @@ const DaoTreasure = () => {
                 <HStack
                     justifyContent={"space-between"}
                 >
-                    <VStack m={5}>
+                    <VStack m={2}>
                         <Text fontSize={"12px"} color={"white"}> For DIY </Text>
                         <Divider />
                         <Badge colorScheme='green' bg={"black"} border={"1px solid #A5D6A7"} color='#A5D6A7' fontWeight={"bold"} fontSize={"12px"}>{(totalJazz / 4).toFixed(2)} USD</Badge>
                     </VStack>
-                    <VStack m={5}>
+                    <VStack m={2}>
                         <Text fontSize={"12px"} color={"white"}>For Dev</Text>
                         <Divider />
                         <Badge colorScheme='green' bg={"black"} border={"1px solid #A5D6A7"} color='#A5D6A7' fontWeight={"bold"} fontSize={"12px"}>{(totalJazz / 2).toFixed(2)} USD</Badge>
                     </VStack>
-                    <VStack m={5}>
+                    <VStack m={2}>
                         <Text fontSize={"12px"} color={"white"}> Sponsors</Text>
                         <Divider />
                         <Badge colorScheme='green' bg={"black"} border={"1px solid #A5D6A7"} color='#A5D6A7' fontWeight={"bold"} fontSize={"12px"}>{(totalJazz / 4).toFixed(2)} USD </Badge>

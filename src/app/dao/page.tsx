@@ -119,14 +119,15 @@ const DaoPage = () => {
 
   return (
     <Box mt={5}
+      h={"100vh"}
       w={"100%"}
-      overflowY={"auto"}
-      overflowX={"hidden"}>
+      overflowY={"hidden"}
+      overflowX={"hidden"}
+    >
 
       {/* HEADER PANEL */}
       <Box
         bg="black"
-        p={4}
         border="1px solid grey"
         borderTopRadius="10px"
         width={"100%"}
@@ -134,7 +135,7 @@ const DaoPage = () => {
         <Grid templateColumns="1fr 2fr 1fr" gap={6} alignItems="center">
           <GridItem colSpan={2} display="flex" alignItems="center">
             <HStack spacing={4}>
-              <Image alt="Connected User Avatar" boxSize="86px" src={avatar || "/infinitypepe.gif"} />
+              <Image alt="Connected User Avatar" borderRadius={'5px'} boxSize="86px" src={avatar || "/infinitypepe.gif"} />
               <VStack>
                 <Text fontSize="16px" color="#A5D6A7">
                   {connectedUserEnsName}
@@ -156,15 +157,18 @@ const DaoPage = () => {
                 bg={"black"}
                 leftIcon={<FaPencil />}
                 p={2}
+                color={"yellow"}
                 borderRadius="full"
-                colorScheme="green"
                 variant="outline"
                 onClick={() => handleCreateProposalButton()}
+                _hover={{ color: 'black', backgroundColor: 'yellow' }}
+                mr={1}
               >
                 {isCreateProposalModalOpen ? "Go Back" : "create"}
               </Button>
             ) : (
-              <Button colorScheme="yellow" variant="outline" onClick={() => handleCreateProposalButton()}>
+              <Button color={"yellow"} mr={1}
+                variant="outline" onClick={() => handleCreateProposalButton()} _hover={{ color: 'black', backgroundColor: 'yellow' }}>
                 {isCreateProposalModalOpen ? "Go Back" : "Create Proposal"}
               </Button>
             )}
@@ -180,7 +184,7 @@ const DaoPage = () => {
         <Flex gap={1} flexDirection={{ base: 'column', md: 'row' }} >
           <Box mt={2} minW={"50%"}>
             <Stack
-              h={"60vh"}
+              h={"65vh"}
               overflow={"auto"}
               sx={{
                 "&::-webkit-scrollbar": {
@@ -211,7 +215,7 @@ const DaoPage = () => {
             borderRadius="10px"
             minW={"50%"}
             minHeight={"100%"}
-            h={"60vh"}
+            h={"65vh"}
             mt={2}
             overflow={"auto"}
             sx={{
