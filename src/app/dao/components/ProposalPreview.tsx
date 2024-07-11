@@ -14,9 +14,11 @@ const ProposalPreview: React.FC<ProposalPreviewProps> = ({ value }) => {
     return (
         <Box
             width="100%"
-            height="100%"
             border="1px solid limegreen"
-            minHeight="60vh"
+            overflow={'auto'}
+            borderRadius={8}
+            p={4}
+            height="55vh"
         >
             <ReactMarkdown
                 components={MarkdownRenderers}

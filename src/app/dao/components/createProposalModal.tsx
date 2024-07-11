@@ -55,6 +55,7 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
 
     return (
         <Box
+            height={"100vh"}
         >
             {useBreakpointValue({
                 base: (
@@ -82,7 +83,7 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
                                 PINATA_GATEWAY_TOKEN={PINATA_GATEWAY_TOKEN}
                             />
                         </Box>
-                        <Box h={"100%"}
+                        <Box
                             width="50%">
                             <ProposalPreview value={value} />
                         </Box>
