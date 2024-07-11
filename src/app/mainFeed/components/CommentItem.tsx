@@ -36,6 +36,7 @@ interface CommentItemProps {
   comment: any;
   username: string;
   handleVote: (author: string, permlink: string) => void;
+  onClick?: () => void
 }
 
 const VotingButton = ({
