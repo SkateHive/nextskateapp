@@ -20,7 +20,7 @@ const isProposalActive = (proposal: Proposal) => {
 };
 
 
-const ProposalListItem = React.memo(({
+const ProposalListItem = ({
     proposal,
     isSelected,
     onSelect,
@@ -89,6 +89,6 @@ const ProposalListItem = React.memo(({
             )}
         </Box>
     );
-});
+};
 
 export default ProposalListItem;
