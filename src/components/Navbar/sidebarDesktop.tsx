@@ -31,9 +31,9 @@ import {
   FaWallet,
 } from "react-icons/fa";
 import { useAccount } from "wagmi";
+import "../../styles/fonts.css";
 import LoginModal from "../Hive/Login/LoginModal";
 import CommunityTotalPayout from "../communityTotalPayout";
-import "./fonts.css";
 import checkRewards from "./utils/checkReward";
 import { claimRewards } from "./utils/claimRewards";
 
