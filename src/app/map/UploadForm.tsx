@@ -212,7 +212,7 @@ export default function UploadForm() {
               {
                 beneficiaries: [
                   {
-                    account: "skatehacker",
+                    account: "web-gnar",
                     weight: 1000,
                   },
                 ],
@@ -267,7 +267,7 @@ export default function UploadForm() {
       p={4}
       width={"100%"}
       maxWidth={{ base: "100vh", md: "100vw" }}
-      bg="black"
+      bg="#484848"
       color="white"
       {...getRootProps()}
       border="2px solid gray"
@@ -286,7 +286,9 @@ export default function UploadForm() {
             <Textarea
 
               border="1px solid gray"
+              background={"black"}
               _focus={{
+                
                 border: "2px solid gray",
                 boxShadow: "none",
               }}
@@ -364,11 +366,19 @@ export default function UploadForm() {
             isLoading={isUploading}
             spinnerPlacement="end"
             leftIcon={<FaImage />}
+            bg="purple.500"  
+          color="white"  
+          _hover={{ bg: "purple.600" }}  
+          _active={{ bg: "green.700" }}
           >
             Image/video
           </Button>
-          <Button onClick={handlePostClick} isLoading={hasPosted}>
-            {hasPosted ? "Published" : "Publish"}
+          <Button onClick={handlePostClick} isLoading={hasPosted} 
+          bg="green.500"  
+          color="white"  
+          _hover={{ bg: "green.600" }}  
+          _active={{ bg: "green.700" }}  >
+            {hasPosted ? "Published" : "Send It"}
           </Button>
         </HStack>
 
