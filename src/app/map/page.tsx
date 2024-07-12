@@ -2,12 +2,13 @@
 
 import { useHiveUser } from '@/contexts/UserContext';
 import { useComments } from '@/hooks/comments';
-import { Box, Center, Divider, Flex, Heading, Image, Text, useBreakpointValue } from '@chakra-ui/react';
+import { vote } from '@/lib/hive/client-functions';
+import { Box, Divider, Flex, Heading, Image, Text, useBreakpointValue } from '@chakra-ui/react';
 import { Global } from '@emotion/react';
+import Head from "next/head";
 import React, { useMemo, useState } from 'react';
 import EmbeddedCommentList, { EmbeddedCommentListProps } from './EmbeddedCommentList';
 import UploadForm from './UploadForm';
-import Head from "next/head";
 
 const EmbeddedMap: React.FC = () => {
   const parent_author = "web-gnar";
@@ -37,11 +38,25 @@ const EmbeddedMap: React.FC = () => {
     return comments;
   }, [comments, sortMethod]);
 
+  const handleVote = async (author: string, permlink: string) => {
+    if (!username) {
+      console.error("Username is missing");
+      return;
+    }
+    vote({
+      username: username,
+      permlink: permlink,
+      author: author,
+      weight: 10000,
+    });
+  };
+
   const embeddedCommentListProps: EmbeddedCommentListProps = {
     comments: sortedComments || [],
     visiblePosts: visiblePosts,
     username: username,
     parentPermlink: parent_permlink,
+    handleVote: handleVote,
   };
 
   return (
@@ -90,6 +105,7 @@ const EmbeddedMap: React.FC = () => {
           mx="auto"
           mb={6}
           boxShadow="xl"
+          
         >
           <Head>
             <title>Skatehive Spot Map - A Global Skatespot Database</title>
@@ -105,25 +121,17 @@ const EmbeddedMap: React.FC = () => {
           <Box mb={4}>
             <iframe
               src={mapSrc}
-
               style={{
                 border: "0",
-
-
                 height: isMobile ? "50vh" : "500px",
-
                 width: "90%",
                 padding: 0,
-
-               
                 margin: "auto",
-                
                 left: 0,
                 top: 0,
                 touchAction: "pan-x pan-y",
                 boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)",
               }}
-
               allowFullScreen
             ></iframe>
           </Box>
@@ -139,7 +147,7 @@ const EmbeddedMap: React.FC = () => {
                 border="5px solid lightblue"
               />
             </Box>
-            <Box flex="2" p={paddingX} bg="black" borderRadius="md"
+            <Box flex="2" p={paddingX} bg="black" borderRadius="md " id="animatedBox"
             style={{
               backgroundImage: 'repeating-linear-gradient(var(--a), #000000, #444444 10vw)',
             }}
