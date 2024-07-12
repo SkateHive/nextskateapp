@@ -7,13 +7,11 @@ import HTMLFlipBook from 'react-pageflip';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
-import { MarkdownRenderers } from '../upload/utils/MarkdownRenderers';
 import AuthorAvatar from '@/components/AuthorAvatar';
 import { getTotalPayout, transform3SpeakContent, transformEcencyImages, transformIPFSContent, transformNormalYoutubeLinksinIframes, transformShortYoutubeLinksinIframes } from '@/lib/utils';
-import { Comment } from '../mainFeed/page';
+import { Comment } from '../../../app/mainFeed/page';
 import TipButton from '@/components/PostCard/TipButton';
-import Head from 'next/head';
-
+import { MagazineRenderers } from '../MagazineRenderers';
 interface Post extends Discussion {
     post_id: number;
     pending_payout_value: string;
@@ -29,7 +27,7 @@ const pageStyles = {
     justifyContent: 'space-between',
     padding: '20px',
     color: 'black',
-    maxHeight: '100vh',
+    // maxHeight: '100vh',
     overflow: 'auto',
     position: 'relative',
 };
@@ -65,10 +63,12 @@ const textStyles = {
     color: 'white',
 };
 
-export default function TestPage() {
-    const SKATEHIVE_TAG = [{ tag: 'hive-173115', limit: 33 }];
-    const [tag, setTag] = useState(SKATEHIVE_TAG);
-    const [query, setQuery] = useState('created');
+export interface TestPageProps {
+    tag: { tag: string; limit: number }[];
+    query: string;
+}
+
+export default function Zine({ tag, query }: TestPageProps) {
     const { posts, error, isLoading, setQueryCategory, setDiscussionQuery } = usePosts(query, tag);
     const flipBookRef = useRef<any>(null);
 
@@ -99,7 +99,7 @@ export default function TestPage() {
 
     if (error) {
         return (
-            <Flex justify="center" align="center" w="100vw" h="100vh" p={5}>
+            <Flex justify="center" align="center" w="100%" h="100%" p={5}>
                 <Text color={'white'}>Error loading posts</Text>
             </Flex>
         );
@@ -114,26 +114,24 @@ export default function TestPage() {
     }
 
     return (
-
-
-        <VStack justify="center" align="center" w="100%" h="100vh" p={5}>
-            <Heading color={'white'}>Use your keyboard arrows ←→ to navigate</Heading>
+        <VStack justify="center" align="center" w="100%" h="60vh" p={5}>
+            {/* <Text border={"1px solid white"} borderRadius="10px" p={2} color={'white'}>Use your keyboard arrows ←→ to navigate</Text> */}
             <HTMLFlipBook
-                width={600}
-                height={850}
-                minWidth={300}
-                maxWidth={1200}
-                minHeight={500}
-                maxHeight={1600}
-                size="fixed"
+                width={500}
+                height={750}
+                minWidth={0}
+                maxWidth={500}
+                minHeight={0}
+                maxHeight={750}
                 startPage={0}
+                size='stretch'
                 drawShadow
                 flippingTime={1000}
                 usePortrait
                 startZIndex={0}
-                autoSize
+                autoSize={true}
                 maxShadowOpacity={0.5}
-                showCover={true}
+                showCover={false}
                 mobileScrollSupport
                 swipeDistance={30}
                 clickEventForward
@@ -156,11 +154,11 @@ export default function TestPage() {
                             <Image src="/skatehive-banner.png" alt="SkateHive Logo" />
                         </Heading>
                         <Center m={20}>
-                            <Image boxSize={'360px'} src="/skatehive_square_green.png" alt="SkateHive Logo" />
+                            <Image boxSize={'auto'} src="/skatehive_square_green.png" alt="SkateHive Logo" />
                         </Center>
                         <Box m={5} borderRadius={5} backgroundColor={'black'} sx={textStyles}>
-                            <Text fontSize={'22px'} color='white'>Welcome to the SkateHive Magazine</Text>
-                            <Text fontSize={'22px'} color='white'>A infinity mag created by skaters all over the world.</Text>
+                            <Text fontSize={'12px'} color='white'>Welcome to the {String(tag[0].tag)} Magazine</Text>
+                            <Text fontSize={'12px'} color='white'>A infinity mag created by skaters all over the world.</Text>
                         </Box>
                     </Flex>
                 </Box>
@@ -171,18 +169,19 @@ export default function TestPage() {
                             <Heading color={'white'} fontSize="xl" ml={2}>{post.title}</Heading>
                         </Flex>
                         <HStack justifyContent={'space-between'}>
-                            <Text color={'white'} mt={4}>{post.author}</Text>
-                            <Text color='white' mt={2}>{new Date(post.created).toLocaleDateString()}</Text>
-                            <Text color='yellow' mt={2}>${getTotalPayout(post as Comment)} USD</Text>
+                            <Text color={'white'} mt={2}>{post.author}</Text>
+                            <Text color='yellow' mt={2}>${Number(getTotalPayout(post as Comment)).toFixed(2)} USD</Text>
                             <TipButton author={post.author} />
                         </HStack>
                         <Divider mt={4} mb={4} />
+                        <Text fontSize={'8px'} color='white' mt={-2}>{new Date(post.created).toLocaleDateString()}</Text>
+
                         <ReactMarkdown
                             key={post.id}
                             className="page"
                             remarkPlugins={[remarkGfm]}
                             rehypePlugins={[rehypeRaw]}
-                            components={MarkdownRenderers}
+                            components={MagazineRenderers}
                         >
                             {transform3SpeakContent(transformIPFSContent(transformEcencyImages(transformNormalYoutubeLinksinIframes(transformShortYoutubeLinksinIframes(post.body)))))}
                         </ReactMarkdown>
