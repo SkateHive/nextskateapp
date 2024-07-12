@@ -184,7 +184,7 @@ const EmbeddedMap: React.FC = () => {
                 border="5px solid lightblue"
               />
             </Box>
-            <Box flex="2" p={paddingX} bg="black" borderRadius="md " id="animatedBox2"
+            <Box flex="2" p={paddingX} bg="black" borderRadius="md " id="animatedBox2" marginLeft={"50px"} marginTop={"20px"}
             style={{
               backgroundImage: 'repeating-linear-gradient(var(--a), #000000, #444444 10vw)',
             }}
