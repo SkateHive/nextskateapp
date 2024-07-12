@@ -11,21 +11,27 @@ import {
   IconButton,
   Image,
   Input,
+  Text,
   Textarea,
   useBreakpointValue
 } from "@chakra-ui/react";
 import * as dhive from "@hiveio/dhive";
+import EXIF from 'exif-js';
 import { useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { FaImage, FaTimes } from "react-icons/fa";
 import { uploadFileToIPFS } from "../upload/utils/uploadToIPFS";
-
 export interface Comment {
   id: number;
   author: string;
   permlink: string;
   created: string;
   body: string;
+}
+
+interface Coordinates {
+  lat: number | null;
+  lng: number | null;
 }
 
 export default function UploadForm() {
@@ -40,6 +46,52 @@ export default function UploadForm() {
   const [isUploading, setIsUploading] = useState(false);
   const [imageList, setImageList] = useState<string[]>([]);
   const placeholderFontSize = useBreakpointValue({ base: "14px", md: "16px" });
+  const [coordinates, setCoordinates] = useState<Coordinates>({ lat: null, lng: null });
+
+  const extractCoordinates = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const imgDataUrl = e.target!.result as string;
+      const img = new window.Image();
+      img.src = imgDataUrl;
+      img.onload = async () => {
+        try {
+          const exifData = await new Promise<any>((resolve, reject) => {
+            EXIF.getData(img as unknown as string, function (this: HTMLElement) {
+              resolve(EXIF.getAllTags(this));
+            });
+          });
+          if (exifData && exifData.GPSLatitude && exifData.GPSLongitude) {
+            const latRef = exifData.GPSLatitudeRef || 'N';
+            const lngRef = exifData.GPSLongitudeRef || 'W';
+            const latitude = convertDMSToDD(exifData.GPSLatitude, latRef);
+            const longitude = convertDMSToDD(exifData.GPSLongitude, lngRef);
+            setCoordinates({ lat: latitude, lng: longitude });
+          } else {
+            console.log("GPS coordinates not found.");
+            setCoordinates({ lat: null, lng: null });
+          }
+        } catch (error) {
+          console.error("Error getting EXIF ​​metadata:", error);
+          setCoordinates({ lat: null, lng: null });
+        }
+      };
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const convertDMSToDD = (dms: number[], ref: string): number => {
+    const degrees = dms[0];
+    const minutes = dms[1];
+    const seconds = dms[2];
+    let dd = degrees + minutes / 60 + seconds / 3600;
+
+    if (ref === "S" || ref === "W") {
+      dd = dd * -1;
+    }
+    return dd;
+  };
+
 
   const { getRootProps, getInputProps } = useDropzone({
     noClick: true,
@@ -55,6 +107,10 @@ export default function UploadForm() {
             ? `<iframe src="${ipfsUrl}" allowfullscreen></iframe>`
             : `![Image](${ipfsUrl})`;
           newImageList.push(markdownLink);
+        }
+        if (file.type.startsWith("image/")) {
+          console.log('Extracting coordinates from:', file.name);
+          extractCoordinates(file);
         }
       }
       setImageList((prevList) => [...prevList, ...newImageList]);
@@ -208,27 +264,27 @@ export default function UploadForm() {
   return (
 
     <Box
-    p={4}
-    width={"100%"}
-    maxWidth={{ base: "100vh", md: "100vw" }} 
-    bg="black"
-    color="white"
-    {...getRootProps()}
-    border="2px solid gray"
-    _focus={{
-      border: "2px solid gray",
-      boxShadow: "none",
-    }}
-    padding={"15px"} 
-    overflowY="auto"
+      p={4}
+      width={"100%"}
+      maxWidth={{ base: "100vh", md: "100vw" }}
+      bg="black"
+      color="white"
+      {...getRootProps()}
+      border="2px solid gray"
+      _focus={{
+        border: "2px solid gray",
+        boxShadow: "none",
+      }}
+      padding={"15px"}
+      overflowY="auto"
     >
-      <div>       
+      <div>
         <Flex  >
           {/* @ts-ignore */}
-          <UserAvatar hiveAccount={user.hiveUser || {}} boxSize={12} borderRadius={5}mr={4} />
+          <UserAvatar hiveAccount={user.hiveUser || {}} boxSize={12} borderRadius={5} mr={4} />
           <Flex flexDir="column" w="100%" mt={{ base: "auto", md: "auto" }} >
             <Textarea
-            
+
               border="1px solid gray"
               _focus={{
                 border: "2px solid gray",
@@ -288,6 +344,12 @@ export default function UploadForm() {
           </Flex>
 
         </Flex>
+        {coordinates.lat !== null && coordinates.lng !== null && (
+          <Box mt={4}>
+            <Text>Latitude: {coordinates.lat}</Text>
+            <Text>Longitude: {coordinates.lng}</Text>
+          </Box>
+        )}
         <HStack justifyContent="space-between" marginTop={2}>
           <Input
             id="md-image-upload"

@@ -8,7 +8,7 @@ export interface EmbeddedCommentListProps {
     visiblePosts: number;
     username?: string;
     parentPermlink: string; 
-
+    handleVote: (author: string, permlink: string) => void;
 }
 
 const EmbeddedCommentList: React.FC<EmbeddedCommentListProps> = ({
@@ -16,12 +16,14 @@ const EmbeddedCommentList: React.FC<EmbeddedCommentListProps> = ({
     visiblePosts,
    parentPermlink,
     username,
+    handleVote
     
   
 }) => {
     
     const [loadedPosts, setLoadedPosts] = useState<any[]>([]);
     const [loadedCount, setLoadedCount] = useState<number>(5);
+    const [expandedComments, setExpandedComments] = useState<{ [key: string]: boolean }>({});
 
     useEffect(() => {
         setLoadedCount(5);
@@ -39,29 +41,51 @@ const EmbeddedCommentList: React.FC<EmbeddedCommentListProps> = ({
     const loadMorePosts = () => {
         setLoadedCount(loadedCount + visiblePosts);
     };
+
+    const toggleCommentVisibility = (commentId: string) => {
+        setExpandedComments(prevState => ({
+          ...prevState,
+          [commentId]: !prevState[commentId]
+        }));
+      };
     
     
 
   return (
     <Box width="full">
-            {loadedPosts.map((comment) => (
-                <CommentItem
-                    key={comment.id}
-                    comment={comment}
-                    username={username || ""}
-                    handleVote={() => {}} />
+    {loadedPosts.map((comment) => (
+      <Box key={comment.id}>
+        <CommentItem
+          comment={comment}
+          username={username || ""}
+          handleVote={handleVote}
+          onClick={() => toggleCommentVisibility(comment.id)}
+        />
+        {expandedComments[comment.id] && (
+          <Box ml={4} mt={2} pl={4} borderLeft="1px solid gray">
+            {comments.filter(childComment => childComment.parent_permlink === comment.permlink).map(childComment => (
+              <CommentItem
+                key={childComment.id}
+                comment={childComment}
+                username={username || ""}
+                handleVote={handleVote}
+              />
             ))}
-            {comments.length === 0 && (
-                <Flex justify="center" py={4}>
-                    <Text>No comments found.</Text>
-                </Flex>
-            )}
-            {comments.length > loadedPosts.length && (
-                <Flex justify="center" py={4}>
-                    <Button onClick={loadMorePosts}>Load more posts</Button>
-                </Flex>
-            )}
-        </Box>
+          </Box>
+        )}
+      </Box>
+    ))}
+    {comments.length === 0 && (
+      <Flex justify="center" py={4}>
+        <Text>No comments found.</Text>
+      </Flex>
+    )}
+    {comments.length > loadedPosts.length && (
+      <Flex justify="center" py={4}>
+        <Button onClick={loadMorePosts}>Load more posts</Button>
+      </Flex>
+    )}
+  </Box>
 
   );
 };
