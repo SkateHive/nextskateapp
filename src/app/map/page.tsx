@@ -7,6 +7,7 @@ import { Box, Divider, Flex, Heading, Image, Text, useBreakpointValue } from '@c
 import { Global } from '@emotion/react';
 import Head from "next/head";
 import React, { useMemo, useState } from 'react';
+import "../../styles/fonts.css";
 import EmbeddedCommentList, { EmbeddedCommentListProps } from './EmbeddedCommentList';
 import UploadForm from './UploadForm';
 
@@ -148,7 +149,7 @@ const EmbeddedMap: React.FC = () => {
             <meta name="description" content="Discover the Skatehive Spot Map, a global database for finding and sharing skate spots. Join the community today!" />
             <meta name="keywords" content="skateboarding, skate spots, skate map, global skate spots, skatehive" />
           </Head>
-          <Heading as="h1" fontSize="4xl" fontWeight="bold"  mb={2} textAlign="center" fontFamily="pixelfont" textShadow="2px 2px 4px rgba(0, 0, 0, 1)" animation="glow 5s ease-in-out infinite">
+          <Heading  as="h1" fontSize="4xl" fontWeight="bold"  mb={2} textAlign="center" fontFamily="Joystix" textShadow="2px 2px 4px rgba(0, 0, 0, 1)" animation="glow 5s ease-in-out infinite">
             Skatespots Map
           </Heading>
           <Text fontSize="20px" fontWeight="bold" color="white" mb={2} textAlign="center" paddingBottom={5} textShadow="2px 2px 4px rgba(0, 0, 0, 1)" animation="float 5s ease-in-out infinite">
