@@ -1,6 +1,7 @@
 @font-face {
-    font-family: 'pixelfont';
-    src: url('/fonts/joystix.woff2') format('woff2'),
-    url('/fonts/joystix.woff') format('woff');
-    font-display: swap;
-  }
+  font-family: 'Joystix';
+  src: url('../../public/fonts/joystix.woff2') format('woff2'),
+       url('../../public/fonts/joystix.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}

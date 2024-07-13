@@ -4,7 +4,6 @@ import { useHiveUser } from "@/contexts/UserContext";
 import HiveClient from "@/lib/hive/hiveclient";
 import { HiveAccount } from "@/lib/models/user";
 import { formatETHaddress } from "@/lib/utils";
-import "../../styles/fonts.css";
 import {
   Box,
   Button,
@@ -31,11 +30,11 @@ import {
   FaWallet,
 } from "react-icons/fa";
 import { useAccount } from "wagmi";
+import "../../styles/fonts.css";
 import LoginModal from "../Hive/Login/LoginModal";
 import CommunityTotalPayout from "../communityTotalPayout";
 import checkRewards from "./utils/checkReward";
 import { claimRewards } from "./utils/claimRewards";
-import Link from 'next/link';
 
 const blink = keyframes`
   0% { color: gold; opacity: 1; }
@@ -139,25 +138,25 @@ const SidebarDesktop = () => {
 
         <HStack padding={0} mt={8} gap={3} fontSize={"22px"}>
           <FaSpeakap color="white" size={"22px"} />
-          <Text color={"white"} cursor={"pointer"} _hover={{ color: 'lime', fontFamily: "Joystix" }} onClick={() => {
+          <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime' }} onClick={() => {
             window.location.href = "/";
           }}>Feed</Text>
         </HStack>
         <HStack padding={0} gap={3} fontSize={"22px"}>
           <FaMapMarkerAlt color="white" size={"22px"} />
-          <Text color={"white"} cursor={"pointer"} _hover={{ color: 'lime', fontFamily: "Joystix" }} onClick={() => {
+          <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime' }} onClick={() => {
             window.location.href = "/map";
           }}>Map</Text>
         </HStack>
         <HStack padding={0} gap={3} fontSize={"22px"}>
           <FaBook color="white" size={"22px"} />
-          <Text color={"white"} cursor={"pointer"} _hover={{ color: 'lime', fontFamily: "Joystix" }} onClick={() => {
+          <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime'}} onClick={() => {
             window.location.href = "/mag";
           }}>Magazine</Text>
         </HStack>
         <HStack padding={0} gap={3} fontSize={"22px"}>
           <FaEthereum color={'white'} size={"22px"} />
-          <Text color={"white"} cursor={"pointer"} _hover={{ color: 'lime', fontFamily: "Joystix" }} onClick={() => {
+          <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime' }} onClick={() => {
             window.location.href = "/dao";
           }}>Dao</Text>
         </HStack>
@@ -165,7 +164,7 @@ const SidebarDesktop = () => {
         {!hiveUser && (
           <HStack padding={0} gap={3} fontSize={"22px"}>
             <FaDiscord size={"22px"} />
-            <Text color={"white"} cursor={"pointer"} _hover={{ color: 'lime', fontFamily: "Joystix" }} onClick={() => {
+            <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime'}} onClick={() => {
               window.location.href = "https://discord.gg/skateboard";
             }}>Chat</Text>
           </HStack>
@@ -175,13 +174,13 @@ const SidebarDesktop = () => {
           <>
             <HStack padding={0} gap={3} fontSize={"22px"}>
               <FaUser color="white" size={"22px"} />
-              <Text color={"white"} cursor={"pointer"} _hover={{ color: 'lime', fontFamily: "Joystix" }} onClick={() => {
+              <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime'}} onClick={() => {
                 window.location.href = `/profile/${hiveUser.name}`;
               }}>Profile</Text>
             </HStack>
             <HStack padding={0} gap={3} fontSize={"22px"} _hover={{ color: 'lime' }}>
               <FaWallet color="white" size={"22px"} />
-              <Text color={"white"} cursor={"pointer"} _hover={{ color: 'lime', fontFamily: "Joystix" }} onClick={() => {
+              <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime'}} onClick={() => {
                 window.location.href = `/wallet`;
               }}>Wallet</Text>
               {hasRewards && (
@@ -213,7 +212,7 @@ const SidebarDesktop = () => {
               fontSize={"22px"}
             >
               <FaBell size={"22px"} />
-              <Text color={"white"} _hover={{ color: 'lime', fontFamily: "Joystix" }}>Notifications</Text>
+              <Text fontFamily="Joystix" color={"white"} _hover={{ color: 'lime' }}>Notifications</Text>
             </HStack>
             {notifications ? <NotificationsPage /> : null}
           </>
