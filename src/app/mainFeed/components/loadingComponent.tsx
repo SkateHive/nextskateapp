@@ -18,13 +18,12 @@ const randomSentences = [
 ];
 
 const LoadingComponent = () => {
-  const [randomSentence, setRandomSentence] = useState("");
   const [fontSize, setFontSize] = useState("44px");
 
-  useEffect(() => {
+  const [randomSentence] = useState(() => {
     const randomIndex = Math.floor(Math.random() * randomSentences.length);
-    setRandomSentence(randomSentences[randomIndex]);
-  }, []);
+    return randomSentences[randomIndex];
+  });
 
   useEffect(() => {
     const handleResize = () => {
@@ -34,7 +33,7 @@ const LoadingComponent = () => {
       if (screenWidth <= 480) {
         newFontSize = "22px";
       } else if (screenWidth <= 840) {
-        newFontSize = "12x";
+        newFontSize = "12px";
       } else if (screenWidth <= 900) {
         newFontSize = "13px";
       } else if (screenWidth <= 1025) {
