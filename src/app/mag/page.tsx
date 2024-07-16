@@ -5,12 +5,11 @@ import PostSkeleton from "@/components/PostCard/Skeleton"
 import { useHiveUser } from "@/contexts/UserContext"
 import usePosts from "@/hooks/usePosts"
 import PostModel from "@/lib/models/post"
-import { Box, Button, ButtonGroup, Center, Flex, Grid, HStack } from "@chakra-ui/react"
+import { Box, Button, ButtonGroup, Center, Flex, Grid } from "@chakra-ui/react"
 import { useState } from "react"
 import InfiniteScroll from "react-infinite-scroll-component"
 import { BeatLoader } from "react-spinners"
 import AuthorSearchBar from "../upload/components/searchBar"
-
 
 export default function Mag() {
   const SKATEHIVE_TAG = [{ tag: "hive-173115", limit: 60 }]
@@ -27,11 +26,12 @@ export default function Mag() {
     setQueryCategory(query)
     setDiscussionQuery(tagParams)
   }
+
   if (error) {
     console.log("here")
-
     return "Error"
   }
+
   if (isLoading || !posts) {
     return (
       <Box
@@ -112,46 +112,51 @@ export default function Mag() {
         },
       }}
     >
+     
+     <AuthorSearchBar
+  onSearch={(author) => updateFeed("blog", [{ tag: author, limit: 10 }])}
+/>
+      <Center mt={2} mb={1}>
+        <Button
+          size={"sm"}
+          onClick={handleCreateClick}
+          colorScheme="green"
+          variant={"outline"}
+          
+        >
+          + Create 🛹
+        </Button>
+      </Center>
 
-      <Flex flexDirection={{ base: 'column', md: 'row' }} justifyContent={'space-between'} >
-        <AuthorSearchBar onSearch={(author) => updateFeed("blog", [{ tag: author, limit: 10 }])} />
-        <HStack justifyContent={'center'}>
-          <ButtonGroup size="sm" isAttached variant="outline" colorScheme="green">
-            <Button
-              onClick={() => updateFeed("trending", SKATEHIVE_TAG)}
-              isActive={query === "trending"}
-            >
-              Trending
-            </Button>
-            <Button
-              onClick={() => updateFeed("created", SKATEHIVE_TAG)}
-              isActive={query === "created"}
-            >
-              Most Recent
-            </Button>
-            {hiveUser.hiveUser && (
-              <Button
-                onClick={() =>
-                  updateFeed("feed", [
-                    { tag: hiveUser?.hiveUser?.name, limit: 100 },
-                  ])
-                }
-                isActive={query === "feed"}
-              >
-                My Crew
-              </Button>
-            )}
-          </ButtonGroup>
+      <Center mb={2}>
+        <ButtonGroup size="sm" isAttached variant="outline" colorScheme="green">
           <Button
-            size={"sm"}
-            onClick={handleCreateClick}
-            colorScheme="green"
-            variant={"outline"}
+            onClick={() => updateFeed("trending", SKATEHIVE_TAG)}
+            isActive={query === "trending"}
           >
-            + Create 🛹
+            Trending
           </Button>
-        </HStack>
-      </Flex>
+          <Button
+            onClick={() => updateFeed("created", SKATEHIVE_TAG)}
+            isActive={query === "created"}
+          >
+            Most Recent
+          </Button>
+          {hiveUser.hiveUser && (
+            <Button
+              onClick={() =>
+                updateFeed("feed", [
+                  { tag: hiveUser?.hiveUser?.name, limit: 100 },
+                ])
+              }
+              isActive={query === "feed"}
+            >
+              My Crew
+            </Button>
+          )}
+        </ButtonGroup>
+      </Center>
+
       {isLoginModalOpen && (
         <LoginModal
           isOpen={isLoginModalOpen}
