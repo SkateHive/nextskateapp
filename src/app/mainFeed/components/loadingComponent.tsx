@@ -19,11 +19,12 @@ const randomSentences = [
 
 const LoadingComponent = () => {
   const [fontSize, setFontSize] = useState("44px");
+  const [randomSentence, setRandomSentence] = useState("");
 
-  const [randomSentence] = useState(() => {
+  useEffect(() => {
     const randomIndex = Math.floor(Math.random() * randomSentences.length);
-    return randomSentences[randomIndex];
-  });
+    setRandomSentence(randomSentences[randomIndex]);
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
