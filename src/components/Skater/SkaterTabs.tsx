@@ -1,4 +1,4 @@
-import { HiveAccount } from "@/lib/models/user";
+import { HiveAccount } from "@/lib/useHiveAuth";
 import { Box, Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import ProfileBlog from "../Profile/ProfileBlog";
 import ProfilePosts from "../Profile/ProfilePosts";

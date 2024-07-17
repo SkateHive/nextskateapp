@@ -33,9 +33,9 @@ export default function ProfileTabs({ user }: ProfilePageProps) {
                     <TabPanel>
                         <ProfileBlog user={user} />
                     </TabPanel>
-                    <TabPanel>
+                    {/* <TabPanel>
                         <ProfilePosts user={user} />
-                    </TabPanel>
+                    </TabPanel> */}
                     <TabPanel>
                         <VideoParts skater={user} />
                     </TabPanel>
