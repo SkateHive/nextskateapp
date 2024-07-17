@@ -3,18 +3,36 @@ import { useEffect, useState } from "react";
 import "../../../styles/fonts.css";
 
 const randomSentences = [
-  "Don't mall grab, or do it, you do you...",
-  "Ok to push Mongo, it is! -master yoda",
-  "Roll one, and play some stoken.quest?",
+  "Don't mall grab, unless you are in the mall...",
+  "Ok to push Mongo, it is! -kook yoda",
+  "there was once a game called quest for stoken",
   "Remember Mirc times ?",
   "Fuck instagram!",
   "Ready to grind on chain?",
   "Praise whoever made skatevideosite",
-  "Loading Stokenomics...",
+  "Loading Skatehive Stokenomics...",
   "Initiating Proof of Stoke...",
-  "We will load as fast as Daryl Rolls",
-  "Who was Gnartoshi Shredamoto?",
-  "We have secret sections here, can you find?"
+  "We will load as fast ... ... as Daryl Rolls",
+  "Ever hear the legend of Gnartoshi Shredamoto?",
+  "Bless it",
+  "Home of the cryptoskaters",
+  "keeping the web gnarly since 2014",
+  "if you stay inside too long, they will start to call you vlad",
+  "lets take back the internet!",
+  "loading everyones thoughts",
+  "stack clips, earn crypto",
+  "converting clips to cash",
+  "support your local skateshops!",
+  "ever made your own wax before?",
+  "ever been in Photograffiti?",
+  "the people's thrasher",
+  "congrats, your a certified cryptoskater",
+  "imagine trying to tell your friend to join this site",
+  "accessing mainframe from skategods",
+  "quantizing your treflip?"
+
+
+
 ];
 
 const LoadingComponent = () => {
