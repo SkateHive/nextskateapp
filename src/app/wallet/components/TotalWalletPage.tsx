@@ -2,6 +2,7 @@
 import { Box, Center, Flex, Image, Text, VStack } from '@chakra-ui/react';
 import { useState } from 'react';
 
+import "../../../styles/fonts.css";
 import EthBox from './ethWallet';
 import HiveBox from './hiveWallet';
 
@@ -30,7 +31,7 @@ const TotalValueBox: React.FC = () => {
             h={{ base: "100%", md: "100%" }}
         >
             <Box w={{ base: "80%", md: "40%" }} textAlign="center">
-                <Text color={"black"} align="center" borderRadius={"md"} fontSize={{ base: 20, md: 20 }} mb={4} backgroundColor="white">
+                <Text fontFamily="Joystix" color={"black"} align="center" borderRadius={"md"} fontSize={{ base: 20, md: 20 }} mb={4} backgroundColor="white">
                     Net Worth
                 </Text>
                 <Center>
@@ -50,15 +51,16 @@ const TotalValueBox: React.FC = () => {
                 >
                     <Text
                         fontWeight="bold"
-                        fontSize={{ base: "35px", md: "35px" }}
+                        fontSize={{ base: "35px", md: "30px" }}
                         color="#003300"
+                        fontFamily="Joystix"
                     >
                         ${totalValue.toFixed(2)}
                     </Text>
                 </Box>
             </Box>
 
-            <Flex direction={{ base: 'column', md: 'row' }} w="100%">
+            <Flex fontFamily="Joystix" direction={{ base: 'column', md: 'row' }} w="100%">
                 <HiveBox onNetWorthChange={handleHiveNetWorth} />
                 <EthBox onNetWorthChange={handleEthNetWorth} />
             </Flex>

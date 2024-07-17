@@ -23,6 +23,7 @@ import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
 import { useEffect, useState } from "react";
 import { FaBell, FaBook, FaEthereum, FaHive, FaMapMarkerAlt, FaSpeakap, FaUser, FaWallet } from "react-icons/fa";
 import { useAccount } from "wagmi";
+import "../../styles/fonts.css";
 import LoginModal from "../Hive/Login/LoginModal";
 import CommunityTotalPayout from "../communityTotalPayout";
 import checkRewards from "./utils/checkReward";
@@ -118,34 +119,34 @@ const SideBarMobile = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
 
                         <HStack onClick={() => setNotifications(false)} padding={0} mt={8} gap={3} fontSize={"22px"}>
                             <FaSpeakap size={"22px"} />
-                            <Link href={"/"}>Feed</Link>
+                            <Link fontFamily="Joystix" href={"/"}>Feed</Link>
                         </HStack>
                         <HStack onClick={() => setNotifications(false)} padding={0} gap={3} fontSize={"22px"}>
                             <FaMapMarkerAlt size={"22px"} />
-                            <Link href={"/map"}>Map</Link>
+                            <Link fontFamily="Joystix" href={"/map"}>Map</Link>
                         </HStack>
                         <HStack onClick={() => setNotifications(false)} padding={0} gap={3} fontSize={"22px"}>
                             <FaBook size={"22px"} />
-                            <Link href={"/mag"}>Magazine</Link>
+                            <Link fontFamily="Joystix" href={"/mag"}>Magazine</Link>
                         </HStack>
                         {ethAccount.address && (
 
                             <HStack onClick={() => setNotifications(false)} padding={0} gap={3} fontSize={"22px"}>
                                 <FaEthereum size={"22px"} />
-                                <Link href={"/dao"}>Dao</Link>
+                                <Link fontFamily="Joystix" href={"/dao"}>Dao</Link>
                             </HStack>
                         )}
                         {hiveUser ? (
                             <>
                                 <HStack onClick={() => setNotifications(false)} padding={0} gap={3} fontSize={"22px"}>
                                     <FaUser size={"22px"} />
-                                    <Text cursor={"pointer"} onClick={() => {
+                                    <Text fontFamily="Joystix" cursor={"pointer"} onClick={() => {
                                         window.location.href = `/profile/${hiveUser.name}`;
                                     }}>Profile</Text>
                                 </HStack>
                                 <HStack onClick={() => setNotifications(false)} padding={0} gap={3} fontSize={"22px"}>
                                     <FaWallet size={"22px"} />
-                                    <Text cursor={"pointer"} onClick={() => {
+                                    <Text fontFamily="Joystix" cursor={"pointer"} onClick={() => {
                                         window.location.href = `/wallet`;
                                     }}>Wallet</Text>
                                     {hasRewards && (
@@ -175,6 +176,7 @@ const SideBarMobile = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
                                     padding={0}
                                     gap={3}
                                     fontSize={"22px"}
+                                    fontFamily="Joystix"
                                 >
                                     <FaBell size={"22px"} />
                                     <Text> Notifications</Text>

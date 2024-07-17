@@ -2,7 +2,7 @@ import AuthorSearchBar from "@/app/upload/components/searchBar";
 import { useHiveUser } from "@/contexts/UserContext";
 import usePosts from "@/hooks/usePosts";
 import PostModel from "@/lib/models/post";
-import { Box, Button, ButtonGroup, Flex, Grid, HStack } from "@chakra-ui/react";
+import { Box, Button, ButtonGroup, Flex, Grid, VStack } from "@chakra-ui/react";
 import { useCallback, useMemo, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { BeatLoader } from "react-spinners";
@@ -47,7 +47,7 @@ const PostFeed: React.FC<PostFeedProps> = ({ posts, visiblePosts, setVisiblePost
 interface NavigationButtonsProps {
   updateFeed: (query: string, tagParams: any[]) => void;
   feedConfig: { query: string; tag: any[] };
-  hiveUser: any;  // Use the appropriate type for hiveUser
+  hiveUser: any;  
 }
 
 const NavigationButtons: React.FC<NavigationButtonsProps> = ({ updateFeed, feedConfig, hiveUser }) => {
@@ -63,31 +63,58 @@ const NavigationButtons: React.FC<NavigationButtonsProps> = ({ updateFeed, feedC
 
   return (
     <>
-      {isLoginModalOpen && <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />}
-      <HStack justifyContent="center" margin="12px">
-        <ButtonGroup size="sm" isAttached variant="outline" colorScheme="green">
-          <Button onClick={() => updateFeed("trending", SKATEHIVE_TAG)} isActive={feedConfig.query === "trending"}>
-            Trending
-          </Button>
-          <Button onClick={() => updateFeed("created", SKATEHIVE_TAG)} isActive={feedConfig.query === "created"}>
-            Most Recent
-          </Button>
-          {hiveUser.hiveUser && (
-            <Button onClick={() => updateFeed("feed", [{ tag: hiveUser.hiveUser.name, limit: 100 }])} isActive={feedConfig.query === "feed"}>
-              My Crew
-            </Button>
-          )}
-        </ButtonGroup>
-        <Button
-          size={"sm"}
-          onClick={handleCreateClick}
-          colorScheme="green"
-          variant={"outline"}
-        >
-          + Create 🛹
+    {isLoginModalOpen && <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />}
+    <VStack justifyContent="center" margin="12px">
+      <ButtonGroup size="sm" isAttached variant="outline" colorScheme="green">
+        <Button onClick={() => updateFeed("trending", SKATEHIVE_TAG)} isActive={feedConfig.query === "trending"}>
+          Trending
         </Button>
-      </HStack>
-    </>
+        <Button onClick={() => updateFeed("created", SKATEHIVE_TAG)} isActive={feedConfig.query === "created"}>
+          Most Recent
+        </Button>
+        {hiveUser.hiveUser && (
+          <Button onClick={() => updateFeed("feed", [{ tag: hiveUser.hiveUser.name, limit: 100 }])} isActive={feedConfig.query === "feed"}>
+            My Crew
+          </Button>
+        )}
+      </ButtonGroup>
+      <Box display="flex" justifyContent="center" >
+  <Button
+    size={"sm"}
+    onClick={handleCreateClick}
+    colorScheme="green"
+    variant={"outline"}
+    sx={{
+      "&:hover .skate": {
+        animation: "giroEFlip 4s infinite",
+      },
+      "@keyframes giroEFlip": {
+        "0%": {
+          transform: "rotate(0) scaleX(1)",
+        },
+        "50%": {
+          transform: "rotate(360deg) scaleX(1)",
+        },
+        "75%": {
+          transform: "rotate(360deg) scaleX(-1)",
+        },
+        "100%": {
+          transform: "rotate(360deg) scaleX(1)",
+        },
+      },
+      ".skate": {
+        display: "inline-block",
+        fontSize: "1.5em", 
+      },
+    }}
+  >
+  
+    <span className="skate">🛹</span> + Create
+  </Button>
+</Box>
+
+    </VStack>
+  </>
   );
 };
 

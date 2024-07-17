@@ -8,11 +8,10 @@ import {
   TabList,
   TabPanel,
   TabPanels,
-  Tabs,
-  Text
+  Tabs
 } from "@chakra-ui/react";
-import TotalValueBox from "./components/TotalWalletPage";
 import '../../styles/fonts.css';
+import TotalValueBox from "./components/TotalWalletPage";
 function Wallet() {
   const user = useHiveUser();
   const username = user?.hiveUser?.name;
@@ -20,7 +19,7 @@ function Wallet() {
   return (
     <Box w="100%" p={4}>
       <Tabs variant={'soft-enclosed'}>
-        <TabList color={"white"} justifyContent={"center"} fontFamily="pixelfont">
+        <TabList color={"white"} justifyContent={"center"} fontFamily="Joystix">
           <Tab _selected={{ bg: 'limegreen' }}>Wallet</Tab>
           <Tab _selected={{ bg: 'limegreen' }}>Swap</Tab>
         </TabList>
