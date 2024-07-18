@@ -165,10 +165,11 @@ const SidebarDesktop = () => {
           <HStack padding={0} gap={3} fontSize={"22px"}>
             <FaDiscord size={"22px"} />
             <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime'}} onClick={() => {
-              window.location.href = "https://discord.gg/skateboard";
+              window.location.href = "https://discord.gg/G4bamNkZuE";
             }}>Chat</Text>
           </HStack>
         )}
+        
 
         {hiveUser ? (
           <>
@@ -204,6 +205,16 @@ const SidebarDesktop = () => {
                 </Button>
               )}
             </HStack>
+
+            
+          <HStack padding={0} gap={3} fontSize={"22px"}>
+            <FaDiscord size={"22px"} />
+            <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime'}} onClick={() => {
+              window.location.href = "https://discord.gg/G4bamNkZuE";
+            }}>Chat</Text>
+          </HStack>
+        
+
             <HStack
               cursor={"pointer"}
               onClick={handleNotifications}
