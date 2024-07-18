@@ -29,12 +29,23 @@ interface LevelMissionsProps {
 export default function LevelMissions({ initialLevel, user, updateAvailableXp }: LevelMissionsProps) {
     const [activeLevel, setActiveLevel] = useState(initialLevel);
     const [activeMissions, setActiveMissions] = useState<Mission[]>([]);
-    const user_posting_metadata = JSON.parse(user.posting_json_metadata);
+
+    const safeParse = (jsonString: string) => {
+        try {
+            return JSON.parse(jsonString);
+        } catch (error) {
+            return null;
+        }
+    };
+
+    const user_posting_metadata = safeParse(user.posting_json_metadata);
+    const user_json_metadata = safeParse(user.json_metadata);
     const user_has_voted_in_skatehive_witness = user.witness_votes.includes("skatehive");
     const [user_has_ethereum_address, setUserHasEthereumAddress] = useState(false);
     const [user_posts, setUserPosts] = useState([]);
     const userLatestPostDate = user.last_post;
     const { hivePower } = useHiveBalance(user);
+
     const [completedMissions, setCompletedMissions] = useState({
         hasProfilePic: false,
         hasCompletedProfile: false,
@@ -59,16 +70,13 @@ export default function LevelMissions({ initialLevel, user, updateAvailableXp }:
                 if (isMissionCompleted(mission.name) && !completedMissionSet.has(mission.name)) {
                     completedMissionSet.add(mission.name);
                     totalXp += mission.xp;
-                    // console.log(`Adding ${mission.xp} XP for ${mission.name}`);
                 }
             });
         }
-        // console.log(`Calculated Total XP: ${totalXp}`);
         return totalXp;
     }, [completedMissions]);
 
     useEffect(() => {
-        // console.log("Setting initial completed missions based on user data");
         const newCompletedMissions = { ...completedMissions };
 
         if (user_posting_metadata) {
@@ -86,7 +94,7 @@ export default function LevelMissions({ initialLevel, user, updateAvailableXp }:
         if (user_has_voted_in_skatehive_witness) {
             newCompletedMissions.hasVotedForSkateHiveWitness = true;
         }
-        if (user.json_metadata && JSON.parse(user.json_metadata).extensions && JSON.parse(user.json_metadata).extensions.eth_address) {
+        if (user_json_metadata?.extensions?.eth_address) {
             setUserHasEthereumAddress(true);
             newCompletedMissions.hasAddedEthereumAddress = true;
         }
@@ -100,11 +108,9 @@ export default function LevelMissions({ initialLevel, user, updateAvailableXp }:
             newCompletedMissions.hasMoreThan50HP = true;
         }
         setCompletedMissions(newCompletedMissions);
-        // console.log(newCompletedMissions);
     }, [user, hivePower]);
 
     useEffect(() => {
-        // console.log(`Active Level Changed: ${activeLevel}`);
         setActiveMissions(dummyMissions[activeLevel] || []);
     }, [activeLevel]);
 
@@ -129,7 +135,6 @@ export default function LevelMissions({ initialLevel, user, updateAvailableXp }:
     const isMissionCompleted = (missionName: string) => {
         switch (missionName) {
             case "Add Profile Picture":
-                // console.log(`Checking if hasProfilePic is true: ${completedMissions.hasProfilePic}`);
                 return completedMissions.hasProfilePic;
             case "Complete Profile":
                 return completedMissions.hasCompletedProfile;
@@ -143,8 +148,6 @@ export default function LevelMissions({ initialLevel, user, updateAvailableXp }:
                 return completedMissions.hasMoreThanFivePosts;
             case "Vote on SkateHive Proposal":
                 return completedMissions.hasVotedOnSkateHiveProposal;
-            case "More than 5 Posts":
-                return completedMissions.hasMoraThanFivePosts;
             case "Posted this week":
                 return completedMissions.hasUserPostedLastWeek;
             case "More than 50 HP":

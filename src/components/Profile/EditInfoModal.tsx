@@ -38,34 +38,38 @@ interface EditModalProps {
 const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN;
 
 export default function EditInfoModal({ isOpen, onClose, user, onUpdate }: EditModalProps) { // Add onUpdate here
-  const metadata = JSON.parse(user.posting_json_metadata).profile ? JSON.parse(user.posting_json_metadata) : (user.json_metadata ? JSON.parse(user.json_metadata) : {});
-  const extMetadata = JSON.parse(user.json_metadata).extensions ? JSON.parse(user.json_metadata) : {};
-  const [name, setName] = useState<string>(metadata?.profile.name || '');
-  const [about, setAbout] = useState<string>(metadata?.profile.about || '');
-  const [location, setLocation] = useState<string>(metadata?.profile.location || '');
-  const [avatarUrl, setAvatarUrl] = useState<string>(metadata?.profile.profile_image || '');
-  const [coverImageUrl, setCoverImageUrl] = useState<string>(metadata?.profile.cover_image || '');
-  const [extensions, setExtensions] = useState<any>(
-    (() => {
-      try {
-        return (extMetadata?.extensions) || "";
-      } catch (error) {
-        console.error("Error parsing JSON metadata:", error);
-        return "";
-      }
-    })()
-  );
+  const safeParse = (jsonString: string) => {
+    try {
+      return JSON.parse(jsonString);
+    } catch (error) {
+      return null;
+    }
+  };
 
-  const [website, setWebsite] = useState<string>(metadata?.profile.website || '');
+  const postingMetadata = safeParse(user.posting_json_metadata);
+  const jsonMetadata = safeParse(user.json_metadata);
+
+  const metadata = postingMetadata?.profile ? postingMetadata : (jsonMetadata?.profile ? jsonMetadata : {});
+  const extMetadata = jsonMetadata?.extensions ? jsonMetadata : {};
+
+  const [name, setName] = useState<string>(metadata?.profile?.name || '');
+  const [about, setAbout] = useState<string>(metadata?.profile?.about || '');
+  const [location, setLocation] = useState<string>(metadata?.profile?.location || '');
+  const [avatarUrl, setAvatarUrl] = useState<string>(metadata?.profile?.profile_image || '');
+  const [coverImageUrl, setCoverImageUrl] = useState<string>(metadata?.profile?.cover_image || '');
+  const [extensions, setExtensions] = useState<any>(extMetadata?.extensions || {});
+
+  const [website, setWebsite] = useState<string>(metadata?.profile?.website || '');
   const [selectedProfileFile, setSelectedProfileFile] = useState<File | null>(null);
   const [selectedCoverFile, setSelectedCoverFile] = useState<File | null>(null);
   const connectedWallet = useAccount().address;
   const [isEthSetupModalOpen, setIsEthSetupModalOpen] = useState(false);
   const [ethAddress, setEthAddress] = useState<string>(extensions?.eth_address || '');
-  const [videoParts, setVideoParts] = useState<VideoPart[]>(extensions?.video_parts || '');
+  const [videoParts, setVideoParts] = useState<VideoPart[]>(extensions?.video_parts || []);
   const [level, setLevel] = useState<number>(extensions?.level || 0);
   const [staticXp, setStaticXp] = useState<number>(extensions?.staticXp || 0);
   const [cumulativeXp, setCumulativeXp] = useState<number>(extensions?.cumulativeXp || 0);
+
   async function handleProfileFileInputChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (file) {
