@@ -10,6 +10,7 @@ import usePosts from "@/hooks/usePosts";
 import PostModel from "@/lib/models/post";
 import Post from "../PostCard";
 import PostSkeleton from "../PostCard/Skeleton";
+import '../../styles/fonts.css';
 
 const SKATEHIVE_TAG = [{ tag: "hive-173115", limit: 30 }];
 
@@ -60,44 +61,78 @@ const NavigationButtons: React.FC<NavigationButtonsProps> = ({ updateFeed, feedC
     }
   };
 
+  const buttonStyle = {
+    "&:hover": {
+      boxShadow: "5px 5px 10px rgba(255, 255, 255, 0.5)",
+    },
+    "&:active": {
+      transform: "translate(2px, 2px)",
+      boxShadow: "2px 2px 10px rgba(255, 255, 255, 0.5)",
+    },
+  };
+
+  const createButtonStyle = {
+    "&:hover": {
+      boxShadow: "5px 5px 10px rgba(255, 255, 255, 0.5)",
+      backgroundColor: "purple.700", // Changes background color to purple on hover
+    },
+    "&:active": {
+      transform: "translate(2px, 2px)",
+      boxShadow: "2px 2px 10px rgba(255, 255, 255, 0.5)",
+    },
+  };
+
   return (
     <>
       {isLoginModalOpen && <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />}
       <VStack justifyContent="center" margin="12px" spacing={4}>
-        <ButtonGroup size="sm" isAttached variant="outline" colorScheme="green">
-          <Button onClick={() => updateFeed("trending", SKATEHIVE_TAG)} isActive={feedConfig.query === "trending"}>
-            $$ Hot $$
-          </Button>
-          <Button onClick={() => updateFeed("created", SKATEHIVE_TAG)} isActive={feedConfig.query === "created"}>
-            Fresh
-          </Button>
-          {hiveUser.hiveUser && (
-            <Button onClick={() => updateFeed("feed", [{ tag: hiveUser.hiveUser.name, limit: 100 }])} isActive={feedConfig.query === "feed"}>
-              Following
-            </Button>
-          )}
-        </ButtonGroup>
-        <Box display="flex" justifyContent="center">
+      <Box display="flex" justifyContent="center">
           <Button
             size={"lg"}
             onClick={handleCreateClick}
             colorScheme="green"
             variant={"outline"}
-            sx={{
-              "&:hover": {
-                boxShadow: "0 0 10px rgba(255, 255, 255, 0.5)",
-              },
-              "&:active": {
-                transform: "translate(2px, 2px)",
-              },
-            }}
+            fontFamily="Joystix"
+            sx={createButtonStyle}
           >
-            <Box marginRight={3}>
-              <Image src="/treboard.gif" alt="Skateboard" width={32} height={32} />
+            <Box marginRight={3} >
+              <Image src="/treboard.gif" alt="Skateboard" width={42} height={42} />
             </Box>
             + Create
           </Button>
         </Box>
+        <ButtonGroup size="sm" isAttached variant="outline" colorScheme="green">
+          <Button
+            onClick={() => updateFeed("trending", SKATEHIVE_TAG)}
+            isActive={feedConfig.query === "trending"}
+            sx={buttonStyle}
+          >
+            <Box marginRight={3}>
+              <Image src="/greenflame.gif" alt="Skateboard" width={18} height={18}/> 
+            </Box>
+            Hot 
+            <Box marginLeft={3}>
+            <Image src="/greenflame.gif" alt="Skateboard" width={18} height={18} />
+            </Box>
+          </Button>
+          <Button
+            onClick={() => updateFeed("created", SKATEHIVE_TAG)}
+            isActive={feedConfig.query === "created"}
+            sx={buttonStyle}
+          >
+            Fresh
+          </Button>
+          {hiveUser.hiveUser && (
+            <Button
+              onClick={() => updateFeed("feed", [{ tag: hiveUser.hiveUser.name, limit: 100 }])}
+              isActive={feedConfig.query === "feed"}
+              sx={buttonStyle}
+            >
+              Following
+            </Button>
+          )}
+        </ButtonGroup>
+
       </VStack>
     </>
   );
