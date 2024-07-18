@@ -1,28 +1,28 @@
-import AuthorSearchBar from "@/app/upload/components/searchBar";
-import { useHiveUser } from "@/contexts/UserContext";
-import usePosts from "@/hooks/usePosts";
-import PostModel from "@/lib/models/post";
 import { Box, Button, ButtonGroup, Flex, Grid, VStack } from "@chakra-ui/react";
 import { useCallback, useMemo, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { BeatLoader } from "react-spinners";
 import LoginModal from "../Hive/Login/LoginModal";
+import Image from "next/image";
+import AuthorSearchBar from "@/app/upload/components/searchBar";
+import { useHiveUser } from "@/contexts/UserContext";
+import usePosts from "@/hooks/usePosts";
+import PostModel from "@/lib/models/post";
 import Post from "../PostCard";
 import PostSkeleton from "../PostCard/Skeleton";
+
 const SKATEHIVE_TAG = [{ tag: "hive-173115", limit: 30 }];
 
 interface PostFeedProps {
-  posts: any[];  // Use a more specific type based on your application
+  posts: any[]; // Use a more specific type based on your application
   visiblePosts: number;
   setVisiblePosts: (count: number) => void;
   query: string;
 }
 
 const PostFeed: React.FC<PostFeedProps> = ({ posts, visiblePosts, setVisiblePosts, query }) => {
-
-
   return (
-    <Box overflow={'auto'}>
+    <Box overflow={"auto"}>
       <InfiniteScroll
         dataLength={visiblePosts}
         next={() => {
@@ -40,86 +40,70 @@ const PostFeed: React.FC<PostFeedProps> = ({ posts, visiblePosts, setVisiblePost
         </Grid>
       </InfiniteScroll>
     </Box>
-
   );
 };
 
 interface NavigationButtonsProps {
   updateFeed: (query: string, tagParams: any[]) => void;
   feedConfig: { query: string; tag: any[] };
-  hiveUser: any;  
+  hiveUser: any;
 }
 
 const NavigationButtons: React.FC<NavigationButtonsProps> = ({ updateFeed, feedConfig, hiveUser }) => {
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const handleCreateClick = () => {
     if (!hiveUser.hiveUser) {
-      setIsLoginModalOpen(true)
+      setIsLoginModalOpen(true);
     } else {
-      window.location.href = "/upload"
+      window.location.href = "/upload";
     }
-  }
+  };
 
   return (
     <>
-    {isLoginModalOpen && <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />}
-    <VStack justifyContent="center" margin="12px">
-      <ButtonGroup size="sm" isAttached variant="outline" colorScheme="green">
-        <Button onClick={() => updateFeed("trending", SKATEHIVE_TAG)} isActive={feedConfig.query === "trending"}>
-          Trending
-        </Button>
-        <Button onClick={() => updateFeed("created", SKATEHIVE_TAG)} isActive={feedConfig.query === "created"}>
-          Most Recent
-        </Button>
-        {hiveUser.hiveUser && (
-          <Button onClick={() => updateFeed("feed", [{ tag: hiveUser.hiveUser.name, limit: 100 }])} isActive={feedConfig.query === "feed"}>
-            My Crew
+      {isLoginModalOpen && <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />}
+      <VStack justifyContent="center" margin="12px" spacing={4}>
+        <ButtonGroup size="sm" isAttached variant="outline" colorScheme="green">
+          <Button onClick={() => updateFeed("trending", SKATEHIVE_TAG)} isActive={feedConfig.query === "trending"}>
+            $$ Hot $$
           </Button>
-        )}
-      </ButtonGroup>
-      <Box display="flex" justifyContent="center" >
-  <Button
-    size={"sm"}
-    onClick={handleCreateClick}
-    colorScheme="green"
-    variant={"outline"}
-    sx={{
-      "&:hover .skate": {
-        animation: "giroEFlip 4s infinite",
-      },
-      "@keyframes giroEFlip": {
-        "0%": {
-          transform: "rotate(0) scaleX(1)",
-        },
-        "50%": {
-          transform: "rotate(360deg) scaleX(1)",
-        },
-        "75%": {
-          transform: "rotate(360deg) scaleX(-1)",
-        },
-        "100%": {
-          transform: "rotate(360deg) scaleX(1)",
-        },
-      },
-      ".skate": {
-        display: "inline-block",
-        fontSize: "1.5em", 
-      },
-    }}
-  >
-  
-    <span className="skate">🛹</span> + Create
-  </Button>
-</Box>
-
-    </VStack>
-  </>
+          <Button onClick={() => updateFeed("created", SKATEHIVE_TAG)} isActive={feedConfig.query === "created"}>
+            Fresh
+          </Button>
+          {hiveUser.hiveUser && (
+            <Button onClick={() => updateFeed("feed", [{ tag: hiveUser.hiveUser.name, limit: 100 }])} isActive={feedConfig.query === "feed"}>
+              Following
+            </Button>
+          )}
+        </ButtonGroup>
+        <Box display="flex" justifyContent="center">
+          <Button
+            size={"lg"}
+            onClick={handleCreateClick}
+            colorScheme="green"
+            variant={"outline"}
+            sx={{
+              "&:hover": {
+                boxShadow: "0 0 10px rgba(255, 255, 255, 0.5)",
+              },
+              "&:active": {
+                transform: "translate(2px, 2px)",
+              },
+            }}
+          >
+            <Box marginRight={3}>
+              <Image src="/treboard.gif" alt="Skateboard" width={32} height={32} />
+            </Box>
+            + Create
+          </Button>
+        </Box>
+      </VStack>
+    </>
   );
 };
 
 export default function MagColumn() {
-
   const SKATEHIVE_TAG = useMemo(() => [{ tag: "hive-173115", limit: 30 }], []);
   const [feedConfig, setFeedConfig] = useState({ tag: SKATEHIVE_TAG, query: "created" });
   const { posts, error, isLoading, setQueryCategory, setDiscussionQuery } = usePosts(feedConfig.query, feedConfig.tag);
@@ -127,7 +111,7 @@ export default function MagColumn() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const hiveUser = useHiveUser();
 
-  const updateFeed = useCallback((query: string, tagParams: { tag: string, limit: number }[]) => {
+  const updateFeed = useCallback((query: string, tagParams: { tag: string; limit: number }[]) => {
     setFeedConfig({ query, tag: tagParams });
     setQueryCategory(query);
     setDiscussionQuery(tagParams);
