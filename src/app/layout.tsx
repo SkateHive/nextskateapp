@@ -2,13 +2,13 @@
 
 import Favicon from "@/components/FaviconLinks";
 import MobileNavbar from "@/components/Navbar/MobileNavbar";
-import SidebarDesktop from "@/components/Navbar/sidebarDesktop";
 import { getWebsiteURL } from "@/lib/utils";
 import { Flex } from "@chakra-ui/react";
 import dynamic from 'next/dynamic';
 import { Share_Tech_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 import { Providers } from "./providers";
+import SidebarWrapper from "./SidebarWrapper";
 
 const share_tech_mono = Share_Tech_Mono({ subsets: ["latin"], weight: "400" });
 
@@ -80,7 +80,7 @@ export default function RootLayout({
           <Flex w={"100%"}
             justifyContent={"center"} id="layout">
             <div className="hide-on-mobile">
-              <SidebarDesktop />
+              <SidebarWrapper />
             </div>
             <div className="mobile-menu-button">
               <MobileNavbar />

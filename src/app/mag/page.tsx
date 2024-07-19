@@ -5,11 +5,12 @@ import PostSkeleton from "@/components/PostCard/Skeleton"
 import { useHiveUser } from "@/contexts/UserContext"
 import usePosts from "@/hooks/usePosts"
 import PostModel from "@/lib/models/post"
-import { Box, Button, ButtonGroup, Center, Flex, Grid } from "@chakra-ui/react"
+import { Box, Button, ButtonGroup, Center, Flex, Grid, useMediaQuery } from "@chakra-ui/react"
 import { useState } from "react"
 import InfiniteScroll from "react-infinite-scroll-component"
 import { BeatLoader } from "react-spinners"
 import AuthorSearchBar from "../upload/components/searchBar"
+import { FaBook, FaBookOpen } from "react-icons/fa"
 
 export default function Mag() {
   const SKATEHIVE_TAG = [{ tag: "hive-173115", limit: 60 }]
@@ -31,6 +32,9 @@ export default function Mag() {
     console.log("here")
     return "Error"
   }
+
+  const isMobile = useMediaQuery("(max-width: 768px)")[0];
+  const [openBook, setOpenBook] = useState(false);
 
   if (isLoading || !posts) {
     return (
@@ -58,6 +62,20 @@ export default function Mag() {
             >
               Most Recent
             </Button>
+            {!isMobile && (
+              <Button
+                onClick={() => {
+                  console.log("Open Mag View");
+                  if (window) {
+                    window.location.href = "/communityMag";
+                  }
+                  setOpenBook(!openBook);
+                }}
+              >
+                {openBook ? <FaBookOpen /> : <FaBook />}
+
+              </Button>
+            )}
             {hiveUser.hiveUser && (
               <Button
                 onClick={() =>
@@ -112,17 +130,17 @@ export default function Mag() {
         },
       }}
     >
-     
-     <AuthorSearchBar
-  onSearch={(author) => updateFeed("blog", [{ tag: author, limit: 10 }])}
-/>
+
+      <AuthorSearchBar
+        onSearch={(author) => updateFeed("blog", [{ tag: author, limit: 10 }])}
+      />
       <Center mt={2} mb={1}>
         <Button
           size={"sm"}
           onClick={handleCreateClick}
           colorScheme="green"
           variant={"outline"}
-          
+
         >
           + Create 🛹
         </Button>
@@ -152,6 +170,20 @@ export default function Mag() {
               isActive={query === "feed"}
             >
               My Crew
+            </Button>
+          )}
+          {!isMobile && (
+            <Button
+              onClick={() => {
+                console.log("Open Mag View");
+                if (window) {
+                  window.location.href = "/communityMag";
+                }
+                setOpenBook(!openBook);
+              }}
+            >
+              {openBook ? <FaBookOpen /> : <FaBook />}
+
             </Button>
           )}
         </ButtonGroup>

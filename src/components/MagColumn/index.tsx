@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Flex, Grid, VStack } from "@chakra-ui/react";
+import { Box, Button, ButtonGroup, Flex, Grid, useMediaQuery, VStack } from "@chakra-ui/react";
 import { useCallback, useMemo, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { BeatLoader } from "react-spinners";
@@ -11,6 +11,7 @@ import PostModel from "@/lib/models/post";
 import Post from "../PostCard";
 import PostSkeleton from "../PostCard/Skeleton";
 import '../../styles/fonts.css';
+import { FaBook, FaBookOpen } from "react-icons/fa";
 
 const SKATEHIVE_TAG = [{ tag: "hive-173115", limit: 30 }];
 
@@ -82,12 +83,13 @@ const NavigationButtons: React.FC<NavigationButtonsProps> = ({ updateFeed, feedC
       boxShadow: "2px 2px 10px rgba(255, 255, 255, 0.5)",
     },
   };
-
+  const [openBook, setOpenBook] = useState(false);
+  const isMobile = useMediaQuery("(max-width: 768px)")[0];
   return (
     <>
       {isLoginModalOpen && <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />}
       <VStack justifyContent="center" margin="12px" spacing={4}>
-      <Box display="flex" justifyContent="center">
+        <Box display="flex" justifyContent="center">
           <Button
             size={"lg"}
             onClick={handleCreateClick}
@@ -109,11 +111,11 @@ const NavigationButtons: React.FC<NavigationButtonsProps> = ({ updateFeed, feedC
             sx={buttonStyle}
           >
             <Box marginRight={3}>
-              <Image src="/greenflame.gif" alt="Skateboard" width={18} height={18}/> 
+              <Image src="/greenflame.gif" alt="Skateboard" width={18} height={18} />
             </Box>
-            Hot 
+            Hot
             <Box marginLeft={3}>
-            <Image src="/greenflame.gif" alt="Skateboard" width={18} height={18} />
+              <Image src="/greenflame.gif" alt="Skateboard" width={18} height={18} />
             </Box>
           </Button>
           <Button
@@ -130,6 +132,20 @@ const NavigationButtons: React.FC<NavigationButtonsProps> = ({ updateFeed, feedC
               sx={buttonStyle}
             >
               Following
+            </Button>
+          )}
+          {!isMobile && (
+            <Button
+              onClick={() => {
+                console.log("Open Mag View");
+                if (window) {
+                  window.location.href = "/communityMag";
+                }
+                setOpenBook(!openBook);
+              }}
+            >
+              {openBook ? <FaBookOpen /> : <FaBook />}
+
             </Button>
           )}
         </ButtonGroup>

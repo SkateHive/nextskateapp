@@ -1,11 +1,26 @@
-import Zine from "@/components/Magazine/test/page";
-import { Flex } from "@chakra-ui/react";
+'use client';
+import FullMag from "@/components/Magazine/test/fullMag";
+import { Button, Flex } from "@chakra-ui/react";
 import React from "react";
 
 const CommunityMagPage = () => {
+    const handleBackClick = () => {
+        if (window) {
+            window.history.back();
+        }
+    };
+
     return (
-        <Zine tag={[{ tag: 'hive-173115', limit: 33 }]} query="created" />
-    )
-}
+        <>
+            <Flex>
+                <Button m={2} colorScheme="green" variant={'outline'} onClick={handleBackClick}>
+                    Back
+                </Button>
+            </Flex>
+            <FullMag tag={[{ tag: 'hive-173115', limit: 33 }]} query="created" />
+        </>
+    );
+};
 
 export default CommunityMagPage;
+
