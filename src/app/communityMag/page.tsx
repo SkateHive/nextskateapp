@@ -15,11 +15,11 @@ const CommunityMagPage = () => {
         <>
 
             <FullMag tag={[{ tag: 'hive-173115', limit: 33 }]} query="created" />
-            <Box>
+            {/* <Box>
                 <Button m={2} colorScheme="green" variant={'outline'} onClick={handleBackClick}>
                     Back
                 </Button>
-            </Box>
+            </Box> */}
         </>
     );
 };
