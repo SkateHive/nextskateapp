@@ -22,6 +22,9 @@ export default function Mag() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
   const hiveUser = useHiveUser()
 
+  const isMobile = useMediaQuery("(max-width: 768px)")[0];
+  const [openBook, setOpenBook] = useState(false);
+
   function updateFeed(query: string, tagParams: any[]) {
     setQuery(query)
     setQueryCategory(query)
@@ -32,9 +35,6 @@ export default function Mag() {
     console.log("here")
     return "Error"
   }
-
-  const isMobile = useMediaQuery("(max-width: 768px)")[0];
-  const [openBook, setOpenBook] = useState(false);
 
   if (isLoading || !posts) {
     return (
