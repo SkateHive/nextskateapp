@@ -75,6 +75,7 @@ const NavigationButtons: React.FC<NavigationButtonsProps> = ({ updateFeed, feedC
     "&:hover": {
       boxShadow: "5px 5px 10px rgba(255, 255, 255, 0.5)",
       backgroundColor: "purple.700", // Changes background color to purple on hover
+      color: "lime"
     },
     "&:active": {
       transform: "translate(2px, 2px)",
