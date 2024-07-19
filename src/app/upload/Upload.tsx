@@ -67,7 +67,6 @@ export default function Upload() {
                     const markdownLink = file.type.startsWith("video/") ? `<iframe src="${ipfsUrl}" allowfullscreen></iframe>` : `![Image](${ipfsUrl})`;
                     setValue(prevMarkdown => `${prevMarkdown}\n${markdownLink}\n`);
                     setThumbnailUrl(acceptedFiles[0].type.startsWith("video/") ? "https://ipfs.skatehive.app/ipfs/QmWgkeX38hgWNh7cj2mTvk8ckgGK3HSB5VeNn2yn9BEnt7" : `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}`);
-
                 }
             }
             setIsUploading(false);
@@ -77,8 +76,8 @@ export default function Upload() {
             'video/*': [".mp4"],
         },
         multiple: false
-    }
-    );
+    });
+
     const extraCommands = [
         {
             name: 'uploadImage',
@@ -116,9 +115,7 @@ export default function Upload() {
         const imageUrls = extractImageUrls(value);
 
         const options = imageUrls.map((imageUrl, index) => (
-            <HStack
-                key={index}
-            >
+            <HStack key={index}>
                 <Box
                     cursor="pointer"
                     width="100px"
@@ -126,15 +123,14 @@ export default function Upload() {
                     display="flex"
                     justifyContent="center"
                     alignItems="center"
-                    onClick={() => {
-                        setThumbnailUrl(imageUrl);
-                    }}
+                    onClick={() => setThumbnailUrl(imageUrl)}
                     style={imageUrl === thumbnailUrl ? selectedThumbnailStyle : {}}
                 >
                     <Image
                         src={imageUrl}
                         alt={`Thumbnail ${index}`}
-                        style={{ maxWidth: "100%", maxHeight: "100%" }} />
+                        style={{ maxWidth: "100%", maxHeight: "100%" }}
+                    />
                 </Box>
             </HStack>
         ));
@@ -168,42 +164,39 @@ export default function Upload() {
         } else {
             alert(`Beneficiary ${searchUsername} already exists or percentage is zero.`);
         }
-
     };
 
     const beneficiariesArray: BeneficiaryForBroadcast[] = [
+        ...(isChecked ? defaultBeneficiaries : []),
         ...beneficiaries,
-        ...defaultBeneficiaries,
-    ].sort((a, b) => a.name.localeCompare(b.name))
-        .map(beneficiary => ({
-            account: beneficiary.name,
-            weight: (beneficiary.percentage * 100).toFixed(0),
-        }));
+    ].map(beneficiary => ({
+        account: beneficiary.name,
+        weight: (beneficiary.percentage * 100).toFixed(0),
+    }));
 
     const handleBeneficiaryPercentageChange = (index: number, newPercentage: number) => {
-        if (index < 0 || index >= beneficiaries.length) {
-            console.error('Invalid index for beneficiaries:', index);
-            return;
-        }
-
         const updatedBeneficiaries = [...beneficiaries];
-        updatedBeneficiaries[index].percentage = newPercentage;
-        setBeneficiaries(updatedBeneficiaries);
+        if (index < beneficiaries.length) {
+            updatedBeneficiaries[index].percentage = newPercentage;
+            setBeneficiaries(updatedBeneficiaries);
+        } else {
+            const defaultBeneficiariesIndex = index - beneficiaries.length;
+            const updatedDefaultBeneficiaries = [...defaultBeneficiaries];
+            updatedDefaultBeneficiaries[defaultBeneficiariesIndex].percentage = newPercentage;
+            setBeneficiaries(updatedBeneficiaries);
+        }
     };
 
     const [showTooltip, setShowTooltip] = React.useState(false);
 
     const handleCheckMark = () => {
+        console.log(isChecked);
         setIsChecked(!isChecked);
-    };
-    const handleDefaultBeneficiaryPercentageChange = (index: number, newPercentage: number) => {
-        if (index < 0 || index >= defaultBeneficiaries.length) {
-            console.error('Invalid index for default beneficiaries:', index);
-            return;
+        if (!isChecked) {
+            setBeneficiaries([]);
+        } else {
+            setBeneficiaries(defaultBeneficiaries);
         }
-
-        const updatedDefaultBeneficiaries = [...defaultBeneficiaries];
-        updatedDefaultBeneficiaries[index].percentage = newPercentage;
     };
 
     const handleChange = (value: string) => {
@@ -216,15 +209,14 @@ export default function Upload() {
             {showPreview &&
                 <PreviewModal
                     isOpen={showPreview}
-                    onClose={() => {
-                        setShowPreview(false);
-                    }}
+                    onClose={() => setShowPreview(false)}
                     title={title}
                     body={value}
                     thumbnailUrl={thumbnailUrl || "https://ipfs.skatehive.app/ipfs/QmYkb6yq2nXSccdMwmyNWXND8T1exqUW1uUiMAQcV4nfVP?pinataGatewayToken=nxHSFa1jQsiF7IHeXWH-gXCY3LDLlZ7Run3aZXZc8DRCfQz4J4a94z9DmVftXyFE"}
                     user={hiveUser!}
                     beneficiariesArray={beneficiariesArray}
-                    tags={tags} />}
+                    tags={tags}
+                />}
 
             <Input {...getInputProps()} id="md-image-upload" style={{ display: 'none' }} size="md" />
 
@@ -240,7 +232,8 @@ export default function Upload() {
                             style={{ caretColor: "#A5D6A7" }}
                             type="text"
                             value={title}
-                            onChange={(e) => setTitle(e.target.value)} />
+                            onChange={(e) => setTitle(e.target.value)}
+                        />
                     </HStack>
 
                     <Box marginTop="3" {...getRootProps()}>
@@ -252,7 +245,6 @@ export default function Upload() {
                             commands={[
                                 commands.bold, commands.italic, commands.strikethrough, commands.table, commands.link, commands.quote, commands.unorderedListCommand, commands.fullscreen
                             ]}
-
                             extraCommands={extraCommands}
                             height="700px"
                             preview="edit"
@@ -261,7 +253,8 @@ export default function Upload() {
                                 border: "1px solid #A5D6A7",
                                 padding: "10px",
                                 backgroundColor: "black",
-                            }} />
+                            }}
+                        />
                     </Box>
                     <VStack>
                         <Badge width={"100%"} mt={5} size="24px" color="#A5D6A7" backgroundColor={"#1e2021"}
@@ -274,7 +267,8 @@ export default function Upload() {
                                             {...getInputProps()}
                                             id="md-image-upload"
                                             style={{ display: 'none' }}
-                                            size="md" />
+                                            size="md"
+                                        />
                                         <Box
                                             cursor="pointer"
                                             width="100px"
@@ -312,7 +306,6 @@ export default function Upload() {
                     {showAdvanced && <Box marginTop="3">
                         <Box marginTop="3">
                             <Center>
-
                                 <Badge
                                     color="#A5D6A7" background={"green.600"} marginBottom={3}>
                                     <Text fontSize={"22px"} color="#A5D6A7">Tags</Text>
@@ -330,7 +323,8 @@ export default function Upload() {
                                         borderColor={"green.600"}
                                         color={"#A5D6A7"}
                                         _placeholder={{ color: "#A5D6A7", opacity: 0.4 }}
-                                        focusBorderColor="#A5D6A7" />
+                                        focusBorderColor="#A5D6A7"
+                                    />
                                 ))}
                             </Flex>
                             <Center>
@@ -339,12 +333,11 @@ export default function Upload() {
                                     <Tooltip label="Your Photographer/Video Maker deserves it">
                                         <Text fontSize={"22px"} color="#A5D6A7">Split Rewards</Text>
                                     </Tooltip>
-
                                 </Badge>
                             </Center>
                             <AuthorSearchBar onSearch={handleAuthorSearch} />
-                            <Checkbox defaultChecked colorScheme="green" size="lg" onChange={handleCheckMark}>Support Devs</Checkbox>
-
+                            {/* <Checkbox defaultChecked colorScheme="green" size="lg" onChange={handleCheckMark}>Support Devs</Checkbox> */}
+                            <Button colorScheme="green" size="lg" onClick={handleCheckMark}>Support Devs</Button>
                             {isChecked &&
                                 defaultBeneficiaries.map((beneficiary, index) => (
                                     <Box key={index}>
@@ -352,7 +345,8 @@ export default function Upload() {
                                             <Avatar
                                                 size="sm"
                                                 src={`https://images.ecency.com/webp/u/${beneficiary.name}/avatar/small`}
-                                                mr={2} />
+                                                mr={2}
+                                            />
                                             <Text>
                                                 {beneficiary.name} - {beneficiary.percentage}%
                                             </Text>
@@ -363,7 +357,7 @@ export default function Upload() {
                                             min={0}
                                             max={100}
                                             colorScheme="green"
-                                            onChange={(val) => handleDefaultBeneficiaryPercentageChange(index, val)}
+                                            onChange={(val) => handleBeneficiaryPercentageChange(index, val)}
                                             onMouseEnter={() => setShowTooltip(true)}
                                             onMouseLeave={() => setShowTooltip(false)}
                                         >
@@ -383,17 +377,16 @@ export default function Upload() {
                                         </Slider>
                                     </Box>
                                 ))}
-
                             <Box marginTop={4}>
                                 <Box ref={searchBarRef}>
-
                                     {beneficiaries.map((beneficiary, index) => (
                                         <Box key={index}>
                                             <Center>
                                                 <Avatar
                                                     size="sm"
                                                     src={`https://images.ecency.com/webp/u/${beneficiary.name}/avatar/small`}
-                                                    mr={2} />
+                                                    mr={2}
+                                                />
                                                 <Text>
                                                     {beneficiary.name} - {beneficiary.percentage}%
                                                 </Text>
@@ -429,7 +422,6 @@ export default function Upload() {
                         </Box>
                     </Box>}
                     <Center>
-
                         <Button
                             mt={5}
                             onClick={() => handlePost()}
@@ -437,7 +429,6 @@ export default function Upload() {
                             w={"100%"}
                             colorScheme="blue"
                             variant={"outline"}
-
                         >
                             Submit
                         </Button>
@@ -453,7 +444,7 @@ export default function Upload() {
                     <Divider my={5} />
                     <Box maxH="90vh" overflow="auto" p={1} borderRadius="md">
                         <ReactMarkdown components={MarkdownRenderers} rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
-                            {(transformIPFSContent(value))}
+                            {transformIPFSContent(value)}
                         </ReactMarkdown>
                     </Box>
                 </Box>

@@ -18,7 +18,6 @@ import { uploadFileToIPFS } from "./utils/uploadToIPFS";
 
 const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN;
 
-
 interface Beneficiary {
     name: string;
     percentage: number;
@@ -41,20 +40,23 @@ export default function Upload() {
     const defaultTags = ["skatehive", "skateboarding", "leofinance", "sportstalk", "hive-engine"];
     const [tags, setTags] = useState([...defaultTags]);
     const [showAdvanced, setShowAdvanced] = useState(false);
-    const [thumbnailUrl, setThumbnailUrl] = useState<string | null>("https://ipfs.skatehive.app/ipfs/QmWgkeX38hgWNh7cj2mTvk8ckgGK3HSB5VeNn2yn9BEnt7?pinataGatewayToken=nxHSFa1jQsiF7IHeXWH-gXCY3LDLlZ7Run3aZXZc8DRCfQz4J4a94z9DmVftXyFE");
+    const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
     const [newTagInputs, setNewTagInputs] = useState(Array(5).fill(""));
     const searchBarRef: RefObject<HTMLDivElement> = useRef(null);
-    const [beneficiaries, setBeneficiaries] = useState<Beneficiary[]>([]);
+    const [userBeneficiaries, setUserBeneficiaries] = useState<Beneficiary[]>([]);
+    const [defaultBeneficiaryState, setDefaultBeneficiaryState] = useState(defaultBeneficiaries);
     const [showPreview, setShowPreview] = useState(false);
     const [isChecked, setIsChecked] = useState(true);
     const [isButtonVisible, setIsButtonVisible] = useState(true);
     const buttonRef = useRef(null);
+    const [showTooltip, setShowTooltip] = useState(false);
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
             setValue(localStorage.getItem('draft') || '');
         }
     }, []);
+
     useEffect(() => {
         const observer = new IntersectionObserver(
             ([entry]) => {
@@ -73,6 +75,7 @@ export default function Upload() {
             }
         };
     }, []);
+
     const { getRootProps, getInputProps } = useDropzone({
         noClick: true,
         noKeyboard: true,
@@ -90,7 +93,6 @@ export default function Upload() {
                     const markdownLink = file.type.startsWith("video/") ? `<iframe src="${ipfsUrl}" allowfullscreen></iframe>` : `![Image](${ipfsUrl})`;
                     setValue(prevMarkdown => `${prevMarkdown}\n${markdownLink}\n`);
                     setThumbnailUrl(acceptedFiles[0].type.startsWith("video/") ? "https://ipfs.skatehive.app/ipfs/QmWgkeX38hgWNh7cj2mTvk8ckgGK3HSB5VeNn2yn9BEnt7" : `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}`);
-
                 }
             }
             setIsUploading(false);
@@ -100,8 +102,8 @@ export default function Upload() {
             'video/*': [".mp4"],
         },
         multiple: false
-    }
-    );
+    });
+
     const extraCommands = [
         {
             name: 'uploadImage',
@@ -129,7 +131,6 @@ export default function Upload() {
                 element.click();
             }
         }
-
     ];
 
     const renderThumbnailOptions = () => {
@@ -140,9 +141,7 @@ export default function Upload() {
         const imageUrls = extractImageUrls(value);
 
         const options = imageUrls.map((imageUrl, index) => (
-            <HStack
-                key={index}
-            >
+            <HStack key={index}>
                 <Box
                     cursor="pointer"
                     width="100px"
@@ -179,62 +178,83 @@ export default function Upload() {
 
         setTags(combinedTags);
 
+        // Check if the total percentage of beneficiaries exceeds 100%
+        const totalBeneficiaryPercentage = [...userBeneficiaries, ...(isChecked ? defaultBeneficiaryState : [])]
+            .reduce((total, beneficiary) => total + beneficiary.percentage, 0);
+
+        if (totalBeneficiaryPercentage > 100) {
+            alert("The total percentage of beneficiaries cannot exceed 100%");
+            return;
+        }
+
         setShowPreview(true);
     }
 
     const handleAuthorSearch = (searchUsername: string) => {
         const percentage = 10;
 
-        const beneficiaryExists = beneficiaries.some(b => b.name === searchUsername);
+        const beneficiaryExists = userBeneficiaries.some(b => b.name === searchUsername);
 
         if (!beneficiaryExists && percentage > 0) {
             const newBeneficiary = { name: searchUsername, percentage };
-            setBeneficiaries(prevBeneficiaries => [...prevBeneficiaries, newBeneficiary]);
+            setUserBeneficiaries(prevBeneficiaries => [...prevBeneficiaries, newBeneficiary]);
         } else {
             alert(`Beneficiary ${searchUsername} already exists or percentage is zero.`);
         }
-
     };
 
-    const beneficiariesArray: BeneficiaryForBroadcast[] = [
-        ...beneficiaries,
-        ...defaultBeneficiaries,
-    ].sort((a, b) => a.name.localeCompare(b.name))
-        .map(beneficiary => ({
-            account: beneficiary.name,
-            weight: (beneficiary.percentage * 100).toFixed(0),
-        }));
+    const combineBeneficiaries = () => {
+        const combinedBeneficiaries: BeneficiaryForBroadcast[] = [
+            ...userBeneficiaries,
+            ...(isChecked ? defaultBeneficiaryState : [])
+        ].sort((a, b) => a.name.localeCompare(b.name))
+            .map(beneficiary => ({
+                account: beneficiary.name,
+                weight: (beneficiary.percentage * 100).toFixed(0),
+            }));
+
+        // Ensure user is always a beneficiary
+        if (!combinedBeneficiaries.some(b => b.account === hiveUser?.name)) {
+            combinedBeneficiaries.push({
+                account: hiveUser?.name || '',
+                weight: '10000' // Ensure the user gets full rewards if no other beneficiaries are set
+            });
+        }
+
+        return combinedBeneficiaries;
+    }
 
     const handleBeneficiaryPercentageChange = (index: number, newPercentage: number) => {
-        if (index < 0 || index >= beneficiaries.length) {
-            console.error('Invalid index for beneficiaries:', index);
+        if (index < 0 || index >= userBeneficiaries.length) {
+            console.error('Invalid index for user beneficiaries:', index);
             return;
         }
 
-        const updatedBeneficiaries = [...beneficiaries];
+        const updatedBeneficiaries = [...userBeneficiaries];
         updatedBeneficiaries[index].percentage = newPercentage;
-        setBeneficiaries(updatedBeneficiaries);
+        setUserBeneficiaries(updatedBeneficiaries);
     };
 
-    const [showTooltip, setShowTooltip] = React.useState(false);
-
-    const handleCheckMark = () => {
-        setIsChecked(!isChecked);
-    }
     const handleDefaultBeneficiaryPercentageChange = (index: number, newPercentage: number) => {
-        if (index < 0 || index >= defaultBeneficiaries.length) {
+        if (index < 0 || index >= defaultBeneficiaryState.length) {
             console.error('Invalid index for default beneficiaries:', index);
             return;
         }
 
-        const updatedDefaultBeneficiaries = [...defaultBeneficiaries];
+        const updatedDefaultBeneficiaries = [...defaultBeneficiaryState];
         updatedDefaultBeneficiaries[index].percentage = newPercentage;
+        setDefaultBeneficiaryState(updatedDefaultBeneficiaries);
     }
+
+    const handleCheckMark = () => {
+        setIsChecked(!isChecked);
+    };
 
     const handleChange = (value: string) => {
         localStorage.setItem('draft', value);
         setValue(value || localStorage.getItem('draft') || '');
     }
+
     const [isMobile, setIsMobile] = useState(false)
     useEffect(() => {
         if (window) {
@@ -251,13 +271,12 @@ export default function Upload() {
                     isOpen={showPreview}
                     onClose={() => {
                         setShowPreview(false)
-                    }
-                    }
+                    }}
                     title={title}
                     body={value}
                     thumbnailUrl={thumbnailUrl || "https://ipfs.skatehive.app/ipfs/QmYkb6yq2nXSccdMwmyNWXND8T1exqUW1uUiMAQcV4nfVP?pinataGatewayToken=nxHSFa1jQsiF7IHeXWH-gXCY3LDLlZ7Run3aZXZc8DRCfQz4J4a94z9DmVftXyFE"}
                     user={hiveUser!}
-                    beneficiariesArray={beneficiariesArray}
+                    beneficiariesArray={combineBeneficiaries()}
                     tags={tags}
                 />}
 
@@ -274,8 +293,6 @@ export default function Upload() {
                         }
                     }}
                 >
-
-
                     <HStack>
                         <Input
                             borderColor={"green.600"}
@@ -297,9 +314,7 @@ export default function Upload() {
                             onChange={(value) => handleChange(value || '')}
                             commands={[
                                 commands.bold, commands.italic, commands.strikethrough, commands.table, commands.link, commands.quote, commands.unorderedListCommand, commands.fullscreen
-                            ]
-                            }
-
+                            ]}
                             extraCommands={extraCommands}
                             height={isMobile ? "500px" : "700px"}
                             preview="edit"
@@ -389,14 +404,13 @@ export default function Upload() {
                                     <Tooltip label="Your Photographer/Video Maker deserves it">
                                         <Text fontSize={"22px"} color="#A5D6A7">Split Rewards</Text>
                                     </Tooltip>
-
                                 </Badge>
                             </Center>
                             <AuthorSearchBar onSearch={handleAuthorSearch} />
                             <Checkbox defaultChecked colorScheme="green" size="lg" onChange={handleCheckMark} >Support Devs</Checkbox>
 
                             {isChecked &&
-                                defaultBeneficiaries.map((beneficiary, index) => (
+                                defaultBeneficiaryState.map((beneficiary, index) => (
                                     <Box key={index}>
                                         <Center>
                                             <Avatar
@@ -438,8 +452,7 @@ export default function Upload() {
 
                             <Box marginTop={4}>
                                 <Box ref={searchBarRef}>
-
-                                    {beneficiaries.map((beneficiary, index) => (
+                                    {userBeneficiaries.map((beneficiary, index) => (
                                         <Box key={index}>
                                             <Center>
                                                 <Avatar
@@ -483,7 +496,7 @@ export default function Upload() {
                     </Box>}
                     <Button
                         mt={5}
-                        ref={buttonRef} // Attach the ref to the button we want to observe
+                        ref={buttonRef}
                         onClick={() => handlePost()}
                         isDisabled={isButtonDisabled}
                         w={"100%"}

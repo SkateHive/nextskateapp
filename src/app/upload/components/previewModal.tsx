@@ -41,13 +41,13 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
     const [hasPosted, setHasPosted] = useState(false);
     const AiSummary = useSummary(body);
     const permlink = slugify(title.toLowerCase());
-    const postLink = `${window.location.origin}/post/hive-173115/@${user.name}/${permlink}`;
+    const postLink = user?.name ? `${window.location.origin}/post/hive-173115/@${user.name}/${permlink}` : '';
     const characterCount = body.length;
     const [isMinCarcterCountReached, setIsMinCarcterCountReached] = useState(characterCount >= 350);
-
+    const parent_perm = process.env.NEXT_PUBLIC_PARENT_PERM;
     let postDataForPreview = {
         post_id: Number(1),
-        author: user.name || "skatehive",
+        author: user?.name || "skatehive",
         permlink: 'permlink',
         title: title,
         body: body,
@@ -97,7 +97,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
                 username: user.name,
                 title: title,
                 body: body,
-                parent_perm: "hive-173115",
+                parent_perm: parent_perm,
                 json_metadata: JSON.stringify({ format: "markdown", description: AiSummary, tags: tags }),
                 permlink: permlink,
                 comment_options: JSON.stringify({
@@ -115,6 +115,8 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
                 })
             }
         }
+
+        console.log('formParamsAsObject', formParamsAsObject);
 
         if (loginMethod === 'keychain') {
             const response = await commentWithKeychain(formParamsAsObject);
