@@ -144,7 +144,7 @@ const CommandPrompt = ({ post, addComment }: CommandPromptProps) => {
 
   return (
     <>
-      <Box p={5} marginTop="3" {...getRootProps()}>
+      <Box p={5} color={'white'} marginTop="3" {...getRootProps()}>
         {isUploading && (
           <Center>
             <Spinner />
@@ -175,6 +175,7 @@ const CommandPrompt = ({ post, addComment }: CommandPromptProps) => {
             border: "none",
             padding: "10px",
             backgroundColor: "black",
+            color: "white",
           }}
         />
         <Flex justifyContent={"flex-end"}>

@@ -15,7 +15,7 @@ const CommentsComponent = (props: CommentsProps) => {
 
   const { comments, addComment } = useComments(author, permlink, true)
   return (
-    <Box>
+    <Box color={'white'}>
       <CommandPrompt addComment={addComment} post={post} />
       <CommentsSection comments={comments} />
     </Box>
