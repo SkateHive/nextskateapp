@@ -5,12 +5,12 @@ import PostSkeleton from "@/components/PostCard/Skeleton"
 import { useHiveUser } from "@/contexts/UserContext"
 import usePosts from "@/hooks/usePosts"
 import PostModel from "@/lib/models/post"
-import { Box, Button, ButtonGroup, Center, Flex, Grid, useMediaQuery } from "@chakra-ui/react"
+import { Box, Button, ButtonGroup, Center, Flex, Grid, Image, useMediaQuery } from "@chakra-ui/react"
 import { useState } from "react"
+import { FaBook, FaBookOpen } from "react-icons/fa"
 import InfiniteScroll from "react-infinite-scroll-component"
 import { BeatLoader } from "react-spinners"
 import AuthorSearchBar from "../upload/components/searchBar"
-import { FaBook, FaBookOpen } from "react-icons/fa"
 
 export default function Mag() {
   const SKATEHIVE_TAG = [{ tag: "hive-173115", limit: 60 }]
@@ -48,49 +48,6 @@ export default function Mag() {
           },
         }}
       >
-        <Center>
-          <ButtonGroup size="sm" isAttached variant="outline" colorScheme="green">
-            <Button
-              onClick={() => updateFeed("trending", SKATEHIVE_TAG)}
-              isActive={query === "trending"}
-            >
-              Trending
-            </Button>
-            <Button
-              onClick={() => updateFeed("created", SKATEHIVE_TAG)}
-              isActive={query === "created"}
-            >
-              Most Recent
-            </Button>
-            {!isMobile && (
-              <Button
-                onClick={() => {
-                  console.log("Open Mag View");
-                  if (window) {
-                    window.location.href = "/communityMag";
-                  }
-                  setOpenBook(!openBook);
-                }}
-              >
-                {openBook ? <FaBookOpen /> : <FaBook />}
-
-              </Button>
-            )}
-            {hiveUser.hiveUser && (
-              <Button
-                onClick={() =>
-                  updateFeed("feed", [
-                    { tag: hiveUser?.hiveUser?.name, limit: 100 },
-                  ])
-                }
-                isActive={query === "feed"}
-              >
-                My Crew
-              </Button>
-            )}
-          </ButtonGroup>
-        </Center>
-
         <Grid
           p={1}
           templateColumns={{
@@ -119,6 +76,17 @@ export default function Mag() {
     }
   }
 
+  const createButtonStyle = {
+    "&:hover": {
+      boxShadow: "5px 5px 10px rgba(255, 255, 255, 0.5)",
+      backgroundColor: "purple.700", 
+    },
+    "&:active": {
+      transform: "translate(2px, 2px)",
+      boxShadow: "2px 2px 10px rgba(255, 255, 255, 0.5)",
+    },
+  };
+
   return (
     <Box
       height={"101vh"}
@@ -131,19 +99,21 @@ export default function Mag() {
       }}
     >
 
-      <AuthorSearchBar
-        onSearch={(author) => updateFeed("blog", [{ tag: author, limit: 10 }])}
-      />
+     
       <Center mt={2} mb={1}>
-        <Button
-          size={"sm"}
-          onClick={handleCreateClick}
-          colorScheme="green"
-          variant={"outline"}
-
-        >
-          + Create 🛹
-        </Button>
+      <Button
+            size={"lg"}
+            onClick={handleCreateClick}
+            colorScheme="green"
+            variant={"outline"}
+            fontFamily="Joystix"
+            sx={createButtonStyle}
+          >
+            <Box marginRight={3} >
+              <Image src="/treboard.gif" alt="Skateboard" width={42} height={42} />
+            </Box>
+            + Create
+          </Button>
       </Center>
 
       <Center mb={2}>
@@ -152,13 +122,19 @@ export default function Mag() {
             onClick={() => updateFeed("trending", SKATEHIVE_TAG)}
             isActive={query === "trending"}
           >
-            Trending
+            <Box marginRight={3}>
+              <Image src="/11.png" alt="Skateboard" width={18} height={18}/> 
+            </Box>
+            Hot 
+            <Box marginLeft={3}>
+            <Image src="/22.png" alt="Skateboard" width={18} height={18} />
+            </Box>
           </Button>
           <Button
             onClick={() => updateFeed("created", SKATEHIVE_TAG)}
             isActive={query === "created"}
           >
-            Most Recent
+           Fresh
           </Button>
           {hiveUser.hiveUser && (
             <Button
@@ -169,7 +145,7 @@ export default function Mag() {
               }
               isActive={query === "feed"}
             >
-              My Crew
+             Following
             </Button>
           )}
           {!isMobile && (
@@ -188,7 +164,13 @@ export default function Mag() {
           )}
         </ButtonGroup>
       </Center>
-
+      <Center mt={2} mb={1}>
+      <Box width={{ base: "62%", sm: "70%", md: "60%", lg: "40%", xl: "19%" }}>
+      <AuthorSearchBar
+            onSearch={(author) => updateFeed("blog", [{ tag: author, limit: 10 }])}
+          />
+        </Box>
+      </Center>
       {isLoginModalOpen && (
         <LoginModal
           isOpen={isLoginModalOpen}
