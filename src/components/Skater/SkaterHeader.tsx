@@ -23,7 +23,6 @@ export default function SkaterHeader({ user }: ProfileProps) {
     const [boxSize, setBoxSize] = useState(20)
     const [isFollowing, setIsFollowing] = useState(false)
 
-    // if mobile show smaller image
     useEffect(() => {
         if (isSmallerThan400) {
             setBoxSize(20)
@@ -34,15 +33,16 @@ export default function SkaterHeader({ user }: ProfileProps) {
     }, [isSmallerThan400])
 
 
-    const onStart = async () => {
-        if (hiveUser.hiveUser?.name && user.name) {
-            const isFollowing = await checkFollow(hiveUser.hiveUser?.name, user.name)
-            setIsFollowing(isFollowing)
-        }
-    }
     useEffect(() => {
-        onStart()
+        const fetchFollowStatus = async () => {
+            if (hiveUser.hiveUser?.name && user.name) {
+                const isFollowing = await checkFollow(hiveUser.hiveUser?.name, user.name)
+                setIsFollowing(isFollowing)
+            }
+        }
+        fetchFollowStatus()
     }, [hiveUser.hiveUser?.name, user.name])
+
 
     const handleFollowButton = async () => {
         console.log("follow button clicked")
