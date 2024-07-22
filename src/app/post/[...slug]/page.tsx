@@ -80,8 +80,18 @@ export default async function Page({ params }: { params: { slug: string } }) {
   };
 
   return (
-    <Box width={{ base: '100%', md: '60%' }} color="white" display="flex" flexDir={{ base: 'column', lg: 'row' }} minH="60vh" gap={6}>
-      <Box width={{ base: '100%', md: '60%' }}>
+    <Box
+    width={{ base: '100%', md: '60%' }}
+      color="white"
+      display="flex"
+      flexDir={{ base: 'column', lg: 'row' }}
+      gap={6}
+    >
+      <Box
+        width={{ base: '100%', md: '60%' }}
+        maxWidth={{ base: '100%', md: '60%' }} 
+        mx="auto" 
+      >
         <Heading mt={8} size="md" border="1px solid grey" borderRadius={5}>
           <Box bg="#201d21" borderRadius={5}>
             <HStack>
@@ -104,7 +114,14 @@ export default async function Page({ params }: { params: { slug: string } }) {
         </Container>
       </Box>
 
-      <Box width={{ base: '100%', md: '40%' }} mt={5}>
+      <Box
+        width={{ base: '100%', md: '40%' }}
+        maxWidth={{ base: '100%', md: '40%' }} 
+        mt={5}
+        mx="auto" 
+        overflow="hidden" 
+        paddingBottom="40px" 
+      >
         <Center>
           <VStack width="90%">
             <Badge
@@ -139,13 +156,20 @@ export default async function Page({ params }: { params: { slug: string } }) {
             )}
           </VStack>
         </Center>
+
         <Center>
           <Text mt={5} fontSize="18px">
             Comments
           </Text>
         </Center>
 
-        <CommentsComponent author={user.substring(3)} permlink={postId} />
+        <Box 
+          maxW="100%" 
+          overflow="hidden"
+           padding="0"
+        >
+          <CommentsComponent author={user.substring(3)} permlink={postId} />
+        </Box>
       </Box>
     </Box>
   );
