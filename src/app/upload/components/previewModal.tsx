@@ -64,24 +64,28 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
             { voter: "Magnolia", weight: 20000, percent: "0", reputation: 100, rshares: 0 },
         ]
     }
+    const formatBeneficiaries = (beneficiariesArray: any[]) => {
+        let seen = new Set();
+        return beneficiariesArray.filter(({ account }: { account: string }) => {
+            const duplicate = seen.has(account);
+            seen.add(account);
+            return !duplicate;
+        }).map(beneficiary => ({
+            account: beneficiary.account,
+            weight: parseInt(beneficiary.weight, 10) // Ensure weight is an integer
+        })).sort((a, b) => a.account.localeCompare(b.account));
+    };
+
+    const finalBeneficiaries = formatBeneficiaries(beneficiariesArray);
 
     const handlePost = async () => {
         if (!isMinCarcterCountReached) {
             alert('Your post is too short for the Magazine Section. Please add more content or post in the Main Feed.');
             return;
         }
-        const formatBeneficiaries = (beneficiariesArray: any[]) => {
-            let seen = new Set();
-            return beneficiariesArray.filter(({ account }: { account: string }) => {
-                const duplicate = seen.has(account);
-                seen.add(account);
-                return !duplicate;
-            }).map(beneficiary => ({
-                account: beneficiary.account,
-                weight: parseInt(beneficiary.weight, 10)
-            })).sort((a, b) => a.account.localeCompare(b.account));
-        };
-        const finalBeneficiaries = formatBeneficiaries(beneficiariesArray);
+
+
+        console.log('finalBeneficiaries', finalBeneficiaries);
         const permlink = slugify(title.toLowerCase());
         const loginMethod = localStorage.getItem('LoginMethod');
 
@@ -115,8 +119,6 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
                 })
             }
         }
-
-        console.log('formParamsAsObject', formParamsAsObject);
 
         if (loginMethod === 'keychain') {
             const response = await commentWithKeychain(formParamsAsObject);
@@ -165,7 +167,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
                                             <PostPreview postData={postDataForPreview} />
                                         </Box>
                                         <Box border={'1px solid white'} w="80%">
-                                            <BeneficiariesTable beneficiariesArray={beneficiariesArray} />
+                                            <BeneficiariesTable beneficiariesArray={finalBeneficiaries} />
                                             <TagsTable tags={tags} />
                                         </Box>
                                     </VStack>

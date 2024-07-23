@@ -204,25 +204,33 @@ export default function Upload() {
     };
 
     const combineBeneficiaries = () => {
-        const combinedBeneficiaries: BeneficiaryForBroadcast[] = [
+        const allBeneficiaries = [
             ...userBeneficiaries,
             ...(isChecked ? defaultBeneficiaryState : [])
-        ].sort((a, b) => a.name.localeCompare(b.name))
+        ];
+
+        // Ensure the user is always a beneficiary with a weight of 10000 - sum of other weights
+        const userAccount = hiveUser?.name || '';
+        const otherWeightsSum = allBeneficiaries.reduce((total, b) => total + b.percentage * 100, 0);
+        const userWeight = Math.max(10000 - otherWeightsSum, 0);
+
+        // Create the beneficiaries list for broadcasting
+        const combinedBeneficiaries = allBeneficiaries
+            .sort((a, b) => a.name.localeCompare(b.name))
             .map(beneficiary => ({
                 account: beneficiary.name,
                 weight: (beneficiary.percentage * 100).toFixed(0),
             }));
 
-        // Ensure user is always a beneficiary
-        if (!combinedBeneficiaries.some(b => b.account === hiveUser?.name)) {
-            combinedBeneficiaries.push({
-                account: hiveUser?.name || '',
-                weight: '10000' // Ensure the user gets full rewards if no other beneficiaries are set
-            });
-        }
+        // Add the user beneficiary with the remaining weight
+        combinedBeneficiaries.push({
+            account: userAccount,
+            weight: userWeight.toFixed(0),
+        });
 
         return combinedBeneficiaries;
-    }
+    };
+
 
     const handleBeneficiaryPercentageChange = (index: number, newPercentage: number) => {
         if (index < 0 || index >= userBeneficiaries.length) {
@@ -501,9 +509,9 @@ export default function Upload() {
                         isDisabled={isButtonDisabled}
                         w={"100%"}
                         bg="black"
-                        color={"limegreen"}
+                        color={"white"}
                         border={"1px solid #A5D6A7"}
-                        _hover={{ bg: "limegreen", color: 'black' }}
+                        _hover={{ bg: "limegreen", color: 'white' }}
                     >
                         Send it !
                     </Button>

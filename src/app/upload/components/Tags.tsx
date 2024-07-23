@@ -9,7 +9,7 @@ const Tags: React.FC<TagsProps> = ({ tags }) => {
     return (
         <Flex flexWrap="wrap">
             {tags.map((tag, index) => (
-                <Badge key={index} colorScheme="green" variant="solid" size="sm" m={1}>
+                <Badge key={index} colorScheme="green" variant="solid" fontSize={'6px'} m={1}>
                     {tag}
                 </Badge>
             ))}

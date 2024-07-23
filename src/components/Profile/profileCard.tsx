@@ -71,7 +71,6 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
     };
 
     const cardStyles = getGlowStyles(userLevel);
-    console.log(userPostingMetadata)
     return (
         <>
             {isLoginModalOpen && <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />}
