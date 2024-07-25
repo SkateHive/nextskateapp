@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Flex, Grid, useMediaQuery, VStack } from "@chakra-ui/react";
+import { Box, Button, ButtonGroup, Center, Flex, Grid, useMediaQuery, VStack } from "@chakra-ui/react";
 import { useCallback, useMemo, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { BeatLoader } from "react-spinners";
@@ -64,23 +64,23 @@ const NavigationButtons: React.FC<NavigationButtonsProps> = ({ updateFeed, feedC
 
   const buttonStyle = {
     "&:hover": {
-      boxShadow: "5px 5px 10px rgba(255, 255, 255, 0.5)",
+      boxShadow: "4px 4px 6px rgba(167, 255, 0, 0.8)",
     },
     "&:active": {
       transform: "translate(2px, 2px)",
-      boxShadow: "2px 2px 10px rgba(255, 255, 255, 0.5)",
+      boxShadow: "2px 2px 3px rgba(167, 255, 0, 0.8)",
     },
   };
 
   const createButtonStyle = {
     "&:hover": {
-      boxShadow: "5px 5px 10px rgba(255, 255, 255, 0.5)",
+      boxShadow: "5px 5px 10px rgba(167, 255, 0, 0.8)",
       backgroundColor: "purple.700", // Changes background color to purple on hover
       color: "lime"
     },
     "&:active": {
       transform: "translate(2px, 2px)",
-      boxShadow: "2px 2px 10px rgba(255, 255, 255, 0.5)",
+      boxShadow: "2px 2px 10px rgba(167, 255, 0, 0.8)",
     },
   };
   const [openBook, setOpenBook] = useState(false);
@@ -99,7 +99,7 @@ const NavigationButtons: React.FC<NavigationButtonsProps> = ({ updateFeed, feedC
             sx={createButtonStyle}
           >
             <Box marginRight={3} >
-              <Image src="/treboard.gif" alt="Skateboard" width={42} height={42} />
+              <Image src="/treboard.gif" alt="tre flip Skateboard icon" width={42} height={42} />
             </Box>
             + Create
           </Button>
@@ -111,11 +111,11 @@ const NavigationButtons: React.FC<NavigationButtonsProps> = ({ updateFeed, feedC
             sx={buttonStyle}
           >
             <Box marginRight={3}>
-              <Image src="/greenflame.gif" alt="Skateboard" width={18} height={18} />
+              <Image src="/flyingMoney11.png" alt="Flying Money Icon" width={18} height={18} />
             </Box>
             Hot
             <Box marginLeft={3}>
-              <Image src="/greenflame.gif" alt="Skateboard" width={18} height={18} />
+              <Image src="/flyingMoney22.png" alt="Flying Money Icon" width={18} height={18} />
             </Box>
           </Button>
           <Button
@@ -136,6 +136,7 @@ const NavigationButtons: React.FC<NavigationButtonsProps> = ({ updateFeed, feedC
           )}
           {!isMobile && (
             <Button
+            sx={buttonStyle}
               onClick={() => {
                 console.log("Open Mag View");
                 if (window) {

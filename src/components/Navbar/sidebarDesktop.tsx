@@ -42,6 +42,9 @@ const blink = keyframes`
   100% { opacity: 1; }
 `;
 
+
+
+
 const SidebarDesktop = () => {
   const user = useHiveUser();
   const hiveUser = user.hiveUser;
@@ -97,6 +100,19 @@ const SidebarDesktop = () => {
       setHasRewards(false);
     }
   };
+
+  const handleClick = () => {
+    const url = "https://discord.gg/G4bamNkZuE";
+    if (/Mobi|Android/i.test(navigator.userAgent)) {
+      // For mobile devices, use the Discord URL scheme to open the app
+      window.location.href = url;
+    } else {
+      // For desktop, open in a new tab
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  };
+
+  
 
   return (
     <>
@@ -165,9 +181,12 @@ const SidebarDesktop = () => {
       {!hiveUser && (
         <HStack padding={0} gap={3} fontSize={"22px"}>
           <FaDiscord size={"22px"} />
-          <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime'}} onClick={() => {
-            window.location.href = "https://discord.gg/G4bamNkZuE";
-          }}>Chat</Text>
+          <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime'}} as="a"
+      href="https://discord.gg/G4bamNkZuE"
+      target="_blank"
+      rel="noopener noreferrer"
+          
+          >Chat</Text>
         </HStack>
       )}
       
@@ -210,9 +229,15 @@ const SidebarDesktop = () => {
           
         <HStack padding={0} gap={3} fontSize={"22px"}>
           <FaDiscord size={"22px"} />
-          <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime'}} onClick={() => {
-            window.location.href = "https://discord.gg/G4bamNkZuE";
-          }}>Chat</Text>
+          <Text
+        fontFamily="Joystix"
+        color={"white"}
+        cursor={"pointer"}
+        _hover={{ color: 'lime' }}
+        onClick={handleClick}
+      >
+        Chat
+      </Text>
         </HStack>
       
 
