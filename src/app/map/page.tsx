@@ -176,7 +176,7 @@ const EmbeddedMap: React.FC = () => {
           <Flex flexDirection={{ base: "column", md: "row" }} align="center">
             <Box flex="1" display={{ base: "none", md: "block" }} mx="auto">
               <Image
-                src="https://i.ibb.co/yqr3KQR/image.png"
+                src="/pepe_map.png"
                 alt="Map thumbnail"
                 boxSize="250px"
                 boxShadow="md"
