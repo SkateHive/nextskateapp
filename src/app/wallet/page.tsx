@@ -8,10 +8,12 @@ import {
   TabList,
   TabPanel,
   TabPanels,
-  Tabs
+  Tabs,
+  Text
 } from "@chakra-ui/react";
 import '../../styles/fonts.css';
 import TotalValueBox from "./components/TotalWalletPage";
+import Pix from "./components/pix";
 function Wallet() {
   const user = useHiveUser();
   const username = user?.hiveUser?.name;
@@ -56,8 +58,17 @@ function Wallet() {
 
           </TabPanel>
           <TabPanel>
-            Em breve, por enquanto use
-            <a> https://aphid-glowing-fish.ngrok-free.app/index.html </a> ou binance
+            <Text
+              fontFamily="Joystix"
+              fontSize="2xl"
+              textAlign="center"
+              color="white"
+              mt={5}
+            >
+              Em breve, por enquanto use
+              <a style={{ color: 'blue' }} href='https://aphid-glowing-fish.ngrok-free.app/index.html'> PixBee </a> ou binance
+            </Text>
+            <Pix />
           </TabPanel>
         </TabPanels>
       </Tabs >
