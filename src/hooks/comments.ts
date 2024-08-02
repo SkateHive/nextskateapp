@@ -66,22 +66,23 @@ export async function fetchComments(
     const comments = (await HiveClient.database.call("get_content_replies", [
       author,
       permlink,
-    ])) as Comment[]
+    ])) as Comment[];
+
     if (recursive) {
       const fetchReplies = async (comment: Comment): Promise<Comment> => {
         if (comment.children && comment.children > 0) {
-          comment.replies = await fetchComments(comment.author, comment.permlink)
+          comment.replies = await fetchComments(comment.author, comment.permlink, true);
         }
-        return comment
-      }
-      const commentsWithReplies = await Promise.all(comments.map(fetchReplies))
-      return commentsWithReplies
+        return comment;
+      };
+      const commentsWithReplies = await Promise.all(comments.map(fetchReplies));
+      return commentsWithReplies;
     } else {
-      return comments
+      return comments;
     }
   } catch (error) {
-    console.error("Failed to fetch comments:", error)
-    return []
+    console.error("Failed to fetch comments:", error);
+    return [];
   }
 }
 
@@ -95,31 +96,35 @@ export function useComments(
   const [error, setError] = useState<string | null>(null)
 
   const fetchAndUpdateComments = useCallback(async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const fetchedComments = await fetchComments(author, permlink, recursive)
-      setComments(fetchedComments)
-      setIsLoading(false)
+      const fetchedComments = await fetchComments(author, permlink, recursive);
+      setComments(fetchedComments);
+      setIsLoading(false);
     } catch (err: any) {
-      setError(err.message ? err.message : "Error loading comments")
-      console.error(err)
+      setError(err.message ? err.message : "Error loading comments");
+      console.error(err);
+      setIsLoading(false);
     }
-    setIsLoading(false)
-  }, [author, permlink, recursive])
+  }, [author, permlink, recursive]);
 
   useEffect(() => {
-    fetchAndUpdateComments()
-  }, [fetchAndUpdateComments])
+    fetchAndUpdateComments();
+  }, [fetchAndUpdateComments]);
 
   const addComment = useCallback((newComment: Comment) => {
-    setComments((existingComments) => [...existingComments, newComment])
-  }, [])
+    setComments((existingComments) => [...existingComments, newComment]);
+  }, []);
+
+  const updateComments = useCallback(async () => {
+    await fetchAndUpdateComments();
+  }, [fetchAndUpdateComments]);
 
   return {
     comments,
     error,
     isLoading,
     addComment,
-    updateComments: fetchAndUpdateComments,
-  }
+    updateComments,
+  };
 }

@@ -30,6 +30,7 @@ import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import { handleVote } from "../utils/handleFeedVote";
 import CommentList from "./CommentsList";
+import { EditCommentModal } from "./EditCommentModal";
 import ReplyModal from "./replyModal";
 
 interface CommentItemProps {
@@ -37,6 +38,7 @@ interface CommentItemProps {
   username: string;
   handleVote: (author: string, permlink: string) => void;
   onClick?: () => void
+
 }
 
 const VotingButton = ({
@@ -108,13 +110,15 @@ const VotingButton = ({
 };
 
 const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
-  const rewardId = comment.id ? "postReward" + comment.id : "";
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const handleModal = () => {
-    setIsModalOpen(!isModalOpen);
-  };
-
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isReplyModalOpen, setIsReplyModalOpen] = useState(false);
   const [isValueTooltipOpen, setIsValueTooltipOpen] = useState(false);
+  const [numberOfComments, setNumberOfComments] = useState(0);
+  const [editedCommentBody, setEditedCommentBody] = useState(comment.body);
+  const [commentReplies, setCommentReplies] = useState<any[]>([]);
+
+  const [visiblePosts, setVisiblePosts] = useState(5);
+
   const toggleValueTooltip = () => {
     setIsValueTooltipOpen(true);
     setTimeout(() => {
@@ -122,86 +126,98 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
     }, 3000);
   };
 
-  const commentReplies = useComments(comment.author, comment.permlink);
-  const comments_count = commentReplies.comments.length;
-  const [numberOfComments, setNumberOfComments] = useState(0);
+
+  const { comments } = useComments(comment.author, comment.permlink);
+
+
 
   useEffect(() => {
-    setNumberOfComments(comments_count);
-  }, [numberOfComments, comments_count]);
+    setCommentReplies(comments);
+    setNumberOfComments(comments.length);
+  }, [comments]);
+
+  const handleNewComment = (newComment: number) => {
+    setCommentReplies(prevComments => [newComment, ...prevComments]);
+    setNumberOfComments((prevCount: number) => prevCount + 1);
+  };
 
   const [isEyeClicked, setIsEyeClicked] = useState(false);
   const handleEyeClick = () => {
     setIsEyeClicked(!isEyeClicked);
   };
 
-  const [visiblePosts, setVisiblePosts] = useState(5);
+  const handleEditSave = async (editedBody: string) => {
+    try {
+      console.log("Edit saved:", editedBody);
+      setEditedCommentBody(editedBody);
+      setIsEditModalOpen(false);
+      console.log('Updated comment body:', editedBody);
+    } catch (error) {
+      console.error('Erro ao salvar edição do comentário:', error);
+    }
+  };
+
+  const handleModalOpen = (modalType: 'edit' | 'reply') => {
+    if (modalType === 'edit') {
+      setIsEditModalOpen(true);
+    } else if (modalType === 'reply') {
+      setIsReplyModalOpen(true);
+    }
+  };
 
   const { voteValue } = useHiveUser();
 
+
+
   return (
     <Box key={comment.id} p={4} width="100%" bg="black" color="white">
-      <ReplyModal
-        comment={comment}
-        isOpen={isModalOpen}
-        onClose={handleModal}
-      />
+    <ReplyModal
+      comment={comment}
+      isOpen={isReplyModalOpen}
+      onClose={() => setIsReplyModalOpen(false)}
+      onNewComment={handleNewComment}
+    />
 
-      <Flex>
-        <AuthorAvatar username={comment.author} />
-        <VStack w={"100%"} ml={4} alignItems={"start"} marginRight={"16px"}>
-          <HStack justify={"space-between"} width={"full"}>
-            <HStack
-              cursor={"pointer"}
-              onClick={() =>
-                window.open(
-                  `/post/test/@${comment.author}/${comment.permlink}`,
-                  "_self",
-                )
-              }
-              gap={"2px"}
-            >
-              <Text fontWeight="bold">{comment.author}</Text>
-              <Text ml={2} color="gray.400" fontSize={"14px"}>
-                · {formatDate(String(comment.created))}
-              </Text>
-            </HStack>
-
-            <FaEye onClick={handleEyeClick} />
-          </HStack>
-          {/* Post Content */}
-          <Box w={"100%"} bg="black" color="white">
-            <ReactMarkdown
-              components={MarkdownRenderers}
-              rehypePlugins={[rehypeRaw]}
-              remarkPlugins={[remarkGfm]}
-            >
-              {transformNormalYoutubeLinksinIframes(transformIPFSContent(
-                transformShortYoutubeLinksinIframes(comment.body),
-              ))}
-            </ReactMarkdown>
-          </Box>
-        </VStack>
-      </Flex>
-
-      {/* Buttons */}
-      <Flex ml={14} justifyContent={"space-between"}>
-        {comment.author === username ? (
-          <Button
-            _hover={{
-              background: "transparent",
-              color: "green.200",
-            }}
-            colorScheme="green"
-            variant="ghost"
-            leftIcon={<FaPencil />}
-            onClick={() => window.alert('soon')}
-            aria-label="Comments"
+    <Flex>
+      <AuthorAvatar username={comment.author} />
+      <VStack w={"100%"} ml={4} alignItems={"start"} marginRight={"16px"}>
+        <HStack justify={"space-between"} width={"full"}>
+          <HStack
+            cursor="pointer"
+            onClick={() =>
+              window.open(
+                `/post/test/@${comment.author}/${comment.permlink}`,
+                '_self'
+              )
+            }
+            gap="2px"
           >
-          </Button>
-        ) : (
-          <TipButton author={comment.author} />
-        )}
+            <Text fontWeight="bold">{comment.author}</Text>
+            <Text ml={2} color="gray.400" fontSize="14px">
+              · {formatDate(String(comment.created))}
+            </Text>
+          </HStack>
+
+          <FaEye onClick={handleEyeClick} />
+        </HStack>
+        <Box w={"100%"} bg="black" color="white">
+          <ReactMarkdown
+            components={MarkdownRenderers}
+            rehypePlugins={[rehypeRaw]}
+            remarkPlugins={[remarkGfm]}
+          >
+            {transformNormalYoutubeLinksinIframes(
+              transformIPFSContent(
+                transformShortYoutubeLinksinIframes(editedCommentBody)
+              )
+            )}
+          </ReactMarkdown>
+        </Box>
+      </VStack>
+    </Flex>
+
+    <Flex ml={14} justifyContent={"space-between"}>
+      {comment.author === username ? (
         <Button
           _hover={{
             background: "transparent",
@@ -209,63 +225,91 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
           }}
           colorScheme="green"
           variant="ghost"
-          leftIcon={<FaRegComment />}
-          onClick={handleModal}
-          aria-label="Comments"
+          leftIcon={<FaPencil />}
+          onClick={() => setIsEditModalOpen(true)}
+          aria-label="Edit Comment"
         >
-          {numberOfComments}
+          Edit
         </Button>
-
-        <VotingButton
-          comment={comment}
-          username={username}
-          toggleValueTooltip={toggleValueTooltip}
-        />
-        <Tooltip
-          label={`+$${voteValue.toFixed(6)}`}
-          placement="top"
-          isOpen={isValueTooltipOpen}
-          hasArrow
-        >
-          <Text
-            fontWeight={"bold"}
-            color={"green.400"}
-            onClick={() =>
-              window.open(
-                `/post/test/@${comment.author}/${comment.permlink}`,
-                "_self",
-              )
-            }
-            cursor={"pointer"}
-            mt={2}
-          >
-            ${getTotalPayout(comment)}
-          </Text>
-        </Tooltip>
-      </Flex>
-      {isEyeClicked && (
-        <Box ml={10} mt={4} pl={4} borderLeft="2px solid gray">
-          <CommentList
-            comments={commentReplies.comments}
-            visiblePosts={visiblePosts}
-            setVisiblePosts={() => { }}
-            username={username}
-            handleVote={handleVote}
-          />
-          {visiblePosts < numberOfComments && (
-            <Button
-              onClick={() => setVisiblePosts(visiblePosts + 5)}
-              variant="outline"
-              colorScheme="green"
-              size="sm"
-              mt={4}
-            >
-              Show More
-            </Button>
-          )}
-        </Box>
+      ) : (
+        <TipButton author={comment.author} />
       )}
-    </Box>
+
+      <Button
+        _hover={{
+          background: "transparent",
+          color: "green.200",
+        }}
+        colorScheme="green"
+        variant="ghost"
+        leftIcon={<FaRegComment />}
+        onClick={() => handleModalOpen('reply')}
+        aria-label="Comments"
+      >
+        {numberOfComments}
+      </Button>
+
+      <VotingButton
+        comment={comment}
+        username={username}
+        toggleValueTooltip={toggleValueTooltip}
+      />
+      <Tooltip
+        label={`+$${voteValue.toFixed(6)}`}
+        placement="top"
+        isOpen={isValueTooltipOpen}
+        hasArrow
+      >
+        <Text
+          fontWeight={"bold"}
+          color={"green.400"}
+          onClick={() =>
+            window.open(
+              `/post/test/@${comment.author}/${comment.permlink}`,
+              "_self"
+            )
+          }
+          cursor={"pointer"}
+          mt={2}
+        >
+          ${getTotalPayout(comment)}
+        </Text>
+      </Tooltip>
+    </Flex>
+
+    <EditCommentModal
+      isOpen={isEditModalOpen}
+      onClose={() => setIsEditModalOpen(false)}
+      commentBody={editedCommentBody}
+      onSave={handleEditSave}
+      post={comment}
+      username={username}
+    />
+
+    {isEyeClicked && (
+      <Box ml={10} mt={4} pl={4} borderLeft="2px solid gray">
+        <CommentList
+          comments={commentReplies}
+          visiblePosts={visiblePosts}
+          setVisiblePosts={() => {}}
+          username={username}
+          handleVote={handleVote}
+        />
+
+        {visiblePosts < commentReplies.length && (
+          <Button
+            onClick={() => setVisiblePosts(visiblePosts + 5)}
+            variant="outline"
+            colorScheme="green"
+            size="sm"
+            mt={4}
+          >
+            Show More
+          </Button>
+        )}
+      </Box>
+    )}
+  </Box>
   );
 };
 
