@@ -16,7 +16,7 @@ function Wallet() {
   const user = useHiveUser();
   const username = user?.hiveUser?.name;
   const posting_metadata = JSON.parse(user?.hiveUser?.posting_json_metadata || '{}');
-  const location = posting_metadata.profile.location;
+  const location = posting_metadata?.profile?.location || '';
 
 
   return (
@@ -57,8 +57,7 @@ function Wallet() {
           </TabPanel>
           <TabPanel>
             Em breve, por enquanto use
-
-            <a>https://aphid-glowing-fish.ngrok-free.app/index.html </a> ou binance
+            <a> https://aphid-glowing-fish.ngrok-free.app/index.html </a> ou binance
           </TabPanel>
         </TabPanels>
       </Tabs >
