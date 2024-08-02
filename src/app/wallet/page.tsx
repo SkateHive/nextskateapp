@@ -15,6 +15,9 @@ import TotalValueBox from "./components/TotalWalletPage";
 function Wallet() {
   const user = useHiveUser();
   const username = user?.hiveUser?.name;
+  const posting_metadata = JSON.parse(user?.hiveUser?.posting_json_metadata || '{}');
+  const location = posting_metadata.profile.location;
+
 
   return (
     <Box w="100%" p={4}>
@@ -22,6 +25,8 @@ function Wallet() {
         <TabList color={"white"} justifyContent={"center"} fontFamily="Joystix">
           <Tab _selected={{ bg: 'limegreen' }}>Wallet</Tab>
           <Tab _selected={{ bg: 'limegreen' }}>Swap</Tab>
+          {location === 'BR' && <Tab _selected={{ bg: 'limegreen' }}> 🇧🇷 PIX</Tab>}
+
         </TabList>
         <TabPanels>
           <TabPanel>
@@ -29,9 +34,7 @@ function Wallet() {
           </TabPanel>
           <TabPanel>
             <Flex direction={{ base: "column", md: "row" }}>
-
               <Box w={'100%'} h={'80%'}>
-
                 <iframe
                   id="swapWidgetkeychain"
                   title="Swap Tokens with Keychain"
@@ -51,6 +54,11 @@ function Wallet() {
               </Box>
             </Flex>
 
+          </TabPanel>
+          <TabPanel>
+            Em breve, por enquanto use
+
+            <a>https://aphid-glowing-fish.ngrok-free.app/index.html </a> ou binance
           </TabPanel>
         </TabPanels>
       </Tabs >
