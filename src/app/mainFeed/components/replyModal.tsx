@@ -30,109 +30,116 @@ interface ReplyModalProps {
     isOpen: boolean;
     onClose: () => void;
     comment: any;
+    onNewComment: (comment: any) => void;
 }
 
-const ReplyModal = ({ isOpen, onClose, comment }: ReplyModalProps) => {
+const ReplyModal = ({ isOpen, onClose, comment , onNewComment}: ReplyModalProps) => {
     const user = useHiveUser();
     const [replyBody, setReplyBody] = useState("");
+    const [error, setError] = useState<string | null>(null); 
 
     const handleReply = async () => {
         const loginMethod = localStorage.getItem("LoginMethod");
         const newPermLink = `${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`;
 
-        if (loginMethod === "keychain") {
-            if (!window.hive_keychain) {
-                console.error("Hive Keychain extension not found!")
-                return
-            }
-            const username = user.hiveUser?.name
-            if (!username) {
-                console.error("Username is missing")
-                return
-            }
-
-            const postData = {
-                parent_author: comment.author,
-                parent_permlink: comment.permlink,
-                author: username,
-                permlink: newPermLink,
-                title: "reply",
-                body: replyBody,
-                json_metadata: JSON.stringify({
-                    tags: ["skateboard"],
-                    app: "skatehive",
-                }),
-            }
-            const operations = [
-                [
-                    "comment",
-                    postData,
-                ],
-            ]
-            console.log(operations)
-
-            window.hive_keychain.requestBroadcast(
-                username,
-                operations,
-                "posting",
-                async (response: any) => {
-                    if (response.success) {
-                        onClose()
-                        console.log("Comment posted successfully")
-                    } else {
-                        console.error("Error posting comment:", response.message)
-                    }
+        try {
+            if (loginMethod === "keychain") {
+                if (!window.hive_keychain) {
+                    throw new Error("Hive Keychain extension not found!");
                 }
-            )
+                const username = user.hiveUser?.name;
+                if (!username) {
+                    throw new Error("Username is missing");
+                }
 
-        } else if (loginMethod === "privateKey") {
-            const commentOptions: dhive.CommentOptionsOperation = [
-                "comment_options",
-                {
-                    author: String(user.hiveUser?.name),
-                    permlink: newPermLink,
-                    max_accepted_payout: "10000.000 HBD",
-                    percent_hbd: 10000,
-                    allow_votes: true,
-                    allow_curation_rewards: true,
-                    extensions: [
-                        [
-                            0,
-                            {
-                                beneficiaries: [{ account: "skatehacker", weight: 1000 }],
-                            },
-                        ],
-                    ],
-                },
-            ];
-
-            const postOperation: dhive.CommentOperation = [
-                "comment",
-                {
+                const postData = {
                     parent_author: comment.author,
                     parent_permlink: comment.permlink,
-                    author: String(user.hiveUser?.name),
+                    author: username,
                     permlink: newPermLink,
-                    title: `Reply to ${comment.author}`,
+                    title: "reply",
                     body: replyBody,
                     json_metadata: JSON.stringify({
                         tags: ["skateboard"],
-                        app: "Skatehive App",
-                        image: "/skatehive_square_green.png",
+                        app: "skatehive",
                     }),
-                },
-            ];
+                };
+                const operations = [
+                    [
+                        "comment",
+                        postData,
+                    ],
+                ];
 
-            try {
+                window.hive_keychain.requestBroadcast(
+                    username,
+                    operations,
+                    "posting",
+                    (response: any) => {
+                        if (response.success) {
+                            onNewComment({
+                                ...postData,
+                                id: newPermLink,
+                            }); 
+                            setReplyBody("");
+                            onClose();
+                        } else {
+                            throw new Error("Error posting comment: " + response.message);
+                        }
+                    }
+                );
+            } else if (loginMethod === "privateKey") {
+                const commentOptions: dhive.CommentOptionsOperation = [
+                    "comment_options",
+                    {
+                        author: String(user.hiveUser?.name),
+                        permlink: newPermLink,
+                        max_accepted_payout: "10000.000 HBD",
+                        percent_hbd: 10000,
+                        allow_votes: true,
+                        allow_curation_rewards: true,
+                        extensions: [
+                            [
+                                0,
+                                {
+                                    beneficiaries: [{ account: "skatehacker", weight: 1000 }],
+                                },
+                            ],
+                        ],
+                    },
+                ];
+
+                const postOperation: dhive.CommentOperation = [
+                    "comment",
+                    {
+                        parent_author: comment.author,
+                        parent_permlink: comment.permlink,
+                        author: String(user.hiveUser?.name),
+                        permlink: newPermLink,
+                        title: `Reply to ${comment.author}`,
+                        body: replyBody,
+                        json_metadata: JSON.stringify({
+                            tags: ["skateboard"],
+                            app: "Skatehive App",
+                            image: "/skatehive_square_green.png",
+                        }),
+                    },
+                ];
+
                 await commentWithPrivateKey(localStorage.getItem("EncPrivateKey")!, postOperation, commentOptions);
+                onNewComment({
+                    ...postOperation[1],
+                    id: newPermLink, 
+                }); 
                 setReplyBody("");
-            } catch (error: any) {
-                console.error("Error posting comment:", error.message);
+                onClose();
             }
+        } catch (error: any) {
+            setError(error.message); 
         }
-        onClose();
     };
 
+    
     return (
         <Modal isOpen={isOpen} onClose={onClose} size="lg" isCentered>
             <ModalOverlay style={{ backdropFilter: "blur(5px)" }} />
@@ -172,6 +179,11 @@ const ReplyModal = ({ isOpen, onClose, comment }: ReplyModalProps) => {
                                     borderRadius="xl"
                                     border="1px solid grey"
                                 />
+                                {error && (
+                                    <Text color="red.500" mt={2}>
+                                        {error}
+                                    </Text>
+                                )}
                             </VStack>
                         </Flex>
                     </VStack>

@@ -1,17 +1,17 @@
-import { Box, Button, ButtonGroup, Center, Flex, Grid, useMediaQuery, VStack } from "@chakra-ui/react";
-import { useCallback, useMemo, useState } from "react";
-import InfiniteScroll from "react-infinite-scroll-component";
-import { BeatLoader } from "react-spinners";
-import LoginModal from "../Hive/Login/LoginModal";
-import Image from "next/image";
 import AuthorSearchBar from "@/app/upload/components/searchBar";
 import { useHiveUser } from "@/contexts/UserContext";
 import usePosts from "@/hooks/usePosts";
 import PostModel from "@/lib/models/post";
+import { Box, Button, ButtonGroup, Flex, Grid, useMediaQuery, VStack } from "@chakra-ui/react";
+import Image from "next/image";
+import { useCallback, useMemo, useState } from "react";
+import { FaBook, FaBookOpen } from "react-icons/fa";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { BeatLoader } from "react-spinners";
+import '../../styles/fonts.css';
+import LoginModal from "../Hive/Login/LoginModal";
 import Post from "../PostCard";
 import PostSkeleton from "../PostCard/Skeleton";
-import '../../styles/fonts.css';
-import { FaBook, FaBookOpen } from "react-icons/fa";
 
 const SKATEHIVE_TAG = [{ tag: "hive-173115", limit: 30 }];
 
@@ -136,7 +136,7 @@ const NavigationButtons: React.FC<NavigationButtonsProps> = ({ updateFeed, feedC
           )}
           {!isMobile && (
             <Button
-            sx={buttonStyle}
+              sx={buttonStyle}
               onClick={() => {
                 console.log("Open Mag View");
                 if (window) {
@@ -174,8 +174,12 @@ export default function MagColumn() {
   if (isLoading || !posts) {
     return (
       <>
-        <AuthorSearchBar onSearch={(author) => updateFeed("blog", [{ tag: author, limit: 10 }])} />
         <NavigationButtons updateFeed={updateFeed} feedConfig={feedConfig} hiveUser={hiveUser} />
+        <Box display="flex" justifyContent="center">
+          <Box width="300px">
+            <AuthorSearchBar onSearch={(author) => updateFeed("blog", [{ tag: author, limit: 10 }])} />
+          </Box>
+        </Box>
         <Grid p={1} templateColumns="repeat(1, 1fr)" gap={0} minHeight="100vh" width="100%">
           {Array.from({ length: visiblePosts }).map((_, i) => (
             <PostSkeleton key={i} />
@@ -187,10 +191,14 @@ export default function MagColumn() {
 
   return (
     <Box overflow="auto" sx={{ "&::-webkit-scrollbar": { display: "none" } }}>
-      <AuthorSearchBar onSearch={(author) => updateFeed("blog", [{ tag: author, limit: 10 }])} />
       <NavigationButtons updateFeed={updateFeed} feedConfig={feedConfig} hiveUser={hiveUser} />
-      {isLoginModalOpen && <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />}
+      <Box display="flex" justifyContent="center">
+        <Box width="300px">
+          <AuthorSearchBar onSearch={(author) => updateFeed("blog", [{ tag: author, limit: 10 }])} />
+        </Box>
+      </Box>
       <PostFeed posts={posts} visiblePosts={visiblePosts} setVisiblePosts={setVisiblePosts} query={feedConfig.query} />
+      {isLoginModalOpen && <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />}
     </Box>
   );
 }
