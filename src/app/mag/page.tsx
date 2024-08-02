@@ -110,21 +110,21 @@ export default function Mag() {
       }}
     >
 
-     
+
       <Center mt={2} mb={1}>
-      <Button
-            size={"lg"}
-            onClick={handleCreateClick}
-            colorScheme="green"
-            variant={"outline"}
-            fontFamily="Joystix"
-            sx={createButtonStyle}
-          >
-            <Box marginRight={3} >
-              <Image src="/treboard.gif" alt="Skateboard" width={42} height={42} />
-            </Box>
-            + Create
-          </Button>
+        <Button
+          size={"lg"}
+          onClick={handleCreateClick}
+          colorScheme="green"
+          variant={"outline"}
+          fontFamily="Joystix"
+          sx={createButtonStyle}
+        >
+          <Box marginRight={3} >
+            <Image src="/treboard.gif" alt="Skateboard" width={42} height={42} />
+          </Box>
+          + Create
+        </Button>
       </Center>
 
       <Center mb={2}>
@@ -135,11 +135,11 @@ export default function Mag() {
             sx={buttonStyle}
           >
             <Box marginRight={3}>
-              <Image src="/flyingMoney11.png" alt="Flying Money Icon" width={18} height={18}/> 
+              <Image src="/flyingMoney11.png" alt="Flying Money Icon" width={18} height={18} />
             </Box>
-            Hot 
+            Hot
             <Box marginLeft={3}>
-            <Image src="/flyingMoney22.png" alt="Flying Money Icon" width={18} height={18} />
+              <Image src="/flyingMoney22.png" alt="Flying Money Icon" width={18} height={18} />
             </Box>
           </Button>
           <Button
@@ -147,7 +147,7 @@ export default function Mag() {
             isActive={query === "created"}
             sx={buttonStyle}
           >
-           Fresh
+            Fresh
           </Button>
           {hiveUser.hiveUser && (
             <Button
@@ -159,12 +159,12 @@ export default function Mag() {
               isActive={query === "feed"}
               sx={buttonStyle}
             >
-             Following
+              Following
             </Button>
           )}
           {!isMobile && (
             <Button
-            sx={buttonStyle}
+              sx={buttonStyle}
               onClick={() => {
                 console.log("Open Mag View");
                 if (window) {
@@ -180,8 +180,8 @@ export default function Mag() {
         </ButtonGroup>
       </Center>
       <Center mt={2} mb={1}>
-      <Box width={{ base: "62%", sm: "70%", md: "60%", lg: "40%", xl: "19%" }}>
-      <AuthorSearchBar
+        <Box width={{ base: "62%", sm: "70%", md: "60%", lg: "40%", xl: "19%" }}>
+          <AuthorSearchBar
             onSearch={(author) => updateFeed("blog", [{ tag: author, limit: 10 }])}
           />
         </Box>
