@@ -13,13 +13,17 @@ import {
     Alert,
     AlertIcon,
     AlertTitle,
-    AlertDescription
+    AlertDescription,
+    Box,
+    Image
 } from "@chakra-ui/react";
 import QRCode from 'qrcode.react';
-import { FaCopy } from "react-icons/fa";
+import { FaCopy, FaInfoCircle } from "react-icons/fa";
 import axios from "axios";
+import { HiveAccount } from "@/lib/useHiveAuth";
+import useHiveBalance from "@/hooks/useHiveBalance";
 
-interface PriceData {
+interface PixBeeData {
     pixbeePixKey: string;
     HivePriceBRL: string;
     HIVEBRLChangePerc: string;
@@ -53,8 +57,26 @@ interface PriceData {
     OurRefundPer: string;
 }
 
+interface PixProps {
+    user: HiveAccount;
+}
+
 export const pixbee = '816b8bac-bf1f-4689-80c2-c2bc2e2a8d7a';
 export const HBDAvailable = 10;
+
+const getLimitsBasedOnHivePower = (hivePower: number) => {
+    if (hivePower < 500) {
+        return { maxWithdraw: 50, minSell: 5 };
+    } else if (hivePower < 1000) {
+        return { maxWithdraw: 100, minSell: 10 };
+    } else if (hivePower < 5000) {
+        return { maxWithdraw: 250, minSell: 20 };
+    } else if (hivePower < 10000) {
+        return { maxWithdraw: 500, minSell: 50 };
+    } else {
+        return { maxWithdraw: 1000, minSell: 100 };
+    }
+};
 
 const fetchPixBeeData = async () => {
     try {
@@ -70,42 +92,65 @@ const fetchPixBeeData = async () => {
     }
 };
 
-export default function Pix() {
-    const [amount, setAmount] = useState("");
+export default function Pix({ user }: PixProps) {
+    const [amountHBDtoSell, setAmountHBDtoSell] = useState("");
+    const [amountHBDtoBuy, setAmountHBDtoBuy] = useState("");
     const [isExceeded, setIsExceeded] = useState(false);
-    const [pixBeeData, setPixBeeData] = useState<PriceData | null>(null);
+    const [pixBeeData, setPixBeeData] = useState<PixBeeData | null>(null);
+    const userHiveBalance = useHiveBalance(user);
+    const limits = getLimitsBasedOnHivePower(userHiveBalance.totalHP);
 
     useEffect(() => {
         fetchPixBeeData().then((data) => {
             setPixBeeData(data);
-            console.log(data);
+            console.log("PixBee data:", data);
         }).catch(error => {
             console.error("Failed to fetch PixBee data:", error);
         });
     }, []);
 
-    const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleSellAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
-        setAmount(value);
+        setAmountHBDtoSell(value);
         setIsExceeded(parseFloat(value) > HBDAvailable);
     };
+
+    const handleBuyAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        setAmountHBDtoBuy(value);
+        setIsExceeded(parseFloat(value) > HBDAvailable);
+    };
+
+    const isSellBlurred = !amountHBDtoSell || parseFloat(amountHBDtoSell) > HBDAvailable;
+    const isBuyBlurred = !amountHBDtoBuy || parseFloat(amountHBDtoBuy) > HBDAvailable;
 
     return (
         <>
             <Center mt="20px">
                 <Container maxW="container.lg">
-                    <HStack spacing={4} flexDirection={{ base: "column", xl: "row" }}>
+                    <HStack>
+                        <Text
+                            fontFamily="Joystix"
+                            fontSize="2xl"
+                            textAlign="center"
+                            color="white"
+                            mt={2}
+                        > User Power {userHiveBalance.totalHP} </Text>
+                        <FaInfoCircle color="white" />
+                    </HStack>
+                    <HStack mt={1} spacing={4} flexDirection={{ base: "column", xl: "row" }}>
                         <Card w="full" height={'465px'}>
                             <CardHeader>
                                 <Center>Enviar HBD, receber PIX:</Center>
                             </CardHeader>
                             <CardBody>
                                 <VStack spacing={4}>
+                                    <Image width={'80%'} src="/logos/HBD-Pix.png" alt="PixBee" />
                                     <Input placeholder="Digite sua chave pix" />
                                     <Input
                                         placeholder="Digite a quantidade de HBD"
-                                        value={amount}
-                                        onChange={handleAmountChange}
+                                        value={amountHBDtoSell}
+                                        onChange={handleSellAmountChange}
                                     />
                                 </VStack>
                             </CardBody>
@@ -116,30 +161,30 @@ export default function Pix() {
                                 <Alert status="warning">
                                     <AlertIcon />
                                     <AlertDescription>
-                                        <Text>Avalaible HBD: {HBDAvailable}</Text>
+                                        <Text>Available HBD: {HBDAvailable}</Text>
                                     </AlertDescription>
                                 </Alert>
                             </CardHeader>
                             <CardBody>
                                 <VStack spacing={4}>
-                                    {parseFloat(amount) <= HBDAvailable && (
-                                        <>
-                                            <QRCode value={pixbee} />
-                                            <Button
-                                                value={pixbee}
-                                                leftIcon={<FaCopy />}
-                                                onClick={() => {
-                                                    navigator.clipboard.writeText(pixbee);
-                                                }}
-                                            >
-                                                {pixbee}
-                                            </Button>
-                                        </>
-                                    )}
+                                    <Box filter={isBuyBlurred ? "blur(5px)" : "none"}>
+                                        <QRCode value={pixbee} />
+                                    </Box>
+                                    <Button
+                                        value={pixbee}
+                                        leftIcon={<FaCopy />}
+                                        onClick={() => {
+                                            navigator.clipboard.writeText(pixbee);
+                                        }}
+                                        filter={isBuyBlurred ? "blur(5px)" : "none"}
+                                        isDisabled={isBuyBlurred}
+                                    >
+                                        {pixbee}
+                                    </Button>
                                     <Input
                                         placeholder="Digite a quantidade de HBD"
-                                        value={amount}
-                                        onChange={handleAmountChange}
+                                        value={amountHBDtoBuy}
+                                        onChange={handleBuyAmountChange}
                                     />
                                     {isExceeded && (
                                         <Alert status="error">

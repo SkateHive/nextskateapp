@@ -68,7 +68,7 @@ function Wallet() {
               Em breve, por enquanto use
               <a style={{ color: 'blue' }} href='https://aphid-glowing-fish.ngrok-free.app/index.html'> PixBee </a> ou binance
             </Text>
-            <Pix />
+            {user.hiveUser && <Pix user={user.hiveUser} />}
 
           </TabPanel>
         </TabPanels>
