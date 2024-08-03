@@ -266,7 +266,6 @@ export async function changeFollow(follower: string, following: string) {
   }
 
 }
-
 export async function witnessVoteWithKeychain(username: string, witness: string) {
   const keychain = new KeychainSDK(window);
   try {
