@@ -151,7 +151,7 @@ export const EditCommentModal = ({ isOpen, onClose, commentBody, onSave, post, u
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} size="xs">
+        <Modal isOpen={isOpen} onClose={onClose} size="xl">
             <ModalOverlay />
             {isPreview ? (
                 <ModalContent bg="black" color="white" border="1px solid limegreen">
@@ -181,14 +181,14 @@ export const EditCommentModal = ({ isOpen, onClose, commentBody, onSave, post, u
             ) : (
                 <ModalContent bg="black" color="white" border="1px solid limegreen">
                     <ModalHeader>
-                        <Center>Edit Comment</Center>
+                        <Center>Edit Post</Center>
                     </ModalHeader>
                     <ModalBody>
                         <Textarea
                             value={editedContent}
                             onChange={(e) => setEditedContent(e.target.value)}
                             placeholder="Edit your comment..."
-
+                            height={'300px'}
                         />
                     </ModalBody>
                     <ModalFooter>

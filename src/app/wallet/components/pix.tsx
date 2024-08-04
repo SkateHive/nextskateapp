@@ -18,14 +18,19 @@ import {
     Image,
     Switch,
     Table, Thead, Tbody, Tr, Th, Td,
-    CardFooter
+    CardFooter,
+    Badge,
+    InputGroup,
+    InputLeftAddon,
+    InputRightAddon
 } from "@chakra-ui/react";
 import QRCode from 'qrcode.react';
 import { FaCopy, FaInfoCircle } from "react-icons/fa";
 import axios from "axios";
 import { HiveAccount } from "@/lib/useHiveAuth";
 import useHiveBalance from "@/hooks/useHiveBalance";
-
+import SendHBDModal from "./sendHBDModal";
+import { set } from "lodash";
 
 interface PixBeeData {
     pixbeePixKey: string;
@@ -60,7 +65,6 @@ interface PixBeeData {
     OurExchangeFee: string;
     OurRefundPer: string;
 }
-
 interface PixProps {
     user: HiveAccount;
 }
@@ -81,7 +85,7 @@ const getLimitsBasedOnHivePower = (hivePower: number) => {
 
 const LimitsTable = (props: PixBeeData) => {
     return (
-        <Card w="full" height={'666px'}>
+        <Card w="full" height={'622px'}>
             <CardHeader>
                 <Center>Limites</Center>
             </CardHeader>
@@ -97,10 +101,6 @@ const LimitsTable = (props: PixBeeData) => {
                         <Tr>
                             <Td>Depósito Mínimo</Td>
                             <Td>{props.depositMinLimit} HBD</Td>
-                        </Tr>
-                        <Tr>
-                            <Td>Retirada Máxima</Td>
-                            <Td>{props.minRefundHive} HBD</Td>
                         </Tr>
                         <Tr>
                             <Td>Compra Mínima</Td>
@@ -131,7 +131,6 @@ const fetchPixBeeData = async () => {
     }
 };
 
-
 export default function Pix({ user }: PixProps) {
     const [amountHBD, setAmountHBD] = useState("");
     const [isSell, setIsSell] = useState(true);
@@ -140,7 +139,7 @@ export default function Pix({ user }: PixProps) {
     const userHiveBalance = useHiveBalance(user);
     const limits = getLimitsBasedOnHivePower(userHiveBalance.totalHP);
     const HBDAvailable = pixBeeData ? parseFloat(pixBeeData.balanceHbd) : 0;
-
+    const [displayModal, setDisplayModal] = useState(false);
     useEffect(() => {
         fetchPixBeeData().then((data) => {
             setPixBeeData(data);
@@ -176,23 +175,28 @@ export default function Pix({ user }: PixProps) {
 
     return (
         <>
+            {displayModal && (
+                <SendHBDModal username={user.name} visible={displayModal} onClose={() => setDisplayModal(false)} amount={parseFloat(amountHBD)} memo={pixBeeData.pixbeePixKey} />
+            )}
+            <Center>
+                <HStack>
+                    <Text
+                        fontFamily="Joystix"
+                        fontSize="2xl"
+                        textAlign="center"
+                        color="white"
+                        mt={2}
+                    > User Power {userHiveBalance.totalHP} </Text>
+                    <FaInfoCircle color="white" />
+                </HStack>
+            </Center>
             <Center mt="20px">
                 <Container maxW="container.lg">
-                    <HStack>
-                        <Text
-                            fontFamily="Joystix"
-                            fontSize="2xl"
-                            textAlign="center"
-                            color="white"
-                            mt={2}
-                        > User Power {userHiveBalance.totalHP} </Text>
-                        <FaInfoCircle color="white" />
-                    </HStack>
                     <VStack mt={1} spacing={4} flexDirection={{ base: "column", xl: "row" }}>
-                        <Card w="full" height={'666px'}>
+                        <Card w="full" height={"622px"} fontFamily={'Joystix'}>
                             <CardHeader>
                                 <Center>
-                                    {isSell ? "Enviar HBD, receber PIX:" : "Enviar PIX, Receber HBD:"}
+                                    {isSell ? "Vender HBD, receber PIX:" : "Enviar PIX, Receber HBD:"}
                                     <Switch
                                         isChecked={!isSell}
                                         onChange={() => setIsSell(!isSell)}
@@ -212,17 +216,37 @@ export default function Pix({ user }: PixProps) {
                                             </Alert>
                                             <Image width={'70%'} src="/logos/HBD-Pix.png" alt="PixBee" />
                                             <Input placeholder="Digite sua chave pix" />
-                                            <Input
-                                                placeholder="Digite a quantidade de HBD"
-                                                value={amountHBD}
-                                                onChange={handleAmountChange}
-                                            />
-                                            <Text
-                                                color="green.400"
-                                                fontSize="4xl"
+                                            <InputGroup>
+                                                <Input
+                                                    placeholder="Digite a quantidade de "
+                                                    value={amountHBD}
+                                                    onChange={handleAmountChange}
+                                                />
+                                                <InputRightAddon color={'red'} children="HBD" />
+                                            </InputGroup>
+                                            {amountHBD && (
+                                                <Badge
+                                                    colorScheme="green"
+                                                    fontSize="3xl"
+                                                    variant="outline"
+                                                    w={'full'}
+                                                >
+                                                    <Center>
+                                                        R$  {calculateTotalPixPayment(parseFloat(amountHBD))}
+                                                    </Center>
+                                                </Badge>
+
+                                            )}
+                                            <Button
+                                                w={'100%'}
+                                                variant={'outline'}
+                                                colorScheme="red"
+                                                onClick={() => {
+                                                    setDisplayModal(true);
+                                                }}
                                             >
-                                                R$ {(amountHBD && calculateTotalPixPayment(parseFloat(amountHBD)))}
-                                            </Text>
+                                                Enviar Hive Dollars
+                                            </Button>
                                         </>
                                     ) : (
                                         <>
@@ -245,7 +269,12 @@ export default function Pix({ user }: PixProps) {
                                                 filter={isBlurred ? "blur(5px)" : "none"}
                                                 isDisabled={isBlurred}
                                             >
-                                                {pixBeeData?.pixbeePixKey}
+                                                <Text
+                                                    m={2}
+                                                    fontSize={"12px"}
+                                                >
+                                                    {pixBeeData?.pixbeePixKey}
+                                                </Text>
                                             </Button>
                                             <Input
                                                 placeholder="Digite a quantidade de HBD"
@@ -256,7 +285,7 @@ export default function Pix({ user }: PixProps) {
                                                 <Alert status="error">
                                                     <AlertIcon />
                                                     <AlertTitle>Valor excedido!</AlertTitle>
-                                                    <AlertDescription>
+                                                    <AlertDescription fontSize={"12px"}>
                                                         A quantidade de HBD inserida excede a quantidade disponível.
                                                     </AlertDescription>
                                                 </Alert>
@@ -265,15 +294,7 @@ export default function Pix({ user }: PixProps) {
                                     )}
                                 </VStack>
                             </CardBody>
-                            <CardFooter>
-                                <Button
-                                    onClick={() => {
-                                        console.log('Send HBD');
-                                    }}
-                                >
-                                    Enviar Hive Dollars
-                                </Button>
-                            </CardFooter>
+
                         </Card>
                         {pixBeeData && <LimitsTable {...pixBeeData} />}
                     </VStack>

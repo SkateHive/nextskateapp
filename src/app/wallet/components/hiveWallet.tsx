@@ -49,7 +49,6 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
         onNetWorthChange(totalValue);
     }, [totalValue, onNetWorthChange]);
 
-
     return (
         <VStack
             w={"100%"}
@@ -64,22 +63,16 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
             color={"white"}
         >
             <Center onClick={() => setIsOpened(!isModalOpened)}>
-
                 <HStack cursor="pointer">
-
                     <FaHive />
-
                     {hiveUser && (
                         <Text fontSize={{ base: 18, md: 22 }}>
                             {hiveUser.name}
                         </Text>
                     )}
                     <FaEye />
-
                 </HStack>
             </Center>
-
-
             {hiveUser ? (
                 <VStack color={"white"}
                     align="normal">
@@ -136,7 +129,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                             variant="outline"
                                             color={'white'}
                                         >
-                                            <Center >
+                                            <Center>
                                                 <VStack>
                                                     <Text fontSize={{ base: 18, md: 24 }}>{String(hiveUser.balance)}</Text>
                                                     <Text fontSize={{ base: 10, md: 12 }}> (~${hiveUsdValue.toFixed(2)})</Text>
