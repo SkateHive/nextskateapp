@@ -222,7 +222,9 @@ export default function Pix({ user }: PixProps) {
                                                     value={amountHBD}
                                                     onChange={handleAmountChange}
                                                 />
-                                                <InputRightAddon color={'red'} children="HBD" />
+                                                <InputRightAddon color={'red'}>
+                                                    HBD
+                                                </InputRightAddon>
                                             </InputGroup>
                                             {amountHBD && (
                                                 <Badge
