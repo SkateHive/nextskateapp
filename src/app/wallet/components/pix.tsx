@@ -17,7 +17,8 @@ import {
     Box,
     Image,
     Switch,
-    Table, Thead, Tbody, Tr, Th, Td
+    Table, Thead, Tbody, Tr, Th, Td,
+    CardFooter
 } from "@chakra-ui/react";
 import QRCode from 'qrcode.react';
 import { FaCopy, FaInfoCircle } from "react-icons/fa";
@@ -162,7 +163,7 @@ export default function Pix({ user }: PixProps) {
         console.log(hbdtoBrl);
         const fee = (hbdtoBrl * amount) * 0.01 + 2;
         console.log(fee);
-        return hbdtoBrl * amount - fee;
+        return (hbdtoBrl * amount - fee).toFixed(2);
     }
 
     if (!pixBeeData) {
@@ -201,16 +202,27 @@ export default function Pix({ user }: PixProps) {
                             </CardHeader>
                             <CardBody>
                                 <VStack spacing={4}>
-                                    {isSell ? <Image width={'80%'} src="/logos/HBD-Pix.png" alt="PixBee" /> : <Image width={'80%'} src="/logos/Pix-HBD.png" alt="PixBee" />}
                                     {isSell ? (
                                         <>
+                                            <Alert status="warning">
+                                                <AlertIcon />
+                                                <AlertDescription>
+                                                    <Text> <strong>{pixBeeData.balancePix}</strong> Reais Disponíveis no Skatehive Bank</Text>
+                                                </AlertDescription>
+                                            </Alert>
+                                            <Image width={'70%'} src="/logos/HBD-Pix.png" alt="PixBee" />
                                             <Input placeholder="Digite sua chave pix" />
                                             <Input
                                                 placeholder="Digite a quantidade de HBD"
                                                 value={amountHBD}
                                                 onChange={handleAmountChange}
                                             />
-                                            {calculateTotalPixPayment(parseFloat(amountHBD))}
+                                            <Text
+                                                color="green.400"
+                                                fontSize="4xl"
+                                            >
+                                                R$ {(amountHBD && calculateTotalPixPayment(parseFloat(amountHBD)))}
+                                            </Text>
                                         </>
                                     ) : (
                                         <>
@@ -220,6 +232,7 @@ export default function Pix({ user }: PixProps) {
                                                     <Text>Available {HBDAvailable} HBD</Text>
                                                 </AlertDescription>
                                             </Alert>
+                                            <Image width={'70%'} src="/logos/Pix-HBD.png" alt="PixBee" />
                                             <Box filter={isBlurred ? "blur(5px)" : "none"}>
                                                 <QRCode value={pixBeeData?.pixbeePixKey || 'server is down, fuck it, just hold that shit'} />
                                             </Box>
@@ -252,6 +265,15 @@ export default function Pix({ user }: PixProps) {
                                     )}
                                 </VStack>
                             </CardBody>
+                            <CardFooter>
+                                <Button
+                                    onClick={() => {
+                                        console.log('Send HBD');
+                                    }}
+                                >
+                                    Enviar Hive Dollars
+                                </Button>
+                            </CardFooter>
                         </Card>
                         {pixBeeData && <LimitsTable {...pixBeeData} />}
                     </VStack>
