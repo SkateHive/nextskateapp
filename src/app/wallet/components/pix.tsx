@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Card,
     CardHeader,
@@ -12,17 +12,15 @@ import {
     Container,
     Alert,
     AlertIcon,
-    AlertTitle,
-    AlertDescription,
     Box,
     Image,
     Switch,
     Table, Thead, Tbody, Tr, Th, Td,
-    CardFooter,
     Badge,
     InputGroup,
-    InputLeftAddon,
-    InputRightAddon
+    InputRightAddon,
+    AlertDescription,
+    AlertTitle,
 } from "@chakra-ui/react";
 import QRCode from 'qrcode.react';
 import { FaCopy, FaInfoCircle } from "react-icons/fa";
@@ -30,7 +28,6 @@ import axios from "axios";
 import { HiveAccount } from "@/lib/useHiveAuth";
 import useHiveBalance from "@/hooks/useHiveBalance";
 import SendHBDModal from "./sendHBDModal";
-import { set } from "lodash";
 
 interface PixBeeData {
     pixbeePixKey: string;
@@ -45,7 +42,6 @@ interface PixBeeData {
     BTCBRLChangeIcon: string;
     BTCPriceUSD: string;
     BTCUSDChangePerc: string;
-    BTCUSDChangeIcon: string;
     HBDPriceBRL: string;
     HBDBRLChangePerc: string;
     HBDBRLChangeIcon: string;
@@ -65,6 +61,7 @@ interface PixBeeData {
     OurExchangeFee: string;
     OurRefundPer: string;
 }
+
 interface PixProps {
     user: HiveAccount;
 }
@@ -131,7 +128,55 @@ const fetchPixBeeData = async () => {
     }
 };
 
-export default function Pix({ user }: PixProps) {
+const formatCPF = (cpf: string) => {
+    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+};
+
+const formatCNPJ = (cnpj: string) => {
+    return cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+};
+
+const formatTelephone = (telephone: string) => {
+    return telephone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+};
+
+const sanitizePixKey = (pixKey: string) => {
+    const validateCPF = (cpf: string) => {
+        return /^\d{11}$/.test(cpf);
+    };
+
+    const validateCNPJ = (cnpj: string) => {
+        return /^\d{14}$/.test(cnpj);
+    };
+
+    const validateTelephone = (telephone: string) => {
+        return /^\d{2}9\d{8}$/.test(telephone);
+    };
+
+    const validateEmail = (email: string) => {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    };
+
+    const validateRandomKey = (key: string) => {
+        return /^[a-zA-Z0-9]{32}$/.test(key);
+    };
+
+    if (validateCPF(pixKey)) {
+        return pixKey.replace(/[^\d]/g, '');
+    } else if (validateCNPJ(pixKey)) {
+        return pixKey.replace(/[^\d]/g, '');
+    } else if (validateTelephone(pixKey)) {
+        return pixKey.replace(/[^\d]/g, '');
+    } else if (validateEmail(pixKey)) {
+        return pixKey;
+    } else if (validateRandomKey(pixKey)) {
+        return pixKey;
+    } else {
+        throw new Error('Invalid Pix key format');
+    }
+};
+
+const Pix = ({ user }: PixProps) => {
     const [amountHBD, setAmountHBD] = useState("");
     const [isSell, setIsSell] = useState(true);
     const [isExceeded, setIsExceeded] = useState(false);
@@ -140,6 +185,11 @@ export default function Pix({ user }: PixProps) {
     const limits = getLimitsBasedOnHivePower(userHiveBalance.totalHP);
     const HBDAvailable = pixBeeData ? parseFloat(pixBeeData.balanceHbd) : 0;
     const [displayModal, setDisplayModal] = useState(false);
+    const [pixTotalPayment, setPixTotalPayment] = useState(0);
+    const [pixKey, setPixKey] = useState("");
+    const [formattedPixKey, setFormattedPixKey] = useState("");
+    const [pixKeyType, setPixKeyType] = useState("");
+
     useEffect(() => {
         fetchPixBeeData().then((data) => {
             setPixBeeData(data);
@@ -157,6 +207,42 @@ export default function Pix({ user }: PixProps) {
 
     const isBlurred = !amountHBD || parseFloat(amountHBD) > HBDAvailable;
 
+    const handlePixKeyChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value.replace(/[^\d\w@.]/g, '');
+
+        if (/^\d{14}$/.test(value)) {
+            setFormattedPixKey(formatCNPJ(value));
+            setPixKeyType("CNPJ");
+        } else if (/^\d{11}$/.test(value)) {
+            setFormattedPixKey(formatCPF(value));
+            setPixKeyType("CPF");
+        } else if (/^\d{2}9\d{8}$/.test(value)) {
+            setFormattedPixKey(formatTelephone(value));
+            setPixKeyType("Telefone");
+        } else if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+            setFormattedPixKey(value);
+            setPixKeyType("Email");
+        } else if (/^[a-zA-Z0-9]{32}$/.test(value)) {
+            setFormattedPixKey(value);
+            setPixKeyType("Chave Aleatória");
+        } else {
+            setFormattedPixKey(value);
+            setPixKeyType("");
+        }
+
+        setPixKey(value);
+    };
+
+    const handleSubmit = () => {
+        try {
+            const sanitizedKey = sanitizePixKey(pixKey);
+            console.log("Sanitized Pix Key:", sanitizedKey);
+            // Proceed with the sanitized Pix key
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     function calculateTotalPixPayment(amount: number) {
         const hbdtoBrl = pixBeeData?.HBDPriceBRL ? parseFloat(pixBeeData.HBDPriceBRL) : 0;
         console.log(hbdtoBrl);
@@ -164,6 +250,11 @@ export default function Pix({ user }: PixProps) {
         console.log(fee);
         return (hbdtoBrl * amount - fee).toFixed(2);
     }
+
+    useEffect(() => {
+        let c = calculateTotalPixPayment(parseFloat(amountHBD));
+        setPixTotalPayment(Number(c));
+    }, [amountHBD]);
 
     if (!pixBeeData) {
         return (
@@ -176,7 +267,7 @@ export default function Pix({ user }: PixProps) {
     return (
         <>
             {displayModal && (
-                <SendHBDModal username={user.name} visible={displayModal} onClose={() => setDisplayModal(false)} amount={parseFloat(amountHBD)} memo={pixBeeData.pixbeePixKey} />
+                <SendHBDModal username={user.name} visible={displayModal} onClose={() => setDisplayModal(false)} hbdAmount={amountHBD} pixAmount={pixTotalPayment} memo={pixBeeData?.pixbeePixKey || ''} />
             )}
             <Center>
                 <HStack>
@@ -211,16 +302,26 @@ export default function Pix({ user }: PixProps) {
                                             <Alert status="warning">
                                                 <AlertIcon />
                                                 <AlertDescription>
-                                                    <Text> <strong>{pixBeeData.balancePix}</strong> Reais Disponíveis no Skatehive Bank</Text>
+                                                    <Text> <strong>{pixBeeData?.balancePix}</strong> Reais Disponíveis no Skatehive Bank</Text>
                                                 </AlertDescription>
                                             </Alert>
                                             <Image width={'70%'} src="/logos/HBD-Pix.png" alt="PixBee" />
-                                            <Input placeholder="Digite sua chave pix" />
+                                            <Input
+                                                placeholder="Digite sua chave pix"
+                                                value={formattedPixKey}
+                                                onChange={handlePixKeyChange}
+                                            />
+                                            {pixKeyType && (
+                                                <Badge colorScheme="blue" mt={2}>
+                                                    {pixKeyType}
+                                                </Badge>
+                                            )}
                                             <InputGroup>
                                                 <Input
                                                     placeholder="Digite a quantidade de "
                                                     value={amountHBD}
                                                     onChange={handleAmountChange}
+                                                    type="number"
                                                 />
                                                 <InputRightAddon color={'red'}>
                                                     HBD
@@ -237,15 +338,12 @@ export default function Pix({ user }: PixProps) {
                                                         R$  {calculateTotalPixPayment(parseFloat(amountHBD))}
                                                     </Center>
                                                 </Badge>
-
                                             )}
                                             <Button
                                                 w={'100%'}
                                                 variant={'outline'}
                                                 colorScheme="red"
-                                                onClick={() => {
-                                                    setDisplayModal(true);
-                                                }}
+                                                onClick={handleSubmit}
                                             >
                                                 Enviar Hive Dollars
                                             </Button>
@@ -296,7 +394,6 @@ export default function Pix({ user }: PixProps) {
                                     )}
                                 </VStack>
                             </CardBody>
-
                         </Card>
                         {pixBeeData && <LimitsTable {...pixBeeData} />}
                     </VStack>
@@ -304,4 +401,6 @@ export default function Pix({ user }: PixProps) {
             </Center>
         </>
     );
-}
+};
+
+export default Pix;
