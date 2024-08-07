@@ -3,33 +3,28 @@ import { useEffect, useState } from "react";
 import "../../../styles/fonts.css";
 
 const randomSentences = [
-  "Don't mall grab, unless you are in the mall...",
+  "skate or don't",
   "Ok to push Mongo, it is! -kook yoda",
-  "there was once a game called quest for stoken",
   "Remember Mirc times ?",
   "Fuck instagram!",
   "Ready to grind on chain?",
   "Praise whoever made skatevideosite",
-  "Loading Skatehive Stokenomics...",
+  "Loading Stokenomics...",
+  "collecting stoken...",
   "Initiating Proof of Stoke...",
-  "We will load as fast ... ... as Daryl Rolls",
-  "Ever hear the legend of Gnartoshi Shredamoto?",
-  "Bless it",
-  "Home of the cryptoskaters",
+  "We will load as fast as Daryl Rolls",
+  "who was Gnartoshi Shredamoto?",
+  "bless up",
+  "worldwide skate community",
   "keeping the web gnarly since 2014",
   "if you stay inside too long, they will start to call you vlad",
-  "lets take back the internet!",
-  "loading everyones thoughts",
-  "stack clips, earn crypto",
-  "converting clips to cash",
+  "take back the internet!",
+  "stack clips, stack crypto",
+  "poppin' off the blockchain",
   "support your local skateshops!",
-  "ever made your own wax before?",
-  "ever been in Photograffiti?",
-  "the people's thrasher",
-  "congrats, your a certified cryptoskater",
-  "imagine trying to tell your friend to join this site",
-  "accessing mainframe from skategods",
-  "quantizing your treflip?"
+  "welcome, cryptoskater!",
+  "accessing mainframe from skategods"
+  
 
 
 
