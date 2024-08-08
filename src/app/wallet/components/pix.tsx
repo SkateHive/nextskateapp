@@ -1,32 +1,37 @@
-import React, { useState, useEffect } from "react";
+import useHiveBalance from "@/hooks/useHiveBalance";
+import { HiveAccount } from "@/lib/useHiveAuth";
 import {
-    Card,
-    CardHeader,
-    CardBody,
-    Text,
-    Center,
-    HStack,
-    VStack,
-    Input,
-    Button,
-    Container,
     Alert,
+    AlertDescription,
     AlertIcon,
-    Box,
-    Image,
-    Switch,
-    Table, Thead, Tbody, Tr, Th, Td,
+    AlertTitle,
     Badge,
+    Box,
+    Button,
+    Card,
+    CardBody,
+    CardHeader,
+    Center,
+    Container,
+    HStack,
+    Image,
+    Input,
     InputGroup,
     InputRightAddon,
-    AlertDescription,
-    AlertTitle,
+    Switch,
+    Table,
+    Tbody,
+    Td,
+    Text,
+    Th,
+    Thead,
+    Tr,
+    VStack,
 } from "@chakra-ui/react";
-import QRCode from 'qrcode.react';
-import { FaCopy, FaInfoCircle } from "react-icons/fa";
 import axios from "axios";
-import { HiveAccount } from "@/lib/useHiveAuth";
-import useHiveBalance from "@/hooks/useHiveBalance";
+import QRCode from 'qrcode.react';
+import React, { useEffect, useState } from "react";
+import { FaCopy, FaInfoCircle } from "react-icons/fa";
 import SendHBDModal from "./sendHBDModal";
 
 interface PixBeeData {
@@ -128,53 +133,41 @@ const fetchPixBeeData = async () => {
     }
 };
 
-const formatCPF = (cpf: string) => {
-    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-};
+const formatCPF = (cpf: string) => cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
 
-const formatCNPJ = (cnpj: string) => {
-    return cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
-};
+const formatCNPJ = (cnpj: string) => cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
 
-const formatTelephone = (telephone: string) => {
-    return telephone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
-};
+const formatTelephone = (telephone: string) => telephone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+
 
 const sanitizePixKey = (pixKey: string) => {
-    const validateCPF = (cpf: string) => {
-        return /^\d{11}$/.test(cpf);
-    };
+    const cleanKey = pixKey.replace(/[^\d\w@.]/g, '');
 
-    const validateCNPJ = (cnpj: string) => {
-        return /^\d{14}$/.test(cnpj);
-    };
+    const isCPF = /^\d{11}$/.test(cleanKey);
 
-    const validateTelephone = (telephone: string) => {
-        return /^\d{2}9\d{8}$/.test(telephone);
-    };
+    const isCNPJ = /^\d{14}$/.test(cleanKey);
 
-    const validateEmail = (email: string) => {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    };
+    const isTelephone = /^\d{11}$/.test(cleanKey) && cleanKey[2] === '9';
 
-    const validateRandomKey = (key: string) => {
-        return /^[a-zA-Z0-9]{32}$/.test(key);
-    };
+    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanKey);
 
-    if (validateCPF(pixKey)) {
-        return pixKey.replace(/[^\d]/g, '');
-    } else if (validateCNPJ(pixKey)) {
-        return pixKey.replace(/[^\d]/g, '');
-    } else if (validateTelephone(pixKey)) {
-        return pixKey.replace(/[^\d]/g, '');
-    } else if (validateEmail(pixKey)) {
-        return pixKey;
-    } else if (validateRandomKey(pixKey)) {
-        return pixKey;
+    const isRandomKey = /^[a-zA-Z0-9]{32}$/.test(cleanKey);
+
+    if (isCNPJ) {
+        return formatCNPJ(cleanKey);
+    } else if (isTelephone) {
+        return formatTelephone(cleanKey);
+    } else if (isCPF) {
+        return formatCPF(cleanKey);
+    } else if (isEmail) {
+        return cleanKey;
+    } else if (isRandomKey) {
+        return cleanKey;
     } else {
-        throw new Error('Invalid Pix key format');
+        throw new Error('Formato de chave Pix inválido');
     }
 };
+
 
 const Pix = ({ user }: PixProps) => {
     const [amountHBD, setAmountHBD] = useState("");
@@ -209,35 +202,48 @@ const Pix = ({ user }: PixProps) => {
 
     const handlePixKeyChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value.replace(/[^\d\w@.]/g, '');
-
-        if (/^\d{14}$/.test(value)) {
-            setFormattedPixKey(formatCNPJ(value));
-            setPixKeyType("CNPJ");
-        } else if (/^\d{11}$/.test(value)) {
-            setFormattedPixKey(formatCPF(value));
-            setPixKeyType("CPF");
-        } else if (/^\d{2}9\d{8}$/.test(value)) {
-            setFormattedPixKey(formatTelephone(value));
-            setPixKeyType("Telefone");
-        } else if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-            setFormattedPixKey(value);
-            setPixKeyType("Email");
-        } else if (/^[a-zA-Z0-9]{32}$/.test(value)) {
-            setFormattedPixKey(value);
-            setPixKeyType("Chave Aleatória");
-        } else {
-            setFormattedPixKey(value);
-            setPixKeyType("");
+        
+        let keyType = '';
+        let formattedKey = '';
+        
+        try {
+            if (/^\d{11}$/.test(value)) {
+                if (value[2] === '9') { 
+                    keyType = "Telefone";
+                    formattedKey = formatTelephone(value);
+                } else {
+                    keyType = "CPF";
+                    formattedKey = formatCPF(value);
+                }
+            } else if (/^\d{14}$/.test(value)) {
+                keyType = "CNPJ";
+                formattedKey = formatCNPJ(value);
+            } else if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+                keyType = "Email";
+                formattedKey = value;
+            } else if (/^[a-zA-Z0-9]{32}$/.test(value)) {
+                keyType = "Chave Aleatória";
+                formattedKey = value;
+            } else {
+                keyType = "Desconhecido";
+                formattedKey = value;
+            }
+        } catch (error) {
+            console.error('Erro ao sanitizar chave Pix:', error);
+            keyType = "Desconhecido";
+            formattedKey = value;
         }
-
+    
         setPixKey(value);
+        setPixKeyType(keyType);
+        setFormattedPixKey(formattedKey);
     };
 
     const handleSubmit = () => {
         try {
             const sanitizedKey = sanitizePixKey(pixKey);
             console.log("Sanitized Pix Key:", sanitizedKey);
-            // Proceed with the sanitized Pix key
+            setDisplayModal(true); 
         } catch (error) {
             console.error(error);
         }
@@ -264,10 +270,13 @@ const Pix = ({ user }: PixProps) => {
         );
     }
 
+   
     return (
         <>
             {displayModal && (
-                <SendHBDModal username={user.name} visible={displayModal} onClose={() => setDisplayModal(false)} hbdAmount={amountHBD} pixAmount={pixTotalPayment} memo={pixBeeData?.pixbeePixKey || ''} />
+                <SendHBDModal
+                    username={user.name} visible={displayModal} onClose={() => setDisplayModal(false)} hbdAmount={amountHBD} pixAmount={pixTotalPayment} memo={pixBeeData?.pixbeePixKey || ''} availableBalance={HBDAvailable}
+                />
             )}
             <Center>
                 <HStack>
@@ -339,14 +348,9 @@ const Pix = ({ user }: PixProps) => {
                                                     </Center>
                                                 </Badge>
                                             )}
-                                            <Button
-                                                w={'100%'}
-                                                variant={'outline'}
-                                                colorScheme="red"
-                                                onClick={handleSubmit}
-                                            >
-                                                Enviar Hive Dollars
-                                            </Button>
+                                            <Button w={'100%'} variant={'outline'} colorScheme="red" onClick={handleSubmit}>
+                                            Enviar Hive Dollars
+                                        </Button>
                                         </>
                                     ) : (
                                         <>

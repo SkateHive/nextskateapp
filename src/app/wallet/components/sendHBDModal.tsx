@@ -1,6 +1,20 @@
-import React from 'react';
 import { transferWithKeychain } from '@/lib/hive/client-functions';
-import { Button, Image, Modal, ModalBody, ModalHeader, ModalCloseButton, Text, ModalContent, ModalOverlay, ModalFooter } from '@chakra-ui/react';
+import {
+    Box,
+    Button,
+    Image,
+    Modal,
+    ModalBody,
+    ModalCloseButton,
+    ModalContent,
+    ModalFooter,
+    ModalHeader,
+    ModalOverlay,
+    Spinner,
+    Text,
+    useToast
+} from '@chakra-ui/react';
+import React, { useState } from 'react';
 
 interface SendHBDModalProps {
     username: string;
@@ -9,27 +23,57 @@ interface SendHBDModalProps {
     memo: string;
     hbdAmount: string;
     pixAmount: number;
+    availableBalance: number;
 }
 
-const SendHBDModal: React.FC<SendHBDModalProps> = ({ username, visible, onClose, memo, hbdAmount, pixAmount }) => {
+const SendHBDModal: React.FC<SendHBDModalProps> = ({ username, visible, onClose, memo, hbdAmount, pixAmount, availableBalance }) => {
+    const [loading, setLoading] = useState(false);
+    const toast = useToast();
     const memoPix = "#" + memo;
 
     const sendHBD = async () => {
-        await transferWithKeychain(username, "pixbee", hbdAmount.toString(), memoPix, "HBD");
-        onClose();
+        setLoading(true);
+        try {
+            if (parseFloat(hbdAmount) > availableBalance) {
+                throw new Error("Saldo insuficiente.");
+            }
+            await transferWithKeychain(username, "pixbee", hbdAmount.toString(), memoPix, "HBD");
+            toast({
+                title: "Transferência realizada.",
+                description: `${hbdAmount} HBD foram trocados por R$${pixAmount}.`,
+                status: "success",
+                duration: 5000,
+                isClosable: true,
+            });
+            onClose();
+        } catch (error: any) {
+            toast({
+                title: "Erro na transferência.",
+                description: error.message || "Houve um problema ao realizar a transferência. Tente novamente.",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+            });
+        } finally {
+            setLoading(false);
+        }
     };
+
+
 
     return (
         <Modal
             isOpen={visible}
             onClose={onClose}
             isCentered
-            size={'xl'}
+            size="xl"
         >
             <ModalOverlay />
             <ModalContent>
                 <ModalHeader>
-                    <Text mb={4} fontSize={'22px'}>Confirma trocar {hbdAmount} HBD por R${pixAmount}?</Text>
+                    <Text mb={4} fontSize="22px">
+                        Confirma trocar {hbdAmount} HBD por R${pixAmount}?
+                    </Text>
                 </ModalHeader>
                 <ModalCloseButton />
                 <ModalBody
@@ -38,10 +82,22 @@ const SendHBDModal: React.FC<SendHBDModalProps> = ({ username, visible, onClose,
                     alignItems="center"
                     justifyContent="center"
                 >
-                    <Image width={'70%'} src="/brl.webp" alt="PixBee" />
+                    <Image width="70%" src="/brl.webp" alt="PixBee" />
+                    {loading && (
+                        <Box mt={4}>
+                            <Spinner size="lg" />
+                            <Text mt={2}>Realizando a transferência...</Text>
+                        </Box>
+                    )}
                 </ModalBody>
                 <ModalFooter>
-                    <Button onClick={sendHBD}>Send</Button>
+                    <Button
+                        colorScheme="blue"
+                        onClick={sendHBD}
+                        isDisabled={loading}
+                    >
+                        {loading ? "Enviando..." : "Enviar"}
+                    </Button>
                 </ModalFooter>
             </ModalContent>
         </Modal>
