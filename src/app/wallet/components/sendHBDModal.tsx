@@ -34,13 +34,20 @@ const SendHBDModal: React.FC<SendHBDModalProps> = ({ username, visible, onClose,
     const sendHBD = async () => {
         setLoading(true);
         try {
-            if (parseFloat(hbdAmount) > availableBalance) {
+            const amount = parseFloat(hbdAmount);
+
+            if (pixAmount < 20) {
+                throw new Error("O valor mínimo em reais é R$20.");
+            }
+
+            if (amount > availableBalance) {
                 throw new Error("Saldo insuficiente.");
             }
-            await transferWithKeychain(username, "pixbee", hbdAmount.toString(), memoPix, "HBD");
+
+            await transferWithKeychain(username, "pixbee", amount.toFixed(3), memoPix, "HBD");
             toast({
                 title: "Transferência realizada.",
-                description: `${hbdAmount} HBD foram trocados por R$${pixAmount}.`,
+                description: `${amount.toFixed(3)} HBD foram trocados por R$${pixAmount.toFixed(2)}.`,
                 status: "success",
                 duration: 5000,
                 isClosable: true,
