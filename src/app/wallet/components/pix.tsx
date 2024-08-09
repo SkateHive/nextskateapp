@@ -26,6 +26,7 @@ import {
     Th,
     Thead,
     Tr,
+    useToast,
     VStack,
 } from "@chakra-ui/react";
 import axios from "axios";
@@ -33,7 +34,6 @@ import QRCode from 'qrcode.react';
 import React, { useEffect, useState } from "react";
 import { FaCopy, FaInfoCircle } from "react-icons/fa";
 import SendHBDModal from "./sendHBDModal";
-
 interface PixBeeData {
     pixbeePixKey: string;
     HivePriceBRL: string;
@@ -139,6 +139,26 @@ const formatCNPJ = (cnpj: string) => cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(
 
 const formatTelephone = (telephone: string) => telephone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
 
+const validateCPF = (cpf: string) => {
+    cpf = cpf.replace(/[^\d]+/g, '');
+    if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+
+    let sum = 0;
+    for (let i = 0; i < 9; i++) {
+        sum += parseInt(cpf.charAt(i)) * (10 - i);
+    }
+    let remainder = (sum * 10) % 11;
+    if (remainder === 10) remainder = 0;
+    if (remainder !== parseInt(cpf.charAt(9))) return false;
+
+    sum = 0;
+    for (let i = 0; i < 10; i++) {
+        sum += parseInt(cpf.charAt(i)) * (11 - i);
+    }
+    remainder = (sum * 10) % 11;
+    if (remainder === 10) remainder = 0;
+    return remainder === parseInt(cpf.charAt(10));
+};
 
 const sanitizePixKey = (pixKey: string) => {
     const cleanKey = pixKey.replace(/[^\d\w@.]/g, '');
@@ -178,10 +198,12 @@ const Pix = ({ user }: PixProps) => {
     const limits = getLimitsBasedOnHivePower(userHiveBalance.totalHP);
     const HBDAvailable = pixBeeData ? parseFloat(pixBeeData.balanceHbd) : 0;
     const [displayModal, setDisplayModal] = useState(false);
-    const [pixTotalPayment, setPixTotalPayment] = useState(0);
+    const [pixTotalPayment, setPixTotalPayment] = useState("0.000");
     const [pixKey, setPixKey] = useState("");
     const [formattedPixKey, setFormattedPixKey] = useState("");
     const [pixKeyType, setPixKeyType] = useState("");
+    const [error, setError] = useState<string | null>(null);
+    const toast = useToast();
 
     useEffect(() => {
         fetchPixBeeData().then((data) => {
@@ -202,13 +224,13 @@ const Pix = ({ user }: PixProps) => {
 
     const handlePixKeyChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value.replace(/[^\d\w@.]/g, '');
-        
+
         let keyType = '';
         let formattedKey = '';
-        
+
         try {
             if (/^\d{11}$/.test(value)) {
-                if (value[2] === '9') { 
+                if (value[2] === '9') {
                     keyType = "Telefone";
                     formattedKey = formatTelephone(value);
                 } else {
@@ -233,7 +255,7 @@ const Pix = ({ user }: PixProps) => {
             keyType = "Desconhecido";
             formattedKey = value;
         }
-    
+
         setPixKey(value);
         setPixKeyType(keyType);
         setFormattedPixKey(formattedKey);
@@ -241,11 +263,37 @@ const Pix = ({ user }: PixProps) => {
 
     const handleSubmit = () => {
         try {
+            const formattedAmountHBD = parseFloat(amountHBD).toFixed(3);
+
             const sanitizedKey = sanitizePixKey(pixKey);
+            let isValidKey = false;
+            if (pixKeyType === "CPF") {
+                isValidKey = validateCPF(pixKey);
+            } else {
+                isValidKey = ['CNPJ', 'Email', 'Chave Aleatória'].includes(pixKeyType);
+            }
+
+            if (!isValidKey) {
+                throw new Error('Chave Pix inválida');
+            }
+            const memo = `#${pixKey}`;
+
+            console.log("Formatted Amount:", formattedAmountHBD);
+            console.log("Memo:", memo);
+
             console.log("Sanitized Pix Key:", sanitizedKey);
-            setDisplayModal(true); 
-        } catch (error) {
+            setDisplayModal(true);
+            setError(null);
+        } catch (error: any) {
             console.error(error);
+            setError('Por favor, insira uma chave Pix válida.');
+            toast({
+                title: 'Erro',
+                description: error.message,
+                status: 'error',
+                duration: 3000,
+                isClosable: true,
+            });
         }
     };
 
@@ -254,13 +302,14 @@ const Pix = ({ user }: PixProps) => {
         console.log(hbdtoBrl);
         const fee = (hbdtoBrl * amount) * 0.01 + 2;
         console.log(fee);
-        return (hbdtoBrl * amount - fee).toFixed(2);
+        return (hbdtoBrl * amount - fee).toFixed(3);
     }
 
     useEffect(() => {
-        let c = calculateTotalPixPayment(parseFloat(amountHBD));
-        setPixTotalPayment(Number(c));
-    }, [amountHBD]);
+        if (amountHBD) {
+            setPixTotalPayment(calculateTotalPixPayment(parseFloat(amountHBD)));
+        }
+    }, [amountHBD, pixBeeData]);
 
     if (!pixBeeData) {
         return (
@@ -270,14 +319,10 @@ const Pix = ({ user }: PixProps) => {
         );
     }
 
-   
+
     return (
         <>
-            {displayModal && (
-                <SendHBDModal
-                    username={user.name} visible={displayModal} onClose={() => setDisplayModal(false)} hbdAmount={amountHBD} pixAmount={pixTotalPayment} memo={pixBeeData?.pixbeePixKey || ''} availableBalance={HBDAvailable}
-                />
-            )}
+
             <Center>
                 <HStack>
                     <Text
@@ -349,8 +394,8 @@ const Pix = ({ user }: PixProps) => {
                                                 </Badge>
                                             )}
                                             <Button w={'100%'} variant={'outline'} colorScheme="red" onClick={handleSubmit}>
-                                            Enviar Hive Dollars
-                                        </Button>
+                                                Enviar Hive Dollars
+                                            </Button>
                                         </>
                                     ) : (
                                         <>
@@ -400,6 +445,17 @@ const Pix = ({ user }: PixProps) => {
                             </CardBody>
                         </Card>
                         {pixBeeData && <LimitsTable {...pixBeeData} />}
+                        {displayModal && (
+                            <SendHBDModal
+                                username={user.name}
+                                visible={displayModal}
+                                onClose={() => setDisplayModal(false)}
+                                hbdAmount={amountHBD}
+                                pixAmount={parseFloat(pixTotalPayment)}
+                                memo={pixBeeData?.pixbeePixKey || ''}
+                                availableBalance={HBDAvailable}
+                            />
+                        )}
                     </VStack>
                 </Container>
             </Center>
