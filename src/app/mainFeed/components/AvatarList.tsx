@@ -3,11 +3,13 @@ import AuthorAvatar from "@/components/AuthorAvatar"
 import { Avatar, Box, Divider, HStack, Link, Tooltip } from "@chakra-ui/react"
 import { useState } from "react"
 import AirdropModal from "./airdropModal"
+import { useAccount } from "wagmi"
 interface AvatarListProps {
   sortedComments: any[]
 }
 const AvatarList = ({ sortedComments }: AvatarListProps) => {
   const [isOpen, setIsOpen] = useState(false)
+  const eth_user = useAccount()
   const handleCloseModal = () => {
     setIsOpen(false)
   }
@@ -32,13 +34,13 @@ const AvatarList = ({ sortedComments }: AvatarListProps) => {
           >
 
             <Avatar
-              border={"1px solid white"}
+              border={"1px dashed limegreen"}
               name="+"
               boxSize={12}
               bg="black"
               src="/loading.gif"
               loading="lazy"
-              borderRadius={100}
+              borderRadius={5}
               _hover={{ cursor: "pointer" }} />
           </Tooltip>
         </Link>
@@ -60,20 +62,20 @@ const AvatarList = ({ sortedComments }: AvatarListProps) => {
       >
         {isOpen && <AirdropModal sortedComments={sortedComments} isOpen={isOpen} onClose={handleCloseModal} />}
         <Tooltip
-          label={"Create Airdrop"}
+          label={"Create Community Airdrop"}
           bg={"black"}
           color={"gold"}
           border={"1px dashed gold"}
         >
           <Avatar
             onClick={() => setIsOpen(true)}
-            border={"1px solid white"}
+            border={"1px solid red"}
             name="airdrop"
             boxSize={12}
             bg="black"
             src="https://i.ibb.co/cgykmcc/image.png"
             loading="lazy"
-            borderRadius={100}
+            borderRadius={5}
             _hover={{ border: "1px solid gold", cursor: "pointer" }} />
         </Tooltip>
       </Box>
