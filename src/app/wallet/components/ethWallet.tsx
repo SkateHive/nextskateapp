@@ -168,9 +168,8 @@ const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
                 <FaEye size={30} color="white" />
             </HStack>
 
-            <Skeleton isLoaded={!isLoading} minWidth="100%">
+            <Skeleton startColor='white' endColor='blue.200' isLoaded={!isLoading} fitContent minWidth="100%">
                 <Box
-                    minWidth="100%"
                     border="1px solid white"
                     bg="blue.700"
                     onClick={() => setIsOpened(!isOpened)}
@@ -195,7 +194,7 @@ const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
                 </Box>
             </Skeleton>
             {isOpened && (
-                <Accordion allowMultiple>
+                <Accordion allowMultiple w="100%">
                     {groupedTokens && sortedNetworks.map((network) => (
                         <AccordionItem key={network}>
                             <AccordionButton>

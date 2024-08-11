@@ -4,11 +4,11 @@ import useHiveBalance from "@/hooks/useHiveBalance";
 import {
     Avatar,
     AvatarBadge,
+    Badge,
     Box,
     Button,
     Center,
     HStack,
-    Image,
     Menu,
     MenuButton,
     MenuItem,
@@ -20,6 +20,7 @@ import {
     Tooltip,
     VStack
 } from "@chakra-ui/react";
+import { Asset } from "@hiveio/dhive";
 import { SendIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AiOutlineThunderbolt } from "react-icons/ai";
@@ -34,6 +35,17 @@ const DEFAULT_AVATAR_URL = "https://i.gifer.com/origin/f1/f1a737e4cfba336f974af0
 
 interface HiveBoxProps {
     onNetWorthChange: (value: number) => void;
+}
+
+function formatToTwoDecimals(value: string | number | Asset | undefined): string {
+    if (typeof value === "string") {
+        const num = parseFloat(value);
+        return isNaN(num) ? "0.00" : num.toFixed(2);
+    }
+    if (typeof value === "number") {
+        return value.toFixed(2);
+    }
+    return "0.00";
 }
 
 const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
@@ -80,14 +92,14 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                 cursor="pointer"
                 onClick={() => setIsOpened(!isModalOpened)}
             >
-                <SkeletonCircle size="48px" isLoaded={!isLoading}>
+                <SkeletonCircle fitContent size="48px" isLoaded={!isLoading}>
                     <Avatar
                         boxSize="48px"
                         name={hiveUser?.name}
                         src={hiveUser?.metadata?.profile.profile_image || DEFAULT_AVATAR_URL}
                     >
                         <AvatarBadge boxSize="1.25em" bg="transparent" border="none">
-                            <Skeleton isLoaded={!isLoading}>
+                            <Skeleton fitContent isLoaded={!isLoading}>
                                 <FaHive size={20} color="white" />
                             </Skeleton >
                         </AvatarBadge>
@@ -102,16 +114,15 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                         textOverflow="ellipsis"
                         textAlign="center"
                     >
-                        {hiveUser?.name}
+                        {hiveUser?.name || "Loading..."}
                     </Text>
                 </SkeletonText>
                 <FaEye size={30} color="white" />
             </HStack>
 
 
-            <Skeleton isLoaded={!isLoading} minWidth="100%">
+            <Skeleton startColor='white' endColor='red.500' fitContent isLoaded={!isLoading} minWidth="100%">
                 <Box
-                    minWidth="100%"
                     border="1px solid white"
                     bg="red.700"
                     onClick={() => setIsOpened(!isModalOpened)}
@@ -119,28 +130,27 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                 >
                     <Center>
                         <VStack m={5}>
-                            <SkeletonText isLoaded={!isLoading} noOfLines={1}>
-                                <Box padding="4px 8px">
+                            <Box padding="4px 8px">
+                                <SkeletonText isLoaded={!isLoading} noOfLines={1}>
                                     <Text
                                         color={"white"}
                                         fontWeight="bold"
                                         fontSize={{ base: 24, md: 34 }}
                                         textShadow="0 0 10px black, 0 0 20px black, 0 0 30px rgba(255, 255, 255, 0.4)"
                                     >
-                                        ${totalValue.toFixed(2)}
+                                        ${formatToTwoDecimals(totalValue)}
                                     </Text>
-                                </Box>
-                            </SkeletonText>
+                                </SkeletonText>
+                            </Box>
                         </VStack>
                     </Center>
                 </Box>
             </Skeleton>
-
             {isModalOpened && (
-                <Skeleton isLoaded={!isLoading} width="100%">
+                <Skeleton fitContent isLoaded={!isLoading} width="100%">
                     <Box>
                         <Center>
-                            <VStack width="100%">
+                            <VStack>
                                 <Menu>
                                     <MenuButton
                                         width="full"
@@ -150,15 +160,26 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                         leftIcon={<Avatar boxSize="30px" src={HIVE_LOGO_URL} />}
                                         variant="outline"
                                         color={'white'}
+                                        _hover={{ color: 'yellow', bg: 'black', border: '1px solid yellow' }}
                                     >
-                                        <Center>
-                                            <VStack>
-                                                <Text fontSize={{ base: 16, md: 20 }}>{String(hiveUser?.balance)}</Text>
-                                                <Text fontSize={{ base: 10, md: 12 }}> (~${hiveUsdValue?.toFixed(2)})</Text>
-                                            </VStack>
-                                        </Center>
+                                        <HStack justifyContent={"space-between"}>
+                                            <Text ml={'10px'} fontSize={{ base: 12, md: 14 }}
+                                                textShadow="0 0 10px black, 0 0 20px black, 0 0 10px red"
+                                            >
+                                                {formatToTwoDecimals(hiveUser?.balance)}
+                                            </Text>
+                                            <Text>
+                                                HIVE
+                                            </Text>
+                                            <Badge
+                                                colorScheme="green"
+                                                color={"green"}
+                                                variant="subtle">
+                                                <Text fontSize={{ base: 10, md: 12 }}> (${formatToTwoDecimals(hiveUsdValue)})</Text>
+                                            </Badge>
+                                        </HStack>
                                     </MenuButton>
-                                    <MenuList bg="black" minWidth="100%">
+                                    <MenuList bg="black" >
                                         <MenuItem bg="black" icon={<SendIcon />} _hover={{ bg: "red" }}>
                                             Send Hive
                                         </MenuItem>
@@ -176,13 +197,24 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                         leftIcon={<Avatar borderRadius="none" boxSize="30px" src={HBD_LOGO_URL} />}
                                         variant="outline"
                                         color={'white'}
+                                        _hover={{ color: 'yellow', bg: 'black', border: '1px solid yellow' }}
                                     >
-                                        <Center>
-                                            <VStack>
-                                                <Text fontSize={{ base: 16, md: 20 }}>{String(hiveUser?.hbd_balance)}</Text>
-                                                <Text fontSize={{ base: 10, md: 12 }}> (~${HBDUsdValue?.toFixed(2)})</Text>
-                                            </VStack>
-                                        </Center>
+                                        <HStack justifyContent={"space-between"}>
+                                            <Text ml={'10px'} fontSize={{ base: 12, md: 14 }}
+                                                textShadow="0 0 10px black, 0 0 20px black, 0 0 10px red"
+                                            >
+                                                {formatToTwoDecimals(hiveUser?.hbd_balance)}
+                                            </Text>
+                                            <Text>
+                                                HBD
+                                            </Text>
+                                            <Badge
+                                                colorScheme="green"
+                                                color={"green"}
+                                                variant="subtle">
+                                                <Text fontSize={{ base: 10, md: 12 }}> (${formatToTwoDecimals(HBDUsdValue)})</Text>
+                                            </Badge>
+                                        </HStack>
                                     </MenuButton>
                                     <MenuList bg="black">
                                         <MenuItem bg="black" icon={<SendIcon />} _hover={{ bg: "red" }}>
@@ -194,24 +226,37 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                     </MenuList>
                                 </Menu>
                                 <Menu>
-                                    <MenuButton
-                                        p={8}
-                                        border="1px solid red"
-                                        width="full"
-                                        as={Button}
-                                        leftIcon={<Avatar borderRadius="none" boxSize="30px" src={SAVINGS_LOGO_URL} />}
-                                        variant="outline"
-                                        color={'white'}
-                                    >
-                                        <Center>
-                                            <Tooltip label="20% APR">
-                                                <VStack>
-                                                    <Text fontSize={{ base: 16, md: 20 }}>{String(hiveUser?.savings_hbd_balance)}</Text>
-                                                    <Text fontSize={{ base: 10, md: 12 }}> (~${savingsUSDvalue?.toFixed(2)})</Text>
-                                                </VStack>
-                                            </Tooltip>
-                                        </Center>
-                                    </MenuButton>
+                                    <Tooltip label="20% APR">
+                                        <MenuButton
+                                            p={8}
+                                            border="1px solid red"
+                                            width="full"
+                                            as={Button}
+                                            leftIcon={<Avatar borderRadius="none" boxSize="30px" src={SAVINGS_LOGO_URL} />}
+                                            variant="outline"
+                                            color={'white'}
+                                            _hover={{ color: 'yellow', bg: 'black', border: '1px solid yellow' }}
+                                        >
+                                            <HStack justifyContent={"space-between"}>
+                                                <Text ml={'10px'} fontSize={{ base: 12, md: 14 }}
+                                                    textShadow="0 0 10px black, 0 0 20px black, 0 0 10px red"
+                                                >
+                                                    {formatToTwoDecimals(hiveUser?.savings_hbd_balance)}</Text>
+                                                <Text>
+                                                    Sav
+                                                </Text>
+                                                <Badge
+                                                    colorScheme="green"
+                                                    variant="subtle"
+                                                    color={"green"}
+                                                >
+
+                                                    <Text fontSize={{ base: 10, md: 12 }}>
+                                                        (~${formatToTwoDecimals(savingsUSDvalue)})</Text>
+                                                </Badge>
+                                            </HStack>
+                                        </MenuButton>
+                                    </Tooltip>
                                     <MenuList bg="black">
                                         <MenuItem bg="black" icon={<SendIcon />} _hover={{ bg: "red" }}>
                                             Withdraw HBD
@@ -230,13 +275,24 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                         leftIcon={<Avatar boxSize="30px" src={HIVE_POWER_LOGO_URL} />}
                                         variant="outline"
                                         color={'white'}
+                                        _hover={{ color: 'yellow', bg: 'black', border: '1px solid yellow' }}
                                     >
-                                        <Center>
-                                            <VStack>
-                                                <Text fontSize={{ base: 16, md: 20 }}>{hivePower?.toFixed(2)} HP</Text>
-                                                <Text fontSize={{ base: 10, md: 12 }}> (~${HPUsdValue?.toFixed(2)})</Text>
-                                            </VStack>
-                                        </Center>
+                                        <HStack justifyContent={"space-between"}>
+                                            <Text ml={'10px'} fontSize={{ base: 12, md: 14 }}
+                                                textShadow="0 0 10px black, 0 0 20px black, 0 0 10px red"
+                                            >
+                                                {formatToTwoDecimals(hivePower)}</Text>
+                                            <Text>
+                                                HP
+                                            </Text>
+                                            <Badge
+                                                colorScheme="green"
+                                                color={"green"}
+                                                variant="subtle">
+                                                <Text fontSize={{ base: 10, md: 12 }}>
+                                                    (~${formatToTwoDecimals(HPUsdValue)})</Text>
+                                            </Badge>
+                                        </HStack>
                                     </MenuButton>
                                     <MenuList bg="black">
                                         <MenuItem bg="black" icon={<SendIcon />} _hover={{ bg: "red" }}>
@@ -254,6 +310,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                     colorScheme="red"
                                     onClick={() => setIsOpened(false)}
                                     mt={'20px'}
+                                    _hover={{ color: 'yellow', bg: 'black', border: '1px solid yellow' }}
                                 >
                                     <Text fontSize={{ base: 26, md: 40 }}>POWER UP !</Text>
                                 </Button>
@@ -263,7 +320,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                     </Box>
                 </Skeleton>
             )}
-        </VStack>
+        </VStack >
     );
 };
 

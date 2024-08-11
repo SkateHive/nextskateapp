@@ -66,7 +66,6 @@ interface PixBeeData {
     OurExchangeFee: string;
     OurRefundPer: string;
 }
-
 interface PixProps {
     user: HiveAccount;
 }
@@ -88,6 +87,7 @@ const getLimitsBasedOnHivePower = (hivePower: number) => {
 const LimitsTable = (props: PixBeeData) => {
     return (
         <Card w="full" height={'622px'}>
+
             <CardHeader>
                 <Center>Limites</Center>
             </CardHeader>
@@ -187,7 +187,6 @@ const sanitizePixKey = (pixKey: string) => {
         throw new Error('Formato de chave Pix inválido');
     }
 };
-
 
 const Pix = ({ user }: PixProps) => {
     const [amountHBD, setAmountHBD] = useState("");
@@ -321,19 +320,6 @@ const Pix = ({ user }: PixProps) => {
 
     return (
         <>
-
-            <Center>
-                <HStack>
-                    <Text
-                        fontFamily="Joystix"
-                        fontSize="2xl"
-                        textAlign="center"
-                        color="white"
-                        mt={2}
-                    > User Power {userHiveBalance.totalHP} </Text>
-                    <FaInfoCircle color="white" />
-                </HStack>
-            </Center>
             <Center mt="20px">
                 <Container maxW="container.lg">
                     <VStack mt={1} spacing={4} flexDirection={{ base: "column", xl: "row" }}>
