@@ -62,17 +62,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
             m={2}
             color={"white"}
         >
-            <Center onClick={() => setIsOpened(!isModalOpened)}>
-                <HStack cursor="pointer">
-                    <FaHive />
-                    {hiveUser && (
-                        <Text fontSize={{ base: 18, md: 22 }}>
-                            {hiveUser.name}
-                        </Text>
-                    )}
-                    <FaEye />
-                </HStack>
-            </Center>
+
             {hiveUser ? (
                 <VStack color={"white"}
                     align="normal">
@@ -86,6 +76,8 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                 mb={-6}
                                 justifyContent="center"
                                 bg="red.900"
+                                cursor="pointer"
+                                onClick={() => setIsOpened(!isModalOpened)}
                             >
                                 <Avatar
                                     name={hiveUser.name}
@@ -94,6 +86,13 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                     boxSize="48px"
                                     bg="gray.200"
                                 />
+                                <FaHive />
+                                {hiveUser && (
+                                    <Text fontSize={{ base: 16, md: 22 }}>
+                                        {hiveUser.name}
+                                    </Text>
+                                )}
+                                <FaEye />
                             </HStack>
                         </Box>
                     </Center>
@@ -106,9 +105,13 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                     >
                         <Center>
                             <VStack m={5}>
-                                <Box bg="#b32227" border={"2px solid black"} borderRadius="8px" padding="4px 8px">
-                                    <Text fontWeight="bold" fontSize={{ base: 24, md: 34 }} color="#33000a">
-                                        ${totalValue.toFixed(2)}
+                                <Box padding="4px 8px">
+                                    <Text
+                                        color={"white"}
+                                        fontWeight="bold"
+                                        fontSize={{ base: 24, md: 34 }}
+                                        textShadow="0 0 10px black, 0 0 20px black, 0 0 30px rgba(255, 255, 255, 0.4)"
+                                    >                                        ${totalValue.toFixed(2)}
                                     </Text>
                                 </Box>
                             </VStack>
@@ -131,7 +134,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                         >
                                             <Center>
                                                 <VStack>
-                                                    <Text fontSize={{ base: 18, md: 24 }}>{String(hiveUser.balance)}</Text>
+                                                    <Text fontSize={{ base: 16, md: 20 }}>{String(hiveUser.balance)}</Text>
                                                     <Text fontSize={{ base: 10, md: 12 }}> (~${hiveUsdValue.toFixed(2)})</Text>
                                                 </VStack>
                                             </Center>
@@ -157,7 +160,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                         >
                                             <Center>
                                                 <VStack>
-                                                    <Text fontSize={{ base: 18, md: 24 }}>{String(hiveUser.hbd_balance)}</Text>
+                                                    <Text fontSize={{ base: 16, md: 20 }}>{String(hiveUser.hbd_balance)}</Text>
                                                     <Text fontSize={{ base: 10, md: 12 }}> (~${HBDUsdValue.toFixed(2)})</Text>
                                                 </VStack>
                                             </Center>
@@ -184,7 +187,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                             <Center>
                                                 <Tooltip label="20% APR">
                                                     <VStack>
-                                                        <Text fontSize={{ base: 18, md: 24 }}>{String(hiveUser.savings_hbd_balance)}</Text>
+                                                        <Text fontSize={{ base: 16, md: 20 }}>{String(hiveUser.savings_hbd_balance)}</Text>
                                                         <Text fontSize={{ base: 10, md: 12 }}> (~${savingsUSDvalue.toFixed(2)})</Text>
                                                     </VStack>
                                                 </Tooltip>
@@ -211,7 +214,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                         >
                                             <Center>
                                                 <VStack>
-                                                    <Text fontSize={{ base: 18, md: 24 }}>{hivePower.toFixed(2)} HP</Text>
+                                                    <Text fontSize={{ base: 16, md: 20 }}>{hivePower.toFixed(2)} HP</Text>
                                                     <Text fontSize={{ base: 10, md: 12 }}> (~${HPUsdValue.toFixed(2)})</Text>
                                                 </VStack>
                                             </Center>

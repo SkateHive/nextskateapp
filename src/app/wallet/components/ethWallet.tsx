@@ -89,13 +89,20 @@ const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
     const formatEthWallet = (address: string) => {
         return `${address.slice(0, 6)}...${address.slice(-4)}`;
     };
+
     const calculateBlockchainTotal = (network: string) => {
         return portfolio?.tokens
             .filter((token) => token.network === network)
             .reduce((acc, token) => acc + token.token.balanceUSD, 0);
-    }
+    };
 
     const [isOpened, setIsOpened] = useState(false);
+
+    const sortedNetworks = Object.keys(groupedTokens).sort((a, b) => {
+        const totalA = calculateBlockchainTotal(a) || 0;
+        const totalB = calculateBlockchainTotal(b) || 0;
+        return totalB - totalA;
+    });
 
     return (
         <VStack
@@ -108,24 +115,7 @@ const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
             borderRadius="10px"
             bg="blue.800"
             m={2}
-
         >
-            <Center onClick={() => setIsOpened(!isOpened)}>
-
-                <HStack>
-                    {userENSname && account.address ? (
-                        <HStack cursor="pointer">
-                            <FaEthereum />
-                            <Text fontSize={{ base: 18, md: 18 }}>{userENSname || formatEthWallet(String(account.address))}</Text>
-                        </HStack>
-                    ) : (
-                        <CustomConnectWallet />
-                    )}
-                    <FaEye />
-
-                </HStack>
-            </Center>
-
             <Center>
                 <HStack
                     minWidth="100%"
@@ -135,6 +125,8 @@ const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
                     mb={-6}
                     justifyContent="center"
                     bg="blue.900"
+                    cursor="pointer"
+                    onClick={() => setIsOpened(!isOpened)}
                 >
                     <Avatar
                         boxSize="48px"
@@ -149,22 +141,37 @@ const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
                             />
                         </AvatarBadge>
                     </Avatar>
+                    {userENSname && account.address ? (
+                        <HStack >
+                            <FaEthereum />
+                            <Text color={"white"} fontSize={{ base: 18, md: 18 }}>{userENSname || formatEthWallet(String(account.address))}</Text>
+                        </HStack>
+                    ) : (
+                        <CustomConnectWallet />
+                    )}
+                    <FaEye size={30} color="white" />
                 </HStack>
             </Center>
             <Box minWidth="100%" border="1px solid white">
                 <Center>
                     <VStack m={5}>
-                        <Box bg="#0fb9fc48" borderRadius="8px" padding="4px 8px">
-                            <Text color={"black"} fontWeight="bold" fontSize={{ base: 24, md: 34 }}>
+                        <Box padding="4px 8px">
+                            <Text
+                                color={"white"}
+                                fontWeight="bold"
+                                fontSize={{ base: 24, md: 34 }}
+                                textShadow="0 0 10px black, 0 0 20px black, 0 0 30px rgba(255, 255, 255, 0.4)"
+                            >
                                 ${portfolio?.totalNetWorth?.toFixed(2) || 0}
                             </Text>
+
                         </Box>
                     </VStack>
                 </Center>
             </Box>
             {isOpened && (
                 <Accordion allowMultiple>
-                    {groupedTokens && Object.keys(groupedTokens).map((network) => (
+                    {groupedTokens && sortedNetworks.map((network) => (
                         <AccordionItem key={network}>
                             <AccordionButton>
                                 <Flex justifyContent="space-between" w="100%">
@@ -175,13 +182,15 @@ const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
                                                 boxSize="24px"
                                                 alt={`${network} logo`}
                                             />
-                                            <Text color={Types.blockchainDictionary[network]?.color || 'white'} fontSize={{ base: 16, md: 18 }}>
-                                                {network.charAt(0).toUpperCase() + network.slice(1)}
+                                            <Text color={Types.blockchainDictionary[network]?.color || 'white'} fontSize={{ base: 12, md: 14 }}>
+                                                {Types.blockchainDictionary[network]?.alias
+                                                    ? Types.blockchainDictionary[network].alias
+                                                    : network.charAt(0).toUpperCase() + network.slice(1)}
                                             </Text>
                                         </HStack>
                                     </Box>
                                     <Box>
-                                        <Badge bg={Types.blockchainDictionary[network]?.color || 'black'}>
+                                        <Badge w={150} bg={Types.blockchainDictionary[network]?.color || 'black'}>
                                             <Text color="black" isTruncated flex="1" textAlign="right" fontSize={{ base: 16, md: 18 }}>
                                                 ${calculateBlockchainTotal(network)?.toFixed(2)}
                                             </Text>
@@ -221,4 +230,3 @@ const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
 }
 
 export default EthBox;
-

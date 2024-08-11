@@ -29,9 +29,10 @@ const TotalValueBox: React.FC = () => {
             p={4}
             borderRadius="10px"
             h={{ base: "100%", md: "100%" }}
+            fontFamily="Joystix"
         >
-            <Box w={{ base: "80%", md: "40%" }} textAlign="center">
-                <Text fontFamily="Joystix" color={"black"} align="center" borderRadius={"md"} fontSize={{ base: 20, md: 20 }} mb={4} backgroundColor="white">
+            <Box w={"full"} textAlign="center">
+                <Text color={"black"} align="center" borderRadius={"md"} fontSize={{ base: 20, md: 20 }} mb={4} backgroundColor="white">
                     Net Worth
                 </Text>
                 <Center>
@@ -47,13 +48,14 @@ const TotalValueBox: React.FC = () => {
                     padding="4px 8px"
                     mb={4}
                     textAlign="center"
-                    backgroundColor="white"
+                    backgroundColor="limegreen"
+                    border={'1px solid white'}
                 >
                     <Text
                         fontWeight="bold"
-                        fontSize={{ base: "35px", md: "30px" }}
-                        color="#003300"
-                        fontFamily="Joystix"
+                        fontSize={{ base: "35px", md: "45px" }}
+                        color="white"
+                        textShadow="0 0 10px black, 0 0 20px black, 0 0 30px rgba(255, 255, 255, 0.4)"
                     >
                         ${totalValue.toFixed(2)}
                     </Text>

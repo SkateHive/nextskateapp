@@ -66,6 +66,7 @@ export type NFT = {
 export interface BlockchainInfo {
     color: string;
     logo: string;
+    alias?: string;
 }
 
 export const blockchainDictionary: Record<string, BlockchainInfo> = {
@@ -80,6 +81,7 @@ export const blockchainDictionary: Record<string, BlockchainInfo> = {
     "binance-smart-chain": {
         color: "#F0B90B",
         logo: "/logos/binance_smart_chain_logo.png",
+        alias: "BSC",
     },
     ethereum: {
         color: "#627EEA",
