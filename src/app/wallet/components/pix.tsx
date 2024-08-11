@@ -1,34 +1,39 @@
-import React, { useState, useEffect } from "react";
+import useHiveBalance from "@/hooks/useHiveBalance";
+import { HiveAccount } from "@/lib/useHiveAuth";
 import {
-    Card,
-    CardHeader,
-    CardBody,
-    Text,
-    Center,
-    HStack,
-    VStack,
-    Input,
-    Button,
-    Container,
     Alert,
+    AlertDescription,
     AlertIcon,
-    Box,
-    Image,
-    Switch,
-    Table, Thead, Tbody, Tr, Th, Td,
+    AlertTitle,
     Badge,
+    Box,
+    Button,
+    Card,
+    CardBody,
+    CardHeader,
+    Center,
+    Container,
+    HStack,
+    Image,
+    Input,
     InputGroup,
     InputRightAddon,
-    AlertDescription,
-    AlertTitle,
+    Switch,
+    Table,
+    Tbody,
+    Td,
+    Text,
+    Th,
+    Thead,
+    Tr,
+    useToast,
+    VStack,
 } from "@chakra-ui/react";
-import QRCode from 'qrcode.react';
-import { FaCopy, FaInfoCircle } from "react-icons/fa";
 import axios from "axios";
-import { HiveAccount } from "@/lib/useHiveAuth";
-import useHiveBalance from "@/hooks/useHiveBalance";
+import QRCode from 'qrcode.react';
+import React, { useEffect, useState } from "react";
+import { FaCopy, FaInfoCircle } from "react-icons/fa";
 import SendHBDModal from "./sendHBDModal";
-
 interface PixBeeData {
     pixbeePixKey: string;
     HivePriceBRL: string;
@@ -128,53 +133,61 @@ const fetchPixBeeData = async () => {
     }
 };
 
-const formatCPF = (cpf: string) => {
-    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-};
+const formatCPF = (cpf: string) => cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
 
-const formatCNPJ = (cnpj: string) => {
-    return cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
-};
+const formatCNPJ = (cnpj: string) => cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
 
-const formatTelephone = (telephone: string) => {
-    return telephone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+const formatTelephone = (telephone: string) => telephone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+
+const validateCPF = (cpf: string) => {
+    cpf = cpf.replace(/[^\d]+/g, '');
+    if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+
+    let sum = 0;
+    for (let i = 0; i < 9; i++) {
+        sum += parseInt(cpf.charAt(i)) * (10 - i);
+    }
+    let remainder = (sum * 10) % 11;
+    if (remainder === 10) remainder = 0;
+    if (remainder !== parseInt(cpf.charAt(9))) return false;
+
+    sum = 0;
+    for (let i = 0; i < 10; i++) {
+        sum += parseInt(cpf.charAt(i)) * (11 - i);
+    }
+    remainder = (sum * 10) % 11;
+    if (remainder === 10) remainder = 0;
+    return remainder === parseInt(cpf.charAt(10));
 };
 
 const sanitizePixKey = (pixKey: string) => {
-    const validateCPF = (cpf: string) => {
-        return /^\d{11}$/.test(cpf);
-    };
+    const cleanKey = pixKey.replace(/[^\d\w@.]/g, '');
 
-    const validateCNPJ = (cnpj: string) => {
-        return /^\d{14}$/.test(cnpj);
-    };
+    const isCPF = /^\d{11}$/.test(cleanKey);
 
-    const validateTelephone = (telephone: string) => {
-        return /^\d{2}9\d{8}$/.test(telephone);
-    };
+    const isCNPJ = /^\d{14}$/.test(cleanKey);
 
-    const validateEmail = (email: string) => {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    };
+    const isTelephone = /^\d{11}$/.test(cleanKey) && cleanKey[2] === '9';
 
-    const validateRandomKey = (key: string) => {
-        return /^[a-zA-Z0-9]{32}$/.test(key);
-    };
+    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanKey);
 
-    if (validateCPF(pixKey)) {
-        return pixKey.replace(/[^\d]/g, '');
-    } else if (validateCNPJ(pixKey)) {
-        return pixKey.replace(/[^\d]/g, '');
-    } else if (validateTelephone(pixKey)) {
-        return pixKey.replace(/[^\d]/g, '');
-    } else if (validateEmail(pixKey)) {
-        return pixKey;
-    } else if (validateRandomKey(pixKey)) {
-        return pixKey;
+    const isRandomKey = /^[a-zA-Z0-9]{32}$/.test(cleanKey);
+
+    if (isCNPJ) {
+        return formatCNPJ(cleanKey);
+    } else if (isTelephone) {
+        return formatTelephone(cleanKey);
+    } else if (isCPF) {
+        return formatCPF(cleanKey);
+    } else if (isEmail) {
+        return cleanKey;
+    } else if (isRandomKey) {
+        return cleanKey;
     } else {
-        throw new Error('Invalid Pix key format');
+        throw new Error('Formato de chave Pix inválido');
     }
 };
+
 
 const Pix = ({ user }: PixProps) => {
     const [amountHBD, setAmountHBD] = useState("");
@@ -185,10 +198,12 @@ const Pix = ({ user }: PixProps) => {
     const limits = getLimitsBasedOnHivePower(userHiveBalance.totalHP);
     const HBDAvailable = pixBeeData ? parseFloat(pixBeeData.balanceHbd) : 0;
     const [displayModal, setDisplayModal] = useState(false);
-    const [pixTotalPayment, setPixTotalPayment] = useState(0);
+    const [pixTotalPayment, setPixTotalPayment] = useState("0.000");
     const [pixKey, setPixKey] = useState("");
     const [formattedPixKey, setFormattedPixKey] = useState("");
     const [pixKeyType, setPixKeyType] = useState("");
+    const [error, setError] = useState<string | null>(null);
+    const toast = useToast();
 
     useEffect(() => {
         fetchPixBeeData().then((data) => {
@@ -210,36 +225,75 @@ const Pix = ({ user }: PixProps) => {
     const handlePixKeyChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value.replace(/[^\d\w@.]/g, '');
 
-        if (/^\d{14}$/.test(value)) {
-            setFormattedPixKey(formatCNPJ(value));
-            setPixKeyType("CNPJ");
-        } else if (/^\d{11}$/.test(value)) {
-            setFormattedPixKey(formatCPF(value));
-            setPixKeyType("CPF");
-        } else if (/^\d{2}9\d{8}$/.test(value)) {
-            setFormattedPixKey(formatTelephone(value));
-            setPixKeyType("Telefone");
-        } else if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-            setFormattedPixKey(value);
-            setPixKeyType("Email");
-        } else if (/^[a-zA-Z0-9]{32}$/.test(value)) {
-            setFormattedPixKey(value);
-            setPixKeyType("Chave Aleatória");
-        } else {
-            setFormattedPixKey(value);
-            setPixKeyType("");
+        let keyType = '';
+        let formattedKey = '';
+
+        try {
+            if (/^\d{11}$/.test(value)) {
+                if (value[2] === '9') {
+                    keyType = "Telefone";
+                    formattedKey = formatTelephone(value);
+                } else {
+                    keyType = "CPF";
+                    formattedKey = formatCPF(value);
+                }
+            } else if (/^\d{14}$/.test(value)) {
+                keyType = "CNPJ";
+                formattedKey = formatCNPJ(value);
+            } else if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+                keyType = "Email";
+                formattedKey = value;
+            } else if (/^[a-zA-Z0-9]{32}$/.test(value)) {
+                keyType = "Chave Aleatória";
+                formattedKey = value;
+            } else {
+                keyType = "Desconhecido";
+                formattedKey = value;
+            }
+        } catch (error) {
+            console.error('Erro ao sanitizar chave Pix:', error);
+            keyType = "Desconhecido";
+            formattedKey = value;
         }
 
         setPixKey(value);
+        setPixKeyType(keyType);
+        setFormattedPixKey(formattedKey);
     };
 
     const handleSubmit = () => {
         try {
+            const formattedAmountHBD = parseFloat(amountHBD).toFixed(3);
+
             const sanitizedKey = sanitizePixKey(pixKey);
+            let isValidKey = false;
+            if (pixKeyType === "CPF") {
+                isValidKey = validateCPF(pixKey);
+            } else {
+                isValidKey = ['CNPJ', 'Email', 'Chave Aleatória'].includes(pixKeyType);
+            }
+
+            if (!isValidKey) {
+                throw new Error('Chave Pix inválida');
+            }
+            const memo = `#${pixKey}`;
+
+            console.log("Formatted Amount:", formattedAmountHBD);
+            console.log("Memo:", memo);
+
             console.log("Sanitized Pix Key:", sanitizedKey);
-            // Proceed with the sanitized Pix key
-        } catch (error) {
+            setDisplayModal(true);
+            setError(null);
+        } catch (error: any) {
             console.error(error);
+            setError('Por favor, insira uma chave Pix válida.');
+            toast({
+                title: 'Erro',
+                description: error.message,
+                status: 'error',
+                duration: 3000,
+                isClosable: true,
+            });
         }
     };
 
@@ -248,13 +302,14 @@ const Pix = ({ user }: PixProps) => {
         console.log(hbdtoBrl);
         const fee = (hbdtoBrl * amount) * 0.01 + 2;
         console.log(fee);
-        return (hbdtoBrl * amount - fee).toFixed(2);
+        return (hbdtoBrl * amount - fee).toFixed(3);
     }
 
     useEffect(() => {
-        let c = calculateTotalPixPayment(parseFloat(amountHBD));
-        setPixTotalPayment(Number(c));
-    }, [amountHBD]);
+        if (amountHBD) {
+            setPixTotalPayment(calculateTotalPixPayment(parseFloat(amountHBD)));
+        }
+    }, [amountHBD, pixBeeData]);
 
     if (!pixBeeData) {
         return (
@@ -264,11 +319,10 @@ const Pix = ({ user }: PixProps) => {
         );
     }
 
+
     return (
         <>
-            {displayModal && (
-                <SendHBDModal username={user.name} visible={displayModal} onClose={() => setDisplayModal(false)} hbdAmount={amountHBD} pixAmount={pixTotalPayment} memo={pixBeeData?.pixbeePixKey || ''} />
-            )}
+
             <Center>
                 <HStack>
                     <Text
@@ -339,12 +393,7 @@ const Pix = ({ user }: PixProps) => {
                                                     </Center>
                                                 </Badge>
                                             )}
-                                            <Button
-                                                w={'100%'}
-                                                variant={'outline'}
-                                                colorScheme="red"
-                                                onClick={handleSubmit}
-                                            >
+                                            <Button w={'100%'} variant={'outline'} colorScheme="red" onClick={handleSubmit}>
                                                 Enviar Hive Dollars
                                             </Button>
                                         </>
@@ -396,6 +445,17 @@ const Pix = ({ user }: PixProps) => {
                             </CardBody>
                         </Card>
                         {pixBeeData && <LimitsTable {...pixBeeData} />}
+                        {displayModal && (
+                            <SendHBDModal
+                                username={user.name}
+                                visible={displayModal}
+                                onClose={() => setDisplayModal(false)}
+                                hbdAmount={amountHBD}
+                                pixAmount={parseFloat(pixTotalPayment)}
+                                memo={pixBeeData?.pixbeePixKey || ''}
+                                availableBalance={HBDAvailable}
+                            />
+                        )}
                     </VStack>
                 </Container>
             </Center>
