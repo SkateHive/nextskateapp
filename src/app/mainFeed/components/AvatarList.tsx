@@ -70,7 +70,7 @@ const AvatarList = ({ sortedComments }: AvatarListProps) => {
           <Avatar
             onClick={() => setIsOpen(true)}
             border={"1px solid red"}
-            name="airdrop"
+            name="community airdrop"
             boxSize={12}
             bg="black"
             src="https://i.ibb.co/cgykmcc/image.png"
