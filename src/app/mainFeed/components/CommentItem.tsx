@@ -15,6 +15,7 @@ import {
 import {
   Box,
   Button,
+  Center,
   Flex,
   HStack,
   Text,
@@ -341,7 +342,9 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
                       />
                     ))}
                     {filteredImages.map((image, i) => (
-                      <center>
+                      <Center
+                        key={i}
+                      >
                         <Box
                           key={i}
                           display="flex"
@@ -365,7 +368,7 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
                             onClick={handleImageClick}
                           />
                         </Box>
-                      </center>
+                      </Center>
                     ))}
                   </Carousel>
                 </CarouselContainer>
