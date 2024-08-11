@@ -58,18 +58,7 @@ function Wallet() {
 
           </TabPanel>
           <TabPanel>
-            <Text
-              fontFamily="Joystix"
-              fontSize="2xl"
-              textAlign="center"
-              color="white"
-              mt={2}
-            >
-              Em breve, por enquanto use
-              <a style={{ color: 'blue' }} href='https://aphid-glowing-fish.ngrok-free.app/index.html'> PixBee </a> ou binance
-            </Text>
             {user.hiveUser && <Pix user={user.hiveUser} />}
-
           </TabPanel>
         </TabPanels>
       </Tabs >

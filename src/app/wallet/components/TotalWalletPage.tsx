@@ -62,7 +62,7 @@ const TotalValueBox: React.FC = () => {
                 </Box>
             </Box>
 
-            <Flex fontFamily="Joystix" direction={{ base: 'column', md: 'row' }} w="100%">
+            <Flex direction={{ base: 'column', md: 'row' }} w="100%">
                 <HiveBox onNetWorthChange={handleHiveNetWorth} />
                 <EthBox onNetWorthChange={handleEthNetWorth} />
             </Flex>

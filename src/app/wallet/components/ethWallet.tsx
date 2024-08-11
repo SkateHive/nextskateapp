@@ -16,6 +16,9 @@ import {
     Flex,
     HStack,
     Image,
+    Skeleton,
+    SkeletonCircle,
+    SkeletonText,
     Table,
     TableContainer,
     Tbody,
@@ -42,12 +45,15 @@ const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
     const [userENSavatar, SetUserENSAvatar] = useState<string | null>(null);
     const [userENSname, SetUserENSName] = useState<string | null>(null);
     const [groupedTokens, setGroupedTokens] = useState<{ [key: string]: Types.TokenDetail[] }>({});
+    const [isLoading, setIsLoading] = useState(true);
+    const [isOpened, setIsOpened] = useState(false);
 
     useEffect(() => {
         const getPortfolio = async () => {
             const Portfolio = await axios.get(`https://pioneers.dev/api/v1/portfolio/${account.address}`);
             setPortfolio(Portfolio.data);
             onNetWorthChange(Portfolio.data.totalNetWorth);
+            setIsLoading(false);
         };
         if (account.address) {
             getPortfolio();
@@ -100,8 +106,6 @@ const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
             .reduce((acc, token) => acc + token.token.balanceUSD, 0);
     };
 
-    const [isOpened, setIsOpened] = useState(false);
-
     const sortedNetworks = Object.keys(groupedTokens).sort((a, b) => {
         const totalA = calculateBlockchainTotal(a) || 0;
         const totalB = calculateBlockchainTotal(b) || 0;
@@ -117,62 +121,79 @@ const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
             p={4}
             border="1px solid #0fb9fc"
             borderRadius="10px"
-            bg="blue.800"
+            bg="#201d21"
             m={2}
+            color={"white"}
         >
-            <Center paddingBottom={4}>
-                <HStack
-                    minWidth="100%"
-                    border="1px solid white"
-                    p={5}
-                    borderTopRadius={10}
-                    mb={-6}
-                    justifyContent="center"
-                    bg="blue.900"
-                    cursor="pointer"
-                    onClick={() => setIsOpened(!isOpened)}
-                >
+            <HStack
+                w="100%"
+                border="1px solid white"
+                p={5}
+                borderTopRadius={10}
+                mb={-6}
+                justifyContent="space-between"
+                bg="blue.900"
+                cursor="pointer"
+                onClick={() => setIsOpened(!isOpened)}
+            >
+                <SkeletonCircle isLoaded={!isLoading} size="48px">
                     <Avatar
                         boxSize="48px"
                         src={String(userENSavatar)}
                         bg="transparent"
                     >
                         <AvatarBadge boxSize="1.25em" bg="transparent" border="none">
-                            <Image
-                                src={Types.blockchainDictionary[account.chain?.name.toLowerCase() ?? '']?.logo || 'logos/ethereum_logo.png'}
-                                boxSize="24px"
-                                alt={`${account.chain?.name} logo`}
-                            />
+                            <Skeleton isLoaded={!isLoading}>
+                                <Image
+                                    src={Types.blockchainDictionary[account.chain?.name.toLowerCase() ?? '']?.logo || 'logos/ethereum_logo.png'}
+                                    boxSize="24px"
+                                    alt={`${account.chain?.name} logo`}
+                                />
+                            </Skeleton>
                         </AvatarBadge>
                     </Avatar>
-                    {userENSname && account.address ? (
-                        <HStack >
-                            <FaEthereum />
-                            <Text color={"white"} fontSize={{ base: 18, md: 18 }}>{userENSname || formatEthWallet(String(account.address))}</Text>
-                        </HStack>
-                    ) : (
-                        <CustomConnectWallet />
-                    )}
-                    <FaEye size={30} color="white" />
-                </HStack>
-            </Center>
-            <Box minWidth="100%" border="1px solid white">
-                <Center>
-                    <VStack m={5}>
-                        <Box padding="4px 8px">
-                            <Text
-                                color={"white"}
-                                fontWeight="bold"
-                                fontSize={{ base: 24, md: 34 }}
-                                textShadow="0 0 10px black, 0 0 20px black, 0 0 30px rgba(255, 255, 255, 0.4)"
-                            >
-                                ${portfolio?.totalNetWorth?.toFixed(2) || 0}
-                            </Text>
+                </SkeletonCircle>
+                <SkeletonText isLoaded={!isLoading} noOfLines={1}>
+                    <Text
+                        fontSize={14}
+                        maxWidth="200px"
+                        whiteSpace="nowrap"
+                        overflow="hidden"
+                        textOverflow="ellipsis"
+                        textAlign="center"
+                    >
+                        {userENSname || formatEthWallet(String(account.address))}
+                    </Text>
+                </SkeletonText>
+                <FaEye size={30} color="white" />
+            </HStack>
 
-                        </Box>
-                    </VStack>
-                </Center>
-            </Box>
+            <Skeleton isLoaded={!isLoading} minWidth="100%">
+                <Box
+                    minWidth="100%"
+                    border="1px solid white"
+                    bg="blue.700"
+                    onClick={() => setIsOpened(!isOpened)}
+                    cursor="pointer"
+                >
+                    <Center>
+                        <VStack m={5}>
+                            <Box padding="4px 8px">
+                                <SkeletonText isLoaded={!isLoading} noOfLines={1}>
+                                    <Text
+                                        color={"white"}
+                                        fontWeight="bold"
+                                        fontSize={{ base: 24, md: 34 }}
+                                        textShadow="0 0 10px black, 0 0 20px black, 0 0 30px rgba(255, 255, 255, 0.4)"
+                                    >
+                                        ${portfolio?.totalNetWorth?.toFixed(2) || 0}
+                                    </Text>
+                                </SkeletonText>
+                            </Box>
+                        </VStack>
+                    </Center>
+                </Box>
+            </Skeleton>
             {isOpened && (
                 <Accordion allowMultiple>
                     {groupedTokens && sortedNetworks.map((network) => (
@@ -181,25 +202,31 @@ const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
                                 <Flex justifyContent="space-between" w="100%">
                                     <Box>
                                         <HStack flex="1" textAlign="left">
-                                            <Image
-                                                src={Types.blockchainDictionary[network]?.logo || '/path/to/default_logo.png'}
-                                                boxSize="24px"
-                                                alt={`${network} logo`}
-                                            />
-                                            <Text color={Types.blockchainDictionary[network]?.color || 'white'} fontSize={{ base: 12, md: 14 }}>
-                                                {Types.blockchainDictionary[network]?.alias
-                                                    ? Types.blockchainDictionary[network].alias
-                                                    : network.charAt(0).toUpperCase() + network.slice(1)}
-                                            </Text>
+                                            <SkeletonCircle isLoaded={!isLoading} boxSize="24px">
+                                                <Image
+                                                    src={Types.blockchainDictionary[network]?.logo || '/path/to/default_logo.png'}
+                                                    boxSize="24px"
+                                                    alt={`${network} logo`}
+                                                />
+                                            </SkeletonCircle>
+                                            <SkeletonText isLoaded={!isLoading} noOfLines={1}>
+                                                <Text color={Types.blockchainDictionary[network]?.color || 'white'} fontSize={{ base: 12, md: 14 }}>
+                                                    {Types.blockchainDictionary[network]?.alias
+                                                        ? Types.blockchainDictionary[network].alias
+                                                        : network.charAt(0).toUpperCase() + network.slice(1)}
+                                                </Text>
+                                            </SkeletonText>
                                         </HStack>
                                     </Box>
-                                    <Box>
+                                    <Skeleton isLoaded={!isLoading} w={150}>
                                         <Badge w={150} bg={Types.blockchainDictionary[network]?.color || 'black'}>
-                                            <Text color="black" isTruncated flex="1" textAlign="right" fontSize={{ base: 16, md: 18 }}>
-                                                ${calculateBlockchainTotal(network)?.toFixed(2)}
-                                            </Text>
+                                            <SkeletonText isLoaded={!isLoading} noOfLines={1}>
+                                                <Text color="black" isTruncated flex="1" textAlign="right" fontSize={{ base: 16, md: 18 }}>
+                                                    ${calculateBlockchainTotal(network)?.toFixed(2)}
+                                                </Text>
+                                            </SkeletonText>
                                         </Badge>
-                                    </Box>
+                                    </Skeleton>
                                 </Flex>
                                 <AccordionIcon />
                             </AccordionButton>
