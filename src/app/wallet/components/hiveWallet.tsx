@@ -64,8 +64,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
         >
 
             {hiveUser ? (
-                <VStack color={"white"}
-                    align="normal">
+                <>
                     <Center>
                         <Box w="100%" paddingBottom={4}>
                             <HStack
@@ -92,7 +91,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                         {hiveUser.name}
                                     </Text>
                                 )}
-                                <FaEye />
+                                <FaEye size={30} color="white" />
                             </HStack>
                         </Box>
                     </Center>
@@ -111,7 +110,8 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                         fontWeight="bold"
                                         fontSize={{ base: 24, md: 34 }}
                                         textShadow="0 0 10px black, 0 0 20px black, 0 0 30px rgba(255, 255, 255, 0.4)"
-                                    >                                        ${totalValue.toFixed(2)}
+                                    >
+                                        ${totalValue.toFixed(2)}
                                     </Text>
                                 </Box>
                             </VStack>
@@ -228,11 +228,23 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                             </MenuItem>
                                         </MenuList>
                                     </Menu>
+                                    <Button
+                                        leftIcon={<AiOutlineThunderbolt size="28px" />}
+                                        w={'full'}
+                                        flex={1}
+                                        colorScheme="red"
+                                        onClick={() => setIsOpened(false)}
+                                        mt={'20px'}
+                                    >
+                                        <Text fontSize={{ base: 26, md: 40 }}>POWER UP !</Text>
+                                    </Button>
+
                                 </VStack>
                             </Center>
                         </Box>
                     )}
-                </VStack>
+                </>
+
             ) : null}
         </VStack>
     );

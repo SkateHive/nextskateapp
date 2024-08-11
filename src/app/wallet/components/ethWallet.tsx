@@ -91,7 +91,11 @@ const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
     };
 
     const calculateBlockchainTotal = (network: string) => {
-        return portfolio?.tokens
+        if (!portfolio?.tokens) {
+            return 0;
+        }
+
+        return portfolio.tokens
             .filter((token) => token.network === network)
             .reduce((acc, token) => acc + token.token.balanceUSD, 0);
     };
@@ -116,7 +120,7 @@ const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
             bg="blue.800"
             m={2}
         >
-            <Center>
+            <Center paddingBottom={4}>
                 <HStack
                     minWidth="100%"
                     border="1px solid white"

@@ -1,3 +1,4 @@
+import { celo } from "viem/chains";
 
 export interface Token {
     address: string;
@@ -92,7 +93,7 @@ export const blockchainDictionary: Record<string, BlockchainInfo> = {
         logo: "/logos/fantom_logo.png",
     },
     gnosis: {
-        color: "green",
+        color: "limegreen",
         logo: "/logos/gnosis_logo.png",
     },
     optimism: {
@@ -106,5 +107,9 @@ export const blockchainDictionary: Record<string, BlockchainInfo> = {
     degen: {
         color: "purple.200",
         logo: "/logos/degen.png",
+    },
+    celo: {
+        color: "yellow.200",
+        logo: "/logos/celo_logo.png",
     },
 };

@@ -208,7 +208,7 @@ const Pix = ({ user }: PixProps) => {
     useEffect(() => {
         fetchPixBeeData().then((data) => {
             setPixBeeData(data);
-            console.log("PixBee data:", data);
+            // console.log("PixBee data:", data);
         }).catch(error => {
             console.error("Failed to fetch PixBee data:", error);
         });
@@ -264,7 +264,6 @@ const Pix = ({ user }: PixProps) => {
     const handleSubmit = () => {
         try {
             const formattedAmountHBD = parseFloat(amountHBD).toFixed(3);
-
             const sanitizedKey = sanitizePixKey(pixKey);
             let isValidKey = false;
             if (pixKeyType === "CPF") {
@@ -278,10 +277,10 @@ const Pix = ({ user }: PixProps) => {
             }
             const memo = `#${pixKey}`;
 
-            console.log("Formatted Amount:", formattedAmountHBD);
-            console.log("Memo:", memo);
+            // console.log("Formatted Amount:", formattedAmountHBD);
+            // console.log("Memo:", memo);
 
-            console.log("Sanitized Pix Key:", sanitizedKey);
+            // console.log("Sanitized Pix Key:", sanitizedKey);
             setDisplayModal(true);
             setError(null);
         } catch (error: any) {
