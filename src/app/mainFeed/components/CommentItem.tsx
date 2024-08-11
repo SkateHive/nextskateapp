@@ -21,25 +21,123 @@ import {
   Tooltip,
   VStack
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, ReactNode } from "react";
 import { FaEye, FaHeart, FaRegComment, FaRegHeart } from "react-icons/fa";
 import { FaPencil } from "react-icons/fa6";
 import ReactMarkdown from "react-markdown";
-import { useReward } from "react-rewards";
+import Carousel from "react-multi-carousel";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import { handleVote } from "../utils/handleFeedVote";
 import CommentList from "./CommentsList";
 import { EditCommentModal } from "./EditCommentModal";
 import ReplyModal from "./replyModal";
+import {
+  LinkWithDomain,
+  extractCustomLinks,
+  extractIFrameLinks,
+  extractLinksFromMarkdown,
+} from "@/lib/markdown";
+import { useReward } from "react-rewards";
+import { FaArrowRight, FaArrowLeft } from 'react-icons/fa';
+import { LuArrowLeftSquare, LuArrowRightSquare } from "react-icons/lu";
+
+const CustomLeftArrow = ({ onClick }: { onClick: () => void }) => {
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        position: 'absolute',
+        left: '0px',
+        zIndex: '10',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '40px',
+        height: '100%',
+        cursor: 'pointer',
+        opacity: 0,
+        transition: 'opacity 0.3s ease',
+      }}
+      className="custom-arrow"
+    >
+      <LuArrowLeftSquare color="white" size="20px" />
+    </div>
+  );
+};
+
+const CustomRightArrow = ({ onClick }: { onClick: () => void }) => {
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        position: 'absolute',
+        right: '0',
+        zIndex: '10',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '40px',
+        height: '100%',
+        cursor: 'pointer',
+        opacity: 0,
+        transition: 'opacity 0.3s ease',
+      }}
+      className="custom-arrow"
+    >
+      <LuArrowRightSquare color="white" size="20px" />
+    </div>
+  );
+};
+
+const CarouselContainer = ({ children }: { children: ReactNode }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseEnter = () => {
+    if (containerRef.current) {
+      const arrows = containerRef.current.querySelectorAll<HTMLDivElement>('.custom-arrow');
+      arrows.forEach((arrow: HTMLDivElement) => {
+        arrow.style.opacity = '1';
+      });
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (containerRef.current) {
+      const arrows = containerRef.current.querySelectorAll<HTMLDivElement>('.custom-arrow');
+      arrows.forEach((arrow: HTMLDivElement) => {
+        arrow.style.opacity = '0';
+      });
+    }
+  };
+
+  return (
+    <Box
+      m={4}
+      maxW={'80%'}
+      ref={containerRef}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      {children}
+    </Box>
+  );
+};
+
 
 interface CommentItemProps {
   comment: any;
   username: string;
   handleVote: (author: string, permlink: string) => void;
-  onClick?: () => void
-
+  onClick?: () => void;
 }
+
+const responsive = {
+  mobile: {
+    breakpoint: { max: 4200, min: 0 },
+    items: 1,
+  },
+};
 
 const VotingButton = ({
   comment,
@@ -116,9 +214,9 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
   const [numberOfComments, setNumberOfComments] = useState(0);
   const [editedCommentBody, setEditedCommentBody] = useState(comment.body);
   const [commentReplies, setCommentReplies] = useState<any[]>([]);
-
   const [visiblePosts, setVisiblePosts] = useState(5);
 
+  const { comments } = useComments(comment.author, comment.permlink);
   const toggleValueTooltip = () => {
     setIsValueTooltipOpen(true);
     setTimeout(() => {
@@ -126,18 +224,13 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
     }, 3000);
   };
 
-
-  const { comments } = useComments(comment.author, comment.permlink);
-
-
-
   useEffect(() => {
     setCommentReplies(comments);
     setNumberOfComments(comments.length);
   }, [comments]);
 
   const handleNewComment = (newComment: number) => {
-    setCommentReplies(prevComments => [newComment, ...prevComments]);
+    setCommentReplies((prevComments) => [newComment, ...prevComments]);
     setNumberOfComments((prevCount: number) => prevCount + 1);
   };
 
@@ -151,73 +244,169 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
       console.log("Edit saved:", editedBody);
       setEditedCommentBody(editedBody);
       setIsEditModalOpen(false);
-      console.log('Updated comment body:', editedBody);
+      console.log("Updated comment body:", editedBody);
     } catch (error) {
-      console.error('Erro ao salvar edição do comentário:', error);
+      console.error("Erro ao salvar edição do comentário:", error);
     }
   };
 
-  const handleModalOpen = (modalType: 'edit' | 'reply') => {
-    if (modalType === 'edit') {
+  const handleModalOpen = (modalType: "edit" | "reply") => {
+    if (modalType === "edit") {
       setIsEditModalOpen(true);
-    } else if (modalType === 'reply') {
+    } else if (modalType === "reply") {
       setIsReplyModalOpen(true);
     }
   };
 
   const { voteValue } = useHiveUser();
 
+  // Extract images and videos from comment body
+  const imageLinks = extractLinksFromMarkdown(editedCommentBody);
+  const iframeLinks = extractIFrameLinks(editedCommentBody);
+  const tSpeakLinks = extractCustomLinks(editedCommentBody);
+  let videoLinks: LinkWithDomain[] = [];
 
+  if (["samuelvelizsk8", "mark0318"].includes(comment.author)) {
+    videoLinks = [...iframeLinks, ...tSpeakLinks];
+  }
+
+  // Filter and deduplicate images
+  const uniqueImageUrls = new Set();
+  const filteredImages = imageLinks.filter((image) => {
+    if (!uniqueImageUrls.has(image.url)) {
+      uniqueImageUrls.add(image.url);
+      return true;
+    }
+    return false;
+  });
+
+  const carouselRef = useRef<any>(null);
+
+  const handleImageClick = () => {
+    if (carouselRef.current) {
+      carouselRef.current.next();
+    }
+  };
 
   return (
     <Box key={comment.id} p={4} width="100%" bg="black" color="white">
-    <ReplyModal
-      comment={comment}
-      isOpen={isReplyModalOpen}
-      onClose={() => setIsReplyModalOpen(false)}
-      onNewComment={handleNewComment}
-    />
+      <ReplyModal
+        comment={comment}
+        isOpen={isReplyModalOpen}
+        onClose={() => setIsReplyModalOpen(false)}
+        onNewComment={handleNewComment}
+      />
 
-    <Flex>
-      <AuthorAvatar username={comment.author} />
-      <VStack w={"100%"} ml={4} alignItems={"start"} marginRight={"16px"}>
-        <HStack justify={"space-between"} width={"full"}>
-          <HStack
-            cursor="pointer"
-            onClick={() =>
-              window.open(
-                `/post/test/@${comment.author}/${comment.permlink}`,
-                '_self'
-              )
-            }
-            gap="2px"
-          >
-            <Text fontWeight="bold">{comment.author}</Text>
-            <Text ml={2} color="gray.400" fontSize="14px">
-              · {formatDate(String(comment.created))}
-            </Text>
+      <Flex>
+        <AuthorAvatar username={comment.author} />
+        <VStack w={"100%"} ml={4} alignItems={"start"} marginRight={"16px"}>
+          <HStack justify={"space-between"} width={"full"}>
+            <HStack
+              cursor="pointer"
+              onClick={() =>
+                window.open(
+                  `/post/test/@${comment.author}/${comment.permlink}`,
+                  "_self"
+                )
+              }
+              gap="2px"
+            >
+              <Text fontWeight="bold">{comment.author}</Text>
+              <Text ml={2} color="gray.400" fontSize="14px">
+                · {formatDate(String(comment.created))}
+              </Text>
+            </HStack>
+
+            <FaEye onClick={handleEyeClick} />
           </HStack>
+          <Box w={"100%"} bg="black" color="white">
+            {(filteredImages.length >= 2 || videoLinks.length >= 2) ? (
+              <Box m={4} maxW={'80%'}>
+                <CarouselContainer>
 
-          <FaEye onClick={handleEyeClick} />
-        </HStack>
-        <Box w={"100%"} bg="black" color="white">
-          <ReactMarkdown
-            components={MarkdownRenderers}
-            rehypePlugins={[rehypeRaw]}
-            remarkPlugins={[remarkGfm]}
-          >
-            {transformNormalYoutubeLinksinIframes(
-              transformIPFSContent(
-                transformShortYoutubeLinksinIframes(editedCommentBody)
-              )
+                  <Carousel
+                    ref={carouselRef}
+                    responsive={responsive}
+                    arrows
+                    customLeftArrow={<CustomLeftArrow onClick={() => carouselRef.current?.previous()} />}
+                    customRightArrow={<CustomRightArrow onClick={() => carouselRef.current?.next()} />}
+                  >
+                    {videoLinks.map((video, i) => (
+                      <iframe
+                        key={i}
+                        src={video.url}
+                        width={"100%"}
+                        height={"100%"}
+                        style={{ aspectRatio: "16/9", border: "0" }}
+                      />
+                    ))}
+                    {filteredImages.map((image, i) => (
+                      <center>
+                        <Box
+                          key={i}
+                          display="flex"
+                          justifyContent="center"
+                          alignItems="center"
+                          width="100%"
+                          height="100%"
+                        >
+                          <img
+                            key={i}
+                            src={image.url}
+                            alt="Post media"
+                            style={{
+                              width: "100%",
+                              height: "auto",
+                              objectFit: "cover",
+                              borderRadius: "8px",
+                              minHeight: '445px',
+                              maxHeight: '445px',
+                            }}
+                            onClick={handleImageClick}
+                          />
+                        </Box>
+                      </center>
+                    ))}
+                  </Carousel>
+                </CarouselContainer>
+              </Box>
+            ) : (
+              <ReactMarkdown
+                components={MarkdownRenderers}
+                rehypePlugins={[rehypeRaw]}
+                remarkPlugins={[remarkGfm]}
+              >
+                {transformNormalYoutubeLinksinIframes(
+                  transformIPFSContent(
+                    transformShortYoutubeLinksinIframes(editedCommentBody)
+                  )
+                )}
+              </ReactMarkdown>
             )}
-          </ReactMarkdown>
-        </Box>
-      </VStack>
-    </Flex>
+          </Box>
 
-    <Flex ml={14} justifyContent={"space-between"}>
-      {comment.author === username ? (
+        </VStack>
+      </Flex>
+
+      <Flex m={4} justifyContent={"space-between"}>
+        {comment.author === username ? (
+          <Button
+            _hover={{
+              background: "transparent",
+              color: "green.200",
+            }}
+            colorScheme="green"
+            variant="ghost"
+            leftIcon={<FaPencil />}
+            onClick={() => setIsEditModalOpen(true)}
+            aria-label="Edit Comment"
+          >
+            Edit
+          </Button>
+        ) : (
+          <TipButton author={comment.author} />
+        )}
+
         <Button
           _hover={{
             background: "transparent",
@@ -225,91 +414,74 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
           }}
           colorScheme="green"
           variant="ghost"
-          leftIcon={<FaPencil />}
-          onClick={() => setIsEditModalOpen(true)}
-          aria-label="Edit Comment"
+          leftIcon={<FaRegComment />}
+          onClick={() => handleModalOpen("reply")}
+          aria-label="Comments"
         >
-          Edit
+          {numberOfComments}
         </Button>
-      ) : (
-        <TipButton author={comment.author} />
-      )}
 
-      <Button
-        _hover={{
-          background: "transparent",
-          color: "green.200",
-        }}
-        colorScheme="green"
-        variant="ghost"
-        leftIcon={<FaRegComment />}
-        onClick={() => handleModalOpen('reply')}
-        aria-label="Comments"
-      >
-        {numberOfComments}
-      </Button>
-
-      <VotingButton
-        comment={comment}
-        username={username}
-        toggleValueTooltip={toggleValueTooltip}
-      />
-      <Tooltip
-        label={`+$${voteValue.toFixed(6)}`}
-        placement="top"
-        isOpen={isValueTooltipOpen}
-        hasArrow
-      >
-        <Text
-          fontWeight={"bold"}
-          color={"green.400"}
-          onClick={() =>
-            window.open(
-              `/post/test/@${comment.author}/${comment.permlink}`,
-              "_self"
-            )
-          }
-          cursor={"pointer"}
-          mt={2}
-        >
-          ${getTotalPayout(comment)}
-        </Text>
-      </Tooltip>
-    </Flex>
-
-    <EditCommentModal
-      isOpen={isEditModalOpen}
-      onClose={() => setIsEditModalOpen(false)}
-      commentBody={editedCommentBody}
-      onSave={handleEditSave}
-      post={comment}
-      username={username}
-    />
-
-    {isEyeClicked && (
-      <Box ml={10} mt={4} pl={4} borderLeft="2px solid gray">
-        <CommentList
-          comments={commentReplies}
-          visiblePosts={visiblePosts}
-          setVisiblePosts={() => {}}
+        <VotingButton
+          comment={comment}
           username={username}
-          handleVote={handleVote}
+          toggleValueTooltip={toggleValueTooltip}
         />
-
-        {visiblePosts < commentReplies.length && (
-          <Button
-            onClick={() => setVisiblePosts(visiblePosts + 5)}
-            variant="outline"
-            colorScheme="green"
-            size="sm"
-            mt={4}
+        <Tooltip
+          label={`+$${voteValue.toFixed(6)}`}
+          placement="top"
+          isOpen={isValueTooltipOpen}
+          hasArrow
+        >
+          <Text
+            fontWeight={"bold"}
+            color={"green.400"}
+            onClick={() =>
+              window.open(
+                `/post/test/@${comment.author}/${comment.permlink}`,
+                "_self"
+              )
+            }
+            cursor={"pointer"}
+            mt={2}
           >
-            Show More
-          </Button>
-        )}
-      </Box>
-    )}
-  </Box>
+            ${getTotalPayout(comment)}
+          </Text>
+        </Tooltip>
+      </Flex>
+
+      <EditCommentModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        commentBody={editedCommentBody}
+        onSave={handleEditSave}
+        post={comment}
+        username={username}
+      />
+
+      {isEyeClicked && (
+        <Box ml={10} mt={4} pl={4} borderLeft="2px solid gray">
+          <CommentList
+            comments={commentReplies}
+            visiblePosts={visiblePosts}
+            setVisiblePosts={() => { }}
+            username={username}
+            handleVote={handleVote}
+          />
+
+          {visiblePosts < commentReplies.length && (
+            <Button
+              onClick={() => setVisiblePosts(visiblePosts + 5)}
+              variant="outline"
+              colorScheme="green"
+              size="sm"
+              mt={4}
+            >
+              Show More
+            </Button>
+          )}
+        </Box>
+      )}
+    </Box>
   );
 };
 

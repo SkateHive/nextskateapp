@@ -243,7 +243,7 @@ const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
                                             {groupedTokens[network].map((token) => (
                                                 <Tr key={token.key}>
                                                     <Td>{token.token.symbol}</Td>
-                                                    <Td>{token.token.balance.toFixed(4)}</Td>
+                                                    <Td>{token.token.balance.toFixed(3)}</Td>
                                                     <Td isNumeric>${token.token.balanceUSD.toFixed(2)}</Td>
                                                 </Tr>
                                             ))}
