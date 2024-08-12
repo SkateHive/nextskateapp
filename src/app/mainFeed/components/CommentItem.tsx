@@ -6,6 +6,12 @@ import TipButton from "@/components/PostCard/TipButton";
 import { useHiveUser } from "@/contexts/UserContext";
 import { useComments } from "@/hooks/comments";
 import {
+  LinkWithDomain,
+  extractCustomLinks,
+  extractIFrameLinks,
+  extractLinksFromMarkdown,
+} from "@/lib/markdown";
+import {
   formatDate,
   getTotalPayout,
   transformIPFSContent,
@@ -15,33 +21,26 @@ import {
 import {
   Box,
   Button,
-  Center,
   Flex,
   HStack,
+  IconButton,
   Text,
   Tooltip,
   VStack
 } from "@chakra-ui/react";
-import { useEffect, useState, useRef, ReactNode } from "react";
-import { FaEye, FaHeart, FaRegComment, FaRegHeart } from "react-icons/fa";
+import { ReactNode, useEffect, useRef, useState } from "react";
+import { FaEye, FaEyeSlash, FaHeart, FaRegComment, FaRegHeart } from "react-icons/fa";
 import { FaPencil } from "react-icons/fa6";
+import { LuArrowLeftSquare, LuArrowRightSquare } from "react-icons/lu";
 import ReactMarkdown from "react-markdown";
 import Carousel from "react-multi-carousel";
+import { useReward } from "react-rewards";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import { handleVote } from "../utils/handleFeedVote";
-import CommentList from "./CommentsList";
 import { EditCommentModal } from "./EditCommentModal";
 import ReplyModal from "./replyModal";
-import {
-  LinkWithDomain,
-  extractCustomLinks,
-  extractIFrameLinks,
-  extractLinksFromMarkdown,
-} from "@/lib/markdown";
-import { useReward } from "react-rewards";
-import { FaArrowRight, FaArrowLeft } from 'react-icons/fa';
-import { LuArrowLeftSquare, LuArrowRightSquare } from "react-icons/lu";
+import ToggleComments from "./ToggleComments";
 
 const CustomLeftArrow = ({ onClick }: { onClick: () => void }) => {
   return (
@@ -228,6 +227,7 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
   const [editedCommentBody, setEditedCommentBody] = useState(comment.body);
   const [commentReplies, setCommentReplies] = useState<any[]>([]);
   const [visiblePosts, setVisiblePosts] = useState(5);
+  const [isEyeClicked, setIsEyeClicked] = useState(false);
 
   const { comments } = useComments(comment.author, comment.permlink);
   const toggleValueTooltip = () => {
@@ -247,9 +247,8 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
     setNumberOfComments((prevCount: number) => prevCount + 1);
   };
 
-  const [isEyeClicked, setIsEyeClicked] = useState(false);
   const handleEyeClick = () => {
-    setIsEyeClicked(!isEyeClicked);
+    setIsEyeClicked(prev => !prev); 
   };
 
   const handleEditSave = async (editedBody: string) => {
@@ -273,7 +272,6 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
 
   const { voteValue } = useHiveUser();
 
-  // Extract images and videos from comment body
   const imageLinks = extractLinksFromMarkdown(editedCommentBody);
   const iframeLinks = extractIFrameLinks(editedCommentBody);
   const tSpeakLinks = extractCustomLinks(editedCommentBody);
@@ -283,7 +281,6 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
     videoLinks = [...iframeLinks, ...tSpeakLinks];
   }
 
-  // Filter and deduplicate images
   const uniqueImageUrls = new Set();
   const filteredImages = imageLinks.filter((image) => {
     if (!uniqueImageUrls.has(image.url)) {
@@ -293,7 +290,6 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
     return false;
   });
 
-  // Remove images from the markdown content
   const markdownWithoutImages = editedCommentBody.replace(/!\[.*?\]\((.*?)\)/g, "");
 
   const carouselRef = useRef<any>(null);
@@ -302,7 +298,7 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
     if (carouselRef.current) {
       carouselRef.current.next();
     }
-  };
+  };  
 
   return (
     <Box key={comment.id} p={4} bg="black" color="white">
@@ -333,8 +329,14 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
               </Text>
             </HStack>
 
-            <FaEye onClick={handleEyeClick} />
-          </HStack>
+            <IconButton
+              icon={isEyeClicked ? <FaEye /> : <FaEyeSlash />}
+              onClick={handleEyeClick}
+              aria-label={isEyeClicked ? "Ocultar conteúdo" : "Mostrar conteúdo"}
+              variant="ghost"
+              colorScheme="green"
+            />         
+            </HStack>
           <Box w={"100%"} bg="black" color="white" id="flexxx">
             <ReactMarkdown
               components={MarkdownRenderers}
@@ -347,8 +349,6 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
                 )
               )}
             </ReactMarkdown>
-
-            {/* Render Carousel if there are multiple images or videos */}
             {(filteredImages.length >= 2 || videoLinks.length >= 2 || filteredImages.length > 1 && videoLinks.length > 1) && (
               <Box maxW={'100%'} >
                 <CarouselContainer>
@@ -369,7 +369,7 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
                         style={{
                           aspectRatio: "16/9",
                           border: "0",
-                          maxWidth: "100%",  // Ensure iframe does not exceed container width
+                          maxWidth: "100%",  
                           overflow: "hidden",
                         }}
                       />
@@ -383,7 +383,7 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
                         style={{
                           height: "100%",
                           overflow: "hidden",
-                          maxWidth: "100%",  // Ensure box does not exceed container width
+                          maxWidth: "100%",  
                         }}
                       >
                         <img
@@ -485,29 +485,15 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
         username={username}
       />
 
-      {isEyeClicked && (
-        <Box ml={10} mt={4} pl={4} borderLeft="2px solid gray">
-          <CommentList
-            comments={commentReplies}
-            visiblePosts={visiblePosts}
-            setVisiblePosts={() => { }}
-            username={username}
-            handleVote={handleVote}
-          />
-
-          {visiblePosts < commentReplies.length && (
-            <Button
-              onClick={() => setVisiblePosts(visiblePosts + 5)}
-              variant="outline"
-              colorScheme="green"
-              size="sm"
-              mt={4}
-            >
-              Show More
-            </Button>
-          )}
-        </Box>
-      )}
+<ToggleComments
+        isEyeClicked={isEyeClicked}
+        setIsEyeClicked={setIsEyeClicked}
+        commentReplies={commentReplies}
+        visiblePosts={visiblePosts}
+        setVisiblePosts={setVisiblePosts}
+        username={username}
+        handleVote={handleVote}
+      />
     </Box>
   );
 };
