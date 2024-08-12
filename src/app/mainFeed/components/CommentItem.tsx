@@ -83,6 +83,8 @@ const CustomRightArrow = ({ onClick }: { onClick: () => void }) => {
         cursor: 'pointer',
         opacity: 0,
         transition: 'opacity 0.3s ease',
+        backdropFilter: 'blur(3px)',
+        borderRadius: '10px',
       }}
       className="custom-arrow"
     >
@@ -119,6 +121,12 @@ const CarouselContainer = ({ children }: { children: ReactNode }) => {
       ref={containerRef}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      _hover={
+        {
+          border: "2px solid white",
+          borderRadius: "10px",
+        }
+      }
     >
       {children}
     </Box>
@@ -324,7 +332,6 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
             <FaEye onClick={handleEyeClick} />
           </HStack>
           <Box w={"100%"} bg="black" color="white">
-            {/* Render Markdown without images */}
             <ReactMarkdown
               components={MarkdownRenderers}
               rehypePlugins={[rehypeRaw]}
@@ -339,7 +346,7 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
 
             {/* Render Carousel if there are multiple images or videos */}
             {(filteredImages.length >= 2 || videoLinks.length >= 2) && (
-              <Box m={4} maxW={'100%'}>
+              <Box maxW={'100%'}>
                 <CarouselContainer>
                   <Carousel
                     ref={carouselRef}
@@ -359,12 +366,12 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
                     ))}
                     {filteredImages.map((image, i) => (
                       <Box
+                        key={i}
                         display="flex"
                         justifyContent="center"
                         alignItems="center"
-                        m={2}
                         style={{
-                          height: "445px", // Set a fixed height for consistency
+                          height: "100%",
                           overflow: "hidden",
                         }}
                       >
@@ -374,12 +381,12 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
                           alt="Post media"
                           style={{
                             width: "100%",
-                            height: "auto",
                             objectFit: "cover",
                             borderRadius: "8px",
                             maxHeight: '445px',
                             display: "block",
-                            margin: "auto", // Ensures the image is centered
+                            margin: "3px",
+
                           }}
                           onClick={handleImageClick}
                         />
