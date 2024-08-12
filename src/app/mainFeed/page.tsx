@@ -276,9 +276,16 @@ const SkateCast = () => {
       width={"100%"}
       borderInline={"1px solid rgb(255,255,255,0.2)"}
       height={"101vh"}
-      overflowX="hidden" // Prevents horizontal scrolling
+      overflowX="hidden"
     >
-      <Box p={4} width={"100%"} bg="black" color="white">
+      <AvatarMediaModal
+        isOpen={mediaModalOpen}
+        onClose={() => setMediaModalOpen(false)}
+        media={media}
+      />
+      <AvatarList sortedComments={sortedComments} />
+
+      <Box p={4} width={"100%"} bg="black" color="white" {...getRootProps()}>
         <div>
           <Flex>
             {/* @ts-ignore */}
@@ -327,7 +334,6 @@ const SkateCast = () => {
                         controls
                         muted
                         width="100%"
-                        style={{ maxWidth: "100%", height: "auto" }} // Ensure video scales responsively
                       />
                     )}
                   </Box>
@@ -335,6 +341,50 @@ const SkateCast = () => {
               </HStack>
             </Flex>
           </Flex>
+          <HStack justifyContent="space-between" marginTop={2}>
+            <Input
+              id="md-image-upload"
+              type="file"
+              style={{ display: "none" }}
+              {...getInputProps({ refKey: "ref" })}
+              ref={inputRef}
+            />
+            <Button
+              name="md-image-upload"
+              variant="ghost"
+              onClick={() => inputRef.current?.click()}
+              _hover={{
+                background: "none",
+              }}
+            >
+              <FaImage style={{
+                color: "#ABE4B8",
+                cursor: "pointer",
+                transition: "all 0.2s",
+              }} onMouseOver={(e) => {
+                e.currentTarget.style.color = "limegreen";
+                e.currentTarget.style.textShadow = "0 0 10px 0 limegreen";
+              }} onMouseOut={(e) => {
+                e.currentTarget.style.color = "#ABE4B8";
+                e.currentTarget.style.textShadow = "none";
+              }} />
+            </Button>
+            <Button
+              colorScheme="green"
+              variant="ghost"
+              ml="auto"
+              onClick={handlePostClick}
+              isLoading={isUploading}
+              // onhover glow effect with shadow and transition the letters only green
+              _hover={{
+                color: "limegreen",
+                textShadow: "0 0 10px 0 limegreen",
+                transition: "all 0.2s",
+              }}
+            >
+              Post
+            </Button>
+          </HStack>
         </div>
       </Box>
       <Divider />
