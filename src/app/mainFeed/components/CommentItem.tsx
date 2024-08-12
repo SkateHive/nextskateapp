@@ -59,6 +59,9 @@ const CustomLeftArrow = ({ onClick }: { onClick: () => void }) => {
         cursor: 'pointer',
         opacity: 0,
         transition: 'opacity 0.3s ease',
+        backdropFilter: 'blur(3px)',
+        borderTopLeftRadius: '10px',
+        borderBottomLeftRadius: '10px',
       }}
       className="custom-arrow"
     >
@@ -84,7 +87,8 @@ const CustomRightArrow = ({ onClick }: { onClick: () => void }) => {
         opacity: 0,
         transition: 'opacity 0.3s ease',
         backdropFilter: 'blur(3px)',
-        borderRadius: '10px',
+        borderTopRightRadius: '10px',
+        borderBottomRightRadius: '10px',
       }}
       className="custom-arrow"
     >
@@ -121,10 +125,10 @@ const CarouselContainer = ({ children }: { children: ReactNode }) => {
       ref={containerRef}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      borderRadius={'10px'}
       _hover={
         {
-          border: "2px solid white",
-          borderRadius: "10px",
+          border: "3px solid limegreen",
         }
       }
     >
