@@ -313,9 +313,9 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
         onNewComment={handleNewComment}
       />
 
-      <Flex w="90%">
+      <Flex>
         <AuthorAvatar username={comment.author} />
-        <VStack w={"100%"} ml={4} alignItems={"start"} marginRight={"16px"}>
+        <VStack w={"80%"} ml={4} alignItems={"start"} marginRight={"16px"}>
           <HStack justify={"space-between"} width={"full"}>
             <HStack
               cursor="pointer"
@@ -335,7 +335,7 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
 
             <FaEye onClick={handleEyeClick} />
           </HStack>
-          <Box w={"100%"} bg="black" color="white">
+          <Box w={"100%"} bg="black" color="white" id="flexxx">
             <ReactMarkdown
               components={MarkdownRenderers}
               rehypePlugins={[rehypeRaw]}
@@ -349,8 +349,8 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
             </ReactMarkdown>
 
             {/* Render Carousel if there are multiple images or videos */}
-            {(filteredImages.length >= 2 || videoLinks.length >= 2) && (
-              <Box maxW={'100%'}>
+            {(filteredImages.length >= 2 || videoLinks.length >= 2 || filteredImages.length > 1 && videoLinks.length > 1) && (
+              <Box maxW={'100%'} >
                 <CarouselContainer>
                   <Carousel
                     ref={carouselRef}
@@ -358,14 +358,20 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
                     arrows
                     customLeftArrow={<CustomLeftArrow onClick={() => carouselRef.current?.previous()} />}
                     customRightArrow={<CustomRightArrow onClick={() => carouselRef.current?.next()} />}
+                    containerClass="carousel-container" // Ensure the container has no extra padding/margin
                   >
                     {videoLinks.map((video, i) => (
                       <iframe
                         key={i}
                         src={video.url}
-                        width={"100%"}
-                        height={"100%"}
-                        style={{ aspectRatio: "16/9", border: "0" }}
+                        width="100%"
+                        height="100%"
+                        style={{
+                          aspectRatio: "16/9",
+                          border: "0",
+                          maxWidth: "100%",  // Ensure iframe does not exceed container width
+                          overflow: "hidden",
+                        }}
                       />
                     ))}
                     {filteredImages.map((image, i) => (
@@ -377,6 +383,7 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
                         style={{
                           height: "100%",
                           overflow: "hidden",
+                          maxWidth: "100%",  // Ensure box does not exceed container width
                         }}
                       >
                         <img
@@ -385,20 +392,22 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
                           alt="Post media"
                           style={{
                             width: "100%",
+                            maxWidth: "100%",
                             objectFit: "cover",
                             borderRadius: "8px",
                             maxHeight: '445px',
                             display: "block",
                             margin: "3px",
-
+                            overflow: "hidden",
                           }}
                           onClick={handleImageClick}
                         />
                       </Box>
-
                     ))}
                   </Carousel>
                 </CarouselContainer>
+
+
               </Box>
             )}
           </Box>
