@@ -281,6 +281,9 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
     return false;
   });
 
+  // Remove images from the markdown content
+  const markdownWithoutImages = editedCommentBody.replace(/!\[.*?\]\((.*?)\)/g, "");
+
   const carouselRef = useRef<any>(null);
 
   const handleImageClick = () => {
@@ -321,10 +324,23 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
             <FaEye onClick={handleEyeClick} />
           </HStack>
           <Box w={"100%"} bg="black" color="white">
-            {(filteredImages.length >= 2 || videoLinks.length >= 2) ? (
-              <Box m={4} maxW={'80%'}>
-                <CarouselContainer>
+            {/* Render Markdown without images */}
+            <ReactMarkdown
+              components={MarkdownRenderers}
+              rehypePlugins={[rehypeRaw]}
+              remarkPlugins={[remarkGfm]}
+            >
+              {transformNormalYoutubeLinksinIframes(
+                transformIPFSContent(
+                  transformShortYoutubeLinksinIframes(markdownWithoutImages)
+                )
+              )}
+            </ReactMarkdown>
 
+            {/* Render Carousel if there are multiple images or videos */}
+            {(filteredImages.length >= 2 || videoLinks.length >= 2) && (
+              <Box m={4} maxW={'100%'}>
+                <CarouselContainer>
                   <Carousel
                     ref={carouselRef}
                     responsive={responsive}
@@ -342,49 +358,37 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
                       />
                     ))}
                     {filteredImages.map((image, i) => (
-                      <Center
-                        key={i}
+                      <Box
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                        m={2}
+                        style={{
+                          height: "445px", // Set a fixed height for consistency
+                          overflow: "hidden",
+                        }}
                       >
-                        <Box
+                        <img
                           key={i}
-                          display="flex"
-                          justifyContent="center"
-                          alignItems="center"
-                          width="100%"
-                          height="100%"
-                        >
-                          <img
-                            key={i}
-                            src={image.url}
-                            alt="Post media"
-                            style={{
-                              width: "100%",
-                              height: "auto",
-                              objectFit: "cover",
-                              borderRadius: "8px",
-                              minHeight: '445px',
-                              maxHeight: '445px',
-                            }}
-                            onClick={handleImageClick}
-                          />
-                        </Box>
-                      </Center>
+                          src={image.url}
+                          alt="Post media"
+                          style={{
+                            width: "100%",
+                            height: "auto",
+                            objectFit: "cover",
+                            borderRadius: "8px",
+                            maxHeight: '445px',
+                            display: "block",
+                            margin: "auto", // Ensures the image is centered
+                          }}
+                          onClick={handleImageClick}
+                        />
+                      </Box>
+
                     ))}
                   </Carousel>
                 </CarouselContainer>
               </Box>
-            ) : (
-              <ReactMarkdown
-                components={MarkdownRenderers}
-                rehypePlugins={[rehypeRaw]}
-                remarkPlugins={[remarkGfm]}
-              >
-                {transformNormalYoutubeLinksinIframes(
-                  transformIPFSContent(
-                    transformShortYoutubeLinksinIframes(editedCommentBody)
-                  )
-                )}
-              </ReactMarkdown>
             )}
           </Box>
 
@@ -489,3 +493,5 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
 };
 
 export default CommentItem;
+
+
