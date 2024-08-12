@@ -305,7 +305,7 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
   };
 
   return (
-    <Box key={comment.id} p={4} width="100%" bg="black" color="white">
+    <Box key={comment.id} p={4} bg="black" color="white">
       <ReplyModal
         comment={comment}
         isOpen={isReplyModalOpen}
@@ -313,7 +313,7 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
         onNewComment={handleNewComment}
       />
 
-      <Flex>
+      <Flex w="90%">
         <AuthorAvatar username={comment.author} />
         <VStack w={"100%"} ml={4} alignItems={"start"} marginRight={"16px"}>
           <HStack justify={"space-between"} width={"full"}>
