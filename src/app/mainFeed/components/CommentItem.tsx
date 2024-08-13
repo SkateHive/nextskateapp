@@ -23,13 +23,12 @@ import {
   Button,
   Flex,
   HStack,
-  IconButton,
   Text,
   Tooltip,
   VStack
 } from "@chakra-ui/react";
 import { ReactNode, useEffect, useRef, useState } from "react";
-import { FaEye, FaEyeSlash, FaHeart, FaRegComment, FaRegHeart } from "react-icons/fa";
+import { FaHeart, FaRegComment, FaRegHeart } from "react-icons/fa";
 import { FaPencil } from "react-icons/fa6";
 import { LuArrowLeftSquare, LuArrowRightSquare } from "react-icons/lu";
 import ReactMarkdown from "react-markdown";
@@ -303,10 +302,15 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
   return (
     <Box key={comment.id} p={4} bg="black" color="white">
       <ReplyModal
-        comment={comment}
-        isOpen={isReplyModalOpen}
-        onClose={() => setIsReplyModalOpen(false)}
-        onNewComment={handleNewComment}
+         comment={comment}
+         isOpen={isReplyModalOpen}
+         onClose={() => setIsReplyModalOpen(false)}
+         onNewComment={handleNewComment}
+         commentReplies={commentReplies} 
+         visiblePosts={visiblePosts} 
+         setVisiblePosts={setVisiblePosts} 
+         username={username}
+         handleVote={handleVote}
       />
 
       <Flex>
@@ -329,13 +333,7 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
               </Text>
             </HStack>
 
-            <IconButton
-              icon={isEyeClicked ? <FaEye /> : <FaEyeSlash />}
-              onClick={handleEyeClick}
-              aria-label={isEyeClicked ? "Ocultar conteúdo" : "Mostrar conteúdo"}
-              variant="ghost"
-              colorScheme="green"
-            />         
+                 
             </HStack>
           <Box w={"100%"} bg="black" color="white" id="flexxx">
             <ReactMarkdown
