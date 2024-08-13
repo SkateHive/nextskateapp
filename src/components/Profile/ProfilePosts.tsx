@@ -1,29 +1,34 @@
-'use client'
-import Post from "@/components/PostCard"
-import useHiveAccount from "@/hooks/useHiveAccount"
-import usePosts from "@/hooks/usePosts"
-import PostModel from "@/lib/models/post"
-import { HiveAccount } from "@/lib/models/user"
-import { Box, Flex, Grid } from "@chakra-ui/react"
-import { useState } from "react"
-import InfiniteScroll from "react-infinite-scroll-component"
-import { BeatLoader } from "react-spinners"
-
+"use client";
+import Post from "@/components/PostCard";
+import useHiveAccount from "@/hooks/useHiveAccount";
+import usePosts from "@/hooks/usePosts";
+import PostModel from "@/lib/models/post";
+import { HiveAccount } from "@/lib/models/user";
+import { Box, Flex, Grid } from "@chakra-ui/react";
+import { useState } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { BeatLoader } from "react-spinners";
 
 interface ProfilePageProps {
-    user: HiveAccount
+  user: HiveAccount;
 }
 
 export default function ProfilePosts({ user }: ProfilePageProps) {
-    const startDate = new Date()
-    const [visiblePosts, setVisiblePosts] = useState(20)
-    const { hiveAccount } = useHiveAccount(user.name)
-    const { posts, error, isLoading, queryCategory, setQueryCategory, setDiscussionQuery } = usePosts("author_before_date", [user.name, "", startDate.toISOString(), 100])
-    if (!hiveAccount || !posts) return <div>Loading...</div>
+  const startDate = new Date();
+  const [visiblePosts, setVisiblePosts] = useState(20);
+  const { hiveAccount } = useHiveAccount(user.name);
+  const { posts, queryCategory } = usePosts("author_before_date", [
+    user.name,
+    "",
+    startDate.toISOString(),
+    100,
+  ]);
+  if (!hiveAccount || !posts) return <div>Loading...</div>;
 
-    return (
-    <Box width="100%" minHeight="100vh">
+  return (
+    <Box width="100%">
       <InfiniteScroll
+        scrollableTarget={"SkaterPage"}
         dataLength={visiblePosts}
         next={() => setVisiblePosts((visiblePosts) => visiblePosts + 3)}
         hasMore={visiblePosts < posts.length}
@@ -50,10 +55,10 @@ export default function ProfilePosts({ user }: ProfilePageProps) {
                   key={`${queryCategory}-${post.url}`}
                   postData={PostModel.newFromDiscussion(post)}
                 />
-              )
+              );
             })}
         </Grid>
       </InfiniteScroll>
     </Box>
-    )
+  );
 }
