@@ -18,6 +18,7 @@ import {
   Heading,
   HStack,
   Image,
+  Kbd,
   Text,
   VStack,
 } from "@chakra-ui/react";
@@ -110,7 +111,7 @@ export default function Zine({ tag, query }: TestPageProps) {
 
   if (isLoading) {
     return (
-      <Flex justify="center" align="center" w="100vw" h="100vh" p={5}>
+      <Flex justify="center" align="center" w="100%" h="100%" p={5}>
         <Text color={"white"}>Loading...</Text>
       </Flex>
     );
@@ -133,8 +134,23 @@ export default function Zine({ tag, query }: TestPageProps) {
   }
 
   return (
-    <VStack justify="center" align="center" w="100%" h="60vh" p={5}>
-      {/* <Text border={"1px solid white"} borderRadius="10px" p={2} color={'white'}>Use your keyboard arrows ←→ to navigate</Text> */}
+    <VStack
+      justify="center"
+      align="center"
+      w="100%"
+      h="60vh"
+      p={5}
+      overflow={"hidden"}
+    >
+      <Text
+        border={"1px solid white"}
+        borderRadius="10px"
+        p={2}
+        color={"white"}
+      >
+        Use your keyboard arrows <Kbd background={"black"}>←</Kbd> and{" "}
+        <Kbd background={"black"}>→</Kbd> to navigate
+      </Text>
       <HTMLFlipBook
         width={500}
         height={750}
