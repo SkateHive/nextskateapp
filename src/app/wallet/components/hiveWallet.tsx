@@ -130,6 +130,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                 >
                     <Center>
                         <VStack m={5}>
+                            <Tooltip label="Estimated Account Value: The estimated US dollars value is based on a 7 day average value of HIVE and HBD in your wallet.">
                             <Box padding="4px 8px">
                                 <SkeletonText isLoaded={!isLoading} noOfLines={1}>
                                     <Text
@@ -142,6 +143,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                     </Text>
                                 </SkeletonText>
                             </Box>
+                            </Tooltip>
                         </VStack>
                     </Center>
                 </Box>
@@ -152,6 +154,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                         <Center>
                             <VStack>
                                 <Menu>
+                                    <Tooltip label="The primary token of the Hive Blockchain. HIVE are tradeable tokens that may be transferred at anytime. HIVE can be converted to Hive Power in a process called powering up.">
                                     <MenuButton
                                         width="full"
                                         p={8}
@@ -179,6 +182,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                             </Badge>
                                         </HStack>
                                     </MenuButton>
+                                    </Tooltip>
                                     <MenuList bg="black" >
                                         <MenuItem bg="black" icon={<SendIcon />} _hover={{ bg: "red" }}>
                                             Send Hive
@@ -189,6 +193,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                     </MenuList>
                                 </Menu>
                                 <Menu>
+                                    <Tooltip label="Another Hive token rewarded on posts. 1 HBD is worth ~$1 worth of Hive, regardless of the price of Hive. Moving HBD to your Savings will generate a 15.00% APR as defined by the witnesses">
                                     <MenuButton
                                         p={8}
                                         border="1px solid red"
@@ -216,6 +221,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                             </Badge>
                                         </HStack>
                                     </MenuButton>
+                                    </Tooltip>
                                     <MenuList bg="black">
                                         <MenuItem bg="black" icon={<SendIcon />} _hover={{ bg: "red" }}>
                                             Send HBD
@@ -226,7 +232,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                     </MenuList>
                                 </Menu>
                                 <Menu>
-                                    <Tooltip label="20% APR">
+                                    <Tooltip label="Balance is subject to 3 days withdraw waiting period. HBD in savings increases at 15.00% APR as defined by the witnesses">
                                         <MenuButton
                                             p={8}
                                             border="1px solid red"
@@ -267,6 +273,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                     </MenuList>
                                 </Menu>
                                 <Menu>
+                                    <Tooltip label="Exchanging Hive for Hive Power is called 'Powering Up' or 'Staking'. Stake/Power up your HIVE tokens to have special abilities on the Skatehive: Larger voting power, increased curation rewards, and more resource credits to do transactions on Hive Blockchain. Hive Power increases at an APR of approximately 3.28%">
                                     <MenuButton
                                         p={8}
                                         border="1px solid red"
@@ -294,13 +301,18 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                             </Badge>
                                         </HStack>
                                     </MenuButton>
+                                    </Tooltip>
                                     <MenuList bg="black">
+                                        <Tooltip label="Delegate HP (Hive Power) to another account. Use your HP to power another account. When updating an existing delegation the specified amount will replace the previous amount. If reducing a delegation to an account, it will take 5 days until the HP is available again in your account.">
                                         <MenuItem bg="black" icon={<SendIcon />} _hover={{ bg: "red" }}>
                                             Delegate
                                         </MenuItem>
+                                        </Tooltip>
+                                        <Tooltip label="Un-stake your HIVE by Powering-down in 13 week chunks. i. e. if you power down 1300 HP, you will get 100 HIVE back per week, for 13 weeks.">
                                         <MenuItem bg="black" icon={<AiOutlineThunderbolt size="28px" />} _hover={{ bg: "red" }}>
                                             Power Down
                                         </MenuItem>
+                                        </Tooltip>
                                     </MenuList>
                                 </Menu>
                                 <Button
@@ -310,6 +322,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                     colorScheme="red"
                                     onClick={() => setIsOpened(false)}
                                     mt={'20px'}
+                                    border="1px solid black"
                                     _hover={{ color: 'yellow', bg: 'black', border: '1px solid yellow' }}
                                 >
                                     <Text fontSize={{ base: 26, md: 40 }}>POWER UP !</Text>
