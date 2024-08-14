@@ -5,6 +5,7 @@ import LoginModal from "@/components/Hive/Login/LoginModal";
 import TipButton from "@/components/PostCard/TipButton";
 import { useHiveUser } from "@/contexts/UserContext";
 import { useComments } from "@/hooks/comments";
+import { commentWithPrivateKey } from "@/lib/hive/server-functions";
 import {
   LinkWithDomain,
   extractCustomLinks,
@@ -21,13 +22,16 @@ import {
 import {
   Box,
   Button,
+  Center,
   Flex,
   HStack,
   IconButton,
   Text,
+  Textarea,
   Tooltip,
   VStack
 } from "@chakra-ui/react";
+import * as dhive from "@hiveio/dhive";
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { FaEye, FaEyeSlash, FaHeart, FaRegComment, FaRegHeart } from "react-icons/fa";
 import { FaPencil } from "react-icons/fa6";
@@ -39,7 +43,6 @@ import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import { handleVote } from "../utils/handleFeedVote";
 import { EditCommentModal } from "./EditCommentModal";
-import ReplyModal from "./replyModal";
 import ToggleComments from "./ToggleComments";
 
 const CustomLeftArrow = ({ onClick }: { onClick: () => void }) => {
@@ -142,6 +145,10 @@ interface CommentItemProps {
   username: string;
   handleVote: (author: string, permlink: string) => void;
   onClick?: () => void;
+  onNewComment: (comment: any) => void;
+  onClose: () => void;
+
+
 }
 
 const responsive = {
@@ -219,17 +226,20 @@ const VotingButton = ({
   );
 };
 
-const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
+const CommentItem = ({ comment, username, handleVote, onNewComment, onClose }: CommentItemProps) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isReplyModalOpen, setIsReplyModalOpen] = useState(false);
   const [isValueTooltipOpen, setIsValueTooltipOpen] = useState(false);
   const [numberOfComments, setNumberOfComments] = useState(0);
   const [editedCommentBody, setEditedCommentBody] = useState(comment.body);
   const [commentReplies, setCommentReplies] = useState<any[]>([]);
   const [visiblePosts, setVisiblePosts] = useState(5);
   const [isEyeClicked, setIsEyeClicked] = useState(false);
-
+  const [isCommentFormVisible, setIsCommentFormVisible] = useState(false);
+  const user = useHiveUser();
+  const [replyBody, setReplyBody] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const { comments } = useComments(comment.author, comment.permlink);
+  
   const toggleValueTooltip = () => {
     setIsValueTooltipOpen(true);
     setTimeout(() => {
@@ -242,13 +252,10 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
     setNumberOfComments(comments.length);
   }, [comments]);
 
-  const handleNewComment = (newComment: number) => {
-    setCommentReplies((prevComments) => [newComment, ...prevComments]);
-    setNumberOfComments((prevCount: number) => prevCount + 1);
-  };
+
 
   const handleEyeClick = () => {
-    setIsEyeClicked(prev => !prev); 
+    setIsEyeClicked(prev => !prev);
   };
 
   const handleEditSave = async (editedBody: string) => {
@@ -262,13 +269,7 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
     }
   };
 
-  const handleModalOpen = (modalType: "edit" | "reply") => {
-    if (modalType === "edit") {
-      setIsEditModalOpen(true);
-    } else if (modalType === "reply") {
-      setIsReplyModalOpen(true);
-    }
-  };
+
 
   const { voteValue } = useHiveUser();
 
@@ -298,17 +299,121 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
     if (carouselRef.current) {
       carouselRef.current.next();
     }
-  };  
+  };
+
+  const handleReply = async () => {
+    const loginMethod = localStorage.getItem("LoginMethod");
+    const newPermLink = `${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`;
+
+    try {
+      if (loginMethod === "keychain") {
+        if (!window.hive_keychain) {
+          throw new Error("Hive Keychain extension not found!");
+        }
+        const username = user.hiveUser?.name;
+        if (!username) {
+          throw new Error("Username is missing");
+        }
+
+        const postData = {
+          parent_author: comment.author,
+          parent_permlink: comment.permlink,
+          author: username,
+          permlink: newPermLink,
+          title: "reply",
+          body: replyBody,
+          json_metadata: JSON.stringify({
+            tags: ["skateboard"],
+            app: "skatehive",
+          }),
+        };
+        const operations = [
+          [
+            "comment",
+            postData,
+          ],
+        ];
+
+        window.hive_keychain.requestBroadcast(
+          username,
+          operations,
+          "posting",
+          (response: any) => {
+            if (response.success) {
+              console.log("onNewComment function:", onNewComment); 
+              if (typeof onNewComment === 'function') {
+                onNewComment({
+                  ...postData,
+                  id: newPermLink,
+                });
+              } else {
+                console.error("onNewComment is not a function");
+              }
+              setReplyBody("");
+              onClose();
+            } else {
+              throw new Error("Error posting comment: " + response.message);
+            }
+          }
+        );
+      } else if (loginMethod === "privateKey") {
+        const commentOptions: dhive.CommentOptionsOperation = [
+          "comment_options",
+          {
+            author: String(user.hiveUser?.name),
+            permlink: newPermLink,
+            max_accepted_payout: "10000.000 HBD",
+            percent_hbd: 10000,
+            allow_votes: true,
+            allow_curation_rewards: true,
+            extensions: [
+              [
+                0,
+                {
+                  beneficiaries: [{ account: "skatehacker", weight: 1000 }],
+                },
+              ],
+            ],
+          },
+        ];
+
+        const postOperation: dhive.CommentOperation = [
+          "comment",
+          {
+            parent_author: comment.author,
+            parent_permlink: comment.permlink,
+            author: String(user.hiveUser?.name),
+            permlink: newPermLink,
+            title: `Reply to ${comment.author}`,
+            body: replyBody,
+            json_metadata: JSON.stringify({
+              tags: ["skateboard"],
+              app: "Skatehive App",
+              image: "/skatehive_square_green.png",
+            }),
+          },
+        ];
+
+        await commentWithPrivateKey(localStorage.getItem("EncPrivateKey")!, postOperation, commentOptions);
+        if (typeof onNewComment === 'function') {
+          onNewComment({
+            ...postOperation[1],
+            id: newPermLink,
+          });
+        } else {
+          console.error("onNewComment is not a function");
+        }
+        setReplyBody("");
+        onClose();
+      }
+    } catch (error: any) {
+      setError(error.message);
+    }
+  };
+
 
   return (
     <Box key={comment.id} p={4} bg="black" color="white">
-      <ReplyModal
-        comment={comment}
-        isOpen={isReplyModalOpen}
-        onClose={() => setIsReplyModalOpen(false)}
-        onNewComment={handleNewComment}
-      />
-
       <Flex>
         <AuthorAvatar username={comment.author} />
         <VStack w={"80%"} ml={4} alignItems={"start"} marginRight={"16px"}>
@@ -332,11 +437,11 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
             <IconButton
               icon={isEyeClicked ? <FaEye /> : <FaEyeSlash />}
               onClick={handleEyeClick}
-              aria-label={isEyeClicked ? "Ocultar conteúdo" : "Mostrar conteúdo"}
+              aria-label={isEyeClicked ? "Hide Content" : "Show Content"}
               variant="ghost"
               colorScheme="green"
-            />         
-            </HStack>
+            />
+          </HStack>
           <Box w={"100%"} bg="black" color="white" id="flexxx">
             <ReactMarkdown
               components={MarkdownRenderers}
@@ -358,7 +463,7 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
                     arrows
                     customLeftArrow={<CustomLeftArrow onClick={() => carouselRef.current?.previous()} />}
                     customRightArrow={<CustomRightArrow onClick={() => carouselRef.current?.next()} />}
-                    containerClass="carousel-container" // Ensure the container has no extra padding/margin
+                    containerClass="carousel-container" 
                   >
                     {videoLinks.map((video, i) => (
                       <iframe
@@ -369,7 +474,7 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
                         style={{
                           aspectRatio: "16/9",
                           border: "0",
-                          maxWidth: "100%",  
+                          maxWidth: "100%",
                           overflow: "hidden",
                         }}
                       />
@@ -383,7 +488,7 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
                         style={{
                           height: "100%",
                           overflow: "hidden",
-                          maxWidth: "100%",  
+                          maxWidth: "100%",
                         }}
                       >
                         <img
@@ -442,8 +547,8 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
           colorScheme="green"
           variant="ghost"
           leftIcon={<FaRegComment />}
-          onClick={() => handleModalOpen("reply")}
-          aria-label="Comments"
+          onClick={() => setIsCommentFormVisible(prev => !prev)}
+          aria-label="Toggle Comment Form"
         >
           {numberOfComments}
         </Button>
@@ -475,7 +580,54 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
           </Text>
         </Tooltip>
       </Flex>
+      {isCommentFormVisible && (
+        <Box>
+          <VStack align="start" spacing={4} position="relative">
+            <Flex align="start" w="full">
+              <AuthorAvatar username={comment.author} borderRadius={100} />
+              <VStack>
+                <Center>
+                  <Box ml={3}>
+                    <ReactMarkdown components={MarkdownRenderers} rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
+                      {transformIPFSContent(comment.body)}
+                    </ReactMarkdown>
+                  </Box>
+                </Center>
+              </VStack>
+            </Flex>
+            <Box position="absolute" left="24px" top="60px" bottom="120px" width="2px" bg="gray.600" />
+            <Flex align="start" w="full" direction={{ base: "column", md: "row" }}>
+              <Box position="relative" w="full">
+                <Textarea
+                  value={replyBody}
+                  onChange={(e) => setReplyBody(e.target.value)}
+                  placeholder="Write your reply here"
+                  bg="transparent"
+                  
+                  resize="none"
+                  minHeight="100px"
+                  borderRadius="xl"
+                  border="1px solid grey"
+                  paddingRight="80px" 
+                />
+              </Box>
+              <Button
+                onClick={handleReply}
+                variant="outline"
+                colorScheme="green"
+                position="absolute"
+                right="10px"
+                bottom="10px"
+                zIndex="1" 
+              >
+                Reply
+              </Button>
 
+            </Flex>
+          </VStack>
+
+        </Box>
+      )}
       <EditCommentModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
@@ -485,7 +637,7 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
         username={username}
       />
 
-<ToggleComments
+      <ToggleComments
         isEyeClicked={isEyeClicked}
         setIsEyeClicked={setIsEyeClicked}
         commentReplies={commentReplies}
