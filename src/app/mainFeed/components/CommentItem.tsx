@@ -1,16 +1,12 @@
 "use client";
+import React from "react";
 import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
 import AuthorAvatar from "@/components/AuthorAvatar";
 import LoginModal from "@/components/Hive/Login/LoginModal";
 import TipButton from "@/components/PostCard/TipButton";
 import { useHiveUser } from "@/contexts/UserContext";
 import { useComments } from "@/hooks/comments";
-import {
-  LinkWithDomain,
-  extractCustomLinks,
-  extractIFrameLinks,
-  extractLinksFromMarkdown,
-} from "@/lib/markdown";
+import { LinkWithDomain } from "@/lib/markdown";
 import {
   formatDate,
   getTotalPayout,
@@ -125,17 +121,11 @@ const CarouselContainer = ({ children }: { children: ReactNode }) => {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       borderRadius={'10px'}
-      _hover={
-        {
-          border: "3px solid limegreen",
-        }
-      }
     >
       {children}
     </Box>
   );
 };
-
 
 interface CommentItemProps {
   comment: any;
@@ -248,7 +238,7 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
   };
 
   const handleEyeClick = () => {
-    setIsEyeClicked(prev => !prev); 
+    setIsEyeClicked(prev => !prev);
   };
 
   const handleEditSave = async (editedBody: string) => {
@@ -272,14 +262,37 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
 
   const { voteValue } = useHiveUser();
 
-  const imageLinks = extractLinksFromMarkdown(editedCommentBody);
-  const iframeLinks = extractIFrameLinks(editedCommentBody);
-  const tSpeakLinks = extractCustomLinks(editedCommentBody);
-  let videoLinks: LinkWithDomain[] = [];
-
-  if (["samuelvelizsk8", "mark0318"].includes(comment.author)) {
-    videoLinks = [...iframeLinks, ...tSpeakLinks];
+  const extractLinksFromMarkdown = (markdown: string) => {
+    const regex = /!\[.*?\]\((.*?)\)/g;
+    const links = [];
+    let match;
+    while ((match = regex.exec(markdown))) {
+      links.push({ url: match[1] });
+    }
+    return links;
   }
+
+  console.log(extractLinksFromMarkdown(editedCommentBody));
+
+  const imageLinks = extractLinksFromMarkdown(editedCommentBody);
+  console.log("Image links:", imageLinks);
+
+  const extractIFrameLinks = (markdown: string) => {
+    const regex = /<iframe src="(.*?)"/g;
+    const links = [];
+    let match;
+    while ((match = regex.exec(markdown))) {
+      links.push({ url: match[1] });
+    }
+    return links;
+  }
+
+
+  const iframeLinks = extractIFrameLinks(editedCommentBody);
+  console.log("Iframe links:", iframeLinks);
+
+
+
 
   const uniqueImageUrls = new Set();
   const filteredImages = imageLinks.filter((image) => {
@@ -298,7 +311,8 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
     if (carouselRef.current) {
       carouselRef.current.next();
     }
-  };  
+  };
+
 
   return (
     <Box key={comment.id} p={4} bg="black" color="white">
@@ -335,82 +349,98 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
               aria-label={isEyeClicked ? "Ocultar conteúdo" : "Mostrar conteúdo"}
               variant="ghost"
               colorScheme="green"
-            />         
-            </HStack>
+            />
+          </HStack>
           <Box w={"100%"} bg="black" color="white" id="flexxx">
-            <ReactMarkdown
-              components={MarkdownRenderers}
-              rehypePlugins={[rehypeRaw]}
-              remarkPlugins={[remarkGfm]}
-            >
-              {transformNormalYoutubeLinksinIframes(
-                transformIPFSContent(
-                  transformShortYoutubeLinksinIframes(markdownWithoutImages)
-                )
-              )}
-            </ReactMarkdown>
-            {(filteredImages.length >= 2 || videoLinks.length >= 2 || filteredImages.length > 1 && videoLinks.length > 1) && (
-              <Box maxW={'100%'} >
-                <CarouselContainer>
-                  <Carousel
-                    ref={carouselRef}
-                    responsive={responsive}
-                    arrows
-                    customLeftArrow={<CustomLeftArrow onClick={() => carouselRef.current?.previous()} />}
-                    customRightArrow={<CustomRightArrow onClick={() => carouselRef.current?.next()} />}
-                    containerClass="carousel-container" // Ensure the container has no extra padding/margin
-                  >
-                    {videoLinks.map((video, i) => (
-                      <iframe
-                        key={i}
-                        src={video.url}
-                        width="100%"
-                        height="100%"
-                        style={{
-                          aspectRatio: "16/9",
-                          border: "0",
-                          maxWidth: "100%",  
-                          overflow: "hidden",
-                        }}
-                      />
-                    ))}
-                    {filteredImages.map((image, i) => (
-                      <Box
-                        key={i}
-                        display="flex"
-                        justifyContent="center"
-                        alignItems="center"
-                        style={{
-                          height: "100%",
-                          overflow: "hidden",
-                          maxWidth: "100%",  
-                        }}
+            {((filteredImages.length <= 1 && iframeLinks.length === 0) ||
+              (iframeLinks.length <= 1 && filteredImages.length === 0)) ? (
+              <ReactMarkdown
+                components={MarkdownRenderers}
+                rehypePlugins={[rehypeRaw]}
+                remarkPlugins={[remarkGfm]}
+              >
+                {transformNormalYoutubeLinksinIframes(
+                  transformIPFSContent(
+                    transformShortYoutubeLinksinIframes(editedCommentBody)
+                  )
+                )}
+              </ReactMarkdown>
+            ) : (
+              <>
+                <ReactMarkdown
+                  components={MarkdownRenderers}
+                  rehypePlugins={[rehypeRaw]}
+                  remarkPlugins={[remarkGfm]}
+                >
+                  {transformNormalYoutubeLinksinIframes(
+                    transformIPFSContent(
+                      transformShortYoutubeLinksinIframes(markdownWithoutImages)
+                    )
+                  )}
+                </ReactMarkdown>
+                {(filteredImages.length > 1 || iframeLinks.length > 1) && (
+                  <Box maxW={'100%'}>
+                    <CarouselContainer>
+                      <Carousel
+                        ref={carouselRef}
+                        responsive={responsive}
+                        arrows
+                        customLeftArrow={<CustomLeftArrow onClick={() => carouselRef.current?.previous()} />}
+                        customRightArrow={<CustomRightArrow onClick={() => carouselRef.current?.next()} />}
+                        containerClass="carousel-container" // Ensure the container has no extra padding/margin
                       >
-                        <img
-                          key={i}
-                          src={image.url}
-                          alt="Post media"
-                          style={{
-                            width: "100%",
-                            maxWidth: "100%",
-                            objectFit: "cover",
-                            borderRadius: "8px",
-                            maxHeight: '445px',
-                            display: "block",
-                            margin: "3px",
-                            overflow: "hidden",
-                          }}
-                          onClick={handleImageClick}
-                        />
-                      </Box>
-                    ))}
-                  </Carousel>
-                </CarouselContainer>
-
-
-              </Box>
+                        {iframeLinks.map((video, i) => (
+                          <iframe
+                            key={i}
+                            src={video.url}
+                            width="100%"
+                            height="100%"
+                            style={{
+                              aspectRatio: "16/9",
+                              border: "0",
+                              maxWidth: "100%",
+                              overflow: "hidden",
+                            }}
+                          />
+                        ))}
+                        {filteredImages.map((image, i) => (
+                          <Box
+                            key={i}
+                            display="flex"
+                            justifyContent="center"
+                            alignItems="center"
+                            style={{
+                              height: "100%",
+                              overflow: "hidden",
+                              maxWidth: "100%",
+                            }}
+                          >
+                            <img
+                              key={i}
+                              src={image.url}
+                              alt="Post media"
+                              style={{
+                                width: "100%",
+                                maxWidth: "100%",
+                                objectFit: "cover",
+                                borderRadius: "8px",
+                                maxHeight: '445px',
+                                display: "block",
+                                margin: "3px",
+                                overflow: "hidden",
+                              }}
+                              onClick={handleImageClick}
+                            />
+                          </Box>
+                        ))}
+                      </Carousel>
+                    </CarouselContainer>
+                  </Box>
+                )}
+              </>
             )}
           </Box>
+
 
         </VStack>
       </Flex>
@@ -485,7 +515,7 @@ const CommentItem = ({ comment, username, handleVote }: CommentItemProps) => {
         username={username}
       />
 
-<ToggleComments
+      <ToggleComments
         isEyeClicked={isEyeClicked}
         setIsEyeClicked={setIsEyeClicked}
         commentReplies={commentReplies}
