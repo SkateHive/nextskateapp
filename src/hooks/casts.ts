@@ -71,7 +71,7 @@ export async function fetchComments(
         console.timeEnd("fetchComments");
         return commentsWithReplies;
     } catch (error) {
-        console.error("Failed to fetch comments:", error);
+        // console.error("Failed to fetch comments:", error);
         return [];
     }
 }
