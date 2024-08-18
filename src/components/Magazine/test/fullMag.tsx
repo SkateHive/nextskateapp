@@ -136,7 +136,7 @@ export default function FullMag({ tag, query }: TestPageProps) {
     <VStack justify="center" align="center" w="100%" h="100vh" p={5}>
       <HTMLFlipBook
         width={1000}
-        height={1200}
+        height={1300}
         minWidth={0}
         maxWidth={1000}
         minHeight={0}

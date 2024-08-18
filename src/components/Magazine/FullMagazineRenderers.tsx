@@ -99,52 +99,25 @@ const VideoRenderer = ({ src, ...props }: RendererProps) => {
 };
 
 export const FullMagazineRenderers = {
-    img: ({ alt, src, title, ...props }: RendererProps) => {
-        const parentRef = useRef<HTMLSpanElement>(null);
-        const [images, setImages] = useState<HTMLImageElement[]>([]);
-
-        useEffect(() => {
-            const parent = parentRef.current;
-            if (parent) {
-                const imgs = Array.from(parent.querySelectorAll('img'));
-                setImages(imgs);
-            }
-        }, []);
-
-        useEffect(() => {
-            if (images.length === 2) {
-                const combinedWidth = images.reduce((acc, img) => acc + img.naturalWidth, 0);
-                const parentWidth = parentRef.current?.clientWidth || 0;
-
-                if (combinedWidth <= parentWidth) {
-                    images.forEach(img => img.style.display = 'inline-block');
-                    parentRef.current!.style.display = 'flex';
-                    parentRef.current!.style.justifyContent = 'space-between';
-                } else {
-                    images.forEach(img => img.style.display = 'block');
-                    parentRef.current!.style.display = 'block';
-                }
-            }
-        }, [images]);
-
-        return (
-            <span ref={parentRef} style={{ display: 'block', textAlign: 'center', marginBottom: '20px' }}>
-                <Image
-                    {...props}
-                    alt={alt}
-                    src={src}
-                    title={title}
-                    style={{
-                        display: 'inline-block',
-                        maxWidth: '100%',
-                        height: 'auto',
-                        borderRadius: '10px',
-                        marginTop: '20px',
-                    }}
-                />
-            </span>
-        );
-    },
+    img: ({ alt, src, title, ...props }: RendererProps) => (
+        <span style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Image
+                {...props}
+                alt={alt}
+                src={src}
+                title={title}
+                style={{
+                    display: 'inline-block',
+                    maxWidth: '100%',
+                    height: '100%',
+                    maxHeight: '545px',
+                    borderRadius: '10px',
+                    marginTop: '20px',
+                    marginBottom: '20px',
+                }}
+            />
+        </span>
+    ),
 
     p: ({ children, ...props }: RendererProps) => (
         <div {...props} style={{ color: 'white', fontSize: '16px', paddingBottom: '5px' }}>
