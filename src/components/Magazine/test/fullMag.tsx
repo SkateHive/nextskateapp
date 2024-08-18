@@ -11,8 +11,10 @@ import {
   transformShortYoutubeLinksinIframes,
 } from "@/lib/utils";
 import {
+  Badge,
   Box,
   Center,
+  Container,
   Divider,
   Flex,
   Heading,
@@ -28,7 +30,7 @@ import HTMLFlipBook from "react-pageflip";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import { Comment } from "../../../app/mainFeed/page";
-import { MagazineRenderers } from "../MagazineRenderers";
+import { FullMagazineRenderers } from "../FullMagazineRenderers";
 
 const pageStyles = {
   backgroundColor: "black",
@@ -41,7 +43,7 @@ const pageStyles = {
   color: "black",
   overflow: "auto",
   position: "relative",
-  height: "100%",
+  height: 100,
 };
 
 const flipbookStyles = {
@@ -56,7 +58,7 @@ const coverStyles = {
   backgroundColor: "darkblue",
   color: "white",
   backgroundImage:
-    "url(https://media1.giphy.com/media/9ZsHm0z5QwSYpV7g01/giphy.gif?cid=6c09b952uxaerotyqa9vct5pkiwvar6l6knjgsctieeg0sh1&ep=v1_gifs_search&rid=giphy.gif&ct=g)",
+    "url(https://gifdb.com/images/high/neon-techno-background-07w3jgqrk7galdgr.gif)",
   backgroundSize: "cover",
   textAlign: "center",
 };
@@ -67,6 +69,9 @@ const backCoverStyles = {
   color: "white",
   justifyContent: "center",
   alignItems: "center",
+  backgroundImage:
+    "url(https://media1.giphy.com/media/9ZsHm0z5QwSYpV7g01/giphy.gif?cid=6c09b952uxaerotyqa9vct5pkiwvar6l6knjgsctieeg0sh1&ep=v1_gifs_search&rid=giphy.gif&ct=g)",
+  backgroundSize: "cover",
 };
 const textStyles = {
   position: "absolute",
@@ -130,10 +135,10 @@ export default function FullMag({ tag, query }: TestPageProps) {
   return (
     <VStack justify="center" align="center" w="100%" h="100vh" p={5}>
       <HTMLFlipBook
-        width={500}
-        height={750}
+        width={1000}
+        height={1200}
         minWidth={0}
-        maxWidth={500}
+        maxWidth={1000}
         minHeight={0}
         maxHeight={750}
         startPage={0}
@@ -150,11 +155,6 @@ export default function FullMag({ tag, query }: TestPageProps) {
         clickEventForward
         useMouseEvents
         renderOnlyPageLengthChange={false}
-        onFlip={(e) => console.log("Current page:", e.data)}
-        onChangeOrientation={(e) => console.log("Orientation:", e.data)}
-        onChangeState={(e) => console.log("State:", e.data)}
-        onInit={(e) => console.log("Book initialized:", e.data)}
-        onUpdate={(e) => console.log("Book updated:", e.data)}
         showPageCorners
         disableFlipByClick={false}
         className="flipbook"
@@ -162,7 +162,7 @@ export default function FullMag({ tag, query }: TestPageProps) {
         ref={flipBookRef}
       >
         <Box sx={coverStyles}>
-          <Flex direction="column" align="center">
+          <Flex direction="column" align="center" justify="center">
             <Heading>
               <Image src="/skatehive-banner.png" alt="SkateHive Logo" />
             </Heading>
@@ -190,32 +190,32 @@ export default function FullMag({ tag, query }: TestPageProps) {
         </Box>
         {posts.map((post: Discussion) => (
           <Box key={post.id} sx={pageStyles}>
-            <Flex align="center">
-              <AuthorAvatar username={post.author} boxSize={10} />
-              <Heading color={"white"} fontSize="xl" ml={2}>
-                {post.title}
-              </Heading>
-            </Flex>
-            <HStack justifyContent={"space-between"}>
-              <Text color={"white"} mt={2}>
-                {post.author}
-              </Text>
-              <Text color="yellow" mt={2}>
-                ${Number(getTotalPayout(post as Comment)).toFixed(2)} USD
-              </Text>
-              <TipButton author={post.author} />
-            </HStack>
-            <Divider mt={4} mb={4} />
-            <Text fontSize={"8px"} color="white" mt={-2}>
-              {new Date(post.created).toLocaleDateString()}
-            </Text>
+            <HStack spacing={2}>
+              <VStack bg="#0c0c0d" p={2} borderRadius={5} width={"20%"}>
+                <AuthorAvatar username={post.author} boxSize={20} borderRadius={100} />
+                <Text color={"white"} mt={0}>
+                  {post.author}
+                </Text>
 
+              </VStack>
+              <Text
+                fontSize={'26px'}
+                color={"white"}
+                whiteSpace="nowrap"
+                overflow="hidden"
+                textOverflow="ellipsis"
+              >
+                {post.title}
+              </Text>
+            </HStack>
+
+            <Divider mt={4} mb={4} />
             <ReactMarkdown
               key={post.id}
               className="page"
               remarkPlugins={[remarkGfm]}
               rehypePlugins={[rehypeRaw]}
-              components={MagazineRenderers}
+              components={FullMagazineRenderers}
             >
               {transform3SpeakContent(
                 transformIPFSContent(
@@ -228,6 +228,19 @@ export default function FullMag({ tag, query }: TestPageProps) {
               )}
             </ReactMarkdown>
             <Divider mt={4} mb={4} />
+            <Flex justifyContent={"space-between"}>
+              <Badge colorScheme="green" variant={"outline"} h={"30px"} width={"20%"}>
+                <Center>
+                  <Text fontSize={'22px'}> ${Number(getTotalPayout(post as Comment)).toFixed(2)}</Text>
+                </Center>
+              </Badge>
+              <Badge colorScheme="green" variant={"outline"} mt={2}>
+
+                <Text color={"white"} fontSize={"16px"}>
+                  {new Date(post.created).toLocaleDateString()}
+                </Text>
+              </Badge>
+            </Flex>
             <Text>Pending Payout: {post.pending_payout_value.toString()}</Text>
           </Box>
         ))}

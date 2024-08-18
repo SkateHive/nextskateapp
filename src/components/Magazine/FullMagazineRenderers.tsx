@@ -91,35 +91,63 @@ const VideoRenderer = ({ src, ...props }: RendererProps) => {
                     poster={poster}
                     crossOrigin='anonymous'
                     playsInline={true}
-                    style={{ background: 'transparent', borderRadius: '10px', marginBottom: '20px', border: '0px grey solid', width: '100%', maxHeight: '520px' }}
+                    style={{ background: 'transparent', borderRadius: '10px', marginBottom: '20px', border: '0px grey solid', width: '100%', minHeight: '50%', maxHeight: '420px' }}
                 />
             </picture>
         </div>
     );
 };
 
-export const MagazineRenderers = {
-    img: ({ alt, src, title, ...props }: RendererProps) => (
-        <span style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <Image
-                {...props}
-                alt={alt}
-                src={src}
-                title={title}
-                style={{
-                    display: 'inline-block',
-                    maxWidth: '100%',
-                    height: '100%',
-                    maxHeight: '545px',
-                    borderRadius: '10px',
-                    marginTop: '20px',
-                    marginBottom: '20px',
-                }}
-            />
-        </span>
-    ),
+export const FullMagazineRenderers = {
+    img: ({ alt, src, title, ...props }: RendererProps) => {
+        const parentRef = useRef<HTMLSpanElement>(null);
+        const [images, setImages] = useState<HTMLImageElement[]>([]);
+
+        useEffect(() => {
+            const parent = parentRef.current;
+            if (parent) {
+                const imgs = Array.from(parent.querySelectorAll('img'));
+                setImages(imgs);
+            }
+        }, []);
+
+        useEffect(() => {
+            if (images.length === 2) {
+                const combinedWidth = images.reduce((acc, img) => acc + img.naturalWidth, 0);
+                const parentWidth = parentRef.current?.clientWidth || 0;
+
+                if (combinedWidth <= parentWidth) {
+                    images.forEach(img => img.style.display = 'inline-block');
+                    parentRef.current!.style.display = 'flex';
+                    parentRef.current!.style.justifyContent = 'space-between';
+                } else {
+                    images.forEach(img => img.style.display = 'block');
+                    parentRef.current!.style.display = 'block';
+                }
+            }
+        }, [images]);
+
+        return (
+            <span ref={parentRef} style={{ display: 'block', textAlign: 'center', marginBottom: '20px' }}>
+                <Image
+                    {...props}
+                    alt={alt}
+                    src={src}
+                    title={title}
+                    style={{
+                        display: 'inline-block',
+                        maxWidth: '100%',
+                        height: 'auto',
+                        borderRadius: '10px',
+                        marginTop: '20px',
+                    }}
+                />
+            </span>
+        );
+    },
+
     p: ({ children, ...props }: RendererProps) => (
-        <div {...props} style={{ color: 'white', fontSize: '10px', paddingBottom: '5px' }}>
+        <div {...props} style={{ color: 'white', fontSize: '16px', paddingBottom: '5px' }}>
             {children}
         </div>
     ),
@@ -127,19 +155,19 @@ export const MagazineRenderers = {
         <a style={{ color: "yellow", textWrap: "wrap", wordBreak: "break-all" }} href={href} {...props}>{children}</a>
     ),
     h1: ({ children, ...props }: RendererProps) => (
-        <h1 {...props} style={{ fontWeight: 'bold', color: '#A5D6A7', fontSize: '18px', paddingBottom: '8px', paddingTop: "8px", paddingLeft: '4px' }}>🛹 {children}</h1>
+        <h1 {...props} style={{ fontWeight: 'bold', color: '#A5D6A7', fontSize: '22px', paddingBottom: '8px', paddingTop: "8px", paddingLeft: '4px' }}>🛹 {children}</h1>
     ),
     h3: ({ children, ...props }: RendererProps) => (
-        <h3 {...props} style={{ fontWeight: 'bold', color: '#A5D6A7', fontSize: '14px', paddingBottom: '4px', paddingTop: "4px", paddingLeft: '4px' }}>🛹 {children}</h3>
+        <h3 {...props} style={{ fontWeight: 'bold', color: '#A5D6A7', fontSize: '20px', paddingBottom: '4px', paddingTop: "4px", paddingLeft: '4px' }}>🛹 {children}</h3>
     ),
     h2: ({ children, ...props }: RendererProps) => (
-        <h2 {...props} style={{ fontWeight: 'bold', color: '#A5D6A7', fontSize: '16px', paddingBottom: '2px', paddingTop: "2px", paddingLeft: '4px' }}>🛹 {children}</h2>
+        <h2 {...props} style={{ fontWeight: 'bold', color: '#A5D6A7', fontSize: '18px', paddingBottom: '2px', paddingTop: "2px", paddingLeft: '4px' }}>🛹 {children}</h2>
     ),
     h4: ({ children, ...props }: RendererProps) => (
-        <h4 {...props} style={{ fontWeight: 'bold', color: '#A5D6A7', fontSize: '12px', paddingBottom: '1px', paddingTop: "1px", paddingLeft: '4px' }}>🛹 {children}</h4>
+        <h4 {...props} style={{ fontWeight: 'bold', color: '#A5D6A7', fontSize: '16px', paddingBottom: '1px', paddingTop: "1px", paddingLeft: '4px' }}>🛹 {children}</h4>
     ),
     em: ({ children, ...props }: RendererProps) => (
-        <em {...props} style={{ color: 'white' }}>{children}</em>
+        <em {...props} style={{ color: '#A5D6A7' }}>{children}</em>
     ),
     blockquote: ({ children, ...props }: RendererProps) => (
         <div
@@ -152,7 +180,7 @@ export const MagazineRenderers = {
                 boxShadow: '0 4px 6px rgba(0, 0, 0, 0.2)',
                 fontStyle: 'italic',
                 fontWeight: 'bold',
-                fontSize: '18px',
+                fontSize: '14px',
                 lineHeight: '1',
             }}
         >
@@ -171,7 +199,7 @@ export const MagazineRenderers = {
         <sub {...props} style={{ color: 'gray' }}>{children}</sub>
     ),
     hr: ({ children, ...props }: RendererProps) => (
-        <Divider {...props} style={{ paddingBottom: '20px', color: '#A5D6A7', marginBottom: '5px' }}>{children}</Divider>
+        <Divider {...props} variant={'dashed'} style={{ paddingBottom: '20px', color: 'limegreen', marginBottom: '5px' }}>{children}</Divider>
     ),
     br: ({ children, ...props }: RendererProps) => (
         <br {...props} style={{ paddingBottom: '20px' }}>{children}</br>
@@ -200,6 +228,9 @@ export const MagazineRenderers = {
                 </code>
             </center>
         </div>
+    ),
+    sup: ({ children, ...props }: RendererProps) => (
+        <sup {...props} style={{ color: 'lightgray', fontSize: '14px' }}>{children}</sup>
     ),
     iframe: ({ src, ...props }: RendererProps) => (
         <center>
