@@ -16,15 +16,14 @@ const randomSentences = [
   "who was Gnartoshi Shredamoto?",
   "bless up",
   "worldwide skate community",
-  "keeping the web gnarly since 2014",
-  "if you stay inside too long, they will start to call you vlad",
+  "keeping the web gnarly",
   "take back the internet!",
   "stack clips, stack crypto",
   "poppin' off the blockchain",
   "support your local skateshops!",
   "welcome, cryptoskater!",
   "accessing mainframe from skategods"
-  
+
 
 
 
