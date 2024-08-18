@@ -3763,8 +3763,8 @@ packages:
   fast-shallow-equal@1.0.0:
     resolution: {integrity: sha512-HPtaa38cPgWvaCFmRNhlc6NG7pv6NUHqjPgVAkWGoB9mQMwYB27/K0CvOM5Czy+qpT3e8XJ6Q4aPAnzpNpzNaw==}
 
-  fast-xml-parser@4.3.6:
-    resolution: {integrity: sha512-M2SovcRxD4+vC493Uc2GZVcZaj66CCJhWurC4viynVSTvrpErCShNcDz1lAho6n9REQKvL/ll4A4/fw6Y9z8nw==}
+  fast-xml-parser@4.4.1:
+    resolution: {integrity: sha512-xkjOecfnKGkSsOwtZ5Pz7Us/T6mrbPQrq0nh+aCO5V9nk5NLWmasAHumTKjiPJPWANe+kAZ84Jc8ooJkzZ88Sw==}
     hasBin: true
 
   fastest-stable-stringify@2.0.2:
@@ -9598,7 +9598,7 @@ snapshots:
       '@react-native-community/cli-tools': 12.3.6(encoding@0.1.13)
       chalk: 4.1.2
       execa: 5.1.1
-      fast-xml-parser: 4.3.6
+      fast-xml-parser: 4.4.1
       glob: 7.2.3
       logkitty: 0.7.1
     transitivePeerDependencies:
@@ -9609,7 +9609,7 @@ snapshots:
       '@react-native-community/cli-tools': 12.3.6(encoding@0.1.13)
       chalk: 4.1.2
       execa: 5.1.1
-      fast-xml-parser: 4.3.6
+      fast-xml-parser: 4.4.1
       glob: 7.2.3
       ora: 5.4.1
     transitivePeerDependencies:
@@ -12061,7 +12061,7 @@ snapshots:
 
   fast-shallow-equal@1.0.0: {}
 
-  fast-xml-parser@4.3.6:
+  fast-xml-parser@4.4.1:
     dependencies:
       strnum: 1.0.5
 
