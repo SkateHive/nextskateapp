@@ -2,27 +2,30 @@ import { Box, Button } from "@chakra-ui/react";
 import CommentList from "./CommentsList";
 
 interface ToggleCommentsProps {
-  isEyeClicked: boolean;
-  setIsEyeClicked: React.Dispatch<React.SetStateAction<boolean>>;
+  isEyeClicked?: boolean;
   commentReplies: any[];
   visiblePosts: number;
   setVisiblePosts: React.Dispatch<React.SetStateAction<number>>;
   username: string;
   handleVote: (author: string, permlink: string) => void;
+  shouldShowAllComments?: boolean; 
+  isCommentFormVisible?: boolean; 
 }
 
 const ToggleComments = ({
   isEyeClicked,
-  setIsEyeClicked,
   commentReplies,
   visiblePosts,
   setVisiblePosts,
   username,
-  handleVote
+  handleVote,
+  shouldShowAllComments,
+  isCommentFormVisible
 }: ToggleCommentsProps) => {
+  const shouldShowComments = isEyeClicked || shouldShowAllComments || isCommentFormVisible;
   return (
     <>
-      {isEyeClicked && (
+      {shouldShowComments && (
         <Box ml={10} mt={4} pl={4} borderLeft="2px solid gray">
           <CommentList
             comments={commentReplies}
@@ -32,7 +35,7 @@ const ToggleComments = ({
             handleVote={handleVote}
           />
 
-          {visiblePosts < commentReplies.length && (
+          {visiblePosts < commentReplies.length && !isCommentFormVisible && (
             <Button
               onClick={() => setVisiblePosts(visiblePosts + 5)}
               variant="outline"
