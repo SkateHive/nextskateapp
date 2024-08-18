@@ -110,7 +110,6 @@ export const FullMagazineRenderers = {
                     display: 'inline-block',
                     maxWidth: '100%',
                     height: '100%',
-                    maxHeight: '545px',
                     borderRadius: '10px',
                     marginTop: '20px',
                     marginBottom: '20px',
