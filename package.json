@@ -27,6 +27,7 @@
     "@types/lodash.debounce": "^4.0.9",
     "@types/qrcode.react": "^1.0.5",
     "@uiw/react-md-editor": "^4.0.4",
+    "qrcode-pix": "5.0.0",
     "@wagmi/core": "^2.6.16",
     "@zoralabs/zdk": "^2.4.0",
     "alchemy-sdk": "^3.2.1",

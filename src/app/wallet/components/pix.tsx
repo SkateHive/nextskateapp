@@ -1,5 +1,6 @@
 import useHiveBalance from "@/hooks/useHiveBalance";
 import { HiveAccount } from "@/lib/useHiveAuth";
+
 import {
     Alert,
     AlertDescription,
@@ -27,12 +28,11 @@ import {
     Thead,
     Tr,
     useToast,
-    VStack,
+    VStack
 } from "@chakra-ui/react";
 import axios from "axios";
-import QRCode from 'qrcode.react';
+import { QrCodePix } from 'qrcode-pix';
 import React, { useEffect, useState } from "react";
-import { FaCopy, FaInfoCircle } from "react-icons/fa";
 import SendHBDModal from "./sendHBDModal";
 interface PixBeeData {
     pixbeePixKey: string;
@@ -62,9 +62,11 @@ interface PixBeeData {
     balanceHive: string;
     balanceTotal: string;
     proBanner: string;
-    OurExchangePer: string;
-    OurExchangeFee: string;
+    OurExchangePer: number;
+    OurExchangeFee: number;
     OurRefundPer: string;
+    transactionFee: number;
+    fixedFee: number;
 }
 interface PixProps {
     user: HiveAccount;
@@ -84,33 +86,48 @@ const getLimitsBasedOnHivePower = (hivePower: number) => {
     }
 };
 
-const LimitsTable = (props: PixBeeData) => {
-    return (
-        <Card w="full" height={'622px'}>
+const LimitsTable: React.FC<PixBeeData> = (props) => {
 
+    return (
+        <Card w="full" height={'700px'}>
             <CardHeader>
-                <Center>Limites</Center>
+                <Center>Limites e Taxas</Center>
             </CardHeader>
+            <Alert status="warning" mb={4}>
+                <AlertIcon />
+                <AlertDescription>
+                    <Text> <strong>{props.balancePix}</strong> PIX Disponíveis no SkateBank</Text>
+                </AlertDescription>
+            </Alert>
+            <Alert status="warning" mb={4}>
+                <AlertIcon />
+                <AlertDescription>
+                    <Text> <strong>{props.balanceHbd}</strong> HBD Disponíveis no SkateBank</Text>
+
+                </AlertDescription>
+            </Alert>
+
             <CardBody>
+
                 <Table variant="simple">
                     <Thead>
                         <Tr>
                             <Th>Operação</Th>
-                            <Th>Limite</Th>
+                            <Th>Limite/Taxa</Th>
                         </Tr>
                     </Thead>
                     <Tbody>
                         <Tr>
-                            <Td>Depósito Mínimo</Td>
-                            <Td>{props.depositMinLimit} HBD</Td>
+                            <Td>Compra Mínimo</Td>
+                            <Td>{props.depositMinLimit} PIX</Td>
                         </Tr>
                         <Tr>
-                            <Td>Compra Mínima</Td>
-                            <Td>{props.minRefundHbd} HBD</Td>
+                            <Td>Taxa Variável</Td>
+                            <Td>{props.transactionFee}1%</Td>
                         </Tr>
                         <Tr>
-                            <Td>Venda Mínima</Td>
-                            <Td>{props.minRefundPix} HBD</Td>
+                            <Td>Taxa Fixa</Td>
+                            <Td>{props.fixedFee} 2 PIX</Td>
                         </Tr>
                     </Tbody>
                 </Table>
@@ -121,7 +138,7 @@ const LimitsTable = (props: PixBeeData) => {
 
 const fetchPixBeeData = async () => {
     try {
-        const response = await axios.get(`https://aphid-glowing-fish.ngrok-free.app/dashboarddata`, {
+        const response = await axios.get(`https://aphid-glowing-fish.ngrok-free.app/skatebank`, {
             headers: {
                 "ngrok-skip-browser-warning": "69420",
             },
@@ -160,34 +177,6 @@ const validateCPF = (cpf: string) => {
     return remainder === parseInt(cpf.charAt(10));
 };
 
-const sanitizePixKey = (pixKey: string) => {
-    const cleanKey = pixKey.replace(/[^\d\w@.]/g, '');
-
-    const isCPF = /^\d{11}$/.test(cleanKey);
-
-    const isCNPJ = /^\d{14}$/.test(cleanKey);
-
-    const isTelephone = /^\d{11}$/.test(cleanKey) && cleanKey[2] === '9';
-
-    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanKey);
-
-    const isRandomKey = /^[a-zA-Z0-9]{32}$/.test(cleanKey);
-
-    if (isCNPJ) {
-        return formatCNPJ(cleanKey);
-    } else if (isTelephone) {
-        return formatTelephone(cleanKey);
-    } else if (isCPF) {
-        return formatCPF(cleanKey);
-    } else if (isEmail) {
-        return cleanKey;
-    } else if (isRandomKey) {
-        return cleanKey;
-    } else {
-        throw new Error('Formato de chave Pix inválido');
-    }
-};
-
 const Pix = ({ user }: PixProps) => {
     const [amountHBD, setAmountHBD] = useState("");
     const [isSell, setIsSell] = useState(true);
@@ -203,11 +192,131 @@ const Pix = ({ user }: PixProps) => {
     const [pixKeyType, setPixKeyType] = useState("");
     const [error, setError] = useState<string | null>(null);
     const toast = useToast();
+    const [qrCodeValue, setQrCodeValue] = useState('');
+    const [isInBrazil, setIsInBrazil] = useState(false);
+    const [countdown, setCountdown] = useState<number>(30);
+    const [qrCodePayload, setQrCodePayload] = useState<string | null>(null);
+
+    // const [currentHBDPrice, setCurrentHBDPrice] = useState<number>(0);
+
+    // useEffect(() => {
+    //     const fetchPixBeeData = async () => {
+    //         try {
+    //             const response = await fetch('https://aphid-glowing-fish.ngrok-free.app/hbdticker');
+    //             const data = await response.json();
+    //             setPixBeeData(data);
+    //             setCurrentHBDPrice(parseFloat(data.HBDPriceBRL) || 0);
+    //         } catch (error) {
+    //             console.error("Failed to fetch updated PixBee data:", error);
+    //         }
+    //     };
+
+    //     const interval = setInterval(() => {
+    //         setCountdown(prevCountdown => prevCountdown - 1);
+    //     }, 1000);
+
+    //     if (countdown === 0) {
+    //         fetchPixBeeData();
+    //         setCountdown(30); // Reseta o countdown após a atualização
+    //     }
+
+    //     return () => clearInterval(interval);
+    // }, [countdown]);
+
+    useEffect(() => {
+        if (pixBeeData && userHiveBalance) {
+            const isExceeded = parseFloat(amountHBD) > userHiveBalance.HBDUsdValue;
+            setIsExceeded(isExceeded);
+
+            if (isExceeded) {
+                setError("O valor inserido excede o saldo disponível.");
+            } else {
+                setError(null);
+            }
+        }
+    }, [amountHBD, pixBeeData, userHiveBalance]);
+
+    useEffect(() => {
+        const checkLocation = async () => {
+            try {
+                const response = await axios.get('https://ipapi.co/json/');
+                const countryCode = response.data.country_code;
+                setIsInBrazil(countryCode === 'BR');
+            } catch (error) {
+                console.error("Failed to fetch location data:", error);
+            }
+        };
+
+        checkLocation();
+    }, []);
+
+    useEffect(() => {
+        if (isInBrazil) {
+            fetchPixBeeData().then((data) => {
+                setPixBeeData(data);
+            }).catch(error => {
+                console.error("Failed to fetch PixBee data:", error);
+            });
+        }
+    }, [isInBrazil]);
+
+
+    useEffect(() => {
+        const generateQrCode = async () => {
+            try {
+                if (!pixBeeData?.pixbeePixKey) {
+                    throw new Error('Chave PIX não definida.');
+                }
+                if (!amountHBD || isNaN(parseFloat(amountHBD))) {
+                    throw new Error('Quantidade HBD inválida.');
+                }
+    
+                const valueHBD = parseFloat(amountHBD);
+                const valueBRL = parseFloat((valueHBD * parseFloat(pixBeeData.HBDPriceBRL)).toFixed(2));
+                
+                console.log('Chave PIX:', pixBeeData?.pixbeePixKey);
+                console.log('Quantidade HBD:', amountHBD);
+                console.log('Valor em BRL:', valueBRL);
+    
+                const qrCodePix = QrCodePix({
+                    version: '01',
+                    key: pixBeeData?.pixbeePixKey || '',
+                    name: "PixBee",
+                    city: '',
+                    message: `${user.name}`,
+                    value: valueBRL,
+                });
+    
+                if (typeof qrCodePix.payload === 'function') {
+                    const payload = qrCodePix.payload();
+                    setQrCodePayload(payload);
+                } else {
+                    console.warn('Método payload não encontrado em QrCodePix.');
+                }
+    
+                const qrCodeBase64 = await qrCodePix.base64();
+    
+                console.log('QR Code Base64:', qrCodeBase64);
+    
+                if (qrCodeBase64 && qrCodeBase64.startsWith('data:image/png;base64,')) {
+                    setQrCodeValue(qrCodeBase64);
+                } else {
+                    throw new Error('QR code Base64 string inválido.');
+                }
+            } catch (error) {
+                console.error('Erro ao gerar QR code PIX:', error);
+            }
+        };
+    
+        if (!isSell) {
+            generateQrCode();
+        }
+    }, [amountHBD, pixBeeData?.pixbeePixKey, user.name, isSell]);
+
 
     useEffect(() => {
         fetchPixBeeData().then((data) => {
             setPixBeeData(data);
-            // console.log("PixBee data:", data);
         }).catch(error => {
             console.error("Failed to fetch PixBee data:", error);
         });
@@ -216,7 +325,8 @@ const Pix = ({ user }: PixProps) => {
     const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
         setAmountHBD(value);
-        setIsExceeded(parseFloat(value) > HBDAvailable);
+        const parsedValue = parseFloat(value);
+        setIsExceeded(parsedValue > HBDAvailable);
     };
 
     const isBlurred = !amountHBD || parseFloat(amountHBD) > HBDAvailable;
@@ -244,7 +354,7 @@ const Pix = ({ user }: PixProps) => {
                 formattedKey = value;
             } else if (/^[a-zA-Z0-9]{32}$/.test(value)) {
                 keyType = "Chave Aleatória";
-                formattedKey = value;
+                formattedKey = event.target.value.trim();
             } else {
                 keyType = "Desconhecido";
                 formattedKey = value;
@@ -260,28 +370,93 @@ const Pix = ({ user }: PixProps) => {
         setFormattedPixKey(formattedKey);
     };
 
+    function calculateLiquidDeposit(realValue: number): number {
+        if (!pixBeeData) {
+            throw new Error('PixBeeData não está definido');
+        }
+        const exchangePer = pixBeeData.OurExchangePer || 0;
+        const exchangeFee = pixBeeData.OurExchangeFee || 0;
+        return parseFloat((realValue * (1 - exchangePer) - exchangeFee).toFixed(2));
+    }
+
+    function findBruteValue(liquidPlusTax: number, valorPix: number, token: string): number {
+        if (!pixBeeData) {
+            throw new Error('PixBeeData não está definido');
+        }
+
+        const epsilon = 0.001;
+        let brutoDeposit = 0;
+        let countWhile = 0;
+
+        if (token === "" || token === "HBD") {
+            const hbdPriceBRL = parseFloat(pixBeeData.HBDPriceBRL);
+            brutoDeposit = liquidPlusTax / hbdPriceBRL;
+
+            while (calculateLiquidDeposit(brutoDeposit) < valorPix) {
+                brutoDeposit += epsilon;
+                brutoDeposit = parseFloat(brutoDeposit.toFixed(3));
+                countWhile++;
+                const diferenca = calculateLiquidDeposit(brutoDeposit) - valorPix;
+                if (diferenca < -0.01) {
+                    brutoDeposit = parseFloat((brutoDeposit - diferenca).toFixed(3));
+                }
+            }
+            return brutoDeposit;
+
+        }
+
+        throw new Error('Token não suportado');
+    }
+
+    const calculateBruteValue = (valorPix: number, token: string): number => {
+        if (!pixBeeData) {
+            throw new Error('PixBeeData não está definido');
+        }
+        const exchangeFee = pixBeeData.OurExchangeFee || 0;
+        const exchangePer = parseFloat(pixBeeData.OurExchangePer.toString()) || 0;
+        let liquidplustax = valorPix + exchangeFee;
+        liquidplustax = liquidplustax * (1 + exchangePer);
+        let bruteValue = findBruteValue(liquidplustax, valorPix, token);
+        return bruteValue / parseFloat(pixBeeData.HBDPriceBRL);
+    };
+
+    const calculateMinimumHBDAmount = (): number | undefined => {
+        if (pixBeeData && pixBeeData.HBDPriceBRL) {
+            const MINIMUM_PIX_VALUE_BRL = pixBeeData.depositMinLimit || 0;
+            return calculateBruteValue(MINIMUM_PIX_VALUE_BRL, "HBD");
+        }
+        return undefined;
+    };
+
+    const setMinAmount = () => {
+        const minHBD = calculateMinimumHBDAmount();
+        console.log("Valor mínimo HBD: setMinAmount");
+        if (minHBD !== undefined) {
+            setAmountHBD(minHBD.toFixed(3));
+            setIsExceeded(parseFloat(minHBD.toFixed(3)) > HBDAvailable);
+        }
+        countdown
+    };
+
     const handleSubmit = () => {
         try {
-            const formattedAmountHBD = parseFloat(amountHBD).toFixed(3);
-            const sanitizedKey = sanitizePixKey(pixKey);
-            let isValidKey = false;
-            if (pixKeyType === "CPF") {
-                isValidKey = validateCPF(pixKey);
-            } else {
-                isValidKey = ['CNPJ', 'Email', 'Chave Aleatória'].includes(pixKeyType);
+            if (isExceeded) {
+
+                let isValidKey = false;
+
+                if (pixKeyType === "CPF") {
+                    isValidKey = validateCPF(pixKey);
+                } else {
+                    isValidKey = ['CNPJ', 'Email', 'Chave Aleatória', "Telefone"].includes(pixKeyType);
+                }
+                if (!isValidKey) {
+                    throw new Error('Chave Pix inválida');
+                }
+
+
+                setDisplayModal(true);
+                setError(null);
             }
-
-            if (!isValidKey) {
-                throw new Error('Chave Pix inválida');
-            }
-            const memo = `#${pixKey}`;
-
-            // console.log("Formatted Amount:", formattedAmountHBD);
-            // console.log("Memo:", memo);
-
-            // console.log("Sanitized Pix Key:", sanitizedKey);
-            setDisplayModal(true);
-            setError(null);
         } catch (error: any) {
             console.error(error);
             setError('Por favor, insira uma chave Pix válida.');
@@ -296,12 +471,22 @@ const Pix = ({ user }: PixProps) => {
     };
 
     function calculateTotalPixPayment(amount: number) {
-        const hbdtoBrl = pixBeeData?.HBDPriceBRL ? parseFloat(pixBeeData.HBDPriceBRL) : 0;
-        console.log(hbdtoBrl);
+        if (!pixBeeData) {
+            throw new Error('PixBeeData não está definido');
+        }
+
+        const hbdtoBrl = parseFloat(pixBeeData.HBDPriceBRL);
         const fee = (hbdtoBrl * amount) * 0.01 + 2;
-        console.log(fee);
-        return (hbdtoBrl * amount - fee).toFixed(3);
+        const totalPayment = hbdtoBrl * amount - fee;
+
+        return totalPayment.toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'PIX', 
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
     }
+
 
     useEffect(() => {
         if (amountHBD) {
@@ -309,42 +494,65 @@ const Pix = ({ user }: PixProps) => {
         }
     }, [amountHBD, pixBeeData]);
 
-    if (!pixBeeData) {
+    const handleCopy = () => {
+        if (qrCodePayload) {
+            navigator.clipboard.writeText(qrCodePayload).then(() => {
+                alert('Payload copiado para a área de transferência!');
+            }).catch(err => {
+                console.error('Erro ao copiar o payload:', err);
+            });
+        }
+    };
+
+    if (!isInBrazil) {
         return (
             <Center>
-                <Text color={'limegreen'}>Call Vaipraonde in Discord and ask him to turn on his raspberry...</Text>;
+                <Alert
+                    status="info"><AlertIcon /><AlertTitle>Localização não permitida</AlertTitle><AlertDescription>
+                        O serviço está disponível apenas para usuários no Brasil.
+                    </AlertDescription></Alert>
             </Center>
         );
     }
 
-
+    if (!pixBeeData) {
+        return (
+            <Center>
+                <Text color={'limegreen'}>Call Vaipraonde in Discord and ask him to turn on his raspberry...</Text>
+            </Center>
+        );
+    }
     return (
         <>
             <Center mt="20px">
                 <Container maxW="container.lg">
                     <VStack mt={1} spacing={4} flexDirection={{ base: "column", xl: "row" }}>
-                        <Card w="full" height={"622px"} fontFamily={'Joystix'}>
+                        <Card w="full" height={"700px"} fontFamily={'Joystix'}>
                             <CardHeader>
                                 <Center>
-                                    {isSell ? "Vender HBD, receber PIX:" : "Enviar PIX, Receber HBD:"}
-                                    <Switch
-                                        isChecked={!isSell}
-                                        onChange={() => setIsSell(!isSell)}
-                                        ml={4}
-                                    />
+                                    <VStack spacing={2}>
+
+                                        <Text fontSize="lg">
+                                            {isSell ? "Sacar usando PIX:" : "Depositar usando Pix:"}
+                                        </Text>
+                                        <Switch
+                                            isChecked={!isSell}
+                                            onChange={() => setIsSell(!isSell)}
+                                            ml={4}
+                                        />
+                                    </VStack>
                                 </Center>
                             </CardHeader>
                             <CardBody>
                                 <VStack spacing={4}>
+
                                     {isSell ? (
                                         <>
-                                            <Alert status="warning">
-                                                <AlertIcon />
-                                                <AlertDescription>
-                                                    <Text> <strong>{pixBeeData?.balancePix}</strong> Reais Disponíveis no Skatehive Bank</Text>
-                                                </AlertDescription>
-                                            </Alert>
-                                            <Image width={'70%'} src="/logos/HBD-Pix.png" alt="PixBee" />
+
+
+                                            <Text> Seu Saldo disponível: {userHiveBalance.HBDUsdValue} HBD</Text>
+
+                                            <Image width={'70%'} src={"/logos/HBD-Pix.png"} alt="PixBee" />
                                             <Input
                                                 placeholder="Digite sua chave pix"
                                                 value={formattedPixKey}
@@ -357,7 +565,7 @@ const Pix = ({ user }: PixProps) => {
                                             )}
                                             <InputGroup>
                                                 <Input
-                                                    placeholder="Digite a quantidade de "
+                                                    placeholder="Digite a quantidade de"
                                                     value={amountHBD}
                                                     onChange={handleAmountChange}
                                                     type="number"
@@ -367,63 +575,53 @@ const Pix = ({ user }: PixProps) => {
                                                 </InputRightAddon>
                                             </InputGroup>
                                             {amountHBD && (
-                                                <Badge
-                                                    colorScheme="green"
-                                                    fontSize="3xl"
-                                                    variant="outline"
-                                                    w={'full'}
-                                                >
-                                                    <Center>
-                                                        R$  {calculateTotalPixPayment(parseFloat(amountHBD))}
-                                                    </Center>
+                                                <Badge colorScheme="green" fontSize="3xl" variant="outline" w={'full'}
+                                                ><Text textAlign="center">
+                                                        {pixTotalPayment}
+                                                    </Text>
                                                 </Badge>
+                                            )}
+                                            <HStack spacing={4} mt={4}>
+                                                <Button colorScheme="blue" onClick={setMinAmount}>
+                                                    Mínimo
+                                                </Button>
+                                                {/* <p> {countdown} </p> */}
+
+                                            </HStack>
+                                            {isExceeded && (
+                                                <Text color="red.500">
+                                                    O valor excede seu saldo disponível.
+                                                </Text>
                                             )}
                                             <Button w={'100%'} variant={'outline'} colorScheme="red" onClick={handleSubmit}>
                                                 Enviar Hive Dollars
                                             </Button>
+
                                         </>
                                     ) : (
                                         <>
-                                            <Alert status="warning">
-                                                <AlertIcon />
-                                                <AlertDescription>
-                                                    <Text>Available {HBDAvailable} HBD</Text>
-                                                </AlertDescription>
-                                            </Alert>
-                                            <Image width={'70%'} src="/logos/Pix-HBD.png" alt="PixBee" />
+                                            <Image width={'70%'} src="/logos/Pix-hbd.png" alt="PixBee" />
                                             <Box filter={isBlurred ? "blur(5px)" : "none"}>
-                                                <QRCode value={pixBeeData?.pixbeePixKey || 'server is down, fuck it, just hold that shit'} />
+                                                {qrCodeValue ? (
+                                                    <Image src={qrCodeValue} alt="QR Code" />
+                                                ) : (
+                                                    <Text >Loading QR Code...</Text>
+                                                )}
                                             </Box>
-                                            <Button
-                                                value={pixBeeData?.pixbeePixKey}
-                                                leftIcon={<FaCopy />}
-                                                onClick={() => {
-                                                    navigator.clipboard.writeText(pixBeeData?.pixbeePixKey || "");
-                                                }}
-                                                filter={isBlurred ? "blur(5px)" : "none"}
-                                                isDisabled={isBlurred}
-                                            >
-                                                <Text
-                                                    m={2}
-                                                    fontSize={"12px"}
-                                                >
-                                                    {pixBeeData?.pixbeePixKey}
-                                                </Text>
-                                            </Button>
+                                            {qrCodePayload && (
+                                                <Box mt={4}>
+                                                    <Button colorScheme="blue" onClick={handleCopy} filter={isBlurred ? "blur(5px)" : "none"}
+                                                        isDisabled={isBlurred}>
+                                                        PIX Copia e Cola
+                                                    </Button>
+                                                </Box>
+                                            )}
                                             <Input
                                                 placeholder="Digite a quantidade de HBD"
                                                 value={amountHBD}
                                                 onChange={handleAmountChange}
                                             />
-                                            {isExceeded && (
-                                                <Alert status="error">
-                                                    <AlertIcon />
-                                                    <AlertTitle>Valor excedido!</AlertTitle>
-                                                    <AlertDescription fontSize={"12px"}>
-                                                        A quantidade de HBD inserida excede a quantidade disponível.
-                                                    </AlertDescription>
-                                                </Alert>
-                                            )}
+
                                         </>
                                     )}
                                 </VStack>
@@ -439,8 +637,10 @@ const Pix = ({ user }: PixProps) => {
                                 pixAmount={parseFloat(pixTotalPayment)}
                                 memo={pixBeeData?.pixbeePixKey || ''}
                                 availableBalance={HBDAvailable}
+                                hbdToBrlRate={parseFloat(pixBeeData?.HBDPriceBRL) || 0}
                             />
                         )}
+
                     </VStack>
                 </Container>
             </Center>
