@@ -4,7 +4,7 @@ import Favicon from "@/components/FaviconLinks";
 import MobileNavbar from "@/components/Navbar/MobileNavbar";
 import { getWebsiteURL } from "@/lib/utils";
 import { Flex } from "@chakra-ui/react";
-import dynamic from 'next/dynamic';
+import dynamic from "next/dynamic";
 import { Share_Tech_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 import { Providers } from "./providers";
@@ -12,7 +12,10 @@ import SidebarWrapper from "./SidebarWrapper";
 
 const share_tech_mono = Share_Tech_Mono({ subsets: ["latin"], weight: "400" });
 
-const ColorModeScriptWrapper = dynamic(() => import('./ColorModeScriptWrapper'), { ssr: false });
+const ColorModeScriptWrapper = dynamic(
+  () => import("./ColorModeScriptWrapper"),
+  { ssr: false }
+);
 
 export type Metadata = {
   title: string;
@@ -36,9 +39,7 @@ interface RootLayoutProps {
   children: ReactNode;
 }
 
-export default function RootLayout({
-  children,
-}: RootLayoutProps) {
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
       <head>
@@ -47,7 +48,7 @@ export default function RootLayout({
         <Favicon />
         <style>
           {`
-            @media (max-width: 768px) {
+            @media (max-width: 1000px) {
               .hide-on-mobile {
                 display: none;
               }
@@ -57,7 +58,7 @@ export default function RootLayout({
                 left: 0px;
               }
             }
-            @media (min-width: 769px) {
+            @media (min-width: 1000px) {
               #layout {
                 gap: 30px;
               }
@@ -77,8 +78,7 @@ export default function RootLayout({
       <body className={share_tech_mono.className}>
         <ColorModeScriptWrapper />
         <Providers>
-          <Flex w={"100%"}
-            justifyContent={"center"} id="layout">
+          <Flex w={"100%"} justifyContent={"center"} id="layout">
             <div className="hide-on-mobile">
               <SidebarWrapper />
             </div>

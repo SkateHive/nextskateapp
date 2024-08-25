@@ -22,11 +22,7 @@ const randomSentences = [
   "poppin' off the blockchain",
   "support your local skateshops!",
   "welcome, cryptoskater!",
-  "accessing mainframe from skategods"
-
-
-
-
+  "accessing mainframe from skategods",
 ];
 
 const LoadingComponent = () => {
@@ -45,7 +41,7 @@ const LoadingComponent = () => {
 
       if (screenWidth <= 480) {
         newFontSize = "22px";
-      } else if (screenWidth <= 840) {
+      } else if (screenWidth <= 900) {
         newFontSize = "12px";
       } else if (screenWidth <= 900) {
         newFontSize = "13px";
@@ -82,12 +78,7 @@ const LoadingComponent = () => {
       align="center"
     >
       <Box position="relative" width="100%">
-        <Image
-          minW={"100%"}
-          src="/skatehive_loader.gif"
-          alt="Loading gif"
-
-        />
+        <Image minW={"100%"} src="/skatehive_loader.gif" alt="Loading gif" />
         <Text
           position="absolute"
           top="20%"
@@ -102,10 +93,30 @@ const LoadingComponent = () => {
           {randomSentence}
         </Text>
       </Box>
-      <Image mt={-2} minW={"100%"} src="/home_animation_body.gif" alt="Loading gif" />
-      <Image mt={-2} minW={"100%"} src="/home_animation_body.gif" alt="Loading gif" />
-      <Image mt={-2} minW={"100%"} src="/home_animation_body.gif" alt="Loading gif" />
-      <Image mt={-2} minW={"100%"} src="/home_animation_body.gif" alt="Loading gif" />
+      <Image
+        mt={-2}
+        minW={"100%"}
+        src="/home_animation_body.gif"
+        alt="Loading gif"
+      />
+      <Image
+        mt={-2}
+        minW={"100%"}
+        src="/home_animation_body.gif"
+        alt="Loading gif"
+      />
+      <Image
+        mt={-2}
+        minW={"100%"}
+        src="/home_animation_body.gif"
+        alt="Loading gif"
+      />
+      <Image
+        mt={-2}
+        minW={"100%"}
+        src="/home_animation_body.gif"
+        alt="Loading gif"
+      />
     </VStack>
   );
 };
