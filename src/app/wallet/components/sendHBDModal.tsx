@@ -47,26 +47,27 @@ const SendHBDModal: React.FC<SendHBDModalProps> = ({ username, visible, onClose,
 
     const sendHBD = async () => {
         setLoading(true);
-        setTransactionStatus(null);
-
         try {
             const amount = parseFloat(hbdAmount);
 
-            // Verifica se o valor de PIX é inferior ao valor mínimo
-            if (pixAmount < 19.99) {
+            if (pixAmount < 20) {
                 throw new Error("O valor mínimo em reais é R$20.");
             }
 
-            // Verifica se o saldo é suficiente
             if (amount > availableBalance) {
                 throw new Error("Saldo insuficiente.");
             }
 
             await transferWithKeychain(username, "pixbee", amount.toFixed(3), memoPix, "HBD");
-
-            setTransactionStatus('success');
+            toast({
+                title: "Transferência realizada.",
+                description: `${amount.toFixed(3)} HBD foram trocados por R$${pixAmount.toFixed(2)}.`,
+                status: "success",
+                duration: 5000,
+                isClosable: true,
+            });
+            onClose();
         } catch (error: any) {
-            setTransactionStatus('failure');
             toast({
                 title: "Erro na transferência.",
                 description: error.message || "Houve um problema ao realizar a transferência. Tente novamente.",
@@ -80,7 +81,7 @@ const SendHBDModal: React.FC<SendHBDModalProps> = ({ username, visible, onClose,
     };
 
     useEffect(() => {
-        if (!visible) {
+        if (!visible && transactionStatus) {
             if (transactionStatus === 'success') {
                 toast({
                     title: "Transferência realizada.",

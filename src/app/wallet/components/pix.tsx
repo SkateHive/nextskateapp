@@ -270,14 +270,14 @@ const Pix = ({ user }: PixProps) => {
                 if (!amountHBD || isNaN(parseFloat(amountHBD))) {
                     throw new Error('Quantidade HBD inválida.');
                 }
-    
+
                 const valueHBD = parseFloat(amountHBD);
                 const valueBRL = parseFloat((valueHBD * parseFloat(pixBeeData.HBDPriceBRL)).toFixed(2));
-                
+
                 console.log('Chave PIX:', pixBeeData?.pixbeePixKey);
                 console.log('Quantidade HBD:', amountHBD);
                 console.log('Valor em BRL:', valueBRL);
-    
+
                 const qrCodePix = QrCodePix({
                     version: '01',
                     key: pixBeeData?.pixbeePixKey || '',
@@ -286,18 +286,18 @@ const Pix = ({ user }: PixProps) => {
                     message: `${user.name}`,
                     value: valueBRL,
                 });
-    
+
                 if (typeof qrCodePix.payload === 'function') {
                     const payload = qrCodePix.payload();
                     setQrCodePayload(payload);
                 } else {
                     console.warn('Método payload não encontrado em QrCodePix.');
                 }
-    
+
                 const qrCodeBase64 = await qrCodePix.base64();
-    
+
                 console.log('QR Code Base64:', qrCodeBase64);
-    
+
                 if (qrCodeBase64 && qrCodeBase64.startsWith('data:image/png;base64,')) {
                     setQrCodeValue(qrCodeBase64);
                 } else {
@@ -307,7 +307,7 @@ const Pix = ({ user }: PixProps) => {
                 console.error('Erro ao gerar QR code PIX:', error);
             }
         };
-    
+
         if (!isSell) {
             generateQrCode();
         }
@@ -440,26 +440,23 @@ const Pix = ({ user }: PixProps) => {
 
     const handleSubmit = () => {
         try {
-            if (isExceeded) {
-
+            if (!isExceeded) {
                 let isValidKey = false;
-
                 if (pixKeyType === "CPF") {
                     isValidKey = validateCPF(pixKey);
                 } else {
                     isValidKey = ['CNPJ', 'Email', 'Chave Aleatória', "Telefone"].includes(pixKeyType);
                 }
                 if (!isValidKey) {
-                    throw new Error('Chave Pix inválida');
+                    throw new Error('Por favor, insira uma chave Pix válida.');
                 }
-
-
-                setDisplayModal(true);
-                setError(null);
+            } else {
+                throw new Error('Valor excede o limite disponível');
             }
+            setDisplayModal(true);
+            setError(null);
         } catch (error: any) {
-            console.error(error);
-            setError('Por favor, insira uma chave Pix válida.');
+            // console.error(error);
             toast({
                 title: 'Erro',
                 description: error.message,
@@ -481,7 +478,7 @@ const Pix = ({ user }: PixProps) => {
 
         return totalPayment.toLocaleString('pt-BR', {
             style: 'currency',
-            currency: 'PIX', 
+            currency: 'PIX',
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
         });
@@ -640,6 +637,7 @@ const Pix = ({ user }: PixProps) => {
                                 hbdToBrlRate={parseFloat(pixBeeData?.HBDPriceBRL) || 0}
                             />
                         )}
+
 
                     </VStack>
                 </Container>
