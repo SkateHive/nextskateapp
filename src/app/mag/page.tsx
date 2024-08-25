@@ -89,8 +89,8 @@ export default function Mag() {
   const createButtonStyle = {
     "&:hover": {
       boxShadow: "5px 5px 10px rgba(167, 255, 0, 0.8)",
-      backgroundColor: "purple.700", // Changes background color to purple on hover
-      color: "lime"
+      backgroundColor: "limegreen",
+      color: "black"
     },
     "&:active": {
       transform: "translate(2px, 2px)",

@@ -2,7 +2,7 @@ import AuthorSearchBar from "@/app/upload/components/searchBar";
 import { useHiveUser } from "@/contexts/UserContext";
 import usePosts from "@/hooks/usePosts";
 import PostModel from "@/lib/models/post";
-import { Box, Button, ButtonGroup, Flex, Grid, useMediaQuery, VStack } from "@chakra-ui/react";
+import { border, Box, Button, ButtonGroup, Flex, Grid, useMediaQuery, VStack } from "@chakra-ui/react";
 import Image from "next/image";
 import { useCallback, useMemo, useState } from "react";
 import { FaBook, FaBookOpen } from "react-icons/fa";
@@ -75,8 +75,9 @@ const NavigationButtons: React.FC<NavigationButtonsProps> = ({ updateFeed, feedC
   const createButtonStyle = {
     "&:hover": {
       boxShadow: "5px 5px 10px rgba(167, 255, 0, 0.8)",
-      backgroundColor: "purple.700", // Changes background color to purple on hover
-      color: "lime"
+      backgroundColor: "green",
+      color: "black",
+      border: "2px solid black",
     },
     "&:active": {
       transform: "translate(2px, 2px)",
