@@ -21,20 +21,19 @@ interface SendHBDModalProps {
     visible: boolean;
     onClose: () => void;
     memo: string;
-    hbdAmount: string;
-    pixAmount: number; 
+    userAmountHBD: string;
+    pixAmountBRL: number;
     availableBalance: number;
     hbdToBrlRate: number;
-    
 }
 
-const SendHBDModal: React.FC<SendHBDModalProps> = ({ username, visible, onClose, memo, hbdAmount, availableBalance, hbdToBrlRate }) => {
+const SendHBDModal: React.FC<SendHBDModalProps> = ({ username, visible, onClose, memo, userAmountHBD, availableBalance, hbdToBrlRate }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [formattedPixKey, setFormattedPixKey] = useState<string>(memo);
     const [transactionStatus, setTransactionStatus] = useState<'success' | 'failure' | null>(null);
 
     const toast = useToast();
-    const memoPix = "#" + memo;
 
     const calculatePixAmount = (amount: number) => {
         const hbdValue = amount * hbdToBrlRate;
@@ -43,14 +42,16 @@ const SendHBDModal: React.FC<SendHBDModalProps> = ({ username, visible, onClose,
         return totalPayment;
     };
 
-    const pixAmount = calculatePixAmount(parseFloat(hbdAmount));
+    const pixAmountBRL = calculatePixAmount(parseFloat(userAmountHBD));
 
     const sendHBD = async () => {
         setLoading(true);
-        try {
-            const amount = parseFloat(hbdAmount);
+        setError(null);
 
-            if (pixAmount < 20) {
+        try {
+            const amount = parseFloat(userAmountHBD);
+
+            if (pixAmountBRL < 19.99) {
                 throw new Error("O valor mínimo em reais é R$20.");
             }
 
@@ -58,16 +59,15 @@ const SendHBDModal: React.FC<SendHBDModalProps> = ({ username, visible, onClose,
                 throw new Error("Saldo insuficiente.");
             }
 
+            const memoPix = `#${formattedPixKey}`;
+
             await transferWithKeychain(username, "pixbee", amount.toFixed(3), memoPix, "HBD");
-            toast({
-                title: "Transferência realizada.",
-                description: `${amount.toFixed(3)} HBD foram trocados por R$${pixAmount.toFixed(2)}.`,
-                status: "success",
-                duration: 5000,
-                isClosable: true,
-            });
+
+            setTransactionStatus('success');
             onClose();
         } catch (error: any) {
+            setError(error.message || "Houve um problema ao realizar a transferência.");
+            setTransactionStatus('failure');
             toast({
                 title: "Erro na transferência.",
                 description: error.message || "Houve um problema ao realizar a transferência. Tente novamente.",
@@ -85,7 +85,7 @@ const SendHBDModal: React.FC<SendHBDModalProps> = ({ username, visible, onClose,
             if (transactionStatus === 'success') {
                 toast({
                     title: "Transferência realizada.",
-                    description: `${parseFloat(hbdAmount).toFixed(3)} HBD foram trocados por ${pixAmount.toLocaleString('pt-BR', { style: 'currency', currency: 'PIX' })}.`,
+                    description: `${parseFloat(userAmountHBD).toFixed(3)} HBD foram trocados por R$${pixAmountBRL.toFixed(2)}.`,
                     status: "success",
                     duration: 5000,
                     isClosable: true,
@@ -100,14 +100,14 @@ const SendHBDModal: React.FC<SendHBDModalProps> = ({ username, visible, onClose,
                 });
             }
         }
-    }, [visible, transactionStatus, toast, hbdAmount, pixAmount]);
-
+    }, [visible, transactionStatus, toast, userAmountHBD, pixAmountBRL]);
     return (
         <Modal
             isOpen={visible}
             onClose={() => {
                 if (!loading) {
-                    onClose(); 
+
+                    onClose();
                 }
             }}
             isCentered
@@ -115,9 +115,10 @@ const SendHBDModal: React.FC<SendHBDModalProps> = ({ username, visible, onClose,
         >
             <ModalOverlay />
             <ModalContent>
-            <ModalHeader>
-                    <Text mb={4} fontSize="22px">
-                        Confirma trocar {hbdAmount} HBD por {pixAmount.toLocaleString('pt-BR', { style: 'currency', currency: 'PIX' })}?
+                <ModalHeader>
+                    <Text mb={4} fontSize="18px">
+                        Chave Pix: <Text as="span" color="blue.500">{formattedPixKey}</Text><br />
+                        Confirma trocar {userAmountHBD} HBD por {pixAmountBRL.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}?
                     </Text>
                 </ModalHeader>
                 <ModalCloseButton />
@@ -134,7 +135,7 @@ const SendHBDModal: React.FC<SendHBDModalProps> = ({ username, visible, onClose,
                             <Text mt={2}>Realizando a transferência...</Text>
                         </Box>
                     )}
-                       {error && (
+                    {error && (
                         <Text color="red.500" mt={4}>
                             {error}
                         </Text>
