@@ -1,38 +1,55 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
-Installation: 
+
+
+```
+
+ $$$$$$\  $$\   $$\  $$$$$$\ $$$$$$$$\ $$$$$$$$\ $$\   $$\ $$$$$$\ $$\    $$\ $$$$$$$$\ 
+$$  __$$\ $$ | $$  |$$  __$$\\__$$  __|$$  _____|$$ |  $$ |\_$$  _|$$ |   $$ |$$  _____|
+$$ /  \__|$$ |$$  / $$ /  $$ |  $$ |   $$ |      $$ |  $$ |  $$ |  $$ |   $$ |$$ |      
+\$$$$$$\  $$$$$  /  $$$$$$$$ |  $$ |   $$$$$\    $$$$$$$$ |  $$ |  \$$\  $$  |$$$$$\    
+ \____$$\ $$  $$<   $$  __$$ |  $$ |   $$  __|   $$  __$$ |  $$ |   \$$\$$  / $$  __|   
+$$\   $$ |$$ |\$$\  $$ |  $$ |  $$ |   $$ |      $$ |  $$ |  $$ |    \$$$  /  $$ |      
+\$$$$$$  |$$ | \$$\ $$ |  $$ |  $$ |   $$$$$$$$\ $$ |  $$ |$$$$$$\    \$  /   $$$$$$$$\ 
+ \______/ \__|  \__|\__|  \__|  \__|   \________|\__|  \__|\______|    \_/    \________|
+        
+```
+
+### Description:
+
+
+Skatehive is a decentralized social network and community built around skateboarding and related culture. This repo uses Hive Blockchain as perpetual database to store and displays users posts and comments. 
+
+
+
+### How to Contribute? 🦾
+
+If you want to contribute, fork this repo and get your hands dirty! 
+
+![](https://www.skatehive.app/pepe-login.png)
+
+### Run Locally 
 
 ```bash
+git clone https://github.com/SkateHive/nextskateapp.git
+
+cd nextskateapp 
+
 pnpm i 
-```
 
-
-First, run the development server:
-
-```bash
-
-pnpm dev
+pnpm dev 
 
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+> Copy and paste this in your terminal
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+#### Docs that might help:
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+[📝 How to create a Fork - Skatehive Docs](https://docs.skatehive.app/docs/Level%20-%201/fork-skatehive)
 
-## Learn More
+[📝 How to create a Pull Request](https://www.atlassian.com/br/git/tutorials/making-a-pull-request)
 
-To learn more about Next.js, take a look at the following resources:
+[💾 Commit pattern](https://gist.github.com/joshbuchea/6f47e86d2510bce28f8e7f42ae84c716)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### Built with: 
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white) ![Chakra](https://img.shields.io/badge/chakra-%234ED1C5.svg?style=for-the-badge&logo=chakraui&logoColor=white) ![ChatGPT](https://img.shields.io/badge/chatGPT-74aa9c?style=for-the-badge&logo=openai&logoColor=white)

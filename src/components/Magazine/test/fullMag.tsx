@@ -47,9 +47,8 @@ const pageStyles = {
 };
 
 const flipbookStyles = {
-  margin: "0 auto",
-  width: "90vw",
-  height: "90vh",
+  width: "100vw",
+  height: "100vh",
   transition: "none",
 };
 
@@ -58,7 +57,7 @@ const coverStyles = {
   backgroundColor: "darkblue",
   color: "white",
   backgroundImage:
-    "url(https://gifdb.com/images/high/neon-techno-background-07w3jgqrk7galdgr.gif)",
+    "url(https://media1.giphy.com/media/9ZsHm0z5QwSYpV7g01/giphy.gif?cid=6c09b952uxaerotyqa9vct5pkiwvar6l6knjgsctieeg0sh1&ep=v1_gifs_search&rid=giphy.gif&ct=g)",
   backgroundSize: "cover",
   textAlign: "center",
 };
@@ -90,6 +89,7 @@ export default function FullMag({ tag, query }: TestPageProps) {
   const { posts, error, isLoading, setQueryCategory, setDiscussionQuery } =
     usePosts(query, tag);
   const flipBookRef = useRef<any>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -107,6 +107,13 @@ export default function FullMag({ tag, query }: TestPageProps) {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
+
+  const playSound = () => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0.02;
+      audioRef.current.play();
+    }
+  };
 
   if (isLoading) {
     return (
@@ -134,6 +141,8 @@ export default function FullMag({ tag, query }: TestPageProps) {
 
   return (
     <VStack justify="center" align="center" w="100%" h="100vh" p={5}>
+      <audio ref={audioRef} src="/pageflip.mp3" preload="auto" />
+
       <HTMLFlipBook
         width={1000}
         height={1300}
@@ -155,95 +164,87 @@ export default function FullMag({ tag, query }: TestPageProps) {
         clickEventForward
         useMouseEvents
         renderOnlyPageLengthChange={false}
-        showPageCorners
+        showPageCorners={false}
         disableFlipByClick={false}
         className="flipbook"
         style={flipbookStyles}
         ref={flipBookRef}
+        onFlip={(e) => {
+          playSound();
+        }}
       >
         <Box sx={coverStyles}>
           <Flex direction="column" align="center" justify="center">
-            <Heading>
+            <Heading mb={5}>
               <Image src="/skatehive-banner.png" alt="SkateHive Logo" />
             </Heading>
-            <Center m={20}>
-              <Image
-                boxSize={"auto"}
-                src="/skatehive_square_green.png"
-                alt="SkateHive Logo"
-              />
-            </Center>
-            <Box
-              m={5}
-              borderRadius={5}
-              backgroundColor={"black"}
-              sx={textStyles}
-            >
-              <Text fontSize={"12px"} color="white">
-                Welcome to the {String(tag[0].tag)} Magazine
-              </Text>
-              <Text fontSize={"12px"} color="white">
-                A infinity mag created by skaters all over the world.
-              </Text>
-            </Box>
+            <Image src="/cover.png" alt="SkateHive Logo" height={700} />
+          </Flex>
+          <Flex justifyContent={'right'}>
+            <Text color={'limegreen'} fontSize={36}> issue #0 </Text>
           </Flex>
         </Box>
-        {posts.map((post: Discussion) => (
-          <Box key={post.id} sx={pageStyles}>
-            <HStack spacing={2}>
-              <VStack bg="#0c0c0d" p={2} borderRadius={5} width={"20%"}>
-                <AuthorAvatar username={post.author} boxSize={20} borderRadius={100} />
-                <Text color={"white"} mt={0}>
-                  {post.author}
+        {posts
+          .sort((a, b) => Number(getTotalPayout(b as Comment)) - Number(getTotalPayout(a as Comment)))
+          .map((post: Discussion) => (
+            <Box key={post.id} sx={pageStyles}>
+              <HStack spacing={2}>
+                <VStack bg="#0c0c0d" p={2} borderRadius={5} width={"20%"}>
+                  <AuthorAvatar username={post.author} boxSize={50} borderRadius={100} />
+                  <Text color={"white"} mt={0}>
+                    {post.author}
+                  </Text>
+                </VStack>
+                <Text
+                  fontSize={'26px'}
+                  color={"white"}
+                  whiteSpace="nowrap"
+                  overflow="hidden"
+                  textOverflow="ellipsis"
+                  bg={"#28292b"}
+                  p={2}
+                  borderRadius={5}
+                  w={"80%"}
+                >
+                  {post.title}
                 </Text>
+              </HStack>
 
-              </VStack>
-              <Text
-                fontSize={'26px'}
-                color={"white"}
-                whiteSpace="nowrap"
-                overflow="hidden"
-                textOverflow="ellipsis"
+              <Divider mt={4} mb={4} />
+              <ReactMarkdown
+                key={post.id}
+                className="page"
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeRaw]}
+                components={FullMagazineRenderers}
               >
-                {post.title}
-              </Text>
-            </HStack>
-
-            <Divider mt={4} mb={4} />
-            <ReactMarkdown
-              key={post.id}
-              className="page"
-              remarkPlugins={[remarkGfm]}
-              rehypePlugins={[rehypeRaw]}
-              components={FullMagazineRenderers}
-            >
-              {transform3SpeakContent(
-                transformIPFSContent(
-                  transformEcencyImages(
-                    transformNormalYoutubeLinksinIframes(
-                      transformShortYoutubeLinksinIframes(post.body),
+                {transform3SpeakContent(
+                  transformIPFSContent(
+                    transformEcencyImages(
+                      transformNormalYoutubeLinksinIframes(
+                        transformShortYoutubeLinksinIframes(post.body),
+                      ),
                     ),
                   ),
-                ),
-              )}
-            </ReactMarkdown>
-            <Divider mt={4} mb={4} />
-            <Flex justifyContent={"space-between"}>
-              <Badge colorScheme="green" variant={"outline"} h={"30px"} width={"20%"}>
-                <Center>
-                  <Text fontSize={'22px'}> ${Number(getTotalPayout(post as Comment)).toFixed(2)}</Text>
-                </Center>
-              </Badge>
-              <Badge colorScheme="green" variant={"outline"} mt={2}>
+                )}
+              </ReactMarkdown>
+              <Divider mt={4} mb={4} />
+              <Flex justifyContent={"space-between"}>
+                <Badge colorScheme="green" variant={"outline"} h={"30px"} width={"20%"}>
+                  <Center>
+                    <Text fontSize={'22px'}> ${Number(getTotalPayout(post as Comment)).toFixed(2)}</Text>
+                  </Center>
+                </Badge>
+                <Badge colorScheme="green" variant={"outline"} mt={2}>
+                  <Text color={"white"} fontSize={"16px"}>
+                    {new Date(post.created).toLocaleDateString()}
+                  </Text>
+                </Badge>
+              </Flex>
+              <Text>Pending Payout: {post.pending_payout_value.toString()}</Text>
+            </Box>
+          ))}
 
-                <Text color={"white"} fontSize={"16px"}>
-                  {new Date(post.created).toLocaleDateString()}
-                </Text>
-              </Badge>
-            </Flex>
-            <Text>Pending Payout: {post.pending_payout_value.toString()}</Text>
-          </Box>
-        ))}
         <Box sx={backCoverStyles}>
           <Heading>Back Cover</Heading>
           <Text>Thrasher my ass!</Text>
