@@ -178,7 +178,7 @@ export default function FullMag({ tag, query }: TestPageProps) {
             <Heading mb={5}>
               <Image src="/skatehive-banner.png" alt="SkateHive Logo" />
             </Heading>
-            <Image src="/cover.png" alt="SkateHive Logo" height={700} />
+            <Image src="/cover.png" alt="SkateHive Logo" height={800} />
           </Flex>
           <Flex justifyContent={'right'}>
             <Text color={'limegreen'} fontSize={36}> issue #0 </Text>
