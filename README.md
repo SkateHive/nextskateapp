@@ -32,3 +32,19 @@ If you want to contribute with coding, fork this repo and get your hands dirty!
 More information on how to contribute [here](CONTRIBUTE.md).
 
 ![](https://www.skatehive.app/pepe-login.png)
+
+## Run locally📍
+
+```bash
+git clone https://github.com/SkateHive/nextskateapp.git
+```
+```bash
+cd nextskateapp 
+```
+```bash
+pnpm i 
+```
+```bash
+pnpm dev 
+```
+> Copy and paste this in your terminal

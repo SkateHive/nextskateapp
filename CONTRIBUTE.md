@@ -1,18 +1,6 @@
 # Contribute on SkateHive
 
-## Run locally 
-
-```bash
-git clone https://github.com/SkateHive/nextskateapp.git
-
-cd nextskateapp 
-
-pnpm i 
-
-pnpm dev 
-
-```
-
+![](https://i.ibb.co/2ML12vx/image.png)
 
 ## In addition, you will need:
 
