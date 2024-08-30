@@ -12,6 +12,7 @@ const randomSentences = [
   "We will load as fast as Daryl Rolls",
   "who was Gnartoshi Shredamoto?",
   "bless up",
+  "skate or die",
   "take back the internet!",
   "stack clips, stack crypto",
   "support your local skateshops!",
