@@ -4,25 +4,19 @@ import "../../../styles/fonts.css";
 
 const randomSentences = [
   "skate or don't",
-  "Ok to push Mongo, it is! -kook yoda",
-  "Remember Mirc times ?",
-  "Fuck instagram!",
+  "F-u-c-k instagram!",
   "Ready to grind on chain?",
   "Praise whoever made skatevideosite",
   "Loading Stokenomics...",
-  "collecting stoken...",
   "Initiating Proof of Stoke...",
   "We will load as fast as Daryl Rolls",
   "who was Gnartoshi Shredamoto?",
   "bless up",
-  "worldwide skate community",
-  "keeping the web gnarly",
   "take back the internet!",
   "stack clips, stack crypto",
-  "poppin' off the blockchain",
   "support your local skateshops!",
-  "welcome, cryptoskater!",
-  "accessing mainframe from skategods"
+  "home of the cryptoskater",
+ 
 
 
 
