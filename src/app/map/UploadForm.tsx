@@ -2,31 +2,46 @@
 import UserAvatar from "@/components/UserAvatar";
 import { useHiveUser } from "@/contexts/UserContext";
 import { useComments } from "@/hooks/comments";
+import { vote } from "@/lib/hive/client-functions";
 import { commentWithPrivateKey } from "@/lib/hive/server-functions";
+import { getTotalPayout } from "@/lib/utils";
 import {
   Box,
   Button,
+  Divider,
   Flex,
   HStack,
   IconButton,
   Image,
   Input,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Text,
   Textarea,
-  useBreakpointValue
+  useBreakpointValue,
+  VStack
 } from "@chakra-ui/react";
 import * as dhive from "@hiveio/dhive";
 import EXIF from 'exif-js';
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { FaImage, FaTimes } from "react-icons/fa";
+import { FaHistory, FaImage, FaMoneyBill, FaTimes } from "react-icons/fa";
+import { FaArrowRightArrowLeft } from "react-icons/fa6";
+import { IoFilter } from "react-icons/io5";
+import CommentList from "../mainFeed/components/CommentsList";
 import { uploadFileToIPFS } from "../upload/utils/uploadToIPFS";
+
 export interface Comment {
   id: number;
   author: string;
   permlink: string;
   created: string;
   body: string;
+  total_payout_value?: string;
+  pending_payout_value?: string;
+  curator_payout_value?: string;
 }
 
 interface Coordinates {
@@ -34,18 +49,26 @@ interface Coordinates {
   lng: number | null;
 }
 
+
 export default function UploadForm() {
-  const parent_author = "web-gnar";
-  const parent_permlink = "about-the-skatehive-spotbook";
-  const { addComment } = useComments(parent_author, parent_permlink);
-  const postBodyRef = useRef<HTMLTextAreaElement>(null);
+  const parent_author = process.env.NEXT_PUBLIC_MAINFEED_AUTHOR || "web-gnar";
+  const parent_permlink = process.env.NEXT_PUBLIC_MAINFEED_PERMLINK || "about-the-skatehive-spotbook";
+  const [visiblePosts, setVisiblePosts] = useState<number>(6);
+  const boxWidth = useBreakpointValue({ base: "90%", sm: "80%", md: "75%", lg: "100%" });
+
+  const { comments, addComment, isLoading } = useComments(
+    parent_author,
+    parent_permlink
+  ); const postBodyRef = useRef<HTMLTextAreaElement>(null);
   const user = useHiveUser();
   const username = user?.hiveUser?.name;
   const [hasPosted, setHasPosted] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [imageList, setImageList] = useState<string[]>([]);
+  const [sortMethod, setSortMethod] = useState<string>("chronological");
   const placeholderFontSize = useBreakpointValue({ base: "14px", md: "16px" });
+
   const [coordinates, setCoordinates] = useState<Coordinates>({ lat: null, lng: null });
 
   const extractCoordinates = (file: File) => {
@@ -109,7 +132,6 @@ export default function UploadForm() {
           newImageList.push(markdownLink);
         }
         if (file.type.startsWith("image/")) {
-          console.log('Extracting coordinates from:', file.name);
           extractCoordinates(file);
         }
       }
@@ -123,15 +145,31 @@ export default function UploadForm() {
     multiple: true,
   });
 
+  const sortedComments = useMemo(() => {
+    if (sortMethod === "chronological") {
+      return comments?.slice().reverse();
+    } else if (sortMethod === "engagement") {
+      return comments?.slice().sort((a, b) => {
+        return (b?.children ?? 0) - (a?.children ?? 0);
+      });
+    } else {
+      return comments?.slice().sort((a, b) => {
+        return getTotalPayout(b as Comment) - getTotalPayout(a as Comment);
+      });
+    }
+  }, [comments, sortMethod]);
+
   const handlePostClick = () => {
     const markdownString = (postBodyRef.current?.value + "\n" + imageList.join("\n")).trim();
     if (markdownString === "") {
       alert("Please write something before posting");
       return;
-    } else if (markdownString.length > 2000) {
+    }
+    else if (markdownString.length > 2000) {
       alert("Post is too long. To make longform content use our /mag section");
       return;
-    } else {
+    }
+    else {
       handlePost(markdownString);
     }
   };
@@ -261,130 +299,177 @@ export default function UploadForm() {
     setImageList((prevList) => prevList.filter((_, i) => i !== index));
   };
 
+  const handleVote = async (author: string, permlink: string) => {
+    if (!username) {
+      console.error("Username is missing");
+      return;
+    }
+    vote({
+      username: username,
+      permlink: permlink,
+      author: author,
+      weight: 10000,
+    });
+  };
+
+  const handleSortChange = (method: string) => {
+    setSortMethod(method);
+  };
+
   return (
 
-    <Box
-      p={4}
-      width={"100%"}
-      maxWidth={{ base: "100vh", md: "100vw" }}
-      bg="#484848"
-      color="white"
-      {...getRootProps()}
-      border="2px solid gray"
-      _focus={{
-        border: "2px solid gray",
-        boxShadow: "none",
-      }}
-      padding={"15px"}
-      overflowY="auto"
+    <VStack
     >
-      <div>
-        <Flex  >
-          {/* @ts-ignore */}
-          <UserAvatar hiveAccount={user.hiveUser || {}} boxSize={12} borderRadius={5} mr={4} />
-          <Flex flexDir="column" w="100%" mt={{ base: "auto", md: "auto" }} >
-            <Textarea
+      <Box p={4}
+        width={"100%"}
+        maxWidth={{ base: "100vh", md: "100vw" }}
+        bg="#484848"
+        color="white"
+        {...getRootProps()}
+        border="2px solid gray"
+        _focus={{
+          border: "2px solid gray",
+          boxShadow: "none",
+        }}
+        padding={"15px"}
+        overflowY="auto">
+        <div>
+          <Flex>
+            {/* @ts-ignore */}
+            <UserAvatar hiveAccount={user.hiveUser || {}} boxSize={12} borderRadius={5} />
+            <Flex flexDir="column" w="100%">
+              <Textarea
+                border="1px solid gray"
+                background={"black"}
+                _focus={{
 
-              border="1px solid gray"
-              background={"black"}
-              _focus={{
-                
-                border: "2px solid gray",
-                boxShadow: "none",
-              }}
-              _placeholder={{
-                fontSize: placeholderFontSize,
-                color: "white",
-              }}
-              overflow={"hidden"}
-              resize={"vertical"}
-              ref={postBodyRef}
-              placeholder="Put your text here... What is the name of the spot?... Where is the location of the spot?"
-              ml={{ base: 2, md: 4 }}
-              mb={{ base: 1, md: 0 }}
-              width={{ base: "100%", md: "auto" }}
-            />
-
-            <HStack spacing={4} mt={4} flexWrap="wrap" justifyContent="center">
-              {imageList.map((item, index) => (
-                <Box key={index} position="relative" maxW={100} maxH={100} mb={4}>
-                  <IconButton
-                    aria-label="Remover imagem"
-                    icon={<FaTimes style={{ color: "black", strokeWidth: 1 }} />}
-                    size="base"
-                    color="white"
-                    bg="white"
-                    _hover={{ bg: "white", color: "black" }}
-                    _active={{ bg: "white", color: "black" }}
-                    position="absolute"
-                    top="0"
-                    right="0"
-                    onClick={() => handleRemoveImage(index)}
-                    zIndex="1"
-                    borderRadius="full"
-                  />
-                  {item.includes("![Image](") ? (
-                    <Image
-                      src={item.match(/!\[Image\]\((.*?)\)/)?.[1] || ""}
-                      alt="markdown-image"
-                      maxW="100%"
-                      maxH="100%"
-                      objectFit="contain"
+                  border: "2px solid gray",
+                  boxShadow: "none",
+                }}
+                _placeholder={{
+                  fontSize: placeholderFontSize,
+                  color: "white",
+                }}
+                overflow={"hidden"}
+                resize={"vertical"}
+                ref={postBodyRef}
+                placeholder="Put your text here... What is the name of the spot?... Where is the location of the spot?"
+                ml={{ base: 2, md: 4 }}
+                mb={{ base: 1, md: 0 }}
+                width={{ base: "100%", md: "auto" }}
+              />
+              <HStack>
+                {imageList.map((item, index) => (
+                  <Box key={index} position="relative" maxW={100} maxH={100}>
+                    <IconButton
+                      aria-label="Remove image"
+                      icon={<FaTimes style={{ color: "black", strokeWidth: 1 }} />}
+                      size="base"
+                      color="white"
+                      bg="white"
+                      _hover={{ bg: "white", color: "black" }}
+                      _active={{ bg: "white", color: "black" }}
+                      position="absolute"
+                      top="0"
+                      right="0"
+                      onClick={() => handleRemoveImage(index)}
+                      zIndex="1"
+                      borderRadius="full"
                     />
-                  ) : (
-                    <video
-                      src={item.match(/<iframe src="(.*?)" allowfullscreen><\/iframe>/)?.[1]}
-                      controls
-                      muted
-                      width="100%"
-                    />
-                  )}
-                </Box>
-              ))}
-            </HStack>
-
+                    {item.includes("![Image](") ? (
+                      <Image
+                        src={item.match(/!\[Image\]\((.*?)\)/)?.[1] || ""}
+                        alt="markdown-image"
+                        maxW="100%"
+                        maxH="100%"
+                        objectFit="contain"
+                      />
+                    ) : (
+                      <video
+                        src={item.match(/<iframe src="(.*?)" allowfullscreen><\/iframe>/)?.[1]}
+                        controls
+                        muted
+                        width="100%"
+                      />
+                    )}
+                  </Box>
+                ))}
+              </HStack>
+            </Flex>
           </Flex>
+          {coordinates.lat !== null && coordinates.lng !== null && (
+            <Box mt={4}>
+              <Text>Latitude: {coordinates.lat}</Text>
+              <Text>Longitude: {coordinates.lng}</Text>
+            </Box>
+          )}
+          <HStack justifyContent="space-between" marginTop={2}>
+            <Input
+              id="md-image-upload"
+              type="file"
+              style={{ display: "none" }}
+              {...getInputProps({ refKey: "ref" })}
+              ref={inputRef}
+            />
+            <Button
+              name="md-image-upload"
+              onClick={() => inputRef.current?.click()}
+              isLoading={isUploading}
+              spinnerPlacement="end"
+              leftIcon={<FaImage />}
+              bg="purple.500"
+              color="white"
+              _hover={{ bg: "purple.600" }}
+              _active={{ bg: "green.700" }}
+            >
+              Image/video
+            </Button>
+            <Button onClick={handlePostClick} isLoading={hasPosted}
+              bg="green.500"
+              color="white"
+              _hover={{ bg: "green.600" }}
+              _active={{ bg: "green.700" }}  >
+              {hasPosted ? "Published" : "Send It"}
+            </Button>
+          </HStack>
+        </div>
+      </Box>
+      <Divider />
 
-        </Flex>
-        {coordinates.lat !== null && coordinates.lng !== null && (
-          <Box mt={4}>
-            <Text>Latitude: {coordinates.lat}</Text>
-            <Text>Longitude: {coordinates.lng}</Text>
-          </Box>
-        )}
-        <HStack justifyContent="space-between" marginTop={2}>
-          <Input
-            id="md-image-upload"
-            type="file"
-            style={{ display: "none" }}
-            {...getInputProps({ refKey: "ref" })}
-            ref={inputRef}
-          />
-          <Button
-            name="md-image-upload"
-            onClick={() => inputRef.current?.click()}
-            isLoading={isUploading}
-            spinnerPlacement="end"
-            leftIcon={<FaImage />}
-            bg="purple.500"  
-          color="white"  
-          _hover={{ bg: "purple.600" }}  
-          _active={{ bg: "green.700" }}
-          >
-            Image/video
-          </Button>
-          <Button onClick={handlePostClick} isLoading={hasPosted} 
-          bg="green.500"  
-          color="white"  
-          _hover={{ bg: "green.600" }}  
-          _active={{ bg: "green.700" }}  >
-            {hasPosted ? "Published" : "Send It"}
-          </Button>
-        </HStack>
 
-      </div>
+      <HStack width="full" justifyContent="flex-end" m={-2} mr={4}>
+        <Menu>
+          <MenuButton>
+            <IoFilter color="#9AE6B4" />
+          </MenuButton>
+          <MenuList color={'white'} bg={"black"} border={"1px solid #A5D6A7"}>
+            <MenuItem
+              bg={"black"}
+              onClick={() => handleSortChange("chronological")}
+            >
+              <FaHistory /> <Text ml={2}> Latest</Text>
+            </MenuItem>
+            <MenuItem bg={"black"} onClick={() => handleSortChange("payout")}>
+              <FaMoneyBill /> <Text ml={2}>Payout</Text>{" "}
+            </MenuItem>
+            <MenuItem
+              bg={"black"}
+              onClick={() => handleSortChange("engagement")}
+            >
+              <FaArrowRightArrowLeft /> <Text ml={2}>Engagement</Text>{" "}
+            </MenuItem>
+          </MenuList>
+        </Menu>
+      </HStack>
+      <CommentList
+        comments={sortedComments}
+        visiblePosts={visiblePosts}
+        setVisiblePosts={setVisiblePosts}
+        username={username}
+        handleVote={handleVote}
 
-    </Box>
+      />
 
+    </VStack>
   );
 }
