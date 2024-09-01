@@ -103,6 +103,35 @@ export default function Upload() {
         },
         multiple: false
     });
+    // TODO: We are using the same function in mainFeed.tsx we probably want to move that to utils
+    const handlePaste = async (event: React.ClipboardEvent<HTMLDivElement>) => {
+        const clipboardItems = event.clipboardData.items;
+        const newImageList: string[] = [];
+
+        for (const item of clipboardItems) {
+            if (item.type.startsWith("image/")) {
+                const blob = item.getAsFile();
+
+                if (blob) {
+                    // Convert Blob to File
+                    const file = new File([blob], "pasted-image.png", { type: blob.type });
+
+                    setIsUploading(true);
+                    const ipfsData = await uploadFileToIPFS(file);
+                    if (ipfsData !== undefined) {
+                        const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}`;
+                        const markdownLink = `![Image](${ipfsUrl})`;
+                        newImageList.push(markdownLink);
+                    }
+                }
+            }
+        }
+
+        if (newImageList.length > 0) {
+            setValue((prevMarkdown) => `${prevMarkdown}\n${newImageList.join("\n")}\n`);
+            setIsUploading(false);
+        }
+    };
 
     const extraCommands = [
         {
@@ -314,7 +343,7 @@ export default function Upload() {
                             onChange={(e) => setTitle(e.target.value)} />
                     </HStack>
 
-                    <Box marginTop="3" {...getRootProps()} >
+                    <Box marginTop="3" {...getRootProps()} onPaste={handlePaste}>
                         {isUploading && <Center m={3}><Spinner color="#A5D6A7" /></Center>}
 
                         <MDEditor
