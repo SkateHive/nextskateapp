@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es2015", // Update the target to es2015 or higher
+    "target": "es5",
     "lib": [
       "dom",
       "dom.iterable",
