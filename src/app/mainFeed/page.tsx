@@ -401,7 +401,7 @@ const SkateCast = () => {
               }} />
             </Button>
             <Button
-              colorScheme="green"
+              color="#ABE4B8"
               variant="ghost"
               ml="auto"
               onClick={handlePostClick}
