@@ -94,6 +94,7 @@ export default memo(function Zine({ tag, query }: TestPageProps) {
   const [isZineFullScreen, setIsZineFullScreen] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const flipBookRef = useRef<any>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -138,14 +139,18 @@ export default memo(function Zine({ tag, query }: TestPageProps) {
       </Flex>
     );
   }
-
+  const playSound = () => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0.02;
+      audioRef.current.play();
+    }
+  };
   return (
     <>
       <VStack
         justify="center"
         align="center"
         w="100%"
-        h="60vh"
         p={5}
         overflow={"hidden"}
       >
@@ -159,10 +164,10 @@ export default memo(function Zine({ tag, query }: TestPageProps) {
           <Kbd background={"black"}>→</Kbd> to navigate. Press <Kbd background={"black"}>Space</Kbd> for full screen.
         </Text>
         <HTMLFlipBook
-          width={500}
-          height={750}
+          width={1000}
+          height={1300}
           minWidth={0}
-          maxWidth={500}
+          maxWidth={1000}
           minHeight={0}
           maxHeight={750}
           startPage={0}
@@ -179,16 +184,14 @@ export default memo(function Zine({ tag, query }: TestPageProps) {
           clickEventForward
           useMouseEvents
           renderOnlyPageLengthChange={false}
-          onFlip={(e) => console.log("Current page:", e.data)}
-          onChangeOrientation={(e) => console.log("Orientation:", e.data)}
-          onChangeState={(e) => console.log("State:", e.data)}
-          onInit={(e) => console.log("Book initialized:", e.data)}
-          onUpdate={(e) => console.log("Book updated:", e.data)}
-          showPageCorners
+          showPageCorners={false}
           disableFlipByClick={false}
           className="flipbook"
           style={flipbookStyles}
           ref={flipBookRef}
+          onFlip={(e) => {
+            playSound();
+          }}
         >
           <Box sx={coverStyles}>
             <Flex direction="column" align="center">

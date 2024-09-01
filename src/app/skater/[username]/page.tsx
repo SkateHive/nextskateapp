@@ -21,6 +21,7 @@ export default function SkaterPage({ params }: ProfilePageProps) {
       h={"100vh"}
       overflow={"scroll"}
       id="SkaterPage"
+      mt={4}
     >
       <SkaterHeader user={hiveAccount} />
       <SkaterTabs user={hiveAccount} />

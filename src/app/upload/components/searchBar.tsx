@@ -114,6 +114,7 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
                             }}
                             p={2}
                             cursor="pointer"
+                            color={"#ABE4B8"}
                             display="flex"
                             backgroundColor={"black"}
                             alignItems="center"

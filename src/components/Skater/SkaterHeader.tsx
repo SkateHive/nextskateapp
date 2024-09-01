@@ -45,9 +45,7 @@ export default function SkaterHeader({ user }: ProfileProps) {
 
 
     const handleFollowButton = async () => {
-        console.log("follow button clicked")
         const loginMethod = localStorage.getItem("LoginMethod")
-        console.log(loginMethod)
         if (hiveUser.hiveUser?.name && user.name) {
 
             if (loginMethod === "keychain") {
@@ -101,8 +99,8 @@ export default function SkaterHeader({ user }: ProfileProps) {
             {isMobile ? null :
                 <Flex justifyContent={"flex-end"}>
                     <Button mt={"-85px"} mr={'15px'} mb={"75px"}
-                        variant={"outline"}
-                        colorScheme="green"
+                        variant={"solid"}
+                        colorScheme="yellow"
                         _hover={{ bg: "black", color: 'white' }}
                         onClick={() => handleFollowButton()}
                     >
