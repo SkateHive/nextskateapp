@@ -42,7 +42,7 @@ export default function ProfileHeader({ user }: ProfileProps) {
     <VStack>
       {isOpen && <EditInfoModal onUpdate={handleProfileUpdate} isOpen={isOpen} onClose={onClose} user={user} />}
       <Image
-        w={{ base: "100%", lg: "80%" }}
+        w={"100%"}
         src={coverImageUrl}
         height={"200px"}
         objectFit="cover"
