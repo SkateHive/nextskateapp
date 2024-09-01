@@ -20,7 +20,7 @@ import {
   MenuList,
   Text,
   Textarea,
-  VStack
+  VStack,
 } from "@chakra-ui/react";
 import * as dhive from "@hiveio/dhive";
 import { useMemo, useRef, useState } from "react";
@@ -90,6 +90,36 @@ const SkateCast = () => {
     },
     multiple: true,
   });
+
+  // Handle pasting images via Ctrl+V / Command+V and right-click Paste
+  const handlePaste = async (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const clipboardItems = event.clipboardData.items;
+    const newImageList: string[] = [];
+
+    for (const item of clipboardItems) {
+      if (item.type.startsWith("image/")) {
+        const blob = item.getAsFile();
+
+        if (blob) {
+          // Convert Blob to File
+          const file = new File([blob], "pasted-image.png", { type: blob.type });
+
+          setIsUploading(true);
+          const ipfsData = await uploadFileToIPFS(file);
+          if (ipfsData !== undefined) {
+            const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}`;
+            const markdownLink = `![Image](${ipfsUrl})`;
+            newImageList.push(markdownLink);
+          }
+        }
+      }
+    }
+
+    if (newImageList.length > 0) {
+      setImageList((prevList) => [...prevList, ...newImageList]);
+      setIsUploading(false);
+    }
+  };
 
   const sortedComments = useMemo(() => {
     if (sortMethod === "chronological") {
@@ -301,6 +331,7 @@ const SkateCast = () => {
                 resize={"vertical"}
                 ref={postBodyRef}
                 placeholder="Write your stuff..."
+                onPaste={handlePaste} // Attach handlePaste to handle right-click Paste and Ctrl+V / Command+V
               />
               <HStack>
                 {imageList.map((item, index) => (
@@ -375,7 +406,6 @@ const SkateCast = () => {
               ml="auto"
               onClick={handlePostClick}
               isLoading={isUploading}
-              // onhover glow effect with shadow and transition the letters only green
               _hover={{
                 color: "limegreen",
                 textShadow: "0 0 10px 0 limegreen",
