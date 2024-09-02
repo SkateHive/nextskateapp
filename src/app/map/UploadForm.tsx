@@ -51,8 +51,8 @@ interface Coordinates {
 
 
 export default function UploadForm() {
-  const parent_author = process.env.NEXT_PUBLIC_MAINFEED_AUTHOR || "web-gnar";
-  const parent_permlink = process.env.NEXT_PUBLIC_MAINFEED_PERMLINK || "about-the-skatehive-spotbook";
+  const parent_author = "web-gnar";
+  const parent_permlink = "about-the-skatehive-spotbook";
   const [visiblePosts, setVisiblePosts] = useState<number>(6);
   const boxWidth = useBreakpointValue({ base: "90%", sm: "80%", md: "75%", lg: "100%" });
 
