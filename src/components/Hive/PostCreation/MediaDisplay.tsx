@@ -1,4 +1,4 @@
-import { Box, HStack, IconButton, Image } from "@chakra-ui/react";
+import { Box, Grid, HStack, IconButton, Image } from "@chakra-ui/react";
 import React from "react";
 import { FaTimes } from "react-icons/fa";
 
@@ -9,14 +9,14 @@ interface MediaDisplayProps {
 
 function MediaDisplay({ imageList, handleRemoveImage }: MediaDisplayProps) {
   return (
-    <HStack>
+    <Grid templateColumns="repeat(4, 1fr)" gap={4} width={"full"}>
       {imageList.map((item, index) => {
         const isImage = item.type.startsWith("image/");
         const isVideo = item.type.startsWith("video/");
         const url = URL.createObjectURL(item);
 
         return (
-          <Box key={index} position="relative" maxW={100} maxH={100}>
+          <Box key={index} position="relative" aspectRatio={"1/1"}>
             <IconButton
               aria-label="Remove image"
               icon={<FaTimes style={{ color: "black", strokeWidth: 1 }} />}
@@ -36,16 +36,16 @@ function MediaDisplay({ imageList, handleRemoveImage }: MediaDisplayProps) {
               <Image
                 src={url}
                 alt="uploaded-image"
-                maxW="100%"
-                maxH="100%"
-                objectFit="contain"
+                w={"100%"}
+                h={"100%"}
+                objectFit="cover"
               />
             )}
             {isVideo && <video src={url} controls muted width="100%" />}
           </Box>
         );
       })}
-    </HStack>
+    </Grid>
   );
 }
 

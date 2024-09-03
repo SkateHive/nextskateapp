@@ -352,59 +352,22 @@ const SkateCast = () => {
                 placeholder="Write your stuff..."
                 onPaste={handlePaste} // Attach handlePaste to handle right-click Paste and Ctrl+V / Command+V
               />
-              <MediaDisplay
-                imageList={images}
-                handleRemoveImage={(index) =>
-                  setImages((prevImages) =>
-                    prevImages.filter((_, i) => i !== index)
-                  )
-                }
-              />
             </Flex>
           </Flex>
-          <Button
-            _hover={{ borderColor: "border", border: "1px solid" }}
-            _active={{ borderColor: "border" }}
-            as="label"
-            // variant="ghost"
-            isDisabled={isLoading}
-          >
-            <FaImage size={22} />
-            <ImageUploader onUpload={handleImageUpload} />
-          </Button>
+          <MediaDisplay
+            imageList={images}
+            handleRemoveImage={(index) =>
+              setImages((prevImages) =>
+                prevImages.filter((_, i) => i !== index)
+              )
+            }
+          />
 
           <HStack justifyContent="space-between" marginTop={2}>
-            <Input
-              id="md-image-upload"
-              type="file"
-              style={{ display: "none" }}
-              {...getInputProps({ refKey: "ref" })}
-              ref={inputRef}
+            <ImageUploader
+              onUpload={handleImageUpload}
+              disabled={isUploading}
             />
-            <Button
-              name="md-image-upload"
-              variant="ghost"
-              onClick={() => inputRef.current?.click()}
-              _hover={{
-                background: "none",
-              }}
-            >
-              <FaImage
-                style={{
-                  color: "#ABE4B8",
-                  cursor: "pointer",
-                  transition: "all 0.2s",
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.color = "limegreen";
-                  e.currentTarget.style.textShadow = "0 0 10px 0 limegreen";
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.color = "#ABE4B8";
-                  e.currentTarget.style.textShadow = "none";
-                }}
-              />
-            </Button>
             <Button
               color="#ABE4B8"
               variant="ghost"
