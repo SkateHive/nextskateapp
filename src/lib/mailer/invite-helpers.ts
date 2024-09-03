@@ -114,7 +114,7 @@ export async function sendInviteEmail(desiredEmail: string, desiredUsername: str
 export async function sendTestEmail(desiredEmail: string, desiredUsername: string, 
   createdby:string, masterPassword:string, keys:any) {
   await serverMailer(
-     'test@gmail.com',
+     'test@test.com', 
     'Welcome to Skatehive @'+desiredUsername + " TEST "+ desiredEmail,
     createdby,
     desiredUsername,
