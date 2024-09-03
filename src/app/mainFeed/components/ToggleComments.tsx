@@ -8,8 +8,8 @@ interface ToggleCommentsProps {
   setVisiblePosts: React.Dispatch<React.SetStateAction<number>>;
   username: string;
   handleVote: (author: string, permlink: string) => void;
-  shouldShowAllComments?: boolean; 
-  isCommentFormVisible?: boolean; 
+  shouldShowAllComments?: boolean;
+  isCommentFormVisible?: boolean;
 }
 
 const ToggleComments = ({
