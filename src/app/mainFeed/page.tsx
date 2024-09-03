@@ -112,13 +112,7 @@ const SkateCast = () => {
             type: blob.type,
           });
 
-          setIsUploading(true);
-          const ipfsData = await uploadFileToIPFS(file);
-          if (ipfsData !== undefined) {
-            const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}`;
-            const markdownLink = `![Image](${ipfsUrl})`;
-            newImageList.push(markdownLink);
-          }
+          handleImageUpload([file]);
         }
       }
     }
