@@ -33,9 +33,12 @@ import AvatarList from "./components/AvatarList";
 import CommentList from "./components/CommentsList";
 import LoadingComponent from "./components/loadingComponent";
 import AvatarMediaModal from "./components/mediaModal";
+import ImageUploader from "@/components/Hive/PostCreation/ImageUpload";
+import MediaDisplay from "@/components/Hive/PostCreation/MediaDisplay";
 
 const parent_author = process.env.NEXT_PUBLIC_MAINFEED_AUTHOR || "skatehacker";
-const parent_permlink = process.env.NEXT_PUBLIC_MAINFEED_PERMLINK || "test-advance-mode-post";
+const parent_permlink =
+  process.env.NEXT_PUBLIC_MAINFEED_PERMLINK || "test-advance-mode-post";
 
 export interface Comment {
   id: number;
@@ -64,6 +67,7 @@ const SkateCast = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [imageList, setImageList] = useState<string[]>([]);
+  const [images, setImages] = useState<File[]>([]);
 
   const { getRootProps, getInputProps } = useDropzone({
     noClick: true,
@@ -92,7 +96,9 @@ const SkateCast = () => {
   });
 
   // Handle pasting images via Ctrl+V / Command+V and right-click Paste
-  const handlePaste = async (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
+  const handlePaste = async (
+    event: React.ClipboardEvent<HTMLTextAreaElement>
+  ) => {
     const clipboardItems = event.clipboardData.items;
     const newImageList: string[] = [];
 
@@ -102,7 +108,9 @@ const SkateCast = () => {
 
         if (blob) {
           // Convert Blob to File
-          const file = new File([blob], "pasted-image.png", { type: blob.type });
+          const file = new File([blob], "pasted-image.png", {
+            type: blob.type,
+          });
 
           setIsUploading(true);
           const ipfsData = await uploadFileToIPFS(file);
@@ -136,16 +144,18 @@ const SkateCast = () => {
   }, [comments, sortMethod]);
 
   const handlePostClick = () => {
-    const markdownString = (postBodyRef.current?.value + "\n" + imageList.join("\n")).trim();
+    const markdownString = (
+      postBodyRef.current?.value +
+      "\n" +
+      imageList.join("\n")
+    ).trim();
     if (markdownString === "") {
       alert("Please write something before posting");
       return;
-    }
-    else if (markdownString.length > 2000) {
+    } else if (markdownString.length > 2000) {
       alert("Post is too long. To make longform content use our /mag section");
       return;
-    }
-    else {
+    } else {
       handlePost(markdownString);
     }
   };
@@ -292,6 +302,11 @@ const SkateCast = () => {
     setSortMethod(method);
   };
 
+  const handleImageUpload = (images: File[]) => {
+    console.log("New images added", [images]);
+    setImages((prev) => [...prev, ...images]);
+  };
+
   return isLoading ? (
     <LoadingComponent />
   ) : (
@@ -318,8 +333,12 @@ const SkateCast = () => {
       <Box p={4} width={"100%"} bg="black" color="white" {...getRootProps()}>
         <div>
           <Flex>
-            {/* @ts-ignore */}
-            <UserAvatar hiveAccount={user.hiveUser || {}} boxSize={12} borderRadius={5} />
+            <UserAvatar
+              /* @ts-ignore */
+              hiveAccount={user.hiveUser || {}}
+              boxSize={12}
+              borderRadius={5}
+            />
             <Flex flexDir="column" w="100%">
               <Textarea
                 border="none"
@@ -333,45 +352,27 @@ const SkateCast = () => {
                 placeholder="Write your stuff..."
                 onPaste={handlePaste} // Attach handlePaste to handle right-click Paste and Ctrl+V / Command+V
               />
-              <HStack>
-                {imageList.map((item, index) => (
-                  <Box key={index} position="relative" maxW={100} maxH={100}>
-                    <IconButton
-                      aria-label="Remove image"
-                      icon={<FaTimes style={{ color: "black", strokeWidth: 1 }} />}
-                      size="base"
-                      color="white"
-                      bg="white"
-                      _hover={{ bg: "white", color: "black" }}
-                      _active={{ bg: "white", color: "black" }}
-                      position="absolute"
-                      top="0"
-                      right="0"
-                      onClick={() => handleRemoveImage(index)}
-                      zIndex="1"
-                      borderRadius="full"
-                    />
-                    {item.includes("![Image](") ? (
-                      <Image
-                        src={item.match(/!\[Image\]\((.*?)\)/)?.[1] || ""}
-                        alt="markdown-image"
-                        maxW="100%"
-                        maxH="100%"
-                        objectFit="contain"
-                      />
-                    ) : (
-                      <video
-                        src={item.match(/<iframe src="(.*?)" allowfullscreen><\/iframe>/)?.[1]}
-                        controls
-                        muted
-                        width="100%"
-                      />
-                    )}
-                  </Box>
-                ))}
-              </HStack>
+              <MediaDisplay
+                imageList={images}
+                handleRemoveImage={(index) =>
+                  setImages((prevImages) =>
+                    prevImages.filter((_, i) => i !== index)
+                  )
+                }
+              />
             </Flex>
           </Flex>
+          <Button
+            _hover={{ borderColor: "border", border: "1px solid" }}
+            _active={{ borderColor: "border" }}
+            as="label"
+            // variant="ghost"
+            isDisabled={isLoading}
+          >
+            <FaImage size={22} />
+            <ImageUploader onUpload={handleImageUpload} />
+          </Button>
+
           <HStack justifyContent="space-between" marginTop={2}>
             <Input
               id="md-image-upload"
@@ -388,17 +389,21 @@ const SkateCast = () => {
                 background: "none",
               }}
             >
-              <FaImage style={{
-                color: "#ABE4B8",
-                cursor: "pointer",
-                transition: "all 0.2s",
-              }} onMouseOver={(e) => {
-                e.currentTarget.style.color = "limegreen";
-                e.currentTarget.style.textShadow = "0 0 10px 0 limegreen";
-              }} onMouseOut={(e) => {
-                e.currentTarget.style.color = "#ABE4B8";
-                e.currentTarget.style.textShadow = "none";
-              }} />
+              <FaImage
+                style={{
+                  color: "#ABE4B8",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.color = "limegreen";
+                  e.currentTarget.style.textShadow = "0 0 10px 0 limegreen";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.color = "#ABE4B8";
+                  e.currentTarget.style.textShadow = "none";
+                }}
+              />
             </Button>
             <Button
               color="#ABE4B8"
@@ -424,7 +429,7 @@ const SkateCast = () => {
           <MenuButton>
             <IoFilter color="#9AE6B4" />
           </MenuButton>
-          <MenuList color={'white'} bg={"black"} border={"1px solid #A5D6A7"}>
+          <MenuList color={"white"} bg={"black"} border={"1px solid #A5D6A7"}>
             <MenuItem
               bg={"black"}
               onClick={() => handleSortChange("chronological")}
@@ -443,13 +448,13 @@ const SkateCast = () => {
           </MenuList>
         </Menu>
       </HStack>
-      <CommentList
+      {/* <CommentList
         comments={sortedComments}
         visiblePosts={visiblePosts}
         setVisiblePosts={setVisiblePosts}
         username={username}
         handleVote={handleVote}
-      />
+      /> */}
     </VStack>
   );
 };
