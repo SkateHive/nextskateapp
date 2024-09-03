@@ -1,6 +1,7 @@
 import { convertVestingSharesToHivePower } from "@/app/wallet/utils/calculateHP";
 import { useHivePrice } from "@/hooks/useHivePrice";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
+import useHiveAccount from "./useHiveAccount";
 
 interface HiveBalance {
     hiveUsdValue: number;
@@ -18,9 +19,10 @@ interface HiveBalance {
 const useHiveBalance = (hiveUser: any): HiveBalance => {
     const hivePrice = useHivePrice();
     const [hiveUsdValue, setHiveUsdValue] = useState(0);
-    const vestingShares = hiveUser?.vesting_shares;
-    const delegatedVestingShares = hiveUser?.delegated_vesting_shares;
-    const receivedVestingShares = hiveUser?.received_vesting_shares;
+    const hiveAccount = useHiveAccount(hiveUser?.name);
+    const vestingShares = hiveAccount?.hiveAccount?.vesting_shares;
+    const delegatedVestingShares = hiveAccount?.hiveAccount?.delegated_vesting_shares;
+    const receivedVestingShares = hiveAccount?.hiveAccount?.received_vesting_shares;
     const [hivePower, setHivePower] = useState(0);
     const [delegatedToUserInUSD, setDelegatedToUserInUSD] = useState('');
     const [HPthatUserDelegated, setHPthatUserDelegated] = useState(0);
@@ -54,11 +56,11 @@ const useHiveBalance = (hiveUser: any): HiveBalance => {
 
         const calculateHiveUsdValue = () => {
             try {
-                if (hivePrice !== null && hiveUser) {
-                    const hiveUsd = hivePrice * Number(String(hiveUser.balance).split(" ")[0]);
+                if (hivePrice !== null && hiveAccount?.hiveAccount) {
+                    const hiveUsd = hivePrice * Number(String(hiveAccount?.hiveAccount?.balance).split(" ")[0]);
                     const delegatedHPUsd = hivePrice * HPthatUserDelegated;
-                    const savingsValue = 1 * Number(String(hiveUser.savings_hbd_balance).split(" ")[0]);
-                    const HBDUsd = 1 * Number(String(hiveUser.hbd_balance).split(" ")[0]);
+                    const savingsValue = 1 * Number(String(hiveAccount.hiveAccount?.savings_hbd_balance).split(" ")[0]);
+                    const HBDUsd = 1 * Number(String(hiveAccount.hiveAccount?.hbd_balance).split(" ")[0]);
                     const total = hiveUsd + HPUsdValue + HBDUsd + savingsValue;
                     setHiveUsdValue(hiveUsd);
                     setDelegatedHPUsdValue(delegatedHPUsd);
