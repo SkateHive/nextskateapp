@@ -193,6 +193,11 @@ const VotingButton = ({
         onClick={handleVoteClick}
         colorScheme="green"
         variant="ghost"
+        _hover={{
+          background: "transparent",
+          color: "green.400",
+        }}
+
         leftIcon={isVoted ? <FaHeart /> : <FaRegHeart />}
       >
         <span
@@ -221,7 +226,7 @@ const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = ()
   const [visiblePosts, setVisiblePosts] = useState(5);
   const [isEyeClicked, setIsEyeClicked] = useState(false);
   const [isCommentFormVisible, setIsCommentFormVisible] = useState(false);
-  const [shouldShowAllComments, setShouldShowAllComments] = useState(false); 
+  const [shouldShowAllComments, setShouldShowAllComments] = useState(false);
   const user = useHiveUser();
   const [replyBody, setReplyBody] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -254,10 +259,8 @@ const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = ()
 
   const handleEditSave = async (editedBody: string) => {
     try {
-      console.log("Edit saved:", editedBody);
       setEditedCommentBody(editedBody);
       setIsEditModalOpen(false);
-      console.log("Updated comment body:", editedBody);
     } catch (error) {
       console.error("Erro ao salvar edição do comentário:", error);
     }
@@ -275,10 +278,8 @@ const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = ()
     return links;
   }
 
-  console.log(extractLinksFromMarkdown(editedCommentBody));
 
   const imageLinks = extractLinksFromMarkdown(editedCommentBody);
-  console.log("Image links:", imageLinks);
 
   const extractIFrameLinks = (markdown: string) => {
     const regex = /<iframe src="(.*?)"/g;
@@ -292,7 +293,6 @@ const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = ()
 
 
   const iframeLinks = extractIFrameLinks(editedCommentBody);
-  console.log("Iframe links:", iframeLinks);
 
 
 
@@ -447,7 +447,7 @@ const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = ()
               </Text>
             </HStack>
 
-           
+
           </HStack>
           <Box w={"100%"} bg="black" color="white" id="flexxx">
             {((filteredImages.length <= 1 && iframeLinks.length === 0) ||
@@ -565,7 +565,7 @@ const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = ()
         <Button
           _hover={{
             background: "transparent",
-            color: "green.200",
+            color: "green.400",
           }}
           colorScheme="green"
           variant="ghost"

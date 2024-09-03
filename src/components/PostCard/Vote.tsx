@@ -3,18 +3,18 @@ import { usePostContext } from "@/contexts/PostContext"
 import { useHiveUser } from "@/contexts/UserContext"
 import { vote } from "@/lib/hive/client-functions"
 import { voteWithPrivateKey } from "@/lib/hive/server-functions"
-import { Button, Text, Tooltip } from "@chakra-ui/react"
+import { Button, Flex, HStack, Text, Tooltip } from "@chakra-ui/react"
 import { VoteOperation } from "@hiveio/dhive"
 import { useState } from "react"
 import { useReward } from "react-rewards"
 import { voting_value2 } from "./calculateHiveVotingValueForHiveUser"
+import { FaHeart, FaRegHeart } from "react-icons/fa"
 
 export default function Vote() {
   const { post } = usePostContext()
   const { hiveUser } = useHiveUser()
   const [postEarnings, setPostEarnings] = useState(Number(post.getEarnings().toFixed(2)))
   const [userVotingValue, setUserVotingValue] = useState(0)
-
 
   const rewardId = post.post_id ? "postReward" + post.post_id : ""
   const { reward, isAnimating } = useReward(rewardId, "emoji", {
@@ -63,9 +63,18 @@ export default function Vote() {
     if (!isVoted) reward()
     setIsVoted((isVoted) => !isVoted)
   }
-
+  console.log(post.active_votes.length)
   return (
-    <Tooltip color={"limegreen"} background={"black"} border={"1px dashed #A5D6A7"} label="Vote fo this">
+    <Flex w={"100%"} justify={"space-between"} align={"center"} mt={2}>
+      <Tooltip color={"limegreen"} background={"black"} border={"1px dashed #A5D6A7"} label="Vote for this">
+        <HStack color="#A5D6A7" onClick={handleVoteClick} cursor={'pointer'}>
+          {isVoted ? <FaHeart /> : <FaRegHeart />}
+          <Text fontSize={"12px"} color="#A5D6A7">
+            {post.active_votes.length}
+          </Text>
+        </HStack>
+      </Tooltip>
+
       <Button
         variant={"link"}
         disabled={isAnimating}
@@ -83,13 +92,10 @@ export default function Vote() {
             zIndex: 5,
           }}
         />
-        <Text
-          fontSize={"18px"}
-          fontWeight={"bold"}
-        >
+        <Text fontSize={"18px"} fontWeight={"bold"}>
           ${postEarnings.toFixed(2)}
         </Text>
       </Button>
-    </Tooltip>
+    </Flex>
   )
 }

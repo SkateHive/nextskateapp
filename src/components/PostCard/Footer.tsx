@@ -10,11 +10,11 @@ export default function Footer() {
 
   return (
     <CardFooter pt={0} flexDirection={"column"} gap={2} key={hiveUser?.name}>
-      <Flex w={"100%"} justify={"space-between"} align={"center"}>
-        <TipButton author={post.author} />
-        <Vote />
+      {/* <Flex w={"100%"} justify={"space-between"} align={"center"}> */}
+      {/* <TipButton author={post.author} /> */}
+      <Vote />
 
-      </Flex>
+      {/* </Flex> */}
     </CardFooter>
   )
 }
