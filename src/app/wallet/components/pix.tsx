@@ -26,7 +26,7 @@ import {
 import axios from "axios";
 import { QrCodePix } from 'qrcode-pix';
 import React, { useEffect, useState } from "react";
-import { fetchPixBeeData, formatCNPJ, formatCPF, formatTelephone, validateCPF } from "../utils/fetchPixBeeData";
+import { fetchPixBeeData, formatCNPJ, formatCPF, formatTelephone, validateCPF, validatePhone } from "../utils/fetchPixBeeData";
 import { LimitsTable } from "./LimitesTable";
 import SendHBDModal from "./sendHBDModal";
 interface PixBeeData {
@@ -224,6 +224,9 @@ const Pix = ({ user }: PixProps) => {
                     pixKeyType = "CPF";
                     sanitizedPixKey = formatCPF(value);
                 }
+            } else if (/^\d{10}$/.test(value) && value.startsWith('0')) {
+                pixKeyType = "Telefone";
+                sanitizedPixKey = formatTelephone(value);
             } else if (/^\d{14}$/.test(value)) {
                 pixKeyType = "CNPJ";
                 sanitizedPixKey = formatCNPJ(value);
@@ -234,8 +237,7 @@ const Pix = ({ user }: PixProps) => {
                 pixKeyType = "Chave Aleatória";
                 sanitizedPixKey = event.target.value.trim();
             } else {
-                pixKeyType = "Desconhecido";
-                sanitizedPixKey = value;
+                throw new Error("Chave Pix inválida");
             }
         } catch (error) {
             console.error('Erro ao sanitizar chave Pix:', error);
@@ -246,6 +248,7 @@ const Pix = ({ user }: PixProps) => {
         setPixKey(value);
         setPixKeyType(pixKeyType);
         setUserFormatedPixKey(sanitizedPixKey);
+        setError(null);
     };
     function calculateLiquidDeposit(realValue: number): number {
         if (!pixbeeInputPixKey) {
@@ -312,24 +315,26 @@ const Pix = ({ user }: PixProps) => {
     };
     const handleSubmit = () => {
         try {
-
             let isValidKey = false;
+    
+            // Validando os diferentes tipos de chave Pix
             if (pixKeyType === "CPF") {
                 isValidKey = validateCPF(pixKey);
-            } else {
-                isValidKey = ['CNPJ', 'Email', 'Chave Aleatória'].includes(pixKeyType);
+            } else if (pixKeyType === "Telefone") {
+                isValidKey = validatePhone(pixKey);
+            } else if (["CNPJ", "Email", "Chave Aleatória"].includes(pixKeyType)) {
+                isValidKey = true;
             }
-
+    
             if (!isValidKey) {
-                throw new Error('Chave Pix inválida');
+                throw new Error("Chave Pix inválida. Por favor, verifique os dados inseridos.");
             }
-
-
-
+    
+            // Se a chave for válida, exibe o modal
             setDisplayModal(true);
             setError(null);
         } catch (error: any) {
-            // console.error(error);
+            setError(error.message);
             toast({
                 title: 'Erro',
                 description: error.message,
@@ -339,6 +344,7 @@ const Pix = ({ user }: PixProps) => {
             });
         }
     };
+    
     function calculateTotalPixPayment(amount: number) {
         if (!pixbeeInputPixKey) {
             throw new Error('PixBeeData não está definido');
@@ -446,11 +452,10 @@ const Pix = ({ user }: PixProps) => {
                                                 </Button>
                                                 {/* <p> {countdown} </p> */}
                                             </HStack>
-                                            {isExceeded && (
-                                                <Text color="red.500">
-                                                    O valor excede seu saldo disponível.
-                                                </Text>
+                                            {error && (
+                                                <Text color="red.500">{error}</Text>
                                             )}
+
                                             <Button w={'100%'} variant={'outline'} colorScheme="red" onClick={handleSubmit}>
                                                 Enviar Hive Dollars
                                             </Button>
