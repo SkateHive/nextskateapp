@@ -19,6 +19,7 @@ export default function AuthorAvatar({ username, borderRadius, hover, boxSize }:
     const [profileImage, setProfileImage] = useState("/loading.gif");
     const [isProfileCardModalOpen, setIsProfileCardModalOpen] = useState(false);
     const [userData, setUserData] = useState({} as any);
+
     const fetchProfileImage = useCallback(async () => {
         if (profileImageCache[username]) {
             setProfileImage(profileImageCache[username]);
@@ -52,21 +53,26 @@ export default function AuthorAvatar({ username, borderRadius, hover, boxSize }:
         threshold: 0.1,
     });
 
-    useEffect(() => {
+    // useEffect(() => {
+    //     if (inView) {
+    //         fetchProfileImage();
+    //     }
+    // }, [inView, fetchProfileImage]);
+
+    function setProfileImageifNecessary() {
         if (inView) {
             fetchProfileImage();
         }
-    }, [inView, fetchProfileImage]);
+        return profileImage;
+    }
 
     return (
         <>
-            {isProfileCardModalOpen && (<ProfileCardModal isOpen={isProfileCardModalOpen} onClose={() => setIsProfileCardModalOpen(false)} profile={userData} />)}
             <Avatar
                 ref={ref}
-                onClick={() => setIsProfileCardModalOpen(!isProfileCardModalOpen)}
-                // onClick={() => window.open(`/skater/${username}`, "_blank", "noreferrer noopener")}
+                onClick={() => window.open(`/skater/${username}`, "_blank", "noreferrer noopener")}
                 name={username}
-                src={inView ? profileImage : "/loading.gif"}
+                src={inView ? `https://images.hive.blog/u/${username}/avatar/sm` : setProfileImageifNecessary()}
                 boxSize={boxSize || 12}
                 bg="transparent"
                 loading="lazy"
