@@ -47,6 +47,7 @@
     "moment-timezone": "^0.5.45",
     "next": "^14.0.4",
     "openai": "^4.33.0",
+    "piexifjs": "^1.0.6",
     "pino-pretty": "^11.0.0",
     "qrcode-pix": "5.0.0",
     "react": "^18.3.1",
