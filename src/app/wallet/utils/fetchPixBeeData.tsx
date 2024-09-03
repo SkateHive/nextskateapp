@@ -40,3 +40,22 @@ export const validateCPF = (cpf: string) => {
     if (remainder === 10) remainder = 0;
     return remainder === parseInt(cpf.charAt(10));
 };
+
+export const validatePhone = (phone: string) => {
+    
+    const cleanPhone = phone.replace(/[^\d]+/g, '');
+
+    const phoneRegex = /^\d{10,11}$/; 
+
+    if (!phoneRegex.test(cleanPhone)) {
+        return false;
+    }
+
+    if (/^(\d)\1+$/.test(cleanPhone)) {
+        return false;
+    }
+
+    return true;
+};
+
+
