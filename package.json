@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "NODE_ENV=production next build",
     "start": "NODE_ENV=production next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "build:dev": "NODE_ENV=development next build",
+    "start:dev": "NODE_ENV=development next start",
+    "build:trace": "NODE_ENV=development NODE_OPTIONS=--trace-deprecation next build"
   },
   "dependencies": {
     "@chakra-ui/next-js": "^2.2.0",
@@ -40,12 +43,14 @@
     "framer-motion": "^11.0.27",
     "giphy": "^0.0.4",
     "hive-auth-wrapper": "^1.0.0",
+    "html-to-text": "^9.0.5",
     "keychain-sdk": "^0.6.1",
     "lodash": "^4.17.21",
     "lucide-react": "^0.367.0",
     "moment": "^2.30.1",
     "moment-timezone": "^0.5.45",
     "next": "^14.0.4",
+    "nodemailer": "^6.9.14",
     "openai": "^4.33.0",
     "pino-pretty": "^11.0.0",
     "react": "^18.3.1",
