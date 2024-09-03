@@ -96,19 +96,20 @@ function DisconnectedUserModal({
                 <Button
                     w={"100%"}
                     onClick={() => doLogin()}
-                    colorScheme="green"
+                    color="limgreen"
                     variant={"outline"}
                     disabled={isLogginIn}
+                    _hover={{ bg: "green.600", color: "white" }}
                 >
                     {isLogginIn ? <Spinner size={"sm"} /> : "Log In"}
                 </Button>
                 <Button
-                    w={"100%"}
-                    onClick={() => window.open("https://hiveonboard.com/create-account")}
-                    colorScheme="blue"
+                    w={"50%"}
+                    onClick={() => window.open("https://discord.gg/skateboard", '_blank', 'noopener,noreferrer')}
+                    colorScheme="purple"
                     variant={"outline"}
                 >
-                    Sign Up
+                    Get Help
                 </Button>
             </ModalFooter>
         </>

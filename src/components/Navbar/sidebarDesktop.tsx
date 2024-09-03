@@ -112,194 +112,196 @@ const SidebarDesktop = () => {
     }
   };
 
-  
+
 
   return (
     <>
-    <LoginModal isOpen={isLoginOpen} onClose={onLoginClose} />
-    <Box
-      bg="Black"
-      w={{ base: "full", md: 280 }}
-      px={2}
-      py={8}
-      h="100vh"
-      display="flex"
-      flexDirection="column"
-      color={"white"}
-    >
-      <Heading size="md">
-        <Image
-          boxSize={"48px"}
-          src="/skatehive_square_green.png"
-          alt="SkateHive"
-          borderRadius={"5px"}
-          _hover={{
-            cursor: "pointer",
-            transform: "scale(1.03)",
-            border: "1px solid #A5D6A7",
-            zIndex: 1,
-          }}
-          transition="transform 0.3s ease-out"
-          minW={"100%"}
-          h={"auto"}
-          onClick={() => {
-            window.location.href = "/";
-          }}
-        />
-      </Heading>
-      <Divider
-        my={4}
-        style={{ color: "#A5D6A7", borderColor: "#A5D6A7" }}
-      />
-      <CommunityTotalPayout />
-
-      <HStack padding={0} mt={8} gap={3} fontSize={"22px"}>
-        <FaSpeakap color="white" size={"22px"} />
-        <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime' }} onClick={() => {
-          window.location.href = "/";
-        }}>Feed</Text>
-      </HStack>
-      <HStack padding={0} gap={3} fontSize={"22px"}>
-        <FaMapMarkerAlt color="white" size={"22px"} />
-        <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime' }} onClick={() => {
-          window.location.href = "/map";
-        }}>Map</Text>
-      </HStack>
-      <HStack padding={0} gap={3} fontSize={"22px"}>
-        <FaBook color="white" size={"22px"} />
-        <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime'}} onClick={() => {
-          window.location.href = "/mag";
-        }}>Magazine</Text>
-      </HStack>
-      <HStack padding={0} gap={3} fontSize={"22px"}>
-        <FaEthereum color={'white'} size={"22px"} />
-        <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime' }} onClick={() => {
-          window.location.href = "/dao";
-        }}>Dao</Text>
-      </HStack>
-
-      {!hiveUser && (
-        <HStack padding={0} gap={3} fontSize={"22px"}>
-          <FaDiscord size={"22px"} />
-          <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime'}} as="a"
-      href="https://discord.gg/G4bamNkZuE"
-      target="_blank"
-      rel="noopener noreferrer"
-          
-          >Chat</Text>
-        </HStack>
-      )}
-      
-
-      {hiveUser ? (
-        <>
-          <HStack padding={0} gap={3} fontSize={"22px"}>
-            <FaUser color="white" size={"22px"} />
-            <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime'}} onClick={() => {
-              window.location.href = `/profile/${hiveUser.name}`;
-            }}>Profile</Text>
-          </HStack>
-          <HStack padding={0} gap={3} fontSize={"22px"} _hover={{ color: 'lime' }}>
-            <FaWallet color="white" size={"22px"} />
-            <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime'}} onClick={() => {
-              window.location.href = `/wallet`;
-            }}>Wallet</Text>
-            {hasRewards && (
-              <Button
-                gap={0}
-                leftIcon={<Icon as={FaHive} />}
-                ml={-2}
-                p={2}
-                justifyContent={"center"}
-                color="gold"
-                variant="outline"
-                border={"none"}
-                animation={`${blink} 1s linear infinite`}
-                onClick={handleClaimRewards}
-                _hover={{
-                  animation: "none",
-                  border: "1px dashed yellow",
-                }}
-              >
-                Rewards
-              </Button>
-            )}
-          </HStack>
-
-          
-        <HStack padding={0} gap={3} fontSize={"22px"}>
-          <FaDiscord size={"22px"} />
-          <Text
-        fontFamily="Joystix"
+      <LoginModal isOpen={isLoginOpen} onClose={onLoginClose} />
+      <Box
+        bg="Black"
+        w={{ base: "full", md: 280 }}
+        px={2}
+        py={8}
+        h="100vh"
+        display="flex"
+        flexDirection="column"
         color={"white"}
-        cursor={"pointer"}
-        _hover={{ color: 'lime' }}
-        onClick={handleClick}
       >
-        Chat
-      </Text>
-        </HStack>
-      
+        <Heading size="md">
+          <Image
+            boxSize={"48px"}
+            src="/skatehive_square_green.png"
+            alt="SkateHive"
+            borderRadius={"5px"}
+            _hover={{
+              cursor: "pointer",
+              transform: "scale(1.03)",
+              border: "1px solid #A5D6A7",
+              zIndex: 1,
+            }}
+            transition="transform 0.3s ease-out"
+            minW={"100%"}
+            h={"auto"}
+            onClick={() => {
+              window.location.href = "/";
+            }}
+          />
+        </Heading>
+        <Divider
+          my={4}
+          style={{ color: "#A5D6A7", borderColor: "#A5D6A7" }}
+        />
+        <CommunityTotalPayout />
 
-          <HStack
-            cursor={"pointer"}
-            onClick={handleNotifications}
-            padding={0}
-            gap={3}
-            fontSize={"22px"}
-          >
-            <FaBell size={"22px"} />
-            <Text fontFamily="Joystix" color={"white"} _hover={{ color: 'lime' }}>Notifications</Text>
+        <HStack padding={0} mt={8} gap={3} fontSize={"22px"}>
+          <FaSpeakap color="white" size={"22px"} />
+          <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime' }} onClick={() => {
+            window.location.href = "/";
+          }}>Feed</Text>
+        </HStack>
+        <HStack padding={0} gap={3} fontSize={"22px"}>
+          <FaMapMarkerAlt color="white" size={"22px"} />
+          <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime' }} onClick={() => {
+            window.location.href = "/map";
+          }}>Map</Text>
+        </HStack>
+        <HStack padding={0} gap={3} fontSize={"22px"}>
+          <FaBook color="white" size={"22px"} />
+          <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime' }} onClick={() => {
+            window.location.href = "/mag";
+          }}>Magazine</Text>
+        </HStack>
+        <HStack padding={0} gap={3} fontSize={"22px"}>
+          <FaEthereum color={'white'} size={"22px"} />
+          <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime' }} onClick={() => {
+            window.location.href = "/dao";
+          }}>Dao</Text>
+        </HStack>
+
+        {!hiveUser && (
+          <HStack padding={0} gap={3} fontSize={"22px"}>
+            <FaDiscord size={"22px"} />
+            <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime' }} as="a"
+              href="https://discord.gg/G4bamNkZuE"
+              target="_blank"
+              rel="noopener noreferrer"
+
+            >Chat</Text>
           </HStack>
-          {notifications ? <NotificationsPage /> : null}
-        </>
-      ) : null}
-      <HStack mt="auto">
-        <Button
-          justifyContent={"center"}
-          fontSize={"14px"}
-          variant={"outline"}
-          borderColor={"red.400"}
-          width={"100%"}
-          color={"white"}
-          bg="black"
-          leftIcon={
-            <Icon color={hiveUser ? "red.400" : "white"} as={FaHive} />
-          }
-          onClick={() => onLoginOpen()}
-        >
-          {hiveUser ? <p>{hiveUser.name}</p> : <span>Login</span>}
-        </Button>
-        <Button
-          justifyContent={"center"}
-          fontSize={"14px"}
-          variant={"outline"}
-          borderColor={"blue.400"}
-          width={"100%"}
-          bg="black"
-          color={"white"}
-          leftIcon={
-            <Icon
-              color={ethAccount.address ? "blue.400" : "white"}
-              as={FaEthereum}
-              marginRight={0}
-            />
-          }
-          onClick={() =>
-            !ethAccount.address && openConnectModal
-              ? openConnectModal()
-              : openAccountModal && openAccountModal()
-          }
-        >
-          {ethAccount.address ? (
-            formatETHaddress(ethAccount.address)
-          ) : (
-            <span>Connect</span>
-          )}
-        </Button>
-      </HStack>
-    </Box>
-  </>
+        )}
+
+
+        {hiveUser ? (
+          <>
+            <HStack padding={0} gap={3} fontSize={"22px"}>
+              <FaUser color="white" size={"22px"} />
+              <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime' }} onClick={() => {
+                window.location.href = `/profile/${hiveUser.name}`;
+              }}>Profile</Text>
+            </HStack>
+            <HStack padding={0} gap={3} fontSize={"22px"} _hover={{ color: 'lime' }}>
+              <FaWallet color="white" size={"22px"} />
+              <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime' }} onClick={() => {
+                window.location.href = `/wallet`;
+              }}>Wallet</Text>
+              {hasRewards && (
+                <Button
+                  gap={0}
+                  leftIcon={<Icon as={FaHive} />}
+                  ml={-2}
+                  p={2}
+                  justifyContent={"center"}
+                  color="gold"
+                  variant="outline"
+                  border={"none"}
+                  animation={`${blink} 1s linear infinite`}
+                  onClick={handleClaimRewards}
+                  _hover={{
+                    animation: "none",
+                    border: "1px dashed yellow",
+                  }}
+                >
+                  Rewards
+                </Button>
+              )}
+            </HStack>
+
+
+            <HStack padding={0} gap={3} fontSize={"22px"}>
+              <FaDiscord size={"22px"} />
+              <Text
+                fontFamily="Joystix"
+                color={"white"}
+                cursor={"pointer"}
+                _hover={{ color: 'lime' }}
+                onClick={handleClick}
+              >
+                Chat
+              </Text>
+            </HStack>
+
+
+            <HStack
+              cursor={"pointer"}
+              onClick={handleNotifications}
+              padding={0}
+              gap={3}
+              fontSize={"22px"}
+            >
+              <FaBell size={"22px"} />
+              <Text fontFamily="Joystix" color={"white"} _hover={{ color: 'lime' }}>Notifications</Text>
+            </HStack>
+            {notifications ? <NotificationsPage /> : null}
+          </>
+        ) : null}
+        <HStack mt="auto">
+          <Button
+            justifyContent={"center"}
+            fontSize={"14px"}
+            variant={"outline"}
+            borderColor={"red.400"}
+            width={"100%"}
+            color={"white"}
+            bg="black"
+            _hover={{ bg: "red.400", color: "black" }}
+            leftIcon={
+              <Icon color={hiveUser ? "red.200" : "white"} as={FaHive} />
+            }
+            onClick={() => onLoginOpen()}
+          >
+            {hiveUser ? <p>{hiveUser.name}</p> : <span>Login</span>}
+          </Button>
+          <Button
+            justifyContent={"center"}
+            fontSize={"14px"}
+            variant={"outline"}
+            borderColor={"blue.400"}
+            width={"100%"}
+            bg="black"
+            color={"white"}
+            _hover={{ bg: "blue.400", color: "black" }}
+            leftIcon={
+              <Icon
+                color={ethAccount.address ? "blue.400" : "white"}
+                as={FaEthereum}
+                marginRight={0}
+              />
+            }
+            onClick={() =>
+              !ethAccount.address && openConnectModal
+                ? openConnectModal()
+                : openAccountModal && openAccountModal()
+            }
+          >
+            {ethAccount.address ? (
+              formatETHaddress(ethAccount.address)
+            ) : (
+              <span>Connect</span>
+            )}
+          </Button>
+        </HStack>
+      </Box>
+    </>
   );
 };
 
