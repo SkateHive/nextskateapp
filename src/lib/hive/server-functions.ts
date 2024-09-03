@@ -1,45 +1,47 @@
-"use server"
+"use server";
 
-import { Validation } from "@/types"
-import * as dhive from "@hiveio/dhive"
-import CryptoJS from "crypto-js"
-import { VideoPart } from "../models/user"
-import { HiveAccount } from "../useHiveAuth"
-import HiveClient from "./hiveclient"
+import { Validation } from "@/types";
+import * as dhive from "@hiveio/dhive";
+import CryptoJS from "crypto-js";
+import { VideoPart } from "../models/user";
+import { HiveAccount } from "../useHiveAuth";
+import { PrivateKey } from "@hiveio/dhive";
+import { Buffer } from "buffer";
+import HiveClient from "./hiveclient";
 
 const communityTag = process.env.NEXT_PUBLIC_HIVE_COMMUNITY_TAG;
 
 interface ServerLoginResponse {
-  validation: Validation
-  key?: string
-  type?: dhive.KeyRole
+  validation: Validation;
+  key?: string;
+  type?: dhive.KeyRole;
 }
 
 async function getAccountByPassword(username: string, password: string) {
-  let hivePrivateKey = dhive.PrivateKey.fromLogin(username, password, "active")
-  let hivePublicKey = hivePrivateKey.createPublic()
-  let val = await HiveClient.keys.getKeyReferences([hivePublicKey.toString()])
-  let accountName = val.accounts[0][0]
+  let hivePrivateKey = dhive.PrivateKey.fromLogin(username, password, "active");
+  let hivePublicKey = hivePrivateKey.createPublic();
+  let val = await HiveClient.keys.getKeyReferences([hivePublicKey.toString()]);
+  let accountName = val.accounts[0][0];
   return {
     accountName,
     hivePrivateKey,
-  }
+  };
 }
 
 function decryptPrivateKey(encryptedPrivateKey: string) {
-  const secret = process.env.NEXT_PUBLIC_CRYPTO_SECRET || ""
-  const bytes = CryptoJS.AES.decrypt(encryptedPrivateKey, secret) || ""
-  const privateKey = bytes.toString(CryptoJS.enc.Utf8)
-  return privateKey
+  const secret = process.env.NEXT_PUBLIC_CRYPTO_SECRET || "";
+  const bytes = CryptoJS.AES.decrypt(encryptedPrivateKey, secret) || "";
+  const privateKey = bytes.toString(CryptoJS.enc.Utf8);
+  return privateKey;
 }
 
 function encryptPrivateKey(privateKey: dhive.PrivateKey) {
-  let cryptoKey = process.env.NEXT_PUBLIC_CRYPTO_SECRET as string
+  let cryptoKey = process.env.NEXT_PUBLIC_CRYPTO_SECRET as string;
   let encryptedKey = CryptoJS.AES.encrypt(
     privateKey.toString(),
     cryptoKey
-  ).toString()
-  return encryptedKey
+  ).toString();
+  return encryptedKey;
 }
 
 export async function hiveServerLoginWithPassword(
@@ -47,70 +49,72 @@ export async function hiveServerLoginWithPassword(
   privateKey: string
 ): Promise<ServerLoginResponse> {
   if (!username)
-    return { validation: { success: false, message: "Empty username" } }
+    return { validation: { success: false, message: "Empty username" } };
   if (!privateKey)
-    return { validation: { success: false, message: "Empty username" } }
+    return { validation: { success: false, message: "Empty username" } };
 
   const { accountName, hivePrivateKey } = await getAccountByPassword(
     username,
     privateKey
-  )
+  );
 
   if (accountName === username) {
-    let encryptedKey = encryptPrivateKey(hivePrivateKey)
+    let encryptedKey = encryptPrivateKey(hivePrivateKey);
     return {
       validation: { success: true, message: "User has found" },
       key: encryptedKey,
       type: "posting",
-    }
+    };
   } else {
-    let hivePrivateKey = dhive.PrivateKey.fromString(privateKey)
-    let hivePublicKey = hivePrivateKey.createPublic()
-    let val = await HiveClient.keys.getKeyReferences([hivePublicKey.toString()])
-    let accountName = val.accounts[0][0]
+    let hivePrivateKey = dhive.PrivateKey.fromString(privateKey);
+    let hivePublicKey = hivePrivateKey.createPublic();
+    let val = await HiveClient.keys.getKeyReferences([
+      hivePublicKey.toString(),
+    ]);
+    let accountName = val.accounts[0][0];
 
     if (accountName === username) {
-      const userData = await HiveClient.database.getAccounts([username])
-      let encryptedKey = encryptPrivateKey(hivePrivateKey)
+      const userData = await HiveClient.database.getAccounts([username]);
+      let encryptedKey = encryptPrivateKey(hivePrivateKey);
 
       const userAccount: HiveAccount = {
         ...userData[0],
-      }
+      };
 
-      let checkAuth = userAccount.posting.key_auths
+      let checkAuth = userAccount.posting.key_auths;
       for (var i = 0, len = checkAuth.length; i < len; i++) {
         if (checkAuth[i][0] == hivePublicKey.toString()) {
           return {
             validation: { success: true, message: "User has found" },
             key: encryptedKey,
             type: "posting",
-          }
+          };
         }
       }
-      checkAuth = userAccount.active.key_auths
+      checkAuth = userAccount.active.key_auths;
       for (var i = 0, len = checkAuth.length; i < len; i++) {
         if (checkAuth[i][0] == hivePublicKey.toString()) {
           return {
             validation: { success: true, message: "User has found" },
             key: encryptedKey,
             type: "active",
-          }
+          };
         }
       }
 
-      checkAuth = userAccount.owner.key_auths
+      checkAuth = userAccount.owner.key_auths;
       for (var i = 0, len = checkAuth.length; i < len; i++) {
         if (checkAuth[i][0] == hivePublicKey.toString()) {
           return {
             validation: { success: true, message: "User has found" },
             key: encryptedKey,
             type: "owner",
-          }
+          };
         }
       }
     }
 
-    return { validation: { success: false, message: "User not found" } }
+    return { validation: { success: false, message: "User not found" } };
   }
 }
 
@@ -118,9 +122,9 @@ export async function voteWithPrivateKey(
   encryptedPrivateKey: string | null,
   vote: dhive.VoteOperation
 ) {
-  if (encryptedPrivateKey === null) throw new Error("Private key not found")
-  const privateKey = decryptPrivateKey(encryptedPrivateKey)
-  sendHiveOperation(encryptedPrivateKey, [vote])
+  if (encryptedPrivateKey === null) throw new Error("Private key not found");
+  const privateKey = decryptPrivateKey(encryptedPrivateKey);
+  sendHiveOperation(encryptedPrivateKey, [vote]);
   // HiveClient.broadcast
   //   .vote(vote[1], dhive.PrivateKey.from(privateKey))
   //   .then((result) => {
@@ -129,8 +133,8 @@ export async function voteWithPrivateKey(
   //   .catch((error) => {
   //     console.error(error)
   //   })
-  console.log("trying to vote")
-  console.log(vote)
+  console.log("trying to vote");
+  console.log(vote);
 }
 
 export async function commentWithPrivateKey(
@@ -150,7 +154,7 @@ export async function commentWithPrivateKey(
       commentOptionsOperation[1],
       privateKey
     )
-    .then(res => {
+    .then((res) => {
       console.log({ res, commentOperation, commentOptionsOperation });
       return res;
     })
@@ -173,10 +177,9 @@ export async function updateProfileWithPrivateKey(
   videoParts: VideoPart[],
   level: number
 ) {
-
   if (encryptedPrivateKey === null) throw new Error("Private key not found");
 
-  const privateKey = decryptPrivateKey(encryptedPrivateKey)
+  const privateKey = decryptPrivateKey(encryptedPrivateKey);
 
   const profileMetadata = {
     profile: {
@@ -186,17 +189,17 @@ export async function updateProfileWithPrivateKey(
       cover_image: coverImageUrl,
       profile_image: avatarUrl,
       website: website,
-      version: 2
-    }
+      version: 2,
+    },
   };
 
   const extMetadata = {
     extensions: {
       eth_address: ethAddress,
       video_parts: videoParts,
-      level: level
-    }
-  }
+      level: level,
+    },
+  };
 
   const updateInfo: dhive.Operation = [
     "account_update2",
@@ -204,88 +207,97 @@ export async function updateProfileWithPrivateKey(
       account: username,
       json_metadata: JSON.stringify(extMetadata),
       posting_json_metadata: JSON.stringify(profileMetadata),
-      extensions: []
-    }
-  ]
+      extensions: [],
+    },
+  ];
 
   HiveClient.broadcast
     .sendOperations([updateInfo], dhive.PrivateKey.from(privateKey))
     .then((result) => {
-      console.log(result)
+      console.log(result);
     })
     .catch((error) => {
-      console.error(error)
-    })
-
+      console.error(error);
+    });
 }
 
-export async function sendHiveOperation(encryptedPrivateKey: string | null, op: dhive.Operation[]) {
-
+export async function sendHiveOperation(
+  encryptedPrivateKey: string | null,
+  op: dhive.Operation[]
+) {
   if (encryptedPrivateKey === null) throw new Error("Private key not found");
-  const privateKey = decryptPrivateKey(encryptedPrivateKey)
+  const privateKey = decryptPrivateKey(encryptedPrivateKey);
   HiveClient.broadcast
     .sendOperations(op, dhive.PrivateKey.from(privateKey))
     .then((result) => {
-      console.log(result)
-      console.log("look mom it worked!")
+      console.log(result);
+      console.log("look mom it worked!");
     })
     .catch((error) => {
-      console.error(error)
-      console.log("I will get damn error")
-    })
-
+      console.error(error);
+      console.log("I will get damn error");
+    });
 }
 
-export async function communitySubscribePassword(encryptedPrivateKey: string | null, username: string) {
+export async function communitySubscribePassword(
+  encryptedPrivateKey: string | null,
+  username: string
+) {
   const json = [
-    'subscribe',
+    "subscribe",
     {
-      community: communityTag
-    }
-  ]
-  const operation: dhive.Operation =
-    [
-      'custom_json',
-      {
-        required_auths: [],
-        required_posting_auths: [username],
-        id: "community",
-        json: JSON.stringify(json)
-      }
-    ]
+      community: communityTag,
+    },
+  ];
+  const operation: dhive.Operation = [
+    "custom_json",
+    {
+      required_auths: [],
+      required_posting_auths: [username],
+      id: "community",
+      json: JSON.stringify(json),
+    },
+  ];
 
-  sendHiveOperation(encryptedPrivateKey, [operation])
-
+  sendHiveOperation(encryptedPrivateKey, [operation]);
 }
 
-async function checkFollow(follower: string, following: string): Promise<boolean> {
+async function checkFollow(
+  follower: string,
+  following: string
+): Promise<boolean> {
   try {
-    const status = await HiveClient.call('bridge', 'get_relationship_between_accounts', [
-      follower,
-      following
-    ]);
+    const status = await HiveClient.call(
+      "bridge",
+      "get_relationship_between_accounts",
+      [follower, following]
+    );
 
     if (status.follows) {
-      return true
+      return true;
     } else {
-      return false
+      return false;
     }
   } catch (error) {
-    console.log(error)
-    return false
+    console.log(error);
+    return false;
   }
 }
 
-export async function changeFollowWithPassword(encryptedPrivateKey: string | null, follower: string, following: string) {
-  const status = await checkFollow(follower, following)
-  let type = ''
+export async function changeFollowWithPassword(
+  encryptedPrivateKey: string | null,
+  follower: string,
+  following: string
+) {
+  const status = await checkFollow(follower, following);
+  let type = "";
   if (status) {
-    type = ''
+    type = "";
   } else {
-    type = 'blog'
+    type = "blog";
   }
   const json = JSON.stringify([
-    'follow',
+    "follow",
     {
       follower: follower,
       following: following,
@@ -293,16 +305,26 @@ export async function changeFollowWithPassword(encryptedPrivateKey: string | nul
     },
   ]);
   const data = {
-    id: 'follow',
+    id: "follow",
     json: json,
     required_auths: [],
     required_posting_auths: [follower],
   };
-  const operation: dhive.Operation =
-    [
-      'custom_json',
-      data
-    ]
+  const operation: dhive.Operation = ["custom_json", data];
 
-  sendHiveOperation(encryptedPrivateKey, [operation])
+  sendHiveOperation(encryptedPrivateKey, [operation]);
+}
+
+export async function signImageHash(hash: string): Promise<string> {
+  const wif = process.env.HIVE_POSTING_KEY;
+
+  if (!wif) {
+    throw new Error("HIVE_POSTING_KEY is not set in the environment");
+  }
+
+  const key = PrivateKey.fromString(wif);
+  const hashBuffer = Buffer.from(hash, "hex");
+  const signature = key.sign(hashBuffer);
+
+  return signature.toString();
 }
