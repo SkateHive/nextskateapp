@@ -23,11 +23,12 @@ import {
 import { Asset } from "@hiveio/dhive";
 import { SendIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { AiOutlineThunderbolt } from "react-icons/ai";
-import { BsArrowDownCircleFill } from "react-icons/bs";
+import { BsArrowDownCircle, BsArrowUpCircle } from "react-icons/bs";
 
 import { FaEye, FaHive } from "react-icons/fa";
+import { GiPiggyBank, GiReceiveMoney } from "react-icons/gi";
 import HiveModals from "./HiveModals";
+
 
 const HIVE_LOGO_URL = "https://cryptologos.cc/logos/hive-blockchain-hive-logo.png";
 const HBD_LOGO_URL = "https://i.ibb.co/C6TPhs3/HBD.png";
@@ -216,7 +217,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                     <Box>
                         <Center>
                             <VStack>
-                            <Menu>
+                                <Menu>
                                     <Tooltip display="none" label="Exchanging Hive for Hive Power is called 'Powering Up' or 'Staking'. Stake/Power up your HIVE tokens to have special abilities on the Skatehive: Larger voting power, increased curation rewards, and more resource credits to do transactions on Hive Blockchain. Hive Power increases at an APR of approximately 3.28%">
                                         <MenuButton
                                             p={8}
@@ -227,6 +228,8 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                             variant="outline"
                                             color={'white'}
                                             _hover={{ color: 'yellow', bg: 'black', border: '1px solid yellow' }}
+                                            _active={{ color: 'yellow', bg: 'black', border: '1px solid yellow' }}
+                                            _focus={{ color: 'yellow', bg: 'black', border: '1px solid yellow' }}
                                         >
                                             <HStack justifyContent={"space-between"}>
                                                 <Text ml={'10px'} fontSize={{ base: 12, md: 14 }}
@@ -253,7 +256,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                             </MenuItem>
                                         </Tooltip>
                                         <Tooltip display="none" label="Un-stake your HIVE by Powering-down in 13 week chunks. i. e. if you power down 1300 HP, you will get 100 HIVE back per week, for 13 weeks.">
-                                            <MenuItem bg="black" icon={<AiOutlineThunderbolt size="28px" />} _hover={{ bg: "red" }} onClick={() => setIsHPPowerModalOpened(true)}>
+                                            <MenuItem bg="black" icon={<BsArrowDownCircle size="28px" />} _hover={{ bg: "red" }} onClick={() => setIsHPPowerModalOpened(true)}>
                                                 Power Down
                                             </MenuItem>
                                         </Tooltip>
@@ -270,6 +273,8 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                             variant="outline"
                                             color={'white'}
                                             _hover={{ color: 'yellow', bg: 'black', border: '1px solid yellow' }}
+                                            _active={{ color: 'yellow', bg: 'black', border: '1px solid yellow' }}
+                                            _focus={{ color: 'yellow', bg: 'black', border: '1px solid yellow' }}
                                         >
                                             <HStack justifyContent={"space-between"}>
                                                 <Text ml={'10px'} fontSize={{ base: 12, md: 14 }}
@@ -293,7 +298,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                         <MenuItem bg="black" icon={<SendIcon />} _hover={{ bg: "red" }} onClick={() => setIsHiveModalOpened(true)}>
                                             Send HIVE
                                         </MenuItem>
-                                        <MenuItem bg="black" icon={<BsArrowDownCircleFill size="28px" />} _hover={{ bg: "red" }} onClick={() => setIsHivePowerModalOpened(true)}>
+                                        <MenuItem bg="black" icon={<BsArrowUpCircle size="28px" />} _hover={{ bg: "red" }} onClick={() => setIsHivePowerModalOpened(true)}>
                                             Power Up
                                         </MenuItem>
                                     </MenuList>
@@ -310,6 +315,8 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                             variant="outline"
                                             color={'white'}
                                             _hover={{ color: 'yellow', bg: 'black', border: '1px solid yellow' }}
+                                            _active={{ color: 'yellow', bg: 'black', border: '1px solid yellow' }}
+                                            _focus={{ color: 'yellow', bg: 'black', border: '1px solid yellow' }}
                                         >
                                             <HStack justifyContent={"space-between"}>
                                                 <Text ml={'10px'} fontSize={{ base: 12, md: 14 }}
@@ -347,6 +354,8 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                             variant="outline"
                                             color={'white'}
                                             _hover={{ color: 'yellow', bg: 'black', border: '1px solid yellow' }}
+                                            _active={{ color: 'yellow', bg: 'black', border: '1px solid yellow' }}
+                                            _focus={{ color: 'yellow', bg: 'black', border: '1px solid yellow' }}
                                         >
                                             <HStack justifyContent={"space-between"}>
                                                 <Text ml={'10px'} fontSize={{ base: 12, md: 14 }}
@@ -369,15 +378,29 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                         </MenuButton>
                                     </Tooltip>
                                     <MenuList bg="black">
-                                        <MenuItem bg="black" icon={<SendIcon />} _hover={{ bg: "red" }} onClick={() => setIsWithdrawHbdModalOp(true)}>
-                                            Withdraw HBD
-                                        </MenuItem>
-                                        <MenuItem bg="black" icon={<AiOutlineThunderbolt size="28px" />} _hover={{ bg: "red" }} onClick={() => setIsDepositHbdSavingsModalOpened(true)}>
+                                        <MenuItem bg="black" icon={<GiPiggyBank size="32px" />} _hover={{ bg: "red" }} onClick={() => setIsDepositHbdSavingsModalOpened(true)}>
                                             Deposit HBD
+                                        </MenuItem>
+                                        <MenuItem bg="black" icon={<GiReceiveMoney size="32px" />} _hover={{ bg: "red" }} onClick={() => setIsWithdrawHbdModalOp(true)}>
+                                            Withdraw HBD
                                         </MenuItem>
                                     </MenuList>
                                 </Menu>
-                               
+                                <Button
+                                    leftIcon={<BsArrowUpCircle size="28px" />}
+                                    w={'full'}
+                                    flex={1}
+                                    colorScheme="red"
+                                    onClick={() => setIsHivePowerModalOpened(true)}
+                                    mt={'20px'}
+                                    border="1px solid black"
+                                    _hover={{ color: 'yellow', bg: 'black', border: '1px solid yellow' }}
+                                    _active={{ color: 'yellow', bg: 'black', border: '1px solid yellow' }}
+                                    _focus={{ color: 'yellow', bg: 'black', border: '1px solid yellow' }}
+
+                                >
+                                    <Text fontSize={{ base: 26, md: 40 }} >POWER UP !</Text>
+                                </Button>
                             </VStack >
                         </Center>
                     </Box>
