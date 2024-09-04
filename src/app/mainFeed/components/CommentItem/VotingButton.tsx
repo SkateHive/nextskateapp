@@ -52,10 +52,7 @@ const VotingButton = ({
                 onClose={() => setIsLoginModalOpen(false)}
             />
             <Button
-                onClick={(e: React.MouseEvent) => {
-                    handleVoteClick
-                    e.stopPropagation()
-                }}
+                onClick={handleVoteClick}
 
                 colorScheme="green"
                 variant="ghost"
