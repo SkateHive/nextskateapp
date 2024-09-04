@@ -6,10 +6,7 @@
     "dev": "next dev",
     "build": "NODE_ENV=production next build",
     "start": "NODE_ENV=production next start",
-    "lint": "next lint",
-    "build:dev": "NODE_ENV=development next build",
-    "start:dev": "NODE_ENV=development next start",
-    "build:trace": "NODE_ENV=development NODE_OPTIONS=--trace-deprecation next build"
+    "lint": "next lint"
   },
   "dependencies": {
     "@chakra-ui/next-js": "^2.2.0",
@@ -80,9 +77,11 @@
   },
   "devDependencies": {
     "@types/crypto-js": "^4.2.2",
+    "@types/html-to-text": "^9.0.4",
     "@types/lodash": "^4.17.4",
     "@types/lodash.memoize": "^4.1.9",
     "@types/node": "^20.12.7",
+    "@types/nodemailer": "^6.4.15",
     "@types/react": "^18.2.75",
     "@types/react-dom": "^18.2.24",
     "@types/react-select-country-list": "^2.2.3",
