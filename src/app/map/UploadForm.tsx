@@ -24,14 +24,14 @@ import {
   VStack
 } from "@chakra-ui/react";
 import * as dhive from "@hiveio/dhive";
-import EXIF from 'exif-js';
+import piexif from 'piexifjs';
 import { useMemo, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { FaHistory, FaImage, FaMoneyBill, FaTimes } from "react-icons/fa";
 import { FaArrowRightArrowLeft } from "react-icons/fa6";
 import { IoFilter } from "react-icons/io5";
-import CommentList from "../mainFeed/components/CommentsList";
 import { uploadFileToIPFS } from "../upload/utils/uploadToIPFS";
+import PostList from "./PostList";
 
 export interface Comment {
   id: number;
@@ -51,10 +51,9 @@ interface Coordinates {
 
 
 export default function UploadForm() {
-  const parent_author = process.env.NEXT_PUBLIC_MAINFEED_AUTHOR || "web-gnar";
-  const parent_permlink = process.env.NEXT_PUBLIC_MAINFEED_PERMLINK || "about-the-skatehive-spotbook";
+  const parent_author = "web-gnar";
+  const parent_permlink = "about-the-skatehive-spotbook";
   const [visiblePosts, setVisiblePosts] = useState<number>(6);
-  const boxWidth = useBreakpointValue({ base: "90%", sm: "80%", md: "75%", lg: "100%" });
 
   const { comments, addComment, isLoading } = useComments(
     parent_author,
@@ -69,50 +68,51 @@ export default function UploadForm() {
   const [sortMethod, setSortMethod] = useState<string>("chronological");
   const placeholderFontSize = useBreakpointValue({ base: "14px", md: "16px" });
 
-  const [coordinates, setCoordinates] = useState<Coordinates>({ lat: null, lng: null });
+  const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
 
-  const extractCoordinates = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      const imgDataUrl = e.target!.result as string;
-      const img = new window.Image();
-      img.src = imgDataUrl;
-      img.onload = async () => {
-        try {
-          const exifData = await new Promise<any>((resolve, reject) => {
-            EXIF.getData(img as unknown as string, function (this: HTMLElement) {
-              resolve(EXIF.getAllTags(this));
-            });
-          });
-          if (exifData && exifData.GPSLatitude && exifData.GPSLongitude) {
-            const latRef = exifData.GPSLatitudeRef || 'N';
-            const lngRef = exifData.GPSLongitudeRef || 'W';
-            const latitude = convertDMSToDD(exifData.GPSLatitude, latRef);
-            const longitude = convertDMSToDD(exifData.GPSLongitude, lngRef);
-            setCoordinates({ lat: latitude, lng: longitude });
-          } else {
-            console.log("GPS coordinates not found.");
-            setCoordinates({ lat: null, lng: null });
-          }
-        } catch (error) {
-          console.error("Error getting EXIF ​​metadata:", error);
-          setCoordinates({ lat: null, lng: null });
-        }
-      };
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const convertDMSToDD = (dms: number[], ref: string): number => {
-    const degrees = dms[0];
-    const minutes = dms[1];
-    const seconds = dms[2];
+  const convertDMSToDD = (dms: any[], ref: string): number => {
+    const degrees = dms[0] || 0;
+    const minutes = dms[1] || 0;
+    const seconds = dms[2] || 0;
     let dd = degrees + minutes / 60 + seconds / 3600;
-
-    if (ref === "S" || ref === "W") {
+    if (ref === 'S' || ref === 'W') {
       dd = dd * -1;
     }
     return dd;
+  };
+  
+  const extractCoordinates = (file: File) => {
+    const reader = new FileReader();
+  
+    reader.onload = (e) => {
+      const imgDataUrl = e.target?.result as string;
+  
+      if (imgDataUrl) {
+        const img = new window.Image();
+        img.src = imgDataUrl;
+  
+        img.onload = () => {
+          const exifData = piexif.load(img.src);
+          console.log('EXIF Data:', exifData); 
+  
+          const gpsData = exifData.GPS || {}; 
+          const latitude = gpsData['GPSLatitude'];
+          const longitude = gpsData['GPSLongitude'];
+          const latitudeRef = gpsData['GPSLatitudeRef'] || 'N'; 
+          const longitudeRef = gpsData['GPSLongitudeRef'] || 'E'; 
+  
+          if (latitude && longitude) {
+            const lat = convertDMSToDD(latitude, latitudeRef);
+            const lng = convertDMSToDD(longitude, longitudeRef);
+  
+            setCoordinates({ lat, lng });
+            console.log(`Latitude: ${lat}, Longitude: ${lng}`);
+          }
+        };
+      }
+    };
+  
+    reader.readAsDataURL(file);
   };
 
 
@@ -392,17 +392,18 @@ export default function UploadForm() {
                         width="100%"
                       />
                     )}
+                 {coordinates && coordinates.lat !== null && coordinates.lng !== null && (
+       <div>
+       <p>Latitude: {coordinates.lat}</p>
+       <p>Longitude: {coordinates.lng}</p>
+     </div>
+      )}
                   </Box>
                 ))}
               </HStack>
             </Flex>
           </Flex>
-          {coordinates.lat !== null && coordinates.lng !== null && (
-            <Box mt={4}>
-              <Text>Latitude: {coordinates.lat}</Text>
-              <Text>Longitude: {coordinates.lng}</Text>
-            </Box>
-          )}
+
           <HStack justifyContent="space-between" marginTop={2}>
             <Input
               id="md-image-upload"
@@ -460,14 +461,14 @@ export default function UploadForm() {
             </MenuItem>
           </MenuList>
         </Menu>
+
       </HStack>
-      <CommentList
+      <PostList
         comments={sortedComments}
         visiblePosts={visiblePosts}
-        setVisiblePosts={setVisiblePosts}
+        parentPermlink={parent_permlink}
         username={username}
         handleVote={handleVote}
-
       />
 
     </VStack>

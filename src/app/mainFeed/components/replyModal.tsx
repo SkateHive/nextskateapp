@@ -33,10 +33,10 @@ interface ReplyModalProps {
     onNewComment: (comment: any) => void;
 }
 
-const ReplyModal = ({ isOpen, onClose, comment , onNewComment}: ReplyModalProps) => {
+const ReplyModal = ({ isOpen, onClose, comment, onNewComment}: ReplyModalProps) => {
     const user = useHiveUser();
     const [replyBody, setReplyBody] = useState("");
-    const [error, setError] = useState<string | null>(null); 
+    const [error, setError] = useState<string | null>(null);
 
     const handleReply = async () => {
         const loginMethod = localStorage.getItem("LoginMethod");
@@ -80,7 +80,7 @@ const ReplyModal = ({ isOpen, onClose, comment , onNewComment}: ReplyModalProps)
                             onNewComment({
                                 ...postData,
                                 id: newPermLink,
-                            }); 
+                            });
                             setReplyBody("");
                             onClose();
                         } else {
@@ -129,17 +129,17 @@ const ReplyModal = ({ isOpen, onClose, comment , onNewComment}: ReplyModalProps)
                 await commentWithPrivateKey(localStorage.getItem("EncPrivateKey")!, postOperation, commentOptions);
                 onNewComment({
                     ...postOperation[1],
-                    id: newPermLink, 
-                }); 
+                    id: newPermLink,
+                });
                 setReplyBody("");
                 onClose();
             }
         } catch (error: any) {
-            setError(error.message); 
+            setError(error.message);
         }
     };
 
-    
+
     return (
         <Modal isOpen={isOpen} onClose={onClose} size="lg" isCentered>
             <ModalOverlay style={{ backdropFilter: "blur(5px)" }} />
@@ -197,5 +197,4 @@ const ReplyModal = ({ isOpen, onClose, comment , onNewComment}: ReplyModalProps)
         </Modal>
     );
 };
-
 export default ReplyModal;
