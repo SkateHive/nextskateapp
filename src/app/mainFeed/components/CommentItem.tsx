@@ -221,7 +221,7 @@ const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = ()
                         containerClass="carousel-container" // Ensure the container has no extra padding/margin
                       >
                         {iframeLinks.map((video, i) => (
-                          <iframe
+                          <video
                             key={i}
                             src={video.url}
                             width="100%"
