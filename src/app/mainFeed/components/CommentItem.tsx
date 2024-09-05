@@ -111,9 +111,6 @@ const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = ()
     return links;
   }
 
-
-  const imageLinks = extractLinksFromMarkdown(editedCommentBody);
-
   const extractIFrameLinks = (markdown: string) => {
     const regex = /<iframe src="(.*?)"/g;
     const links = [];
@@ -124,19 +121,24 @@ const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = ()
     return links;
   }
 
+  const extractLinksAndIFrameLinksFromMarkdown = (markdown: string) => {
+    const imageLinks = extractLinksFromMarkdown(markdown);
+    const iframeLinks = extractIFrameLinks(markdown);
+    const uniqueImageUrls = new Set();
+    const filteredImages = imageLinks.filter((image) => {
+      if (!uniqueImageUrls.has(image.url)) {
+        uniqueImageUrls.add(image.url);
+        return true;
+      }
+      return false;
+    });
+    return { imageLinks, iframeLinks, filteredImages };
+  }
 
-  const iframeLinks = extractIFrameLinks(editedCommentBody);
+  const { imageLinks, iframeLinks, filteredImages } = extractLinksAndIFrameLinksFromMarkdown(editedCommentBody);
 
-  const uniqueImageUrls = new Set();
-  const filteredImages = imageLinks.filter((image) => {
-    if (!uniqueImageUrls.has(image.url)) {
-      uniqueImageUrls.add(image.url);
-      return true;
-    }
-    return false;
-  });
+  const markdownWithoutImagesAndVideos = editedCommentBody.replace(/!\[.*?\]\((.*?)\)/g, "").replace(/<iframe src="(.*?)"/g, "").replace(/allowfullscreen>/g, "");
 
-  const markdownWithoutImages = editedCommentBody.replace(/!\[.*?\]\((.*?)\)/g, "");
 
   const carouselRef = useRef<any>(null);
 
@@ -146,8 +148,10 @@ const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = ()
     }
   };
 
-
-
+  const mediaItems = [
+    ...iframeLinks.map((video) => ({ type: "video", url: video.url })),
+    ...filteredImages.map((image) => ({ type: "image", url: image.url }))
+  ];
   const toggleCommentVisibility = () => {
     setIsCommentFormVisible((prev) => !prev);
   };
@@ -162,7 +166,7 @@ const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = ()
         onNewComment={handleNewComment}
       />
 
-      <Flex onClick={toggleCommentVisibility} cursor="pointer">
+      <Flex cursor="pointer">
         <AuthorAvatar username={comment.author} />
         <VStack w={"80%"} ml={4} alignItems={"start"} marginRight={"16px"}>
           <HStack justify={"space-between"} width={"full"}>
@@ -182,90 +186,112 @@ const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = ()
               </Text>
             </HStack>
           </HStack>
-          <Box w={"100%"} bg="black" color="white" id="flexxx">
+          <Box w={"100%"} bg="black" color="white" onClick={() => { toggleCommentVisibility(); }}>
             {((filteredImages.length <= 1 && iframeLinks.length === 0) ||
               (iframeLinks.length <= 1 && filteredImages.length === 0)) ? (
               <ReactMarkdown
                 components={MarkdownRenderers}
                 rehypePlugins={[rehypeRaw]}
                 remarkPlugins={[remarkGfm]}
+
               >
                 {transformNormalYoutubeLinksinIframes(
                   transformIPFSContent(
+                    // is that right ? editedCommentBody here ?
                     transformShortYoutubeLinksinIframes(editedCommentBody)
                   )
                 )}
               </ReactMarkdown>
             ) : (
               <>
-                <ReactMarkdown
-                  components={MarkdownRenderers}
-                  rehypePlugins={[rehypeRaw]}
-                  remarkPlugins={[remarkGfm]}
-                >
-                  {transformNormalYoutubeLinksinIframes(
-                    transformIPFSContent(
-                      transformShortYoutubeLinksinIframes(markdownWithoutImages)
-                    )
-                  )}
-                </ReactMarkdown>
-                {(filteredImages.length > 1 || iframeLinks.length > 1) && (
+                <Box onClick={() => { toggleCommentVisibility(); console.log(comment); }}>
+
+                  <ReactMarkdown
+                    components={MarkdownRenderers}
+                    rehypePlugins={[rehypeRaw]}
+                    remarkPlugins={[remarkGfm]}
+                  >
+                    {transformNormalYoutubeLinksinIframes(
+                      transformIPFSContent(
+                        transformShortYoutubeLinksinIframes(markdownWithoutImagesAndVideos)
+                      )
+                    )}
+                  </ReactMarkdown>
+                </Box>
+                {(filteredImages.length > 0 || iframeLinks.length > 0) && (
                   <Box maxW={'100%'}>
-                    <CarouselContainer>
-                      <Carousel
-                        ref={carouselRef}
-                        responsive={responsive}
-                        arrows
-                        customLeftArrow={<CustomLeftArrow onClick={() => carouselRef.current?.previous()} />}
-                        customRightArrow={<CustomRightArrow onClick={() => carouselRef.current?.next()} />}
-                        containerClass="carousel-container" // Ensure the container has no extra padding/margin
-                      >
-                        {iframeLinks.map((video, i) => (
-                          <video
-                            key={i}
-                            src={video.url}
-                            width="100%"
-                            height="100%"
-                            style={{
-                              aspectRatio: "16/9",
-                              border: "0",
-                              maxWidth: "100%",
-                              overflow: "hidden",
-                            }}
-                          />
-                        ))}
-                        {filteredImages.map((image, i) => (
-                          <Box
-                            key={i}
-                            display="flex"
-                            justifyContent="center"
-                            alignItems="center"
-                            style={{
-                              height: "100%",
-                              overflow: "hidden",
-                              maxWidth: "100%",
-                            }}
-                          >
-                            <img
-                              key={i}
-                              src={image.url}
-                              alt="Post media"
-                              style={{
-                                width: "100%",
-                                maxWidth: "100%",
-                                objectFit: "cover",
-                                borderRadius: "8px",
-                                maxHeight: '445px',
-                                display: "block",
-                                margin: "3px",
-                                overflow: "hidden",
-                              }}
-                              onClick={handleImageClick}
-                            />
-                          </Box>
-                        ))}
-                      </Carousel>
-                    </CarouselContainer>
+                    <center>
+
+                      <CarouselContainer>
+                        <Carousel
+                          ref={carouselRef}
+                          responsive={responsive}
+                          arrows
+                          customLeftArrow={<CustomLeftArrow onClick={() => carouselRef.current?.previous()} />}
+                          customRightArrow={<CustomRightArrow onClick={() => carouselRef.current?.next()} />}
+                          containerClass="carousel-container"
+                        >
+                          {mediaItems.map((media, i) =>
+                            media.type === "video" ? (
+                              <Box
+                                key={i}
+                                display="flex"
+                                justifyContent="center"
+                                alignItems="center"
+                                style={{
+                                  height: "100%",
+                                  overflow: "hidden",
+                                  maxWidth: "100%",
+                                }}
+                              >
+                                <video
+                                  key={i}
+                                  src={media.url}
+                                  controls
+                                  style={{
+                                    width: "100%",
+                                    maxWidth: "100%",
+                                    aspectRatio: "16/9",
+                                    border: "0",
+                                    borderRadius: "8px",
+                                    overflow: "hidden",
+                                  }}
+                                />
+                              </Box>
+                            ) : (
+                              <Box
+                                key={i}
+                                display="flex"
+                                justifyContent="center"
+                                alignItems="center"
+                                style={{
+                                  height: "100%",
+                                  overflow: "hidden",
+                                  maxWidth: "100%",
+                                }}
+                              >
+                                <img
+                                  src={media.url}
+                                  alt="Post media"
+                                  style={{
+                                    width: "100%",
+                                    maxWidth: "100%",
+                                    objectFit: "cover",
+                                    borderRadius: "8px",
+                                    maxHeight: '445px',
+                                    display: "block",
+                                    margin: "3px",
+                                    overflow: "hidden",
+                                  }}
+                                  onClick={handleImageClick}
+                                />
+                              </Box>
+                            )
+                          )}
+                        </Carousel>
+                      </CarouselContainer>
+                    </center>
+
                   </Box>
                 )}
               </>
@@ -284,7 +310,7 @@ const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = ()
             colorScheme="green"
             variant="ghost"
             leftIcon={<FaPencil />}
-            onClick={(e) => {
+            onClick={(e: any) => {
               e.stopPropagation();
               setIsEditModalOpen(true);
             }}
@@ -304,7 +330,7 @@ const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = ()
           colorScheme="green"
           variant="ghost"
           leftIcon={<FaRegComment />}
-          onClick={(e) => {
+          onClick={(e: any) => {
             e.stopPropagation();
             setIsReplyModalOpen(true);
           }}
@@ -327,7 +353,7 @@ const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = ()
           <Text
             fontWeight={"bold"}
             color={"green.400"}
-            onClick={(e) => {
+            onClick={(e: any) => {
               e.stopPropagation();
               window.open(
                 `/post/test/@${comment.author}/${comment.permlink}`,
