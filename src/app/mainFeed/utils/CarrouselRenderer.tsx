@@ -50,7 +50,11 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
         return false;
     });
 
-    const markdownWithoutImages = editedCommentBody.replace(/!\[.*?\]\((.*?)\)/g, "");
+    const markdownWithoutImages = editedCommentBody
+    .replace(/!\[.*?\]\((.*?)\)/g, "")
+    .replace(/<iframe src="(.*?)"/g, "")
+    .replace(/allowfullscreen>/g, "");
+
 
     const carouselRef = useRef<any>(null);
 
