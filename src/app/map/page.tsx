@@ -10,8 +10,8 @@ import "../../styles/fonts.css";
 import UploadForm from './UploadForm';
 
 const EmbeddedMap: React.FC = () => {
-  const parent_author = process.env.NEXT_PUBLIC_MAINFEED_AUTHOR || "web-gnar";
-  const parent_permlink = process.env.NEXT_PUBLIC_MAINFEED_PERMLINK || "about-the-skatehive-spotbook";
+  const parent_author = "web-gnar";
+  const parent_permlink = "about-the-skatehive-spotbook";
   const mapSrc = "https://www.google.com/maps/d/u/1/embed?mid=1iiXzotKL-uJ3l7USddpTDvadGII&hl=en&ll=29.208380630280647%2C-100.5437214508988&z=4";
   const { comments: allComments, addComment, isLoading } = useComments(parent_author, parent_permlink);
   const user = useHiveUser();

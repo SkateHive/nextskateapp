@@ -1,139 +1,151 @@
 'use client'
-import {
-    Box,
-    Button,
-    Center,
-    Checkbox,
-    Flex,
-    FormControl,
-    HStack,
-    Icon,
-    Input,
-    Text,
-    VStack
-} from '@chakra-ui/react';
+//import { Client, Operation, KeyRole, utils } from '@hiveio/dhive';
+//import { KeychainKeyTypes, KeychainRequestTypes, KeychainSDK } from 'keychain-sdk';
+//import { KeychainKeyTypes, KeychainRequestTypes } from 'keychain-sdk';
+//import { KeychainRequestTypes, KeychainKeyTypes } from 'keychain-sdk';
 import '@fontsource/creepster';
+import { Operation } from '@hiveio/dhive'; 
+import { KeychainSDK, KeychainRequestTypes, KeychainKeyTypes } from 'keychain-sdk';
 import * as dhive from '@hiveio/dhive';
-import { KeyRole } from '@hiveio/dhive';
-import { KeychainKeyTypes, KeychainRequestTypes, KeychainSDK } from 'keychain-sdk';
+
+//import serverMailer from '../../lib/mailer/route';
+import * as invites from '../../lib/mailer/invite-helpers';
+
+import { Box, Button, Center, Checkbox, Flex, FormControl,
+         Icon, Input, Text, VStack } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
-import { FaCheck, FaDownload, FaKey, FaTimes } from 'react-icons/fa';
-
-
-
-const client = new dhive.Client([
-    'https://api.hive.blog',
-    'https://api.hivekings.com',
-    'https://anyx.io',
-    'https://api.openhive.network',
-]);
-
-
+import { FaCheck, FaDownload, FaKey, FaMailBulk, FaTimes } from 'react-icons/fa';
 import { useHiveUser } from '@/contexts/UserContext';
-import { Operation } from '@hiveio/dhive';
-
-const generatePassword = () => {
-    const array = new Uint32Array(10);
-    crypto.getRandomValues(array);
-
-    const key = 'SKATE000' + dhive.PrivateKey.fromSeed(array.toString()).toString();
-    return key.substring(0, 25);
-}
-
-const getPrivateKeys = (username: string, password: string, roles = ['owner', 'active', 'posting', 'memo']) => {
-    const privKeys = {} as any;
-    roles.forEach((role) => {
-        privKeys[role] = dhive.PrivateKey.fromLogin(username, password, role as KeyRole).toString();
-        privKeys[`${role}Pubkey`] = dhive.PrivateKey.from(privKeys[role]).createPublic().toString();
-    });
-
-    return privKeys;
-};
-
-
-const checkAccountExists = async (desiredUsername: string) => {
-    try {
-        const accounts = await client.database.getAccounts([desiredUsername]);
-        return accounts.length === 0;
-    } catch (error) {
-        console.error('Error checking account:', error);
-        return false;
-    }
-};
-
-const copyToClipboard = (text: string) => {
-    const el = document.createElement('textarea');
-    el.value = text;
-    document.body.appendChild(el);
-    el.select();
-    document.execCommand('copy');
-    document.body.removeChild(el);
-};
 
 function AccountCreation() {
+    const [isLoading, setIsLoading] = useState(true);
     const [desiredUsername, setDesiredUsername] = useState('');
-    const [showSecondForm, setShowSecondForm] = useState(false);
+    const [desiredEmail, setDesiredEmail] = useState('');
     const [accountAvailable, setAccountAvailable] = useState(false);
+    const [accountInvalid, setAccountInvalid] = useState<string | null>(null);
     const [isCheckedOnce, setIsCheckedOnce] = useState(false);
-    const [email, setEmail] = useState('');
     const [masterPassword, setMasterPassword] = useState('');
     const [keys, setKeys] = useState<any>(null);
-    const [downloadText, setDownloadText] = useState('');
     const [areKeysDownloaded, setAreKeysDownloaded] = useState(false);
     const [charactersToShow, setCharactersToShow] = useState(0);
+
+    const [broadcast_success, setBroadcastResult] = useState(false);
+    const [broadcast_txid, setTxId] = useState('');
+    const [broadcast_message, setBMessage] = useState('');
+
+    const [email, setEmail] = useState('');
+    const [showSecondForm, setShowSecondForm] = useState(false);
     const [textToDisplay, setTextToDisplay] = useState('');
+    const [downloadText, setDownloadText] = useState('');
     const user = useHiveUser();
 
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setIsLoading(false);
+          }, 1000); // 1000 milliseconds = 1 second
+          // Clear the interval when the component unmounts to prevent memory leaks
+          return () => clearInterval(interval);
+      }, []);
 
     const handleCheck = async () => {
+        var isValidAccountName = null;
+        var isAvailable = false;
+
+        setBroadcastResult(false);
+        setBMessage("");
+
+        // for debug
+        // console.log("handlecheck");
+        // sendTestEmail('', '', []);
+        // debug
+
+        if(desiredEmail==""){
+            setBroadcastResult(true);
+            setBMessage("You forgot the fill up the email");
+            return
+        } else {
+            setBroadcastResult(false);
+            setBMessage("");
+        }
+
         if (desiredUsername) {
-            const isAvailable = await checkAccountExists(desiredUsername);
-
-            setIsCheckedOnce(true);
-
-            if (isAvailable) {
-                setShowSecondForm(true);
-                setAccountAvailable(true);
+            // console.log("desiredUsername: "+desiredUsername);
+            isValidAccountName = invites.validateAccountName(desiredUsername);
+            if(isValidAccountName !== null){
+                // account is invalid, return error string
+                setAccountInvalid(String(isValidAccountName));
             } else {
-                console.log('Account already exists. Please choose a different desiredUsername.');
+                setAccountInvalid('');
+            }
+
+            if(isValidAccountName === null){
+                isAvailable = await invites.checkAccountExists(desiredUsername);
+                setIsCheckedOnce(true);
+            } else {
+                isAvailable = false;
+                setIsCheckedOnce(true);
+            }
+
+            // console.log("isValidAccountName: "+isValidAccountName);
+            // console.log("isAvailable: "+isAvailable);
+            if (isAvailable && (isValidAccountName === null)) {
+                // console.log("Is Available");
+                // console.log("isValidAccountName: "+isValidAccountName);
+                // console.log("isAvailable: "+isAvailable);
+                //setShowSecondForm(true);
+                setAccountAvailable(true);
+                setAreKeysDownloaded(true);
+                handleGenerateKeys();
+            } else {
+                // console.log("Not Available");
+                // console.log("isValidAccountName :"+isValidAccountName);
+                // console.log("isAvailable :"+isAvailable);
+                // console.log('Account already exists. Please choose a different desiredUsername.');
+                //setShowSecondForm(false);
                 setAccountAvailable(false);
+                setAreKeysDownloaded(false);
             }
         } else {
-            console.log('Please enter a username.');
+            // console.log('Please enter a username.');
+            setAccountAvailable(false);
         }
     };
 
     const handleGenerateKeys = () => {
-        const masterPassword = generatePassword();
+        const masterPassword = invites.generatePassword();
         setMasterPassword(masterPassword);
-
-        const keys = getPrivateKeys(desiredUsername, masterPassword);
+        const keys = invites.getPrivateKeys(desiredUsername, masterPassword);
         setKeys(keys);
-
-        let text = `Username: ${desiredUsername}\n\n`;
-        text += `Master Password (Backup): ${masterPassword}\n\n`;
-        text += `Owner Private Key: ${keys.owner}\n\n`;
-        text += `Active Private Key: ${keys.active}\n\n`;
-        text += `Posting Private Key: ${keys.posting}\n\n`;
-        text += `Memo Private Key: ${keys.memo}\n\n\n\n`;
-        text += `Email: ${email}\n`
-        text += `Account created: ${new Date().toUTCString()}\n`;
-        text += `Account created by: ${user.hiveUser?.name}\n`;
-        text += `Account created on SKATEHIVE! - skatehive.app`;
-
-        let displayText = `Username: ${desiredUsername}\n\n`;
-        displayText += `Password: ${masterPassword}\n\n`;
-
-        setDownloadText(text);
-        setTextToDisplay(displayText);
     }
 
     const handleCreateAccount = async () => {
-        try {
-            const keychain = new KeychainSDK(window);
-            let ops: Operation[] = [];
+        // const keychain = window?.hive_keychain;
+        const keychain = new KeychainSDK(window);
+        let ops: Operation[] = [];
 
-            if (user) {
+        if (!keychain) {
+            setBroadcastResult(true);
+            setBMessage("Hive Keychain is probably not enabled");
+            //console.log("keychain is probably not enabled");
+            return;
+        } else {
+            // console.log("keychain is enabled. step1");
+            setBroadcastResult(false);
+            setBMessage("");
+        }
+
+        try {
+            if (user.hiveUser?.name) {
+                if(!keys) {
+                    // console.log("no keys");
+                    setBroadcastResult(true);
+                    setBMessage("Issue with keys");
+                    return;
+                }
+
+                const isKeychainInstalled = await keychain.isKeychainInstalled();
+                console.log("is keychain installed? "+isKeychainInstalled);
+
                 const createAccountOperation: Operation = [
                     'account_create',
                     {
@@ -149,22 +161,49 @@ function AccountCreation() {
                     },
                 ];
 
-
                 ops.push(createAccountOperation);
-
                 const formParamsAsObject = {
                     type: KeychainRequestTypes.broadcast,
-                    username: user.hiveUser?.name ?? '',
+                    username: user.hiveUser.name,
                     operations: ops,
                     method: KeychainKeyTypes.active,
                 };
 
-                const broadcast = await keychain.broadcast(formParamsAsObject);
+                try {
+
+                    const broadcast = await keychain.broadcast(formParamsAsObject);
+                    //console.log(broadcast);
+
+                    if(broadcast.success) {
+                        console.log("invites.sendInviteEmail result:");
+                        const invitation = invites.sendInviteEmail(desiredEmail, desiredUsername, user.hiveUser.name, masterPassword, keys);
+                        console.log(invitation);
+                        setBroadcastResult(true);
+                        //setTxId(broadcast.result.tx_id);
+                        setBMessage(broadcast.message);
+                        console.log(broadcast.result?.tx_id);
+                        console.log(broadcast.message);
+                    } else {
+                        setBroadcastResult(true);
+                        setBMessage(broadcast.error + ": " + broadcast.message);
+                        console.log(broadcast.message);
+                        console.log(broadcast.error);
+                    }
+                } catch (error:any){
+                    //console.log("error broadcasting: ");
+                    console.log(error);
+                    setBroadcastResult(true);
+                    setBMessage(error.message);
+                }
             } else {
-                console.log('no user');
+                setBroadcastResult(true);
+                setBMessage("no logged hive user");
+                //console.log('no logged hive user');
             }
         } catch (error) {
-            console.error('Error during KeychainSDK interaction:', error);
+            setBroadcastResult(true);
+            setBMessage('Error during Keychain interaction:' + error);
+            console.error('Error during Keychain interaction:', error);
         }
     };
 
@@ -188,12 +227,12 @@ function AccountCreation() {
         }
     };
 
-    return (
-        <Flex
-            style={{
-                backgroundImage: "url('https://i.ibb.co/Lv5C8rZ/nft-unscreen.gif')",
-                backgroundSize: '100%',
-                backgroundPosition: 'center',
+    if(isLoading) {
+        return (
+            <Flex style={{
+                backgroundImage: "url('/spinning-joint-sm.gif')",
+                backgroundSize: '10%',
+                backgroundPosition: 'center center',
                 backgroundRepeat: 'no-repeat',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -201,103 +240,255 @@ function AccountCreation() {
                 width: '100%',
                 height: '100vh',
                 color: 'white',
-            }}
-        >
+            }}>
+                <VStack>
+        <>
+        <Center>
+          <Text align={"center"} fontFamily="Creepster" fontSize="44px" 
+          color="green" textShadow="2px 2px white">
+            Rolling...</Text>
+        </Center>
+        </>
+        </VStack>
+            </Flex>
+        )
+    }
 
-            <VStack spacing={3}>
-                <Center>
-                    <Text align={"center"} fontFamily="Creepster" fontSize="44px" color="white">Invite a Shredder to Skatehive</Text>
-                </Center>
-                <Text fontFamily="Creepster" fontSize="32px" color={"yellow"}>Choose a username!</Text>
+    if(!user.hiveUser?.name) {
+      // need to login
+      return (
+        <Flex style={{
+        backgroundImage: "url('https://images.hive.blog/0x0/https://media3.giphy.com/media/jLGwKuxeloeTYfahcT/giphy.gif?cid=53fbcc77tro039zxx7rfnyxlkrdbxx07bopfjh2zmsmlwt90&ep=v1_gifs_search&rid=giphy.gif&ct=g')",
+        backgroundSize: '65%',
+        backgroundPosition: 'top center',
+        backgroundRepeat: 'no-repeat',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexWrap: 'wrap',
+        width: '100%',
+        height: '100vh',
+        color: 'white',
+    }}>
+        <VStack>
+        <>
+        <Center>
+          <Text align={"center"} fontFamily="Creepster" fontSize="44px" 
+          color="red" textShadow="2px 2px yellow">
+            You need Login before Invite!</Text>
+        </Center>
+        </>
+        </VStack>
+      
+      <VStack>
+        <Center>
+            <Button w={"100%"} p="20px" 
+              alignContent={"center"}
+              colorScheme="green" 
+              border={"2px solid black"} 
+              onClick={handleCreateAccount} 
+              margin="10px" 
+              display={'none'}
+              isDisabled={areKeysDownloaded ? false : true}>
+              TEST are keys downloaded 
+            </Button>
+          </Center>
+      </VStack>
 
-                <Input
-                    type='login'
-                    placeholder="Enter Hive username"
-                    backdropBlur={4}
-                    bg={"black"}
-                    maxW={"375px"}
-                    value={desiredUsername}
-                    onChange={(e) => setDesiredUsername(e.target.value)}
-                    onKeyDown={handleKeyDown}
+      <VStack>
+        <Center>
+            <Button w={"100%"} p="20px" 
+              alignContent={"center"}
+              colorScheme="green" 
+              border={"2px solid black"} 
+              onClick={handleCreateAccount} 
+              margin="10px" 
+              display={'none'}
+              isDisabled={false}>
+              TEST Create Account and Send Keys
+            </Button>
+            <Text>.</Text>
+          </Center>
+      </VStack>
+  </Flex>);
 
-                />
-                <HStack>
+    } else 
+      // user is in
+      return (
+<Flex style={{
+        backgroundImage: "url('https://i.ibb.co/Lv5C8rZ/nft-unscreen.gif')",
+        backgroundSize: '20%',
+        backgroundPosition: 'top center',
+        backgroundRepeat: 'no-repeat',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexWrap: 'wrap',
+        width: '100%',
+        height: '100vh',
+        color: 'white',
+    }}>
+<VStack spacing={3}>
+    <Center>
+      <Text align={"center"} fontFamily="Creepster" fontSize="44px" color="white">Invite a Shredder to Skatehive</Text>
+    </Center>
+      <Text fontFamily="Creepster" fontSize="32px" color={"yellow"}>
+        Your buddy nickname. Choose wisely!</Text>
 
-                    <Button colorScheme="yellow" border={"2px solid black"} onClick={handleCheck}>
-                        Is it available?
-                    </Button>
-                    <Flex border={"2px solid yellow"} borderRadius="5px" bg={"black"} p={"5px"} align="center" display={isCheckedOnce ? 'flex' : 'none'}>
-                        {accountAvailable ? (
-                            <Icon as={FaCheck} color="green" />
-                        ) : (
-                            <Icon as={FaTimes} color="red" />
-                        )}
-                        <Text color={accountAvailable ? "yellow" : "white"} ml={2}>
-                            {accountAvailable ? 'Account available' : 'Account unavailable'}
-                        </Text>
-                    </Flex>
-                </HStack>
+      <Input type='login'
+            placeholder="Friend's desired Hive Nickname"
+            backdropBlur={4}
+            bg={"black"}
+            maxW={"375px"}
+            value={desiredUsername}
+            onChange={(e) => setDesiredUsername(e.target.value)}
+            onKeyDown={handleKeyDown} />
 
-                {showSecondForm && (
-                    <FormControl>
-                        <Center>
-                            <Button leftIcon={<FaKey />} colorScheme="yellow" border={"2px solid black"} onClick={handleGenerateKeys} marginTop={5}>
-                                Generate Keys
-                            </Button>
-                        </Center>
-                        <Flex
-                            display={keys ? 'flex' : 'none'}
-                            direction="column"
-                            align="center"
-                            justify="center"
-                            marginTop={5}
-                        >
-                            <Box w={"90%"} border={"2px solid yellow"}>
-                                <Text
-                                    borderRadius="15"
-                                    padding={5}
-                                    background="#252525"
-                                    fontSize={"14px"}
-                                    whiteSpace="pre">
-                                    {textToDisplay.slice(0, charactersToShow)}
-                                </Text>
-                            </Box>
-                            <Flex mt={4} width="100%" gap={2} justifyContent="center" marginBottom={5}>
+      <Text fontFamily="Creepster" fontSize="32px" color={"yellow"}>Your buddy email</Text>
+      <Input type='email'
+            placeholder="Friend's email"
+            backdropBlur={4}
+            bg={"black"}
+            maxW={"375px"}
+            value={desiredEmail}
+            onChange={(e) => setDesiredEmail(e.target.value)}
+            onKeyDown={handleKeyDown} />
 
-                                <Button leftIcon={<FaKey />} colorScheme="yellow" border={"2px solid black"} onClick={() => copyToClipboard(downloadText)}>
-                                    Copy Keys
-                                </Button>
-                                <Button leftIcon={<FaDownload />} colorScheme="yellow" border={"2px solid black"} onClick={() => {
-                                    const element = document.createElement("a");
-                                    const file = new Blob([downloadText], { type: 'text/plain' });
-                                    element.href = URL.createObjectURL(file);
-                                    element.download = `KEYS BACKUP - @${desiredUsername.toUpperCase()}.txt`;
-                                    document.body.appendChild(element);
-                                    element.click();
+    <VStack>
+        <Flex border={"2px solid yellow"} borderRadius="5px" bg={"black"} p={"5px"} align="center" display={isCheckedOnce ? 'flex' : 'none'}>
+            {accountAvailable 
+                ? ( <Icon as={FaCheck} color="green" /> ) 
+                : ( <Icon as={FaTimes} color="red" /> )}
 
-                                    setAreKeysDownloaded(true);
-                                }}>
-                                    Download Keys
-                                </Button>
-                            </Flex>
-
-
-                        </Flex>
-                        <Flex>
-
-                            <Checkbox marginLeft={"15px"} colorScheme="teal" size="lg" isChecked={areKeysDownloaded} onChange={(e) => setAreKeysDownloaded(e.target.checked)}>
-                                I have downloaded that shit and I wont lose it.
-                            </Checkbox>
-
-                        </Flex>
-                        <Button w={"100%"} p="20px" colorScheme="yellow" border={"2px solid black"} onClick={handleCreateAccount} margin="10px" isDisabled={areKeysDownloaded ? false : true}>
-                            Create Account
-                        </Button>
-                    </FormControl>
-                )}
-            </VStack>
+            <Text color={accountAvailable ? "yellow" : "white"} ml={2}>
+                {accountAvailable 
+                    ? 'Yeah!! Account available. Drop it!' 
+                    : 'Please choose other nickname! ' + accountInvalid}
+            </Text>
         </Flex>
-    );
+
+        <Center>
+            {desiredUsername && (
+            <Button display={'block'} 
+                colorScheme="yellow" 
+                border={"2px solid black"} 
+                onClick={handleCheck}>
+                    Check if @{desiredUsername} is available!
+            </Button>
+            )}
+        </Center>
+    </VStack>
+
+    <VStack>
+        {desiredUsername != '' && (
+        <Text>Create Account and Send keys to {desiredUsername} at {desiredEmail}.</Text>
+        )}
+    </VStack>
+    <VStack>
+      <FormControl>
+          <Center>
+            <Button w={"100%"} p="20px" 
+              alignContent={"center"}
+              colorScheme="green" 
+              border={"2px solid black"} 
+              onClick={handleCreateAccount} 
+              margin="10px" 
+              isDisabled={areKeysDownloaded ? false : true}>
+               Looks Good, Lets go for it!
+            </Button>
+          </Center>
+      </FormControl>
+    </VStack>
+
+    {broadcast_success && (
+        <VStack>
+            <Text id="BroadcastResults"
+                    borderRadius="15"
+                    borderColor={'yellow'}
+                    padding={5}
+                    background="#252525"
+                    fontSize={"14px"}
+                    whiteSpace="pre">
+                {broadcast_message}
+            </Text>
+        </VStack>
+    )}
+
+  {showSecondForm && (
+      <FormControl>
+          <Button leftIcon={<FaKey />} colorScheme="yellow" 
+              border={"2px solid black"} 
+              onClick={handleGenerateKeys} 
+              marginTop={5}>
+              Generate Keys</Button>
+          <Flex display={keys ? 'flex' : 'none'}
+                  direction="column"
+                  align="center"
+                  justify="center"
+                  marginTop={5} >
+              <Box w={"90%"}>
+                  <Text id="hiddenSecretKeys"
+                          borderRadius="15"
+                          display="none"
+                          borderColor={'yellow'}
+                          padding={5}
+                          background="#252525"
+                          fontSize={"14px"}
+                          whiteSpace="pre">
+                      {textToDisplay.slice(0, charactersToShow)}
+                  </Text>
+              </Box>
+              <Flex mt={4} width="100%" gap={2} justifyContent="center" marginBottom={5}>
+                  <Button leftIcon={<FaKey />} colorScheme="yellow" 
+                          border={"2px solid black"} 
+                          onClick={() => invites.copyToClipboard(downloadText)}>
+                      Copy Keys
+                  </Button>
+                  <Button leftIcon={<FaDownload />} colorScheme="yellow" 
+                          border={"2px solid black"} 
+                          onClick={() => {
+                              const element = document.createElement("a");
+                              const file = new Blob([downloadText], { type: 'text/plain' });
+                              element.href = URL.createObjectURL(file);
+                              element.download = `KEYS BACKUP - @${desiredUsername.toUpperCase()}.txt`;
+                              document.body.appendChild(element);
+                              element.click();
+                              setAreKeysDownloaded(true); 
+                          }}>
+                          Download Keys
+                  </Button>
+                  <Button leftIcon={<FaMailBulk />} colorScheme="yellow" 
+                  border={"2px solid black"} 
+                  onClick={() => invites.copyToClipboard(downloadText)}>
+                      Send via e-mail
+                  </Button>
+              </Flex>
+          </Flex>
+          <Flex>
+              <Checkbox display={'none'}
+                      marginLeft={"15px"} 
+                      colorScheme="teal" 
+                      size="lg" 
+                      isChecked={areKeysDownloaded} 
+                      onChange={(e) => setAreKeysDownloaded(e.target.checked)}>
+                  I have downloaded that shit and I wont lose it.
+              </Checkbox>
+          </Flex>
+          <Center>
+            <Button w={"100%"} p="20px" 
+              alignContent={"center"}
+              colorScheme="green" 
+              border={"2px solid black"} 
+              onClick={handleCreateAccount} 
+              margin="10px" 
+              isDisabled={areKeysDownloaded ? false : true}>
+              Create Account and Send Keys via Email
+            </Button>
+          </Center>
+      </FormControl>
+    )}
+</VStack>
+</Flex>
+);
+
 }
 
 export default AccountCreation;
