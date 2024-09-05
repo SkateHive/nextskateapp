@@ -1,15 +1,11 @@
 "use client";
-import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
 import AuthorAvatar from "@/components/AuthorAvatar";
 import TipButton from "@/components/PostCard/TipButton";
 import { useHiveUser } from "@/contexts/UserContext";
 import { useComments } from "@/hooks/comments";
 import {
   formatDate,
-  getTotalPayout,
-  transformIPFSContent,
-  transformNormalYoutubeLinksinIframes,
-  transformShortYoutubeLinksinIframes,
+  getTotalPayout
 } from "@/lib/utils";
 import {
   Box,
@@ -20,16 +16,10 @@ import {
   Tooltip,
   VStack
 } from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { FaRegComment } from "react-icons/fa";
 import { FaPencil } from "react-icons/fa6";
-import ReactMarkdown from "react-markdown";
-import Carousel from "react-multi-carousel";
-import rehypeRaw from "rehype-raw";
-import remarkGfm from "remark-gfm";
-import CarouselContainer from "./CommentItem/CarouselContainer";
-import CustomLeftArrow from "./CommentItem/CustomLeftArrow";
-import CustomRightArrow from "./CommentItem/CustomRightArrow";
+import CarrouselRenderer from "../utils/CarrouselRenderer";
 import VotingButton from "./CommentItem/VotingButton";
 import { EditCommentModal } from "./EditCommentModal";
 import ReplyModal from "./replyModal";
@@ -43,13 +33,6 @@ interface CommentItemProps {
   onNewComment?: (comment: any) => void;
   onClose?: () => void;
 }
-
-const responsive = {
-  mobile: {
-    breakpoint: { max: 4200, min: 0 },
-    items: 1,
-  },
-};
 
 const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = () => { } }: CommentItemProps) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -101,83 +84,30 @@ const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = ()
 
   const { voteValue } = useHiveUser();
 
-  const extractLinksFromMarkdown = (markdown: string) => {
-    const regex = /!\[.*?\]\((.*?)\)/g;
-    const links = [];
-    let match;
-    while ((match = regex.exec(markdown))) {
-      links.push({ url: match[1] });
-    }
-    return links;
-  }
-
-  const extractIFrameLinks = (markdown: string) => {
-    const regex = /<iframe src="(.*?)"/g;
-    const links = [];
-    let match;
-    while ((match = regex.exec(markdown))) {
-      links.push({ url: match[1] });
-    }
-    return links;
-  }
-
-  const extractLinksAndIFrameLinksFromMarkdown = (markdown: string) => {
-    const imageLinks = extractLinksFromMarkdown(markdown);
-    const iframeLinks = extractIFrameLinks(markdown);
-    const uniqueImageUrls = new Set();
-    const filteredImages = imageLinks.filter((image) => {
-      if (!uniqueImageUrls.has(image.url)) {
-        uniqueImageUrls.add(image.url);
-        return true;
-      }
-      return false;
-    });
-    return { imageLinks, iframeLinks, filteredImages };
-  }
-
-  const { imageLinks, iframeLinks, filteredImages } = extractLinksAndIFrameLinksFromMarkdown(editedCommentBody);
-
-  const markdownWithoutImagesAndVideos = editedCommentBody.replace(/!\[.*?\]\((.*?)\)/g, "").replace(/<iframe src="(.*?)"/g, "").replace(/allowfullscreen>/g, "");
-
-
-  const carouselRef = useRef<any>(null);
-
-  const handleImageClick = () => {
-    if (carouselRef.current) {
-      carouselRef.current.next();
-    }
-  };
-
-  const mediaItems = [
-    ...iframeLinks.map((video) => ({ type: "video", url: video.url })),
-    ...filteredImages.map((image) => ({ type: "image", url: image.url }))
-  ];
   const toggleCommentVisibility = () => {
     setIsCommentFormVisible((prev) => !prev);
   };
 
   return (
     <Box key={comment.id} p={4} bg="black" color="white">
-
       <ReplyModal
         comment={comment}
         isOpen={isReplyModalOpen}
         onClose={() => setIsReplyModalOpen(false)}
         onNewComment={handleNewComment}
       />
-
-      <Flex cursor="pointer">
+      <Flex onClick={toggleCommentVisibility} cursor="pointer">
         <AuthorAvatar username={comment.author} />
         <VStack w={"80%"} ml={4} alignItems={"start"} marginRight={"16px"}>
           <HStack justify={"space-between"} width={"full"}>
             <HStack
               cursor="pointer"
-              onClick={() =>
-                window.open(
-                  `/post/test/@${comment.author}/${comment.permlink}`,
-                  "_self"
-                )
-              }
+              // onClick={() =>
+              //   window.open(
+              //     `/post/test/@${comment.author}/${comment.permlink}`,
+              //     "_self"
+              //   )
+              // }
               gap="2px"
             >
               <Text fontWeight="bold">{comment.author}</Text>
@@ -186,120 +116,11 @@ const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = ()
               </Text>
             </HStack>
           </HStack>
-          <Box w={"100%"} bg="black" color="white" onClick={() => { toggleCommentVisibility(); }}>
-            {((filteredImages.length <= 1 && iframeLinks.length === 0) ||
-              (iframeLinks.length <= 1 && filteredImages.length === 0)) ? (
-              <ReactMarkdown
-                components={MarkdownRenderers}
-                rehypePlugins={[rehypeRaw]}
-                remarkPlugins={[remarkGfm]}
-
-              >
-                {transformNormalYoutubeLinksinIframes(
-                  transformIPFSContent(
-                    // is that right ? editedCommentBody here ?
-                    transformShortYoutubeLinksinIframes(editedCommentBody)
-                  )
-                )}
-              </ReactMarkdown>
-            ) : (
-              <>
-                <Box onClick={() => { toggleCommentVisibility(); console.log(comment); }}>
-
-                  <ReactMarkdown
-                    components={MarkdownRenderers}
-                    rehypePlugins={[rehypeRaw]}
-                    remarkPlugins={[remarkGfm]}
-                  >
-                    {transformNormalYoutubeLinksinIframes(
-                      transformIPFSContent(
-                        transformShortYoutubeLinksinIframes(markdownWithoutImagesAndVideos)
-                      )
-                    )}
-                  </ReactMarkdown>
-                </Box>
-                {(filteredImages.length > 0 || iframeLinks.length > 0) && (
-                  <Box maxW={'100%'}>
-                    <center>
-
-                      <CarouselContainer>
-                        <Carousel
-                          ref={carouselRef}
-                          responsive={responsive}
-                          arrows
-                          customLeftArrow={<CustomLeftArrow onClick={() => carouselRef.current?.previous()} />}
-                          customRightArrow={<CustomRightArrow onClick={() => carouselRef.current?.next()} />}
-                          containerClass="carousel-container"
-                        >
-                          {mediaItems.map((media, i) =>
-                            media.type === "video" ? (
-                              <Box
-                                key={i}
-                                display="flex"
-                                justifyContent="center"
-                                alignItems="center"
-                                style={{
-                                  height: "100%",
-                                  overflow: "hidden",
-                                  maxWidth: "100%",
-                                }}
-                              >
-                                <video
-                                  key={i}
-                                  src={media.url}
-                                  controls
-                                  style={{
-                                    width: "100%",
-                                    maxWidth: "100%",
-                                    aspectRatio: "16/9",
-                                    border: "0",
-                                    borderRadius: "8px",
-                                    overflow: "hidden",
-                                  }}
-                                />
-                              </Box>
-                            ) : (
-                              <Box
-                                key={i}
-                                display="flex"
-                                justifyContent="center"
-                                alignItems="center"
-                                style={{
-                                  height: "100%",
-                                  overflow: "hidden",
-                                  maxWidth: "100%",
-                                }}
-                              >
-                                <img
-                                  src={media.url}
-                                  alt="Post media"
-                                  style={{
-                                    width: "100%",
-                                    maxWidth: "100%",
-                                    objectFit: "cover",
-                                    borderRadius: "8px",
-                                    maxHeight: '445px',
-                                    display: "block",
-                                    margin: "3px",
-                                    overflow: "hidden",
-                                  }}
-                                  onClick={handleImageClick}
-                                />
-                              </Box>
-                            )
-                          )}
-                        </Carousel>
-                      </CarouselContainer>
-                    </center>
-
-                  </Box>
-                )}
-              </>
-            )}
-          </Box>
+          <HStack justify={"space-between"} width={"full"}>
+            <CarrouselRenderer editedCommentBody={editedCommentBody} />
+          </HStack>
         </VStack>
       </Flex>
-
       <Flex m={4} justifyContent={"space-between"}>
         {comment.author === username ? (
           <Button
@@ -310,7 +131,7 @@ const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = ()
             colorScheme="green"
             variant="ghost"
             leftIcon={<FaPencil />}
-            onClick={(e: any) => {
+            onClick={(e) => {
               e.stopPropagation();
               setIsEditModalOpen(true);
             }}
@@ -321,7 +142,6 @@ const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = ()
         ) : (
           <TipButton author={comment.author} />
         )}
-
         <Button
           _hover={{
             background: "transparent",
@@ -330,7 +150,7 @@ const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = ()
           colorScheme="green"
           variant="ghost"
           leftIcon={<FaRegComment />}
-          onClick={(e: any) => {
+          onClick={(e) => {
             e.stopPropagation();
             setIsReplyModalOpen(true);
           }}
@@ -353,7 +173,7 @@ const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = ()
           <Text
             fontWeight={"bold"}
             color={"green.400"}
-            onClick={(e: any) => {
+            onClick={(e) => {
               e.stopPropagation();
               window.open(
                 `/post/test/@${comment.author}/${comment.permlink}`,
@@ -392,7 +212,6 @@ const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = ()
     </Box>
   );
 };
-
 
 export default CommentItem;
 
