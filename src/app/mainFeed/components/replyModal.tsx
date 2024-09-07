@@ -1,14 +1,12 @@
-import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
 import AuthorAvatar from "@/components/AuthorAvatar";
 import UserAvatar from "@/components/UserAvatar";
 import { useHiveUser } from "@/contexts/UserContext";
 import { commentWithPrivateKey } from "@/lib/hive/server-functions";
-import { transformIPFSContent } from "@/lib/utils";
 import {
     Box,
     Button,
-    Center,
     Flex,
+    HStack,
     Modal,
     ModalBody,
     ModalCloseButton,
@@ -18,13 +16,11 @@ import {
     ModalOverlay,
     Text,
     Textarea,
-    VStack,
+    VStack
 } from "@chakra-ui/react";
 import * as dhive from "@hiveio/dhive";
 import { useState } from "react";
-import ReactMarkdown from "react-markdown";
-import rehypeRaw from "rehype-raw";
-import remarkGfm from "remark-gfm";
+import CarrouselRenderer from "../utils/CarrouselRenderer";
 
 interface ReplyModalProps {
     isOpen: boolean;
@@ -33,10 +29,11 @@ interface ReplyModalProps {
     onNewComment: (comment: any) => void;
 }
 
-const ReplyModal = ({ isOpen, onClose, comment, onNewComment}: ReplyModalProps) => {
+const ReplyModal = ({ isOpen, onClose, comment, onNewComment }: ReplyModalProps) => {
     const user = useHiveUser();
     const [replyBody, setReplyBody] = useState("");
     const [error, setError] = useState<string | null>(null);
+    const [editedCommentBody, setEditedCommentBody] = useState(comment.body);
 
     const handleReply = async () => {
         const loginMethod = localStorage.getItem("LoginMethod");
@@ -138,28 +135,20 @@ const ReplyModal = ({ isOpen, onClose, comment, onNewComment}: ReplyModalProps) 
             setError(error.message);
         }
     };
-
-
     return (
         <Modal isOpen={isOpen} onClose={onClose} size="lg" isCentered>
             <ModalOverlay style={{ backdropFilter: "blur(5px)" }} />
-            <ModalContent color={"white"} w={{ base: "100%", md: "75%" }} bg="black" border="0.6px solid grey" borderRadius="20px" mx={4}>
+            <ModalContent color={"white"} w={{ base: "100%", md: "75%" }} bg="black" border="0.6px solid grey" borderRadius="20px" mx={8}>
                 <ModalHeader>
                     <ModalCloseButton />
                 </ModalHeader>
                 <ModalBody>
                     <VStack align="start" spacing={4} position="relative">
-                        <Flex align="start" w="full">
+                        <Flex align="start" w="100%">
                             <AuthorAvatar username={comment.author} borderRadius={100} />
-                            <VStack>
-                                <Center>
-                                    <Box ml={3}>
-                                        <ReactMarkdown components={MarkdownRenderers} rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
-                                            {transformIPFSContent(comment.body)}
-                                        </ReactMarkdown>
-                                    </Box>
-                                </Center>
-                            </VStack>
+                            <HStack justify={"space-between"} width={"full"}>
+                                <CarrouselRenderer editedCommentBody={editedCommentBody} />
+                            </HStack>
                         </Flex>
                         <Box position="absolute" left="24px" top="60px" bottom="120px" width="2px" bg="gray.600" />
                         <Flex align="start" w="full" direction={{ base: "column", md: "row" }}>
