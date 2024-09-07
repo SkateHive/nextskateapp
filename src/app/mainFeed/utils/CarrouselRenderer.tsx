@@ -1,3 +1,5 @@
+import { MarkdownRenderers } from '@/app/upload/utils/MarkdownRenderers';
+import { transformIPFSContent, transformNormalYoutubeLinksinIframes, transformShortYoutubeLinksinIframes } from '@/lib/utils';
 import { Box } from '@chakra-ui/react';
 import React, { useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
@@ -34,29 +36,31 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
         return links;
     };
 
-    const transformNormalYoutubeLinksinIframes = (markdown: string) => markdown;
-    const transformIPFSContent = (markdown: string) => markdown;
-    const transformShortYoutubeLinksinIframes = (markdown: string) => markdown;
+    const extractLinksAndIFrameLinksFromMarkdown = (markdown: string) => {
+        const imageLinks = extractLinksFromMarkdown(markdown);
+        const iframeLinks = extractIFrameLinks(markdown);
+        const uniqueImageUrls = new Set();
+        const filteredImages = imageLinks.filter((image) => {
+            if (!uniqueImageUrls.has(image.url)) {
+                uniqueImageUrls.add(image.url);
+                return true;
+            }
+            return false;
+        });
+        return { imageLinks, iframeLinks, filteredImages };
+    }
 
-    const iframeLinks = extractIFrameLinks(editedCommentBody);
-    const imageLinks = extractLinksFromMarkdown(editedCommentBody);
-
-    const uniqueImageUrls = new Set();
-    const filteredImages = imageLinks.filter((image) => {
-        if (!uniqueImageUrls.has(image.url)) {
-            uniqueImageUrls.add(image.url);
-            return true;
-        }
-        return false;
-    });
-
-    const markdownWithoutImages = editedCommentBody
-    .replace(/!\[.*?\]\((.*?)\)/g, "")
-    .replace(/<iframe src="(.*?)"/g, "")
-    .replace(/allowfullscreen>/g, "");
-
+    const { imageLinks, iframeLinks, filteredImages } = extractLinksAndIFrameLinksFromMarkdown(editedCommentBody);
 
     const carouselRef = useRef<any>(null);
+
+
+    const markdownWithoutImages = editedCommentBody
+        .replace(/!\[.*?\]\((.*?)\)/g, "")
+        .replace(/<iframe src="(.*?)"/g, "")
+        .replace(/allowfullscreen>/g, "");
+
+
 
     const handleImageClick = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -65,6 +69,11 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
             carouselRef.current.next();
         }
     };
+
+    const mediaItems = [
+        ...iframeLinks.map((video) => ({ type: "video", url: video.url })),
+        ...filteredImages.map((image) => ({ type: "image", url: image.url }))
+    ];
 
     const responsive = {
         mobile: {
@@ -78,7 +87,7 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
             {((filteredImages.length <= 1 && iframeLinks.length === 0) ||
                 (iframeLinks.length <= 1 && filteredImages.length === 0)) ? (
                 <ReactMarkdown
-
+                    components={MarkdownRenderers}
                     rehypePlugins={[rehypeRaw]}
                     remarkPlugins={[remarkGfm]}
                 >
@@ -91,6 +100,7 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
             ) : (
                 <>
                     <ReactMarkdown
+                        components={MarkdownRenderers}
                         rehypePlugins={[rehypeRaw]}
                         remarkPlugins={[remarkGfm]}
                     >
@@ -111,54 +121,77 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
                                     customRightArrow={<CustomRightArrow onClick={() => carouselRef.current?.next()} color='green' />}
                                     containerClass="carousel-container"
                                 >
-                                    {iframeLinks.map((video, i) => (
-                                        <iframe
-                                            key={i}
-                                            src={video.url}
-                                            width="100%"
-                                            height="100%"
-                                            style={{
-                                                aspectRatio: "16/9",
-                                                border: "0",
-                                                maxWidth: "100%",
-                                                overflow: "hidden",
-                                            }}
-                                        />
-                                    ))}
-                                    {filteredImages.map((image, i) => (
-                                        <Box
-                                            key={i}
-                                            display="flex"
-                                            justifyContent="center"
-                                            alignItems="center"
-                                            style={{
-                                                height: "100%",
-                                                overflow: "hidden",
-                                                maxWidth: "100%",
-                                            }}
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                handleImageClick(e);
-                                            }}
-                                        >
-                                            <img
-                                                src={image.url}
-                                                alt="Post media"
+                                    {mediaItems.map((media, i) =>
+                                        media.type === "video" ? (
+                                            <Box
+                                                key={i}
+                                                display="flex"
+                                                justifyContent="center"
+                                                alignItems="center"
                                                 style={{
-                                                    width: "100%",
-                                                    maxWidth: "100%",
-                                                    objectFit: "cover",
-                                                    borderRadius: "8px",
-                                                    maxHeight: '445px',
-                                                    display: "block",
-                                                    margin: "3px",
+                                                    height: "100%",
                                                     overflow: "hidden",
+                                                    maxWidth: "100%",
                                                 }}
-
-                                            />
-                                        </Box>
-                                    ))}
+                                            >
+                                                <video
+                                                    key={i}
+                                                    src={media.url}
+                                                    controls
+                                                    style={{
+                                                        width: "100%",
+                                                        maxWidth: "100%",
+                                                        aspectRatio: "16/9",
+                                                        border: "0",
+                                                        borderRadius: "8px",
+                                                        overflow: "hidden",
+                                                    }}
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        handleImageClick(e);
+                                                    }}
+                                                />
+                                            </Box>
+                                        ) : (
+                                            <Box
+                                                key={i}
+                                                display="flex"
+                                                justifyContent="center"
+                                                alignItems="center"
+                                                style={{
+                                                    height: "100%",
+                                                    overflow: "hidden",
+                                                    maxWidth: "100%",
+                                                }}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    handleImageClick(e);
+                                                }}
+                                            >
+                                                <img
+                                                    src={media.url}
+                                                    alt="Post media"
+                                                    style={{
+                                                        width: "100%",
+                                                        maxWidth: "100%",
+                                                        objectFit: "cover",
+                                                        borderRadius: "8px",
+                                                        maxHeight: '445px',
+                                                        display: "block",
+                                                        margin: "3px",
+                                                        overflow: "hidden",
+                                                    }}
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        handleImageClick(e);
+                                                    }}
+                                                />
+                                            </Box>
+                                        )
+                                    )}
                                 </Carousel>
                             </CarouselContainer>
                         </Box>
