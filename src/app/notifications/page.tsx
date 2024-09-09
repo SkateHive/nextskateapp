@@ -94,7 +94,7 @@ export default function NotificationsPage() {
         </Flex>
       ) : filteredNotifications?.length === 0 && !loading ? (
         <Flex w={"100%"} justify={"center"} pt={4}>
-          <Text fontSize={'48px'} color={'white'}>No notifications found for "{filter}"</Text>
+          <Text fontSize={'48px'} color={'white'}>No notifications found for {filter}</Text>
         </Flex>
       ) : (
         filteredNotifications?.map((notification: Notification, i: number) => {
