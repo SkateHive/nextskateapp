@@ -13,18 +13,14 @@ import {
   Button,
 } from "@chakra-ui/react"
 import { ExternalLink } from "lucide-react"
-import { FaEye } from "react-icons/fa"
 import { Notification } from "../page"
 import { getPostDetails } from "../lib/getPostDetails"
 import { checkFollow, changeFollow } from "@/lib/hive/client-functions"
 import { Comment } from "@hiveio/dhive"
-import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers"
-import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
-import remarkGfm from 'remark-gfm'
-
+import ReactMarkdown from "react-markdown"
 interface NotificationContentProps {
   notification: Notification
+  username: string
 }
 
 function getTypeColor(type: string) {
@@ -34,6 +30,7 @@ function getTypeColor(type: string) {
     case "vote":
       return "green"
     case "reply":
+    case "reply_comment":
       return "blue"
     case "follow":
       return "purple"
@@ -50,29 +47,35 @@ const extractPermlink = (url: string) => {
 
 export function NotificationContent({
   notification,
+  username,
 }: NotificationContentProps) {
-  const [isPreview, setIsPreview] = useState(false)
   const [post, setPost] = useState<Comment | null>(null)
-  const [isFollowing, setIsFollowing] = useState<boolean | null>(null) // To track follow status
-  const [loadingFollow, setLoadingFollow] = useState(false) // To disable the button while processing follow/unfollow
+  const [isFollowing, setIsFollowing] = useState<boolean | null>(null)
+  const [loadingFollow, setLoadingFollow] = useState(false)
 
-  // Load post details only when clicked
-  const loadPostDetails = async () => {
-    const permlink = extractPermlink(notification.url)
-    try {
-      const postDetails = await getPostDetails(String(notification.user), permlink)
-      setPost(postDetails)
-      setIsPreview(true)
-    } catch (error) {
-      console.error("Error fetching post details", error)
+  // Load post details automatically for reply and reply_comment types
+  useEffect(() => {
+    const fetchPostDetails = async () => {
+      if (notification.type === "reply" || notification.type === "reply_comment") {
+        const permlink = extractPermlink(notification.url)
+        try {
+          const postDetails = await getPostDetails(String(notification.user), permlink)
+          setPost(postDetails)
+        } catch (error) {
+          console.error("Error fetching post details", error)
+        }
+      } else {
+        setPost(null) // Clear post when switching tabs to non-reply types
+      }
     }
-  }
+    fetchPostDetails()
+  }, [notification.type, notification.url, notification.user])
 
   // Check follow status if the notification is a follow type
   useEffect(() => {
     if (notification.type === "follow") {
       const fetchFollowStatus = async () => {
-        const status = await checkFollow("currentUser", String(notification.user)) // Replace "currentUser" with the current logged-in user
+        const status = await checkFollow(username, String(notification.user)) // Replace "currentUser" with the current logged-in user
         setIsFollowing(status)
       }
       fetchFollowStatus()
@@ -82,8 +85,8 @@ export function NotificationContent({
   // Handle follow/unfollow action
   const handleFollowToggle = async () => {
     setLoadingFollow(true)
-    await changeFollow("currentUser", String(notification.user)) // Replace "currentUser" with the current logged-in user
-    const updatedStatus = await checkFollow("currentUser", String(notification.user))
+    await changeFollow(username, String(notification.user)) // Replace "currentUser" with the current logged-in user
+    const updatedStatus = await checkFollow(username, String(notification.user))
     setIsFollowing(updatedStatus)
     setLoadingFollow(false)
   }
@@ -107,69 +110,47 @@ export function NotificationContent({
       </Link>
       <Stack flexGrow={1} gap={1}>
         <HStack>
-          <Badge colorScheme={getTypeColor(notification.type)} fontSize="1.2em">
-            {notification.type.replace("_", " ")}
-          </Badge>
-          <Text fontSize="14px" color="darkgray">
-            ·
+
+          <Text fontSize={"22px"}>
+            <Link fontWeight={"bold"} href={`/skater/${notification.user}`}>
+              @{notification.user}
+            </Link>{" "}
+            {notification.msg}
           </Text>
           <Text fontSize="18px" color="darkgray" fontWeight="400">
-            {calculateTimeAgo(notification.date)}
+            {calculateTimeAgo(notification.date)} ago
           </Text>
-          {/* Render follow/unfollow button if it's a follow notification */}
-
         </HStack>
-        <Text fontSize={"22px"}>
-          <Link fontWeight={"bold"} href={`/skater/${notification.user}`}>
-            @{notification.user}
-          </Link>{" "}
-          {notification.msg}
-        </Text>
 
-        {/* Conditionally show post content for replies after loading */}
-        {isPreview && post && (
-          <ReactMarkdown
-            components={MarkdownRenderers}
-            rehypePlugins={[rehypeRaw]}
-            remarkPlugins={[remarkGfm]}
-          >
-            {post.body}
-          </ReactMarkdown>
+        {/* Only show post content for reply and reply_comment */}
+        {post !== null && (notification.type === "reply" || notification.type === "reply_comment") && (
+          <ReactMarkdown>{post.body}</ReactMarkdown>
         )}
       </Stack>
+
       {notification.type === "follow" ? (
         <Button
           size="sm"
-          colorScheme={isFollowing ? "red" : "green"} // Red for unfollow, green for follow
+          colorScheme={isFollowing ? "red" : "green"}
           onClick={handleFollowToggle}
           isLoading={loadingFollow}
         >
           {isFollowing ? "Unfollow" : "Follow Back"}
         </Button>
       ) : (
-        <Tooltip label={isPreview ? "Hide preview" : "View preview"}>
+        <Tooltip label="View post">
           <IconButton
             size={"md"}
-            aria-label="Toggle preview"
-            icon={<FaEye color={"gray"} />}
+            aria-label="View post"
+            icon={<ExternalLink color={"gray"} />}
             variant={"ghost"}
-            onClick={isPreview ? () => setIsPreview(false) : loadPostDetails} // Load post on click
+            as={Link}
+            href={notification.url}
+            target="_blank"
+            rel="noopener noreferrer"
           />
         </Tooltip>
       )}
-
-      <Tooltip label="View post">
-        <IconButton
-          size={"md"}
-          aria-label="View post"
-          icon={<ExternalLink color={"gray"} />}
-          variant={"ghost"}
-          as={Link}
-          href={notification.type === "follow" ? `/skater/${notification.user}` : notification.url}
-          target="_blank"
-          rel="noopener noreferrer"
-        />
-      </Tooltip>
     </Flex>
   )
 }

@@ -1,5 +1,5 @@
 'use client'
-import { Button, Flex, Spinner, Stack, StackDivider, HStack, Text, Center } from "@chakra-ui/react"
+import { Button, Flex, Spinner, Stack, StackDivider, HStack, Text, Center, Container, Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react"
 import { useEffect, useState, useCallback } from "react"
 import debounce from "lodash/debounce"
 import { useHiveUser } from "@/contexts/UserContext"
@@ -17,14 +17,20 @@ export interface Notification {
 
 // List of all possible notification types
 const notificationTypes = [
-  "follow", "reply_comment", "reply", "all", "reblog", "mention", "vote"
+  { label: "Follow", value: "follow" },
+  { label: "Reply", value: "reply" },
+  { label: "Reply Comment", value: "reply_comment" },
+  { label: "All", value: "all" },
+  { label: "Reblog", value: "reblog" },
+  { label: "Mention", value: "mention" },
+  { label: "Vote", value: "vote" }
 ]
 
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [filteredNotifications, setFilteredNotifications] = useState<Notification[]>([])
   const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState("reply")
+  const [filter, setFilter] = useState("follow")
   const { hiveUser } = useHiveUser()
 
   const getNotifications = async () => {
@@ -33,7 +39,7 @@ export default function NotificationsPage() {
     setLoading(true)
     const data = await getUserNotifications(hiveUser?.name, 100) // Use limit incrementally
     if (Array.isArray(data)) {
-      setNotifications((prevNotifications) => [...prevNotifications, ...data])
+      setNotifications(data)
     } else {
       console.error("Failed to fetch notifications, data is not an array:", data)
     }
@@ -53,76 +59,67 @@ export default function NotificationsPage() {
     }
   }, [filter, notifications])
 
-  const handleLoadMore = useCallback(
-    debounce(() => {
-      getNotifications()
-    }, 500),
-    [getNotifications]
-  )
-
-  // const show_load_button = notifications?.length > 0 && notifications?.length < 100 // Assuming 100 as the max limit
-
   return (
-    <Stack
-      w={"100%"}
-      h={"100vh"}
-      overflow={"auto"}
-      sx={{
-        "::-webkit-scrollbar": {
-          display: "none",
-        },
-      }}
-      gap={0}
-      divider={<StackDivider style={{ margin: 0 }} />}
-    >
-      {/* Filter buttons */}
-      <HStack justify="center" py={4} spacing={4}>
-        {notificationTypes.map((type) => (
-          <Button
-            key={type}
-            onClick={() => setFilter(type)}
-            colorScheme={filter === type ? "green" : "gray"}
-          >
-            {type.replace("_", " ").charAt(0).toUpperCase() + type.slice(1)}
-          </Button>
-        ))}
-      </HStack>
+    <Container maxW="container.lg" p={0}>
+      <Stack
+        w={"100%"}
+        h={"100vh"}
+        overflow={"auto"}
+        sx={{
+          "::-webkit-scrollbar": {
+            display: "none",
+          },
+        }}
+        gap={0}
+        divider={<StackDivider style={{ margin: 0 }} />}
+      >
+        {/* Use Chakra UI Tabs */}
+        <Tabs variant="soft-rounded" colorScheme="green" onChange={(index) => setFilter(notificationTypes[index].value)}>
+          <TabList justifyContent="center">
+            {notificationTypes.map((type) => (
+              <Tab key={type.value}>{type.label}</Tab>
+            ))}
+          </TabList>
 
-      {loading && notifications?.length === 0 ? (
-        <Flex w={"100%"} justify={"center"} pt={4}>
-          <Spinner size={"lg"} />
-        </Flex>
-      ) : filteredNotifications?.length === 0 && !loading ? (
-        <Flex w={"100%"} justify={"center"} pt={4}>
-          <Text fontSize={'48px'} color={'white'}>No notifications found for {filter}</Text>
-        </Flex>
-      ) : (
-        filteredNotifications?.map((notification: Notification, i: number) => {
-          const [user, ...contentChunk] = notification.msg.split(" ")
-          const content = contentChunk.join(" ")
-          const post_url = `/post/${getCommunityTag()}/${notification.url}`
+          <TabPanels>
+            {notificationTypes.map((type) => (
+              <TabPanel key={type.value}>
+                {loading && notifications.length === 0 ? (
+                  <Flex w={"100%"} justify={"center"} pt={4}>
+                    <Spinner size={"lg"} />
+                  </Flex>
+                ) : filteredNotifications.length === 0 && !loading ? (
+                  <Flex w={"100%"} justify={"center"} pt={4}>
+                    <Text fontSize={"48px"} color={"white"}>
+                      No notifications found for {filter}
+                    </Text>
+                  </Flex>
+                ) : (
+                  filteredNotifications.map((notification: Notification, i: number) => {
+                    const [user, ...contentChunk] = notification.msg.split(" ")
+                    const content = contentChunk.join(" ")
+                    const post_url = `/post/${getCommunityTag()}/${notification.url}`
 
-          return (
-            <NotificationContent
-              key={i}
-              notification={{
-                user: user.substring(1),
-                msg: content,
-                url: post_url,
-                type: notification.type,
-                date: notification.date,
-              }}
-            />
-          )
-        })
-      )}
-      {/* {show_load_button && (
-        <Center>
-          <Button w={"100px"} my={4} onClick={handleLoadMore} variant={"outline"} colorScheme={"green"}>
-            Load more
-          </Button>
-        </Center>
-      )} */}
-    </Stack>
+                    return (
+                      <NotificationContent
+                        username={String(hiveUser?.name)}
+                        key={i}
+                        notification={{
+                          user: user.substring(1),
+                          msg: content,
+                          url: post_url,
+                          type: notification.type,
+                          date: notification.date,
+                        }}
+                      />
+                    )
+                  })
+                )}
+              </TabPanel>
+            ))}
+          </TabPanels>
+        </Tabs>
+      </Stack>
+    </Container>
   )
 }
