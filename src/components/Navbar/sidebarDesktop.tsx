@@ -1,5 +1,5 @@
 "use client";
-import NotificationsPage from "@/components/notifications/page";
+import NotificationsPage from "@/app/notifications/page";
 import { useHiveUser } from "@/contexts/UserContext";
 import HiveClient from "@/lib/hive/hiveclient";
 import { HiveAccount } from "@/lib/models/user";
@@ -241,7 +241,7 @@ const SidebarDesktop = () => {
             </HStack>
 
 
-            <HStack
+            {/* <HStack
               cursor={"pointer"}
               onClick={handleNotifications}
               padding={0}
@@ -251,7 +251,7 @@ const SidebarDesktop = () => {
               <FaBell size={"22px"} />
               <Text fontFamily="Joystix" color={"white"} _hover={{ color: 'lime' }}>Notifications</Text>
             </HStack>
-            {notifications ? <NotificationsPage /> : null}
+            {notifications ? <NotificationsPage /> : null} */}
           </>
         ) : null}
         <HStack mt="auto">

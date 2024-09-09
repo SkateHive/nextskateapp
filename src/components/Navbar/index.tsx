@@ -1,6 +1,6 @@
 "use client"
 
-import NotificationsPage from "@/components/notifications/page"
+import NotificationsPage from "@/app/notifications/page"
 import AuthorSearchBar from "@/app/upload/components/searchBar"
 import { useHiveUser } from "@/contexts/UserContext"
 import { claimRewards } from "./utils/claimRewards"
@@ -203,8 +203,8 @@ export default function Navbar() {
         </DrawerContent>
       </Drawer>
 
-      
-      <Flex m={3} align="center" justify="space-between"  zIndex={999}>
+
+      <Flex m={3} align="center" justify="space-between" zIndex={999}>
         <Heading ml={3} size="2xl">
           <HStack>
             <Image

@@ -1,4 +1,4 @@
-import NotificationsPage from "@/components/notifications/page";
+import NotificationsPage from "@/app/notifications/page";
 import { useHiveUser } from "@/contexts/UserContext";
 import HiveClient from "@/lib/hive/hiveclient";
 import { HiveAccount } from "@/lib/models/user";
@@ -139,7 +139,7 @@ const SideBarMobile = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
                         {hiveUser ? (
                             <>
                                 <HStack onClick={() => { setNotifications(false); onClose(); }} padding={0} gap={3} fontSize={"22px"}>
-                                <FaUser size={"22px"} />
+                                    <FaUser size={"22px"} />
                                     <Text fontFamily="Joystix" cursor={"pointer"} onClick={() => {
                                         window.location.href = `/profile/${hiveUser.name}`;
                                     }}>Profile</Text>
