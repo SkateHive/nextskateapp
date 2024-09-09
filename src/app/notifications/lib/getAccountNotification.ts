@@ -4,24 +4,28 @@ export async function getUserNotifications(account: string, limit: number = 100)
     method: "bridge.account_notifications",
     params: {
       account,
-      limit
+      limit,
     },
-    id: 1
+    id: 1,
   };
 
   try {
-    const response = await fetch('https://api.hive.blog', {
+    const response = await fetch('https://api.deathwing.me', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(requestBody)
+      body: JSON.stringify(requestBody),
     });
 
     const data = await response.json();
-
-
-    return data.result; 
+    console.log("DATA: ", data)
+    if (Array.isArray(data.result)) {
+      return data.result;
+    } else {
+      console.log("Unexpected data format:", data);
+      return [];
+    }
   } catch (error) {
     console.error('Error fetching account notifications:', error);
     throw error;

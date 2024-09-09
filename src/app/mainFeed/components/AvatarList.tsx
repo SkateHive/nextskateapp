@@ -4,12 +4,15 @@ import { Avatar, Box, Divider, HStack, Link, Tooltip } from "@chakra-ui/react"
 import { useState } from "react"
 import AirdropModal from "./airdropModal"
 import { useAccount } from "wagmi"
+import { useRouter } from "next/navigation"
 interface AvatarListProps {
   sortedComments: any[]
 }
 const AvatarList = ({ sortedComments }: AvatarListProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const eth_user = useAccount()
+  const router = useRouter()
+
   const handleCloseModal = () => {
     setIsOpen(false)
   }
@@ -82,6 +85,39 @@ const AvatarList = ({ sortedComments }: AvatarListProps) => {
     )
   }
 
+  const NotificationsAvatar = () => {
+    return (
+      <Box
+        w={"40px"}
+        h={"40px"}
+        borderRadius={"50%"}
+        bg={"gray.200"}
+        display={"flex"}
+        justifyContent={"center"}
+        alignItems={"center"}
+        mr={1}
+        onClick={() => router.push("/notifications")}
+      >
+        <Tooltip
+          label={"Notifications"}
+          bg={"black"}
+          color={"yellow"}
+          border={"1px dashed yellow"}
+        >
+          <Avatar
+            border={"1px dashed yellow"}
+            name="Notifications"
+            boxSize={12}
+            bg="black"
+            src="https://cdn.dribbble.com/users/1209774/screenshots/6227735/notification.gif"
+            loading="lazy"
+            borderRadius={5}
+            _hover={{ cursor: "pointer", border: '1px dashed red' }} />
+        </Tooltip>
+      </Box>
+    )
+  }
+
   return (
     <HStack
       flexWrap={"nowrap"}
@@ -91,6 +127,7 @@ const AvatarList = ({ sortedComments }: AvatarListProps) => {
       minHeight={"60px"}
       px={4}
     >
+      <NotificationsAvatar />
       <AirdropAvatar />
       <InviteAvatar />
       {sortedComments?.map((comment, index, commentsArray) => {
