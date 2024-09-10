@@ -26,7 +26,7 @@ import {
 import axios from "axios";
 import { QrCodePix } from 'qrcode-pix';
 import React, { useEffect, useState } from "react";
-import { fetchPixBeeData, formatCNPJ, formatCPF, formatTelephone, validateCPF, validatePhone } from "../utils/fetchPixBeeData";
+import { fetchPixBeeData, formatCNPJ, formatCPF, formatRandomKey, formatTelephone, validateCPF, validatePhone } from "../utils/fetchPixBeeData";
 import { LimitsTable } from "./LimitesTable";
 import SendHBDModal from "./sendHBDModal";
 interface PixBeeData {
@@ -233,9 +233,9 @@ const Pix = ({ user }: PixProps) => {
             } else if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
                 pixKeyType = "Email";
                 sanitizedPixKey = value;
-            } else if (/^[a-zA-Z0-9]{32}$/.test(value)) {
+            } else if (/^[a-fA-F0-9]{32}$/.test(value)) {
                 pixKeyType = "Chave Aleatória";
-                sanitizedPixKey = event.target.value.trim();
+                sanitizedPixKey = formatRandomKey(value);
             } else {
                 throw new Error("Chave Pix inválida");
             }
