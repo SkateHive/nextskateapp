@@ -37,9 +37,11 @@ const SendHBDModal: React.FC<SendHBDModalProps> = ({ username, visible, onClose,
 
     const calculatePixAmount = (amount: number) => {
         const hbdValue = amount * hbdToBrlRate;
-        const fee = hbdValue * 0.01 + 2;
+        const fee = hbdValue * 0.01 + 2;  // 1% de taxa + R$2
         const totalPayment = hbdValue - fee;
-        return totalPayment;
+        
+        // Certifica-se de que o valor final em BRL não seja negativo
+        return totalPayment > 0 ? totalPayment : 0;
     };
 
     const pixAmountBRL = calculatePixAmount(parseFloat(userAmountHBD));
@@ -51,8 +53,10 @@ const SendHBDModal: React.FC<SendHBDModalProps> = ({ username, visible, onClose,
         try {
             const amount = parseFloat(userAmountHBD);
 
-            if (pixAmountBRL < 19.99) {
-                throw new Error("O valor mínimo em reais é R$20.");
+            // Verificação de valor mínimo, considerando o valor BRL original sem a dedução da taxa
+            const totalWithoutFees = amount * hbdToBrlRate;
+            if (totalWithoutFees >= 20.00) {
+                throw new Error("O valor mínimo  é de R$20.");
             }
 
             if (amount > availableBalance) {

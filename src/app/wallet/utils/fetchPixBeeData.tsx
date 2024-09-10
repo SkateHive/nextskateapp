@@ -58,4 +58,12 @@ export const validatePhone = (phone: string) => {
     return true;
 };
 
-
+export const formatRandomKey = (key: string) => {
+    // Remove qualquer caractere não hexadecimal
+    const cleanKey = key.replace(/[^a-fA-F0-9]/g, '');
+    
+    // Adiciona traços no formato UUID
+    return cleanKey.length === 32 
+        ? `${cleanKey.slice(0, 8)}-${cleanKey.slice(8, 12)}-${cleanKey.slice(12, 16)}-${cleanKey.slice(16, 20)}-${cleanKey.slice(20)}`
+        : cleanKey;
+};
