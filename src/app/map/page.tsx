@@ -2,11 +2,13 @@
 
 import { useHiveUser } from '@/contexts/UserContext';
 import { useComments } from '@/hooks/comments';
+import { vote } from '@/lib/hive/client-functions';
 import { Box, Divider, Flex, Heading, Image, Text, useBreakpointValue } from '@chakra-ui/react';
 import { Global } from '@emotion/react';
 import Head from "next/head";
 import React, { useEffect, useMemo, useState } from 'react';
 import "../../styles/fonts.css";
+import PostList from './PostList';
 import UploadForm from './UploadForm';
 
 const EmbeddedMap: React.FC = () => {
@@ -44,7 +46,18 @@ const EmbeddedMap: React.FC = () => {
     setFilteredComments(comments);
   }, [comments]);
 
-
+  const handleVote = async (author: string, permlink: string) => {
+    if (!username) {
+      console.error("Username is missing");
+      return;
+    }
+    vote({
+      username: username,
+      permlink: permlink,
+      author: author,
+      weight: 10000,
+    });
+  };
 
 
 
@@ -114,6 +127,8 @@ const EmbeddedMap: React.FC = () => {
         align="center"
         justifyContent="center"
         p={4}
+        style={{ width: isMobile ? "auto" : "70%" }}
+        maxWidth="100%"
 
       >
         <Box
@@ -225,6 +240,13 @@ const EmbeddedMap: React.FC = () => {
         <Box width={boxWidth} color="white">
           <UploadForm />
         </Box>
+        <PostList
+          comments={sortedComments}
+          visiblePosts={visiblePosts}
+          parentPermlink={parent_permlink}
+          username={username}
+          handleVote={handleVote}
+        />
         <Divider mt={12} />
 
       </Flex>
