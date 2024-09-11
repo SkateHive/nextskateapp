@@ -53,7 +53,7 @@ const ProfileDashboard = ({ user }: ProfileDashboardProps) => {
         });
 
         return (
-            <Box m={10} whiteSpace="nowrap">
+            <Box m={10}>
                 <Stepper sx={{
                     "&::-webkit-scrollbar": {
                         display: "none",
