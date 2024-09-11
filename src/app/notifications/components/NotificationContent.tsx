@@ -18,6 +18,7 @@ import { getPostDetails } from "../lib/getPostDetails"
 import { checkFollow, changeFollow } from "@/lib/hive/client-functions"
 import { Comment } from "@hiveio/dhive"
 import ReactMarkdown from "react-markdown"
+import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers"
 interface NotificationContentProps {
   notification: Notification
   username: string
@@ -124,7 +125,9 @@ export function NotificationContent({
 
         {/* Only show post content for reply and reply_comment */}
         {post !== null && (notification.type === "reply" || notification.type === "reply_comment") && (
-          <ReactMarkdown>{post.body}</ReactMarkdown>
+          <ReactMarkdown
+            components={MarkdownRenderers}
+          >{post.body}</ReactMarkdown>
         )}
       </Stack>
 
