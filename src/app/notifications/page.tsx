@@ -74,10 +74,10 @@ export default function NotificationsPage() {
         divider={<StackDivider style={{ margin: 0 }} />}
       >
         {/* Use Chakra UI Tabs */}
-        <Tabs variant="soft-rounded" colorScheme="green" onChange={(index) => setFilter(notificationTypes[index].value)}>
-          <TabList justifyContent="center">
+        <Tabs isLazy variant="enclosed" color="white" onChange={(index) => setFilter(notificationTypes[index].value)}>
+          <TabList justifyContent="center" mt={5} color={'limegreen'}>
             {notificationTypes.map((type) => (
-              <Tab key={type.value}>{type.label}</Tab>
+              <Tab _selected={{ bg: "limegreen", color: "black" }} key={type.value}>{type.label}</Tab>
             ))}
           </TabList>
 
