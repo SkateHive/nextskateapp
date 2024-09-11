@@ -8,17 +8,11 @@ import { getTotalPayout } from "@/lib/utils";
 import {
   Box,
   Button,
-  Divider,
   Flex,
   HStack,
   IconButton,
   Image,
   Input,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Text,
   Textarea,
   useBreakpointValue,
   VStack
@@ -27,11 +21,8 @@ import * as dhive from "@hiveio/dhive";
 import piexif from 'piexifjs';
 import { useMemo, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { FaHistory, FaImage, FaMoneyBill, FaTimes } from "react-icons/fa";
-import { FaArrowRightArrowLeft } from "react-icons/fa6";
-import { IoFilter } from "react-icons/io5";
+import { FaImage, FaTimes } from "react-icons/fa";
 import { uploadFileToIPFS } from "../upload/utils/uploadToIPFS";
-import PostList from "./PostList";
 
 export interface Comment {
   id: number;
@@ -80,38 +71,38 @@ export default function UploadForm() {
     }
     return dd;
   };
-  
+
   const extractCoordinates = (file: File) => {
     const reader = new FileReader();
-  
+
     reader.onload = (e) => {
       const imgDataUrl = e.target?.result as string;
-  
+
       if (imgDataUrl) {
         const img = new window.Image();
         img.src = imgDataUrl;
-  
+
         img.onload = () => {
           const exifData = piexif.load(img.src);
-          console.log('EXIF Data:', exifData); 
-  
-          const gpsData = exifData.GPS || {}; 
+          console.log('EXIF Data:', exifData);
+
+          const gpsData = exifData.GPS || {};
           const latitude = gpsData['GPSLatitude'];
           const longitude = gpsData['GPSLongitude'];
-          const latitudeRef = gpsData['GPSLatitudeRef'] || 'N'; 
-          const longitudeRef = gpsData['GPSLongitudeRef'] || 'E'; 
-  
+          const latitudeRef = gpsData['GPSLatitudeRef'] || 'N';
+          const longitudeRef = gpsData['GPSLongitudeRef'] || 'E';
+
           if (latitude && longitude) {
             const lat = convertDMSToDD(latitude, latitudeRef);
             const lng = convertDMSToDD(longitude, longitudeRef);
-  
+
             setCoordinates({ lat, lng });
             console.log(`Latitude: ${lat}, Longitude: ${lng}`);
           }
         };
       }
     };
-  
+
     reader.readAsDataURL(file);
   };
 
@@ -392,12 +383,12 @@ export default function UploadForm() {
                         width="100%"
                       />
                     )}
-                 {coordinates && coordinates.lat !== null && coordinates.lng !== null && (
-       <div>
-       <p>Latitude: {coordinates.lat}</p>
-       <p>Longitude: {coordinates.lng}</p>
-     </div>
-      )}
+                    {coordinates && coordinates.lat !== null && coordinates.lng !== null && (
+                      <div>
+                        <p>Latitude: {coordinates.lat}</p>
+                        <p>Longitude: {coordinates.lng}</p>
+                      </div>
+                    )}
                   </Box>
                 ))}
               </HStack>
@@ -435,41 +426,6 @@ export default function UploadForm() {
           </HStack>
         </div>
       </Box>
-      <Divider />
-
-
-      <HStack width="full" justifyContent="flex-end" m={-2} mr={4}>
-        <Menu>
-          <MenuButton>
-            <IoFilter color="#9AE6B4" />
-          </MenuButton>
-          <MenuList color={'white'} bg={"black"} border={"1px solid #A5D6A7"}>
-            <MenuItem
-              bg={"black"}
-              onClick={() => handleSortChange("chronological")}
-            >
-              <FaHistory /> <Text ml={2}> Latest</Text>
-            </MenuItem>
-            <MenuItem bg={"black"} onClick={() => handleSortChange("payout")}>
-              <FaMoneyBill /> <Text ml={2}>Payout</Text>{" "}
-            </MenuItem>
-            <MenuItem
-              bg={"black"}
-              onClick={() => handleSortChange("engagement")}
-            >
-              <FaArrowRightArrowLeft /> <Text ml={2}>Engagement</Text>{" "}
-            </MenuItem>
-          </MenuList>
-        </Menu>
-
-      </HStack>
-      <PostList
-        comments={sortedComments}
-        visiblePosts={visiblePosts}
-        parentPermlink={parent_permlink}
-        username={username}
-        handleVote={handleVote}
-      />
 
     </VStack>
   );
