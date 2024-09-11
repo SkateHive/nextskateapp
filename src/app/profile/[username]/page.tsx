@@ -34,7 +34,13 @@ export default function ProfilePage({ params }: ProfilePageProps) {
 
 
   return (
-    <Box h="101vh" color="white" w={{ base: "100%" }}>
+    <Box  
+    color="white"      
+    maxW={{ base: "95%", md: "80%", lg: "1200px" }} 
+    p={{ base: 6, md: 2 }}
+    gap={{ base: 4, md: 6 }}
+      
+>
       <ProfileHeader user={hiveAccount} />
       <ProfileTabs user={hiveAccount} />
     </Box>
