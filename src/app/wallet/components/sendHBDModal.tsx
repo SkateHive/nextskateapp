@@ -55,7 +55,7 @@ const SendHBDModal: React.FC<SendHBDModalProps> = ({ username, visible, onClose,
 
             // Verificação de valor mínimo, considerando o valor BRL original sem a dedução da taxa
             const totalWithoutFees = amount * hbdToBrlRate;
-            if (totalWithoutFees >= 20.00) {
+            if (totalWithoutFees < 20) {
                 throw new Error("O valor mínimo  é de R$20.");
             }
 
