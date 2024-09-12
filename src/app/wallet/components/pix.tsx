@@ -81,7 +81,6 @@ const Pix = ({ user }: PixProps) => {
     const [error, setError] = useState<string | null>(null);
     const toast = useToast();
     const [qrCodeValue, setQrCodeValue] = useState('');
-    const [isInBrazil, setIsInBrazil] = useState(false);
     const [countdown, setCountdown] = useState<number>(30);
     const [qrCodePayload, setQrCodePayload] = useState<string | null>(null);
     // const [currentHBDPrice, setCurrentHBDPrice] = useState<number>(0);
@@ -122,28 +121,14 @@ const Pix = ({ user }: PixProps) => {
             }
         }
     }, [userAmountHBD, pixbeeInputPixKey, userHiveBalance]);
-    useEffect(() => {
-        const checkLocation = async () => {
-            try {
-                const response = await axios.get('https://ipapi.co/json/');
-                const countryCode = response.data.country_code;
-                setIsInBrazil(countryCode === 'BR');
-            } catch (error) {
-                console.error("Failed to fetch location data:", error);
-            }
-        };
 
-        checkLocation();
-    }, []);
     useEffect(() => {
-        if (isInBrazil) {
-            fetchPixBeeData().then((data) => {
-                setPixbeeInputPixKey(data);
-            }).catch(error => {
-                console.error("Failed to fetch PixBee data:", error);
-            });
-        }
-    }, [isInBrazil]);
+        fetchPixBeeData().then((data) => {
+            setPixbeeInputPixKey(data);
+        }).catch(error => {
+            console.error("Failed to fetch PixBee data:", error);
+        });
+    }, []);
     useEffect(() => {
         const generateQrCode = async () => {
             try {
@@ -156,10 +141,6 @@ const Pix = ({ user }: PixProps) => {
 
                 const valueHBD = parseFloat(userAmountHBD);
                 const valueBRL = parseFloat((valueHBD * parseFloat(pixbeeInputPixKey.HBDPriceBRL)).toFixed(2));
-
-                console.log('Chave PIX:', pixbeeInputPixKey?.pixbeePixKey);
-                console.log('Quantidade HBD:', userAmountHBD);
-                console.log('Valor em BRL:', valueBRL);
 
                 const qrCodePix = QrCodePix({
                     version: '01',
@@ -316,7 +297,7 @@ const Pix = ({ user }: PixProps) => {
     const handleSubmit = () => {
         try {
             let isValidKey = false;
-    
+
             // Validando os diferentes tipos de chave Pix
             if (pixKeyType === "CPF") {
                 isValidKey = validateCPF(pixKey);
@@ -325,11 +306,11 @@ const Pix = ({ user }: PixProps) => {
             } else if (["CNPJ", "Email", "Chave Aleatória"].includes(pixKeyType)) {
                 isValidKey = true;
             }
-    
+
             if (!isValidKey) {
                 throw new Error("Chave Pix inválida. Por favor, verifique os dados inseridos.");
             }
-    
+
             // Se a chave for válida, exibe o modal
             setDisplayModal(true);
             setError(null);
@@ -344,7 +325,7 @@ const Pix = ({ user }: PixProps) => {
             });
         }
     };
-    
+
     function calculateTotalPixPayment(amount: number) {
         if (!pixbeeInputPixKey) {
             throw new Error('PixBeeData não está definido');
@@ -375,29 +356,23 @@ const Pix = ({ user }: PixProps) => {
             });
         }
     };
-    if (!isInBrazil) {
-        return (
-            <Center>
-                <Alert
-                    status="info"><AlertIcon /><AlertTitle>Localização não permitida</AlertTitle><AlertDescription>
-                        O serviço está disponível apenas para usuários no Brasil.
-                    </AlertDescription></Alert>
-            </Center>
-        );
-    }
+
     if (!pixbeeInputPixKey) {
         return (
             <Center>
-                <Text color={'limegreen'}>Call Vaipraonde in Discord and ask him to turn on his raspberry...</Text>
+                <VStack>
+                    <Image src="https://cdn.dribbble.com/users/921277/screenshots/13742833/media/98615054c34087c21144640c23c4d9fa.gif" objectFit={'fill'} h={'100%'} alt="PixBee" />
+                    <Text color={'limegreen'}>Fudeu, deu erro, vai reclamar no discord...</Text>
+                </VStack>
             </Center>
         );
     }
     return (
         <>
             <Center mt="20px">
-                <Container maxW="container.lg">
-                    <VStack mt={1} spacing={4} flexDirection={{ base: "column", xl: "row" }}>
-                        <Card w="full" height={"700px"} fontFamily={'Joystix'}>
+                <Container maxW="container.lg" p={0}>
+                    <VStack mt={1} spacing={2} flexDirection={{ base: "column", xl: "row" }}>
+                        <Card w="full" height={"580px"} fontFamily={'Joystix'}>
                             <CardHeader>
                                 <Center>
                                     <VStack spacing={2}>

@@ -31,7 +31,7 @@ const TotalValueBox: React.FC = () => {
             h={{ base: "100%", md: "100%" }}
             fontFamily="Joystix"
         >
-            <Box w={"full"} textAlign="center">
+            {/* <Box w={"full"} textAlign="center">
                 <Text color={"black"} align="center" borderRadius={"md"} fontSize={{ base: 20, md: 20 }} mb={4} backgroundColor="white">
                     Net Worth
                 </Text>
@@ -60,11 +60,11 @@ const TotalValueBox: React.FC = () => {
                         ${totalValue.toFixed(2)}
                     </Text>
                 </Box>
-            </Box>
+            </Box> */}
 
             <Flex direction={{ base: 'column', md: 'row' }} w="100%">
                 <HiveBox onNetWorthChange={handleHiveNetWorth} />
-                <EthBox onNetWorthChange={handleEthNetWorth} />
+                {/* <EthBox onNetWorthChange={handleEthNetWorth} /> */}
             </Flex>
         </VStack>
     );

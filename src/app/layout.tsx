@@ -79,12 +79,9 @@ export default function RootLayout({
         <Providers>
           <Flex w={"100%"}
             justifyContent={"center"} id="layout">
-            <div className="hide-on-mobile">
-              <SidebarWrapper />
-            </div>
-            <div className="mobile-menu-button">
+            {/* <div className="mobile-menu-button">
               <MobileNavbar />
-            </div>
+            </div> */}
             {children}
           </Flex>
         </Providers>
