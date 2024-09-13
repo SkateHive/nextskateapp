@@ -19,7 +19,7 @@ export async function getUserNotifications(account: string, limit: number = 100)
     });
 
     const data = await response.json();
-    console.log("DATA: ", data)
+    // console.log("DATA: ", data)
     if (Array.isArray(data.result)) {
       return data.result;
     } else {

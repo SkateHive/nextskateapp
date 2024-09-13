@@ -1,0 +1,202 @@
+import { Button, Flex, Spinner, Stack, StackDivider, Text, Container, Tabs, TabList, TabPanels, Tab, TabPanel, HStack, Image } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import { useHiveUser } from "@/contexts/UserContext";
+import { getAccountHistory } from "@/lib/hive/client-functions";
+import AuthorAvatar from "@/components/AuthorAvatar";
+import { FaHive } from "react-icons/fa";
+
+export interface Transaction {
+    block: number;
+    op: any;
+    op_in_trx: number;
+    timestamp: string;
+    trx_id: string;
+    trx_in_block: number;
+    virtual_op: boolean;
+}
+
+
+const CLAIM_REWARDS_IMAGE = "https://cryptologos.cc/logos/hive-blockchain-hive-logo.png";
+
+const ITEMS_PER_PAGE = 20;
+
+const TransactionHistory = () => {
+    const user = useHiveUser();
+    const username = user?.hiveUser?.name;
+    const [transactions, setTransactions] = useState<Transaction[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(0); // Start at page 0
+    const [batchSize, setBatchSize] = useState(ITEMS_PER_PAGE);
+
+    // Fetch transactions
+    useEffect(() => {
+        const fetchTransactions = async () => {
+            if (!username) return;
+
+            setIsLoading(true);
+            try {
+                const data = await getAccountHistory(String(username), batchSize * (currentPage + 1)); // Fetch in batches
+                if (Array.isArray(data)) {
+                    const mappedData = data.map(([block, op]: [number, any]) => ({
+                        block,
+                        op,
+                        op_in_trx: op.op_in_trx,
+                        timestamp: op.timestamp,
+                        trx_id: op.trx_id,
+                        trx_in_block: op.trx_in_block,
+                        virtual_op: op.virtual_op,
+                    }));
+                    setTransactions(mappedData.reverse()); // Reverse the array to get newest first
+                } else {
+                    console.error("Failed to fetch transactions, data is not an array:", data);
+                }
+            } catch (error) {
+                console.error("Error fetching transactions:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchTransactions();
+    }, [username, currentPage, batchSize]);
+
+    // Define different card designs based on the transaction type
+    const renderTransactionCard = (type: string, details: any, index: number) => {
+        switch (type) {
+            case "claim_reward_balance":
+                return (
+                    <HStack key={index} p={4} borderBottom="1px solid gray">
+                        <Image src={CLAIM_REWARDS_IMAGE} boxSize={10} />
+                        <Text fontSize="lg">
+                            Claim Reward: {details.reward_hbd}, {details.reward_hive}, {details.reward_vests}
+                        </Text>
+                    </HStack>
+                );
+            case "transfer":
+                return (
+                    <HStack key={index} p={4} borderBottom="1px solid gray">
+                        <AuthorAvatar username={details.from} boxSize={10} />
+                        <Text fontSize="lg">
+                            Transfer from {details.from} to {details.to}: {details.amount}
+                        </Text>
+                        <FaHive size={6} style={{ position: "absolute", bottom: 2, right: 2 }} />
+                    </HStack>
+                );
+            case "effective_comment_vote":
+                return (
+                    <HStack key={index} p={4} borderBottom="1px solid gray">
+                        <AuthorAvatar username={details.author} boxSize={10} />
+                        <Text fontSize="lg">
+                            Vote on {details.author}s comment: {details.permlink}, Payout: {details.pending_payout}
+                        </Text>
+                    </HStack>
+                );
+            case "curation_reward":
+                return (
+                    <HStack key={index} p={4} borderBottom="1px solid gray">
+                        <AuthorAvatar username={details.comment_author} boxSize={10} />
+                        <Text fontSize="lg">
+                            Curation Reward: {details.reward} VESTS for voting on {details.comment_author}s post
+                        </Text>
+                    </HStack>
+                );
+            case "comment":
+                return (
+                    <HStack key={index} p={4} borderBottom="1px solid gray">
+                        <AuthorAvatar username={details.author} boxSize={10} />
+                        <Text fontSize="lg">
+                            Comment by {details.author}: {details.body}
+                        </Text>
+                    </HStack>
+                );
+            case "vote":
+                return (
+                    <HStack key={index} p={4} borderBottom="1px solid gray">
+                        <AuthorAvatar username={details.voter} boxSize={10} />
+                        <Text fontSize="lg">
+                            Vote by {details.voter} on {details.author}s post: {details.permlink}, Weight: {details.weight}
+                        </Text>
+                    </HStack>
+                );
+            default:
+                return (
+                    <Flex key={index} p={4} borderBottom="1px solid gray">
+                        <Text fontSize="lg">
+                            {type}: {JSON.stringify(details)}
+                        </Text>
+                    </Flex>
+                );
+        }
+    };
+
+    // Handle pagination
+    const nextPage = () => {
+        setCurrentPage(prev => prev + 1);
+    };
+
+    const prevPage = () => {
+        if (currentPage > 0) {
+            setCurrentPage(prev => prev - 1);
+        }
+    };
+
+    return (
+        <Container maxW="container.lg" p={0}>
+            <Stack
+                w={"100%"}
+                h={"100vh"}
+                overflow={"auto"}
+                sx={{
+                    "::-webkit-scrollbar": {
+                        display: "none"
+                    }
+                }}
+                gap={0}
+                divider={<StackDivider style={{ margin: 0 }} />}
+            >
+                <Tabs isLazy variant="enclosed" color="white">
+                    <TabList justifyContent="center" mt={5} color={"limegreen"}>
+                        <Tab _selected={{ bg: "limegreen", color: "black" }}>All Transactions</Tab>
+                    </TabList>
+
+                    <TabPanels>
+                        <TabPanel>
+                            {isLoading ? (
+                                <Flex w={"100%"} justify={"center"} pt={4}>
+                                    <Spinner size={"lg"} />
+                                </Flex>
+                            ) : transactions.length === 0 ? (
+                                <Flex w={"100%"} justify={"center"} pt={4}>
+                                    <Text fontSize={"48px"} color={"white"}>
+                                        No transactions found
+                                    </Text>
+                                </Flex>
+                            ) : (
+                                transactions.map((transaction: Transaction, index: number) => {
+                                    const nestedOp = transaction.op.op; // Access the nested 'op' field
+                                    const type = nestedOp[0]; // First element of the array is the type
+                                    const details = nestedOp[1]; // Second element is the details object
+
+                                    // Render the transaction card based on the type
+                                    return renderTransactionCard(type, details, index);
+                                })
+                            )}
+                        </TabPanel>
+                    </TabPanels>
+                </Tabs>
+
+                {/* Pagination Controls */}
+                <Flex justify="space-between" p={4}>
+                    <Button onClick={prevPage} disabled={currentPage === 0}>
+                        Previous
+                    </Button>
+                    <Button onClick={nextPage} disabled={transactions.length < batchSize * (currentPage + 1)}>
+                        Next
+                    </Button>
+                </Flex>
+            </Stack>
+        </Container>
+    );
+};
+
+export default TransactionHistory;

@@ -328,3 +328,7 @@ export async function witnessVoteWithKeychain(
     console.log({ error });
   }
 }
+export async function getAccountHistory(username: string, batchSize: number) {
+  const accountHistory = await HiveClient.database.getAccountHistory(username, -1, batchSize * 2);
+  return accountHistory;
+}

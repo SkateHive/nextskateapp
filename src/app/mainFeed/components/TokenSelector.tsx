@@ -112,7 +112,7 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                             "from": user.hiveUser?.name,
                             "to": element.author,
                             "amount": amount,
-                            "memo": "you just got skatehive airdrop for testing beta.skatehive.app!"
+                            "memo": `you just got a skatehive airdrop triggered by ${user.hiveUser?.name}`
                         }
                     ]
                 operations.push(operation)
