@@ -72,6 +72,11 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
             abi: memberABI as unknown as any[],
             tokenLogo: "/logos/degen.png"
         },
+        SPACE: {
+            address: '0x48c6740bcf807d6c47c864faeea15ed4da3910ab',
+            abi: memberABI as unknown as any[],
+            tokenLogo: "https://cdn.zerion.io/8c5eea78-246d-4fe2-9ab6-5bcd75ef0fb7.png"
+        },
         HIVE: {
             address: '0xFUCKTHEGOVERMENT',
             abi: [],
@@ -228,6 +233,17 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                             <MenuList ml='-16px' color={'white'} bg="black" zIndex="9999">
                                 <MenuItem
                                     bg="black"
+                                    _hover={{ bg: "blue.500" }}
+                                    onClick={() => {
+                                        setToken("SPACE");
+                                        setIsCustomToken(false);
+                                    }}
+                                >
+                                    <Image alt="sendit" mr={3} boxSize="20px" src="https://cdn.zerion.io/8c5eea78-246d-4fe2-9ab6-5bcd75ef0fb7.png" />
+                                    $SPACE
+                                </MenuItem>
+                                <MenuItem
+                                    bg="black"
                                     _hover={{ bg: "green.500", color: "black" }}
                                     onClick={() => {
                                         setToken("SENDIT");
@@ -248,7 +264,7 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                                     <Image alt="nogs" mr={3} boxSize="20px" src="/logos/nog.png" />
                                     $NOGS
                                 </MenuItem>
-                                <MenuItem
+                                {/* <MenuItem
                                     bg="black"
                                     _hover={{ bg: "teal.500" }}
                                     onClick={() => {
@@ -258,7 +274,7 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                                 >
                                     <Image alt="member" mr={3} boxSize="20px" src="https://member.clinic/images/01-1.jpg" />
                                     $MEMBER
-                                </MenuItem>
+                                </MenuItem> */}
                                 <MenuItem
                                     bg="black"
                                     _hover={{ bg: "purple.500" }}
