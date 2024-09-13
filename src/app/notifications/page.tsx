@@ -36,7 +36,7 @@ const notificationTypes = [
   { label: "Reply", value: "reply" },
   { label: "Reply Comment", value: "reply_comment" },
   { label: "All", value: "all" },
-  { label: "Reblog", value: "reblog" },
+  // { label: "Reblog", value: "reblog" },
   { label: "Mention", value: "mention" },
   { label: "Vote", value: "vote" }
 ];
@@ -108,7 +108,7 @@ export default function NotificationsPage() {
           }}
         >
           <TabList justifyContent="center" mt={5} color={"limegreen"}>
-            <Tab _selected={{ bg: "limegreen", color: "black" }}>Tips</Tab>
+            <Tab _selected={{ bg: "limegreen", color: "black" }}>Money</Tab>
             {notificationTypes.map((type) => (
               <Tab _selected={{ bg: "limegreen", color: "black" }} key={type.value}>
                 {type.label}

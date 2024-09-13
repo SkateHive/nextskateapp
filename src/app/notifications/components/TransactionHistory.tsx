@@ -76,10 +76,19 @@ const TransactionHistory = () => {
                 return (
                     <HStack key={index} p={4} borderBottom="1px solid gray">
                         <AuthorAvatar username={details.from} boxSize={10} />
+
+
                         <Text fontSize="lg">
-                            Transfer from {details.from} to {details.to}: {details.amount}
+                            <HStack>
+                                <Text fontSize="lg">
+
+                                    Transfer from {details.from} to {details.to}: {details.amount}
+                                </Text>
+                                <FaHive color="red" size={16} />
+                            </HStack>
+                            {details.memo && <Text><strong>Memo:</strong> {details.memo}</Text>}
+
                         </Text>
-                        <FaHive size={6} style={{ position: "absolute", bottom: 2, right: 2 }} />
                     </HStack>
                 );
             case "effective_comment_vote":
@@ -87,8 +96,13 @@ const TransactionHistory = () => {
                     <HStack key={index} p={4} borderBottom="1px solid gray">
                         <AuthorAvatar username={details.author} boxSize={10} />
                         <Text fontSize="lg">
-                            Vote on {details.author}s comment: {details.permlink}, Payout: {details.pending_payout}
+                            Vote on {details.author} s
+                            <a href={`https://skatehive.app/post/@${details.author}/${details.permlink}`} target="_blank" rel="noopener noreferrer">
+                                comment
+                            </a>
+                            : Payout: {details.pending_payout}
                         </Text>
+
                     </HStack>
                 );
             case "curation_reward":
@@ -114,10 +128,30 @@ const TransactionHistory = () => {
                     <HStack key={index} p={4} borderBottom="1px solid gray">
                         <AuthorAvatar username={details.voter} boxSize={10} />
                         <Text fontSize="lg">
-                            Vote by {details.voter} on {details.author}s post: {details.permlink}, Weight: {details.weight}
+                            Vote by {details.voter} on {details.author}s
+
+                            <a href={`https://skatehive.app/post/@${details.author}/${details.permlink}`} target="_blank" rel="noopener noreferrer" >
+                                post
+                            </a>
+
+                            Weight: {details.weight}
                         </Text>
                     </HStack>
                 );
+            case "comment_benefactor_reward":
+                return (
+                    <HStack key={index} p={4} borderBottom="1px solid gray">
+                        <AuthorAvatar username={details.benefactor} boxSize={10} />
+                        <Text fontSize="lg">
+                            Benefactor Reward for {details.benefactor} on
+                            <a href={`https://skatehive.app/post/@${details.author}/${details.permlink}`} target="_blank" rel="noopener noreferrer">
+                                {details.author}'s comment
+                            </a>
+                            : {details.hbd_payout} HBD, {details.hive_payout} HIVE, {details.vesting_payout} VESTS
+                        </Text>
+                    </HStack>
+                );
+
             default:
                 return (
                     <Flex key={index} p={4} borderBottom="1px solid gray">
