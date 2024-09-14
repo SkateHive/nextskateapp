@@ -231,7 +231,7 @@ const SidebarDesktop = () => {
                   justifyContent={"center"}
                   color="gold"
                   variant="outline"
-                  border={"none"}
+                  border={"1px dashed black"}
                   animation={`${blink} 1s linear infinite`}
                   onClick={handleClaimRewards}
                   _hover={{
