@@ -33,7 +33,7 @@ import { useAccount } from "wagmi";
 import "../../styles/fonts.css";
 import LoginModal from "../Hive/Login/LoginModal";
 import CommunityTotalPayout from "../communityTotalPayout";
-import checkRewards from "./utils/checkReward";
+// import checkRewards from "./utils/checkReward";
 import { claimRewards } from "./utils/claimRewards";
 
 const blink = keyframes`
@@ -42,7 +42,9 @@ const blink = keyframes`
   100% { opacity: 1; }
 `;
 
-
+interface Asset {
+  toString(): string;
+}
 
 
 const SidebarDesktop = () => {
@@ -60,7 +62,23 @@ const SidebarDesktop = () => {
         try {
           const userAccount = await client.database.getAccounts([hiveUser.name]);
           if (userAccount.length > 0) {
+            const account = userAccount[0];
+            
+            const getBalance = (balance: string | Asset): number => {
+                const balanceStr = typeof balance === 'string' ? balance : balance.toString();
+                return Number(balanceStr.split(' ')[0]);
+            };
+
+            const hbdBalance = getBalance(account.reward_hbd_balance);
+            const hiveBalance = getBalance(account.reward_hive_balance);
+            const vestingHive = getBalance(account.reward_vesting_hive);
+
+            const hasRewards = hbdBalance > 0 || hiveBalance > 0 || vestingHive > 0;
+            // console.log(hasRewards ? "User has rewards" : "User has no rewards");
+            // return hasRewards;
+
             setHiveAccount(userAccount[0]);
+            setHasRewards(hasRewards);
           }
         } catch (error) {
           console.error("Failed to fetch user account", error);
@@ -80,15 +98,15 @@ const SidebarDesktop = () => {
   const [notifications, setNotifications] = useState(false);
   const [hasRewards, setHasRewards] = useState(false);
 
-  useEffect(() => {
-    const checkUserRewards = async () => {
-      if (hiveUser) {
-        setHasRewards(await checkRewards(String(hiveUser.name)));
-      }
-    };
+  // useEffect(() => {
+  //   const checkUserRewards = async () => {
+  //     if (hiveUser) {
+  //       setHasRewards(await checkRewards(String(hiveUser.name)));
+  //     }
+  //   };
 
-    checkUserRewards();
-  }, [hiveUser]);
+  //   checkUserRewards();
+  // }, [hiveUser]);
 
   const handleNotifications = () => {
     setNotifications(!notifications);
