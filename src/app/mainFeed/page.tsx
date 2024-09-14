@@ -4,6 +4,7 @@ import { useHiveUser } from "@/contexts/UserContext";
 import { useComments } from "@/hooks/comments";
 import { vote } from "@/lib/hive/client-functions";
 import { getTotalPayout } from "@/lib/utils";
+import EmojiPicker, { Theme } from 'emoji-picker-react';
 import {
   Divider,
   HStack,
