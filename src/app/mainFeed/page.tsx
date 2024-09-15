@@ -66,7 +66,7 @@ const SkateCast = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [imageList, setImageList] = useState<string[]>([]);
   const [isPickingEmoji, setIsPickingEmoji] = useState<boolean>(false)
-  const parentRef = useRef()
+  const parentRef = useRef<HTMLDivElement>(null)
 
 
   const handleOutsideClick = (e: any) => {
@@ -75,15 +75,14 @@ const SkateCast = () => {
     }
   }
 
-  const handleEmojiClick = emoji => {
-    //now begin the logic for placing the emoji
-    let positionStart = postBodyRef.current?.selectionStart;
-    let positionEnd = postBodyRef.current?.selectionEnd;
-    let currentText = postBodyRef.current?.value;
-    let textBefore = currentText?.substring(0, positionStart);
-    let textAfter = currentText?.substring(positionEnd as number)
-    postBodyRef.current.value = textBefore + emoji.emoji + textAfter
-  }
+  const handleEmojiClick = (emoji: { emoji: string }) => {
+    let positionStart: number | null = postBodyRef.current?.selectionStart ?? null;
+    let positionEnd: number | null = postBodyRef.current?.selectionEnd ?? null;
+    let currentText: string | undefined = postBodyRef.current?.value;
+    let textBefore: string | undefined = currentText?.substring(0, positionStart as number);
+    let textAfter: string | undefined = currentText?.substring(positionEnd as number);
+    postBodyRef.current!.value = textBefore + emoji.emoji + textAfter;
+  };
 
   useEffect(() => {
 
@@ -92,14 +91,18 @@ const SkateCast = () => {
       document.removeEventListener('mousedown', handleOutsideClick);
     };
   }, [])
+  interface IPFSData {
+    IpfsHash: string;
+  }
+
   const { getRootProps, getInputProps } = useDropzone({
     noClick: true,
     noKeyboard: true,
-    onDrop: async (acceptedFiles) => {
+    onDrop: async (acceptedFiles: File[]) => {
       setIsUploading(true);
       const newImageList: string[] = [];
       for (const file of acceptedFiles) {
-        const ipfsData = await uploadFileToIPFS(file);
+        const ipfsData: IPFSData | undefined = await uploadFileToIPFS(file);
         if (ipfsData !== undefined) {
           const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}`;
           const markdownLink = file.type.startsWith("video/")
