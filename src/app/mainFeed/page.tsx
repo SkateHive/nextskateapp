@@ -70,7 +70,6 @@ const SkateCast = () => {
 
 
   const handleOutsideClick = (e: any) => {
-    console.log(e, parentRef.current)
     if (parentRef.current && !parentRef.current.contains(e.target)) {
       setIsPickingEmoji(false)
     }
