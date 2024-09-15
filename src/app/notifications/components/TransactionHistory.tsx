@@ -1,8 +1,8 @@
-import { Button, Flex, Spinner, Stack, StackDivider, Text, Container, Tabs, TabList, TabPanels, Tab, TabPanel, HStack, Image } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import AuthorAvatar from "@/components/AuthorAvatar";
 import { useHiveUser } from "@/contexts/UserContext";
 import { getAccountHistory } from "@/lib/hive/client-functions";
-import AuthorAvatar from "@/components/AuthorAvatar";
+import { Button, Container, Flex, HStack, Image, Spinner, Stack, StackDivider, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 import { FaHive } from "react-icons/fa";
 
 export interface Transaction {
@@ -145,7 +145,7 @@ const TransactionHistory = () => {
                         <Text fontSize="lg">
                             Benefactor Reward for {details.benefactor} on
                             <a href={`https://skatehive.app/post/@${details.author}/${details.permlink}`} target="_blank" rel="noopener noreferrer">
-                                {details.author}'s comment
+                                {details.author}&apos;s comment
                             </a>
                             : {details.hbd_payout} HBD, {details.hive_payout} HIVE, {details.vesting_payout} VESTS
                         </Text>

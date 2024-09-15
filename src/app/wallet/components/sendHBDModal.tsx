@@ -1,4 +1,9 @@
-import { transferWithKeychain } from '@/lib/hive/client-functions';
+import {
+    KeychainSDK,
+    Transfer
+} from "keychain-sdk";
+
+
 import {
     Box,
     Button,
@@ -18,70 +23,77 @@ import React, { useEffect, useState } from 'react';
 
 interface SendHBDModalProps {
     username: string;
+    memo: string;
+    userInputHBD: string;
+    valueTotalPIX: string;
     visible: boolean;
     onClose: () => void;
-    memo: string;
-    userAmountHBD: string;
-    pixAmountBRL: number;
-    availableBalance: number;
-    hbdToBrlRate: number;
 }
 
-const SendHBDModal: React.FC<SendHBDModalProps> = ({ username, visible, onClose, memo, userAmountHBD, availableBalance, hbdToBrlRate }) => {
+const SendHBDModal: React.FC<SendHBDModalProps> = ({
+    username,
+    userInputHBD,
+    memo,
+    valueTotalPIX,
+    visible,
+    onClose,
+}) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [formattedPixKey, setFormattedPixKey] = useState<string>(memo);
     const [transactionStatus, setTransactionStatus] = useState<'success' | 'failure' | null>(null);
-
     const toast = useToast();
-
-    const calculatePixAmount = (amount: number) => {
-        const hbdValue = amount * hbdToBrlRate;
-        const fee = hbdValue * 0.01 + 2;  // 1% de taxa + R$2
-        const totalPayment = hbdValue - fee;
-        
-        // Certifica-se de que o valor final em BRL não seja negativo
-        return totalPayment > 0 ? totalPayment : 0;
-    };
-
-    const pixAmountBRL = calculatePixAmount(parseFloat(userAmountHBD));
 
     const sendHBD = async () => {
         setLoading(true);
-        setError(null);
+        const memoPix = `#${formattedPixKey}`;
+        const keychain = new KeychainSDK(window);
 
-        try {
-            const amount = parseFloat(userAmountHBD);
-
-            // Verificação de valor mínimo, considerando o valor BRL original sem a dedução da taxa
-            const totalWithoutFees = amount * hbdToBrlRate;
-            if (totalWithoutFees < 20) {
-                throw new Error("O valor mínimo  é de R$20.");
+        const formParamsAsObject = {
+            "data": {
+                "username": username,
+                "to": 'pixbee',
+                "amount": userInputHBD,
+                "memo": memoPix,
+                "enforce": false,
+                "currency": "HBD",
             }
+        }
 
-            if (amount > availableBalance) {
-                throw new Error("Saldo insuficiente.");
+        keychain.transfer(formParamsAsObject.data as Transfer).then((resultado) => {
+            if (resultado?.success == true) {
+                console.log(resultado); //debug
+                setTransactionStatus('success');
+                toast({
+                    title: "Solicitacao Pix Enviada com Sucesso.",
+                    description: resultado?.message + resultado?.request_id,
+                    status: "error",
+                    duration: 5000,
+                    isClosable: true,
+                });
+                setLoading(false);
+                onClose();
+            } else {
+                console.error(resultado);
+                setLoading(false);
             }
-
-            const memoPix = `#${formattedPixKey}`;
-
-            await transferWithKeychain(username, "pixbee", amount.toFixed(3), memoPix, "HBD");
-
-            setTransactionStatus('success');
-            onClose();
-        } catch (error: any) {
-            setError(error.message || "Houve um problema ao realizar a transferência.");
+        }).catch((err) => {
+            console.log(err); //debug
+            setError("Houve um problema ao realizar a transferência.");
             setTransactionStatus('failure');
             toast({
                 title: "Erro na transferência.",
-                description: error.message || "Houve um problema ao realizar a transferência. Tente novamente.",
+                description: err.message || "Houve um problema ao realizar a transferência. Tente novamente.",
                 status: "error",
                 duration: 5000,
                 isClosable: true,
             });
-        } finally {
             setLoading(false);
-        }
+            onClose();
+        });
+
+        console.log("aguardando resposta");
+
     };
 
     useEffect(() => {
@@ -89,7 +101,7 @@ const SendHBDModal: React.FC<SendHBDModalProps> = ({ username, visible, onClose,
             if (transactionStatus === 'success') {
                 toast({
                     title: "Transferência realizada.",
-                    description: `${parseFloat(userAmountHBD).toFixed(3)} HBD foram trocados por R$${pixAmountBRL.toFixed(2)}.`,
+                    description: `${userInputHBD} HBD foram trocados por R$${valueTotalPIX}.`,
                     status: "success",
                     duration: 5000,
                     isClosable: true,
@@ -104,13 +116,12 @@ const SendHBDModal: React.FC<SendHBDModalProps> = ({ username, visible, onClose,
                 });
             }
         }
-    }, [visible, transactionStatus, toast, userAmountHBD, pixAmountBRL]);
+    }, [visible, transactionStatus, toast, userInputHBD, valueTotalPIX]);
     return (
         <Modal
             isOpen={visible}
             onClose={() => {
                 if (!loading) {
-
                     onClose();
                 }
             }}
@@ -122,7 +133,7 @@ const SendHBDModal: React.FC<SendHBDModalProps> = ({ username, visible, onClose,
                 <ModalHeader>
                     <Text mb={4} fontSize="18px">
                         Chave Pix: <Text as="span" color="blue.500">{formattedPixKey}</Text><br />
-                        Confirma trocar {userAmountHBD} HBD por {pixAmountBRL.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}?
+                        Confirma trocar {userInputHBD} HBD por {valueTotalPIX}?
                     </Text>
                 </ModalHeader>
                 <ModalCloseButton />
