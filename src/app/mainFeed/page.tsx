@@ -5,6 +5,7 @@ import { useComments } from "@/hooks/comments";
 import { vote } from "@/lib/hive/client-functions";
 import { commentWithPrivateKey } from "@/lib/hive/server-functions";
 import { getTotalPayout } from "@/lib/utils";
+import EmojiPicker, { Theme } from 'emoji-picker-react';
 import {
   Box,
   Button,
@@ -23,10 +24,10 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import * as dhive from "@hiveio/dhive";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { FaHistory, FaImage, FaMoneyBill, FaTimes } from "react-icons/fa";
-import { FaArrowRightArrowLeft } from "react-icons/fa6";
+import { FaArrowRightArrowLeft, FaFaceSmile } from "react-icons/fa6";
 import { IoFilter } from "react-icons/io5";
 import { uploadFileToIPFS } from "../upload/utils/uploadToIPFS";
 import AvatarList from "./components/AvatarList";
@@ -64,7 +65,33 @@ const SkateCast = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [imageList, setImageList] = useState<string[]>([]);
+  const [isPickingEmoji, setIsPickingEmoji] = useState<boolean>(false)
+  const parentRef = useRef()
 
+
+  const handleOutsideClick = (e: any) => {
+    if (parentRef.current && !parentRef.current.contains(e.target)) {
+      setIsPickingEmoji(false)
+    }
+  }
+
+  const handleEmojiClick = emoji => {
+    //now begin the logic for placing the emoji
+    let positionStart = postBodyRef.current?.selectionStart;
+    let positionEnd = postBodyRef.current?.selectionEnd;
+    let currentText = postBodyRef.current?.value;
+    let textBefore = currentText?.substring(0, positionStart);
+    let textAfter = currentText?.substring(positionEnd as number)
+    postBodyRef.current.value = textBefore + emoji.emoji + textAfter
+  }
+
+  useEffect(() => {
+
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, [])
   const { getRootProps, getInputProps } = useDropzone({
     noClick: true,
     noKeyboard: true,
@@ -333,6 +360,10 @@ const SkateCast = () => {
                 placeholder="Write your stuff..."
                 onPaste={handlePaste} // Attach handlePaste to handle right-click Paste and Ctrl+V / Command+V
               />
+              <div ref={parentRef as any} style={{ opacity: isPickingEmoji ? 1 : 0, marginTop: 50, transition: '1s', zIndex: 10, position: 'absolute' }}>
+                <EmojiPicker theme={"dark" as Theme} onEmojiClick={handleEmojiClick} open={isPickingEmoji} />
+              </div>
+
               <HStack>
                 {imageList.map((item, index) => (
                   <Box key={index} position="relative" maxW={100} maxH={100}>
@@ -389,6 +420,26 @@ const SkateCast = () => {
               }}
             >
               <FaImage style={{
+                color: "#ABE4B8",
+                cursor: "pointer",
+                transition: "all 0.2s",
+              }} onMouseOver={(e) => {
+                e.currentTarget.style.color = "limegreen";
+                e.currentTarget.style.textShadow = "0 0 10px 0 limegreen";
+              }} onMouseOut={(e) => {
+                e.currentTarget.style.color = "#ABE4B8";
+                e.currentTarget.style.textShadow = "none";
+              }} />
+            </Button>
+            <Button
+              name="md-select-emoji"
+              variant="ghost"
+              onClick={() => { setIsPickingEmoji(is => !is) }}
+              _hover={{
+                background: "none",
+              }}
+            >
+              <FaFaceSmile style={{
                 color: "#ABE4B8",
                 cursor: "pointer",
                 transition: "all 0.2s",
