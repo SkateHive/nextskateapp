@@ -34,13 +34,14 @@ export default function ProfilePage({ params }: ProfilePageProps) {
 
 
   return (
-    <Box  
-    color="white"      
-    maxW={{ base: "95%", md: "80%", lg: "1200px" }} 
-    p={{ base: 6, md: 2 }}
-    gap={{ base: 4, md: 6 }}
-      
->
+    <Box
+      color={"white"}
+      w={"100%"}
+      h={"100vh"}
+      overflow={"scroll"}
+      id="SkaterPage"
+      mt={4}
+    >
       <ProfileHeader user={hiveAccount} />
       <ProfileTabs user={hiveAccount} />
     </Box>
