@@ -1,4 +1,20 @@
-import { Box, HStack, Badge, Flex, Progress, Text, Button, Tabs, TabList, TabPanels, TabPanel, Tab, Center, Divider } from "@chakra-ui/react";
+import {
+    Box,
+    HStack,
+    Badge,
+    Flex,
+    Progress,
+    Text,
+    Button,
+    Tabs,
+    TabList,
+    TabPanels,
+    TabPanel,
+    Tab,
+    Center,
+    Divider,
+    Image
+} from "@chakra-ui/react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
@@ -19,6 +35,7 @@ interface Vote {
     vp: number;
     reason: string;
 }
+
 interface ProposalDetailPanelProps {
     mainProposal: Proposal | null;
     selectedChoice: number | null;
@@ -27,6 +44,7 @@ interface ProposalDetailPanelProps {
     ethAccount: string | null;
     voteOnProposal: (ethAccount: string | null, proposalId: string, choice: number, reason: string) => void;
 }
+
 const ProposalDetailPanel = ({
     mainProposal,
     selectedChoice,
@@ -48,21 +66,21 @@ const ProposalDetailPanel = ({
     const fetchVotes = async (proposalId: string) => {
         setLoadingVotes(true);
         const query = `
-      query GetVotes($proposalId: String!) {
-        votes(
-          where: { proposal: $proposalId }
-          orderBy: "created"
-          orderDirection: desc
-        ) {
-          id
-          voter
-          choice
-          created
-          vp
-          reason
-        }
-      }
-    `;
+        query GetVotes($proposalId: String!) {
+            votes(
+                where: { proposal: $proposalId }
+                orderBy: "created"
+                orderDirection: desc
+            ) {
+                id
+                voter
+                choice
+                created
+                vp
+                reason
+            }
+        }`;
+
         const variables = { proposalId };
 
         try {
@@ -80,22 +98,8 @@ const ProposalDetailPanel = ({
         }
     };
 
-    if (!mainProposal) {
-        return (
-            <Box
-                height={"100%"}
-                width={"100%"}
-            >
-                <Center>
-
-                    <Text color="white">Loading...</Text>
-                </Center>
-            </Box>
-        )
-    }
-
     return (
-        <Box mt={2} w={{ base: '100%%', md: '100%' }} color={"white"}>
+        <Box mt={2} w={{ base: '100%', md: '100%' }} color={"white"}>
             <Tabs isLazy isFitted variant="enclosed-colored">
                 <Center>
                     <TabList>
@@ -106,27 +110,49 @@ const ProposalDetailPanel = ({
                 </Center>
 
                 <TabPanels>
-
+                    {/* First Tab: Proposal */}
                     <TabPanel>
-                        <HStack>
-                            <ProposerAvatar authorAddress={mainProposal.author} boxSize={100} />
-                            <Text fontSize={24} fontWeight={"bold"} mt={5}>{mainProposal.title}</Text>
-                        </HStack>
-                        <Divider color={"white"} mt={5} />
-                        <Box mt={2} h={"100%"}>
-                            <ReactMarkdown
-                                components={MarkdownRenderers}
-                                rehypePlugins={[rehypeRaw]}
-                                remarkPlugins={[remarkGfm]}
-                            >
-                                {mainProposal.body}
-                            </ReactMarkdown>
-                        </Box>
+                        {!mainProposal ? (
+                            <Center>
+                                <Image
+                                    src="https://cdn.dribbble.com/users/921277/screenshots/13742833/media/98615054c34087c21144640c23c4d9fa.gif"
+                                    objectFit={'fill'}
+                                    h={'100%'}
+                                    alt="Loading Proposal"
+                                />
+                            </Center>
+                        ) : (
+                            <>
+                                <Divider color={"white"} mb={5} />
+                                <HStack>
+                                    <ProposerAvatar authorAddress={mainProposal.author} boxSize={100} />
+                                    <Text fontSize={24} fontWeight={"bold"} mt={5}>{mainProposal.title}</Text>
+                                </HStack>
+                                <Divider color={"white"} mt={5} />
+                                <Box mt={2} h={'85vh'} overflow={"auto"}>
+                                    <ReactMarkdown
+                                        components={MarkdownRenderers}
+                                        rehypePlugins={[rehypeRaw]}
+                                        remarkPlugins={[remarkGfm]}
+                                    >
+                                        {mainProposal.body}
+                                    </ReactMarkdown>
+                                </Box>
+                            </>
+                        )}
                     </TabPanel>
 
+                    {/* Second Tab: Votes */}
                     <TabPanel>
                         {loadingVotes ? (
-                            <Text>Loading votes...</Text>
+                            <Center>
+                                <Image
+                                    src="https://cdn.dribbble.com/users/921277/screenshots/13742833/media/87d7e9272d8234b3b5efeda7b213a292.gif"
+                                    objectFit={'fill'}
+                                    h={'100%'}
+                                    alt="Loading Votes"
+                                />
+                            </Center>
                         ) : votes.length === 0 ? (
                             <Text>No votes yet</Text>
                         ) : (
@@ -140,12 +166,11 @@ const ProposalDetailPanel = ({
                                         mb={2}
                                     >
                                         <HStack>
-
                                             <Text>
                                                 <ProposerAvatar authorAddress={vote.voter} /> {formatETHaddress(vote.voter)}
                                             </Text>
                                             <Text>
-                                                voted {mainProposal.choices[vote.choice - 1]} with {vote.vp}
+                                                voted {mainProposal?.choices[vote.choice - 1]} with {vote.vp}
                                             </Text>
                                         </HStack>
                                         {vote.reason && (
@@ -159,13 +184,22 @@ const ProposalDetailPanel = ({
                         )}
                     </TabPanel>
 
-
+                    {/* Third Tab: Report */}
                     <TabPanel>
-                        <Box mt={2} h={"100%"}>
+                        {!mainProposal ? (
                             <Center>
-                                SOON
+                                <Image
+                                    src="https://cdn.dribbble.com/users/921277/screenshots/13742833/media/2a58f4ef0f2de48fddf7c4d1c104f5dc.gif"
+                                    objectFit={'fill'}
+                                    h={'100%'}
+                                    alt="Loading Report"
+                                />
                             </Center>
-                        </Box>
+                        ) : (
+                            <Box mt={2} h={"100%"}>
+                                <Center>SOON</Center>
+                            </Box>
+                        )}
                     </TabPanel>
                 </TabPanels>
             </Tabs>
