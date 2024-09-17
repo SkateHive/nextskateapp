@@ -1,5 +1,5 @@
 import React from 'react';
-import { Badge, Box, Center, HStack, Text } from "@chakra-ui/react";
+import { Badge, Box, Button, Center, Flex, HStack, Progress, Text, VStack } from "@chakra-ui/react";
 import { mainnet } from "viem/chains";
 import { normalize } from "viem/ens";
 import { useEnsAvatar, useEnsName } from "wagmi";
@@ -8,7 +8,7 @@ import { Proposal } from "../utils/fetchProposals";
 import ProposerAvatar from "./proposerAvatar";
 
 const formatEthAddress = (address: string) => {
-    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+    return `${address.slice(0, 4)}...${address.slice(-4)}`;
 };
 
 // Utility function to check if the proposal is active
@@ -24,10 +24,12 @@ const ProposalListItem = ({
     proposal,
     isSelected,
     onSelect,
+    setSelectedChoice
 }: {
     proposal: Proposal;
     isSelected: boolean;
     onSelect: () => void;
+    setSelectedChoice: (choice: number) => void;
 }) => {
     const { data: ensName, error: ensNameError } = useEnsName({
         address: proposal.author as `0x${string}`,
@@ -42,17 +44,32 @@ const ProposalListItem = ({
     const outcome = checkProposalOutcome(proposal);
     const isActive = isProposalActive(proposal);
 
+    function setConfirmationModalOpen(arg0: boolean) {
+        throw new Error('Function not implemented.');
+    }
+
     return (
         <Box
             cursor="pointer"
             onClick={onSelect}
             key={proposal.id}
             bg="#201d21"
-            p={4}
+            p={2}
             borderRadius="10px"
         >
-            <HStack justifyContent="space-between">
-                <Text color="white">{proposal.title}</Text>
+            <HStack justifyContent={"space-between"}>
+                <VStack justifyContent="flex-start" w={'20%'}>
+                    <ProposerAvatar authorAddress={proposal.author} />
+                    <Center>
+                        <Text color="blue.200" ml={2} >
+                            {ensName || formatEthAddress(proposal.author)}
+                        </Text>
+                    </Center>
+                </VStack>
+                <Box maxW={"60%"} justifyContent={"flex-start"}>
+                    <Text color="white" isTruncated>{proposal.title}</Text>
+                </Box>
+
                 <Badge
                     colorScheme='green'
                     bg="black"
@@ -61,6 +78,7 @@ const ProposalListItem = ({
                 >
                     {isActive ? "Active" : outcome.hasWon ? "Passed" : "Failed"}
                 </Badge>
+
             </HStack>
 
             {isSelected && (
@@ -71,20 +89,67 @@ const ProposalListItem = ({
                         mt={2}
                         mb={2}
                         borderRadius={5}
-                        fontSize="12px"
+                        fontSize="16px"
                         color="white"
                     >
                         Summary: {decodeURIComponent(proposal.summary ?? "")}
                     </Text>
-
-                    <HStack ml={2} justifyContent="flex-end">
-                        <Center>
-                            <ProposerAvatar authorAddress={proposal.author} />
-                            <Text color="blue.200" ml={2}>
-                                {ensName || formatEthAddress(proposal.author)}
-                            </Text>
-                        </Center>
+                    <HStack justifyContent="space-between" m={2}>
+                        <Text color={"white"}>
+                            Start:{" "}
+                            <Badge bg={"black"} color={"#A5D6A7"}>
+                                {new Date(proposal.start * 1000).toLocaleDateString()}
+                            </Badge>
+                        </Text>
+                        <Text color={"white"}>
+                            End:{" "}
+                            <Badge bg={"black"} color={"#A5D6A7"}>
+                                {new Date(proposal.end * 1000).toLocaleDateString()}
+                            </Badge>
+                        </Text>
                     </HStack>
+
+                    <Box p={4} border="0.6px solid #A5D6A7" color={"green.200"}>
+                        <Text fontSize={"18px"}>{proposal.title}</Text>
+                    </Box>
+
+                    <Box p={4} border="0.6px solid #A5D6A7" borderTop={"none"}>
+                        <Text fontSize="16px" color="#A5D6A7">
+                            {proposal.scores[0]} For
+                        </Text>
+                        <Progress value={proposal.scores[0]} colorScheme="green" size="sm" />
+                        <Text fontSize="16px" color="#A5D6A7">
+                            {proposal.scores[1]} Against
+                        </Text>
+                        <Progress value={proposal.scores[1]} colorScheme="red" size="sm" />
+
+                        {proposal.state !== "active" && (
+                            <Center>
+                                <Text fontSize="14px" color="#A5D6A7" mt={5}>
+                                    Quorum: {checkProposalOutcome(proposal).quorumReached ? "Reached" : "Not Reached"} (
+                                    {checkProposalOutcome(proposal).totalVotes} Votes)
+                                </Text>
+                            </Center>
+                        )}
+
+                        {proposal.state === "active" &&
+                            proposal.choices.map((choice, choiceIndex) => (
+                                <Button
+                                    mt={4}
+                                    colorScheme={choice.toUpperCase() === "FOR" ? "green" : "red"}
+                                    variant="outline"
+                                    key={choiceIndex}
+                                    onClick={() => {
+                                        setSelectedChoice(choiceIndex);
+                                        setConfirmationModalOpen(true);
+                                    }}
+                                >
+                                    {choice.toUpperCase()}
+                                </Button>
+                            ))}
+                    </Box>
+
+
                 </>
             )}
         </Box>

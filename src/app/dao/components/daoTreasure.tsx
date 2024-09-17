@@ -1,7 +1,8 @@
-'use client'
+'use client';
 import { useETHPrice } from '@/hooks/useETHprice';
 import {
     Badge,
+    Box,
     Card,
     CardBody,
     CardHeader,
@@ -10,118 +11,137 @@ import {
     HStack,
     Text,
     Tooltip,
+    useMediaQuery,
     VStack
 } from "@chakra-ui/react";
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { FaEthereum } from 'react-icons/fa';
 import { mainnet } from 'viem/chains';
 import { useBalance } from 'wagmi';
 
-const HOT_ADDRESS = '0xB4964e1ecA55Db36a94e8aeFfBFBAb48529a2f6c';
+const HOT_ADDRESS = '0xB4964e1ecA55Db36a94e8aeFfsBFBAb48529a2f6c' as `0x${string}`;
 const OLD_MULTISIG_ADDRESS = '0x5501838d869B125EFd90daCf45cDFAC4ea192c12' as `0x${string}`;
 const NEW_MULTISIG_ADDRESS = '0xc1afa4c0a70b622d7b71d42241bb4d52b6f3e218' as `0x${string}`;
 const BASE_USDC_TOKEN_ADDRESS = '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913' as `0x${string}`;
 
 const DaoTreasure = () => {
-    const multisigBalance = useBalance({
-        address: OLD_MULTISIG_ADDRESS,
-        chainId: mainnet.id,
-    });
-    const old_multisig_balance = useBalance({
+    const { data: oldMultisigBalance } = useBalance({
         address: OLD_MULTISIG_ADDRESS,
         chainId: mainnet.id
     });
-    const new_multisig_balance = useBalance({
+
+    const { data: newMultisigBalance } = useBalance({
         address: NEW_MULTISIG_ADDRESS,
         chainId: 8453
     });
-    const new_multisig_usdc_balance = useBalance({
+
+    const { data: newMultisigUsdcBalance } = useBalance({
         address: NEW_MULTISIG_ADDRESS,
         chainId: 8453,
         token: BASE_USDC_TOKEN_ADDRESS
     });
 
-    const [hotWalletbalance, setWalletbalance] = useState("0")
-    const ethprice = useETHPrice() || 3400;
-    const totalJazz =
-        Number(hotWalletbalance) +
-        Number(old_multisig_balance.data?.formatted) * ethprice +
-        Number(new_multisig_balance.data?.formatted) * ethprice +
-        Number(new_multisig_usdc_balance.data?.formatted);
+    const [hotWalletBalance, setHotWalletBalance] = useState("0");
+    const ethPrice = useETHPrice() || 3400;
 
+    // Fetch the hot wallet balance
     useEffect(() => {
         const fetchData = async () => {
-            const Portfolio = await axios.get(`https://pioneers.dev/api/v1/portfolio/${HOT_ADDRESS}`);
-            setWalletbalance(Portfolio.data.totalNetWorth);
+            try {
+                const response = await axios.get(`https://pioneers.dev/api/v1/portfolio/${HOT_ADDRESS}`);
+                console.log(response.data);
+                setHotWalletBalance(response.data.totalNetWorth || "0");
+            } catch (error) {
+                console.error("Error fetching hot wallet balance:", error);
+            }
         };
         fetchData();
     }, []);
 
+    // Memoize totalJazz calculation for efficiency
+    const totalJazz = useMemo(() => {
+        const oldMultisigValue = Number(oldMultisigBalance?.formatted || 0) * ethPrice;
+        const newMultisigValue = Number(newMultisigBalance?.formatted || 0) * ethPrice;
+        const newUsdcValue = Number(newMultisigUsdcBalance?.formatted || 0);
+        const hotWalletValue = Number(hotWalletBalance);
+        console.log(hotWalletValue, oldMultisigValue, newMultisigValue, newUsdcValue);
+        console.log(hotWalletBalance)
+        return hotWalletValue + oldMultisigValue + newMultisigValue + newUsdcValue;
+    }, [hotWalletBalance, oldMultisigBalance, newMultisigBalance, newMultisigUsdcBalance, ethPrice]);
+    const isMobile = useMediaQuery("(max-width: 768px)")[0];
+
     return (
         <Card
             bg="black"
-            width={"100%"}
-            border={"1px solid grey"}
-            borderBottomRadius={'10px'}
-            borderTopRadius={'0px'}
-            borderTop={"0px"}
-            color={"white"}
+            border="1px solid grey"
+            borderBottomRadius="10px"
+            borderTopRadius="0px"
+            borderTop="0px"
+            color="white"
             mb={2}
         >
             <Center>
                 <CardHeader>
-                    <HStack>
-                        <FaEthereum />
-                        <Text> SkateHive Treasure </Text>
-                        <Tooltip
-                            bg={"black"}
-                            color={"white"}
-                            border={"1px solid white"}
-                            label={
-                                <Center>
-                                    <VStack >
-                                        <Text> {HOT_ADDRESS}</Text>
-                                        <Text> {OLD_MULTISIG_ADDRESS}</Text>
-                                        <Text>{NEW_MULTISIG_ADDRESS}</Text>
-                                    </VStack>
-                                </Center>
-                            }>
-                            <Badge ml={2} bg={"black"} border={"1px solid #A5D6A7"} color='#A5D6A7' fontSize={"22px"} > {totalJazz.toFixed(2)} USD </Badge>
-                        </Tooltip>
+                    <HStack spacing={'30%'}>
+                        <Box>
+                            <HStack>
+                                <FaEthereum size={36} />
+                                <Text>SkateHive Treasure</Text>
+                                <Tooltip
+                                    bg="black"
+                                    color="white"
+                                    border="1px solid white"
+                                    label={
+                                        <Center>
+                                            <VStack>
+                                                <Text>{HOT_ADDRESS}</Text>
+                                                <Text>{OLD_MULTISIG_ADDRESS}</Text>
+                                                <Text>{NEW_MULTISIG_ADDRESS}</Text>
+                                            </VStack>
+                                        </Center>
+                                    }
+                                >
+                                    <Badge
+                                        ml={2}
+                                        bg="black"
+                                        border="1px solid #A5D6A7"
+                                        color="#A5D6A7"
+                                        fontSize="22px"
+                                    >
+                                        {totalJazz.toFixed(2)} USD
+                                    </Badge>
+                                </Tooltip>
+                            </HStack>
+                        </Box>
+                        {!isMobile && (
+                            <Box>
+                                <HStack justifyContent="space-between">
+                                    {["For DIY", "For Dev", "Sponsors"].map((label, index) => (
+                                        <VStack m={2} key={index}>
+                                            <Text fontSize="12px" color="white">{label}</Text>
+                                            <Divider />
+                                            <Badge
+                                                colorScheme="green"
+                                                bg="black"
+                                                border="1px solid #A5D6A7"
+                                                color="#A5D6A7"
+                                                fontWeight="bold"
+                                                fontSize="12px"
+                                            >
+                                                {(totalJazz / (index === 1 ? 2 : 4)).toFixed(2)} USD
+                                            </Badge>
+                                        </VStack>
+                                    ))}
+                                </HStack>
+                            </Box>
+                        )}
                     </HStack>
-
                 </CardHeader>
             </Center>
 
-            <Divider border={"1px solid grey"} />
-            <CardBody
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-            >
-                <HStack
-                    justifyContent={"space-between"}
-                >
-                    <VStack m={2}>
-                        <Text fontSize={"12px"} color={"white"}> For DIY </Text>
-                        <Divider />
-                        <Badge colorScheme='green' bg={"black"} border={"1px solid #A5D6A7"} color='#A5D6A7' fontWeight={"bold"} fontSize={"12px"}>{(totalJazz / 4).toFixed(2)} USD</Badge>
-                    </VStack>
-                    <VStack m={2}>
-                        <Text fontSize={"12px"} color={"white"}>For Dev</Text>
-                        <Divider />
-                        <Badge colorScheme='green' bg={"black"} border={"1px solid #A5D6A7"} color='#A5D6A7' fontWeight={"bold"} fontSize={"12px"}>{(totalJazz / 2).toFixed(2)} USD</Badge>
-                    </VStack>
-                    <VStack m={2}>
-                        <Text fontSize={"12px"} color={"white"}> Sponsors</Text>
-                        <Divider />
-                        <Badge colorScheme='green' bg={"black"} border={"1px solid #A5D6A7"} color='#A5D6A7' fontWeight={"bold"} fontSize={"12px"}>{(totalJazz / 4).toFixed(2)} USD </Badge>
-                    </VStack>
-                </HStack>
-            </CardBody>
-        </Card >
+        </Card>
     );
-}
+};
 
 export default DaoTreasure;
