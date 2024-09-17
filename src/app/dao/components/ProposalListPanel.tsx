@@ -11,7 +11,7 @@ interface ProposalListPanelProps {
 
 const ProposalListPanel = ({ proposals, loadingProposals, setMainProposal, mainProposal }: ProposalListPanelProps) => {
     return (
-        <Box mt={2}>
+        <Box mt={2} h={'85vh'}>
             <Stack
                 overflow={"auto"}
                 sx={{
