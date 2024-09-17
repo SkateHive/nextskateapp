@@ -4,23 +4,24 @@ import { getENSavatar } from "../utils/getENSavatar"
 
 interface ProposerAvatarProps {
     authorAddress: string
+    boxSize?: number
 }
 
-const ProposerAvatar: React.FC<ProposerAvatarProps> = ({ authorAddress }) => {
+const ProposerAvatar: React.FC<ProposerAvatarProps> = ({ authorAddress, boxSize }) => {
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
 
     useEffect(() => {
         const loadAvatar = async () => {
             try {
                 const url = await getENSavatar(authorAddress)
-                setAvatarUrl(url || "/infinitypepe.gif")  
+                setAvatarUrl(url || "/infinitypepe.gif")
             } catch (error) {
                 console.error(
                     "Failed to fetch avatar for address:",
                     authorAddress,
                     error
                 )
-                setAvatarUrl("infinitypepe.gif") 
+                setAvatarUrl("infinitypepe.gif")
             }
         }
 
@@ -32,7 +33,7 @@ const ProposerAvatar: React.FC<ProposerAvatarProps> = ({ authorAddress }) => {
     return (
         <Avatar
             borderRadius={5}
-            boxSize={"22px"}
+            boxSize={boxSize || "22px"}
             src={avatarUrl || "/infinitypepe.gif"}
             name={authorAddress}
         />

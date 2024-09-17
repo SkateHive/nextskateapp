@@ -1,4 +1,4 @@
-import { Box, HStack, Badge, Flex, Progress, Text, Button, Tabs, TabList, TabPanels, TabPanel, Tab, Center } from "@chakra-ui/react";
+import { Box, HStack, Badge, Flex, Progress, Text, Button, Tabs, TabList, TabPanels, TabPanel, Tab, Center, Divider } from "@chakra-ui/react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
@@ -8,6 +8,7 @@ import { checkProposalOutcome } from "../utils/checkProposalOutcome";
 import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
 import { useEffect, useState } from "react";
 import { formatETHaddress } from "@/lib/utils";
+import ProposerAvatar from "./proposerAvatar";
 
 // Add a new type for vote data
 interface Vote {
@@ -80,22 +81,38 @@ const ProposalDetailPanel = ({
     };
 
     if (!mainProposal) {
-        return <Text color="white">No proposal selected</Text>;
+        return (
+            <Box
+                height={"100%"}
+                width={"100%"}
+            >
+                <Center>
+
+                    <Text color="white">Loading...</Text>
+                </Center>
+            </Box>
+        )
     }
 
     return (
         <Box mt={2} w={{ base: '100%%', md: '100%' }} color={"white"}>
-            <Tabs>
-                <TabList>
-                    <Center>
-                        <Tab>Proposal</Tab>
-                        <Tab>Votes</Tab> {/* New tab for votes */}
-                    </Center>
-                </TabList>
+            <Tabs isLazy isFitted variant="enclosed-colored">
+                <Center>
+                    <TabList>
+                        <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Proposal</Tab>
+                        <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Votes</Tab>
+                        <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Report</Tab>
+                    </TabList>
+                </Center>
 
                 <TabPanels>
-                    {/* Existing Proposal Tab */}
+
                     <TabPanel>
+                        <HStack>
+                            <ProposerAvatar authorAddress={mainProposal.author} boxSize={100} />
+                            <Text fontSize={24} fontWeight={"bold"} mt={5}>{mainProposal.title}</Text>
+                        </HStack>
+                        <Divider color={"white"} mt={5} />
                         <Box mt={2} h={"100%"}>
                             <ReactMarkdown
                                 components={MarkdownRenderers}
@@ -107,7 +124,6 @@ const ProposalDetailPanel = ({
                         </Box>
                     </TabPanel>
 
-                    {/* New Votes Tab */}
                     <TabPanel>
                         {loadingVotes ? (
                             <Text>Loading votes...</Text>
@@ -123,26 +139,33 @@ const ProposalDetailPanel = ({
                                         borderRadius="10px"
                                         mb={2}
                                     >
-                                        <HStack justifyContent="space-between">
+                                        <HStack>
+
                                             <Text>
-                                                <strong>Voter:</strong> {formatETHaddress(vote.voter)}
+                                                <ProposerAvatar authorAddress={vote.voter} /> {formatETHaddress(vote.voter)}
                                             </Text>
                                             <Text>
-                                                <strong>Choice:</strong> {mainProposal.choices[vote.choice - 1]} {/* Display the choice */}
-                                            </Text>
-                                            <Text>
-                                                <strong>Voting Power:</strong> {vote.vp}
+                                                voted {mainProposal.choices[vote.choice - 1]} with {vote.vp}
                                             </Text>
                                         </HStack>
                                         {vote.reason && (
                                             <Text mt={2} bg={"#451513"} p={2} borderRadius={5}>
-                                                <strong>Reason:</strong> {vote.reason}
+                                                {vote.reason}
                                             </Text>
                                         )}
                                     </Box>
                                 ))}
                             </Box>
                         )}
+                    </TabPanel>
+
+
+                    <TabPanel>
+                        <Box mt={2} h={"100%"}>
+                            <Center>
+                                SOON
+                            </Center>
+                        </Box>
                     </TabPanel>
                 </TabPanels>
             </Tabs>

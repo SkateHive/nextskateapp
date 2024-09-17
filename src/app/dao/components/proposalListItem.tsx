@@ -1,8 +1,7 @@
 import React from 'react';
-import { Badge, Box, Button, Center, Flex, HStack, Progress, Text, VStack } from "@chakra-ui/react";
+import { Badge, Box, Button, Center, Flex, HStack, Text, VStack } from "@chakra-ui/react";
 import { mainnet } from "viem/chains";
-import { normalize } from "viem/ens";
-import { useEnsAvatar, useEnsName } from "wagmi";
+import { useEnsName } from "wagmi";
 import { checkProposalOutcome } from "../utils/checkProposalOutcome";
 import { Proposal } from "../utils/fetchProposals";
 import ProposerAvatar from "./proposerAvatar";
@@ -19,7 +18,6 @@ const isProposalActive = (proposal: Proposal) => {
     return startTime < currentTime && endTime > currentTime;
 };
 
-
 const ProposalListItem = ({
     proposal,
     isSelected,
@@ -31,22 +29,18 @@ const ProposalListItem = ({
     onSelect: () => void;
     setSelectedChoice: (choice: number) => void;
 }) => {
-    const { data: ensName, error: ensNameError } = useEnsName({
+    const { data: ensName } = useEnsName({
         address: proposal.author as `0x${string}`,
-        chainId: mainnet.id,
-    });
-
-    const { data: ensAvatar, error: ensAvatarError } = useEnsAvatar({
-        name: normalize(ensName || ""),
         chainId: mainnet.id,
     });
 
     const outcome = checkProposalOutcome(proposal);
     const isActive = isProposalActive(proposal);
 
-    function setConfirmationModalOpen(arg0: boolean) {
-        throw new Error('Function not implemented.');
-    }
+    // Calculate percentages for "For" and "Against" votes
+    const totalVotes = proposal.scores[0] + proposal.scores[1];
+    const forPercentage = (proposal.scores[0] / totalVotes) * 100;
+    const againstPercentage = (proposal.scores[1] / totalVotes) * 100;
 
     return (
         <Box
@@ -56,18 +50,12 @@ const ProposalListItem = ({
             bg="#201d21"
             p={2}
             borderRadius="10px"
+            border="0.6px solid gray"
         >
             <HStack justifyContent={"space-between"}>
-                <VStack justifyContent="flex-start" w={'20%'}>
-                    <ProposerAvatar authorAddress={proposal.author} />
-                    <Center>
-                        <Text color="blue.200" ml={2} >
-                            {ensName || formatEthAddress(proposal.author)}
-                        </Text>
-                    </Center>
-                </VStack>
-                <Box maxW={"60%"} justifyContent={"flex-start"}>
-                    <Text color="white" isTruncated>{proposal.title}</Text>
+
+                <Box maxW={"80%"} justifyContent={"flex-start"}>
+                    <Text color="white" fontSize={18} isTruncated ml={2}>{proposal.title}</Text>
                 </Box>
 
                 <Badge
@@ -78,22 +66,60 @@ const ProposalListItem = ({
                 >
                     {isActive ? "Active" : outcome.hasWon ? "Passed" : "Failed"}
                 </Badge>
-
             </HStack>
 
             {isSelected && (
                 <>
-                    <Text
-                        border="0.6px solid darkgrey"
-                        p={2}
-                        mt={2}
-                        mb={2}
-                        borderRadius={5}
-                        fontSize="16px"
-                        color="white"
-                    >
-                        Summary: {decodeURIComponent(proposal.summary ?? "")}
-                    </Text>
+                    <HStack p={4} color={"green.200"}>
+                        <VStack justifyContent="flex-start" w={'20%'} mr={2}>
+                            <ProposerAvatar authorAddress={proposal.author} />
+                            <Center>
+                                <Text color="blue.200" ml={2}>
+                                    {ensName || formatEthAddress(proposal.author)}
+                                </Text>
+                            </Center>
+                        </VStack>
+                        <Text fontSize={"18px"}>
+                            {decodeURIComponent(proposal.summary ?? "")}
+                        </Text>
+                    </HStack>
+
+                    <Box p={4} borderTop={"none"}>
+                        {/* Progress bar representing both "For" and "Against" votes */}
+                        <Box height="20px" width="100%" bg="gray.700" borderRadius="md" overflow="hidden">
+                            <Box height="100%" width={`${forPercentage}%`} bg="green.400" float="left"></Box>
+                            <Box height="100%" width={`${againstPercentage}%`} bg="red.400" float="right"></Box>
+                        </Box>
+                        <HStack justifyContent="space-between" mt={2}>
+                            <Text fontSize="16px" color="#A5D6A7">{proposal.scores[0]} For</Text>
+                            <Text fontSize="16px" color="red.200">{proposal.scores[1]} Against</Text>
+                        </HStack>
+
+                        {proposal.state !== "active" && (
+                            <Center>
+                                <Text fontSize="14px" color="#A5D6A7" mt={5}>
+                                    Quorum: {checkProposalOutcome(proposal).quorumReached ? "Reached" : "Not Reached"} (
+                                    {checkProposalOutcome(proposal).totalVotes} Votes)
+                                </Text>
+                            </Center>
+                        )}
+
+                        {proposal.state === "active" && (
+                            <HStack mt={4} spacing={4} justifyContent="space-between">
+                                {proposal.choices.map((choice, choiceIndex) => (
+                                    <Button
+                                        colorScheme={choice.toUpperCase() === "FOR" ? "green" : "red"}
+                                        variant="outline"
+                                        key={choiceIndex}
+                                        onClick={() => setSelectedChoice(choiceIndex)}
+                                    >
+                                        {choice.toUpperCase()}
+                                    </Button>
+                                ))}
+                            </HStack>
+                        )}
+                    </Box>
+
                     <HStack justifyContent="space-between" m={2}>
                         <Text color={"white"}>
                             Start:{" "}
@@ -108,48 +134,6 @@ const ProposalListItem = ({
                             </Badge>
                         </Text>
                     </HStack>
-
-                    <Box p={4} border="0.6px solid #A5D6A7" color={"green.200"}>
-                        <Text fontSize={"18px"}>{proposal.title}</Text>
-                    </Box>
-
-                    <Box p={4} border="0.6px solid #A5D6A7" borderTop={"none"}>
-                        <Text fontSize="16px" color="#A5D6A7">
-                            {proposal.scores[0]} For
-                        </Text>
-                        <Progress value={proposal.scores[0]} colorScheme="green" size="sm" />
-                        <Text fontSize="16px" color="#A5D6A7">
-                            {proposal.scores[1]} Against
-                        </Text>
-                        <Progress value={proposal.scores[1]} colorScheme="red" size="sm" />
-
-                        {proposal.state !== "active" && (
-                            <Center>
-                                <Text fontSize="14px" color="#A5D6A7" mt={5}>
-                                    Quorum: {checkProposalOutcome(proposal).quorumReached ? "Reached" : "Not Reached"} (
-                                    {checkProposalOutcome(proposal).totalVotes} Votes)
-                                </Text>
-                            </Center>
-                        )}
-
-                        {proposal.state === "active" &&
-                            proposal.choices.map((choice, choiceIndex) => (
-                                <Button
-                                    mt={4}
-                                    colorScheme={choice.toUpperCase() === "FOR" ? "green" : "red"}
-                                    variant="outline"
-                                    key={choiceIndex}
-                                    onClick={() => {
-                                        setSelectedChoice(choiceIndex);
-                                        setConfirmationModalOpen(true);
-                                    }}
-                                >
-                                    {choice.toUpperCase()}
-                                </Button>
-                            ))}
-                    </Box>
-
-
                 </>
             )}
         </Box>

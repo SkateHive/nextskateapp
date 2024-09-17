@@ -63,10 +63,10 @@ const SidebarDesktop = () => {
           const userAccount = await client.database.getAccounts([hiveUser.name]);
           if (userAccount.length > 0) {
             const account = userAccount[0];
-            
+
             const getBalance = (balance: string | Asset): number => {
-                const balanceStr = typeof balance === 'string' ? balance : balance.toString();
-                return Number(balanceStr.split(' ')[0]);
+              const balanceStr = typeof balance === 'string' ? balance : balance.toString();
+              return Number(balanceStr.split(' ')[0]);
             };
 
             const hbdBalance = getBalance(account.reward_hbd_balance);

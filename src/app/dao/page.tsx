@@ -45,7 +45,7 @@ const DaoPage = () => {
         <CreateProposalModal connectedUserAddress={ethAccount || ""} />
       ) : (
         <Flex gap={1} flexDirection={{ base: "column", md: "row" }}>
-          <Box>
+          <Box maxW={{ base: "100%", md: "40%" }} h={"100%"}>
             <DaoHeader
               avatar={null}
               connectedUserEnsName={null}
@@ -62,15 +62,16 @@ const DaoPage = () => {
               mainProposal={mainProposal}
             />
           </Box>
-
-          <ProposalDetailPanel
-            mainProposal={mainProposal}
-            selectedChoice={selectedChoice}
-            reason={reason}
-            setReason={setReason}
-            ethAccount={ethAccount ?? null} // Use null if ethAccount is undefined
-            voteOnProposal={voteOnProposal}
-          />
+          <Box w={"100%"} h={"100%"}>
+            <ProposalDetailPanel
+              mainProposal={mainProposal}
+              selectedChoice={selectedChoice}
+              reason={reason}
+              setReason={setReason}
+              ethAccount={ethAccount ?? null} // Use null if ethAccount is undefined
+              voteOnProposal={voteOnProposal}
+            />
+          </Box>
         </Flex>
       )}
     </Box>

@@ -1,6 +1,7 @@
 // src/app/dao/components/DaoHeader.tsx
 
 import { Box, Grid, GridItem, HStack, Image, Text, VStack, Button } from "@chakra-ui/react";
+import { FaEthereum } from "react-icons/fa";
 import { FaPencil } from "react-icons/fa6";
 
 interface DaoHeaderProps {
@@ -24,19 +25,16 @@ const DaoHeader: React.FC<DaoHeaderProps> = ({
             bg="black"
             border="1px solid grey"
             borderTopRadius="10px"
+            color={"white"}
+            p={2}
         >
-            <Grid templateColumns="1fr 2fr 1fr" gap={6} alignItems="center">
+            <Grid templateColumns="1fr 2fr 1fr" gap={6} alignItems="center" >
                 <GridItem colSpan={2} display="flex" alignItems="center">
                     <HStack spacing={4}>
-                        <Image alt="Connected User Avatar" borderRadius={'5px'} boxSize="86px" src={avatar || "/infinitypepe.gif"} />
-                        <VStack>
-                            <Text fontSize="16px" color="#A5D6A7">
-                                {connectedUserEnsName}
-                            </Text>
-                            <Text color={"white"} fontSize="10px" mb={2}>
-                                Voting Power: Loading...
-                            </Text>
-                        </VStack>
+                        <HStack>
+                            <FaEthereum size={32} />
+                            <Text>SkateHive Treasure</Text>
+                        </HStack>
                     </HStack>
                 </GridItem>
                 <GridItem
