@@ -1,5 +1,5 @@
 "use client";
-import { Box, Flex, Center, Image, Text, VStack } from "@chakra-ui/react";
+import { Box, Flex, Center, Image, VStack, Progress, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import CreateProposalModal from "./components/createProposalModal";
@@ -20,6 +20,7 @@ const DaoPage = () => {
   const [selectedChoice, setSelectedChoice] = useState<number | null>(null);
   const [reason, setReason] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true); // New state for loading everything
+  const [progressValue, setProgressValue] = useState(0); // State for progress bar
 
   useEffect(() => {
     // Fetch proposals and summaries
@@ -43,11 +44,27 @@ const DaoPage = () => {
     }
   }, [loadingProposals, loadingSummaries]);
 
+  // Progress bar animation logic
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setProgressValue((oldValue) => {
+        const newValue = oldValue + 5; // Increment by 5
+        if (newValue >= 100) {
+          clearInterval(interval); // Stop interval at 100%
+          return 100;
+        }
+        return newValue;
+      });
+    }, 420); // Change this to control the speed of the progress
+
+    return () => clearInterval(interval); // Cleanup the interval on unmount
+  }, []);
+
   const handleCreateProposalButton = () => {
     setIsCreateProposalModalOpen(!isCreateProposalModalOpen);
   };
 
-  // Render the loading image while the data is being fetched
+  // Render the loading image and progress bar while the data is being fetched
   if (isLoading) {
     return (
       <Center w={'100%'} h={"100vh"}>
@@ -58,9 +75,10 @@ const DaoPage = () => {
             alt="Loading data..."
             h={'100%'}
           />
-          <Text fontSize="28px" color="#A5D6A7">
-            Loading Proposals...
-          </Text>
+          <Box w="100%" mt={4}>
+            <Progress value={progressValue} size="lg" colorScheme="green" hasStripe isAnimated />
+          </Box>
+          <Text fontSize="18px" color="#A5D6A7">{progressValue}%</Text>
         </VStack>
       </Center>
     );

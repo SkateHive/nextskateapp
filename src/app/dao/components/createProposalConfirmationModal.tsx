@@ -1,7 +1,7 @@
 import { MarkdownRenderers } from '@/app/upload/utils/MarkdownRenderers';
 import { useHiveUser } from '@/contexts/UserContext';
 import { commentWithKeychain } from '@/lib/hive/client-functions';
-import { Button, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay } from "@chakra-ui/react";
+import { Button, Center, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay } from "@chakra-ui/react";
 import { Web3Provider } from '@ethersproject/providers';
 import React, { useCallback, useMemo, useState } from 'react';
 import Confetti from 'react-confetti';
@@ -9,6 +9,7 @@ import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import { createProposal } from '../utils/createProposal';
+
 export enum ProposalType {
     SingleChoice = 'single-choice',
     Approval = 'approval',
@@ -52,12 +53,11 @@ const CreateProposalConfirmationModal: React.FC<CreateProposalConfirmationModalP
 
             const propostBody = `
             ---
-            HiveUser: ${hiveUser?.hiveUser?.name}
-            PermLink: ${proPostPermlink}
+            user: ${hiveUser?.hiveUser?.name}
+            permLink: ${proPostPermlink}
             ---
             ${proposalBody}
             `
-
 
             let proposalData = {
                 space: "skatehive.eth",
@@ -65,7 +65,7 @@ const CreateProposalConfirmationModal: React.FC<CreateProposalConfirmationModalP
                 title: title,
                 body: propostBody,
                 discussion: '',
-                choices: ['For', 'Against'],
+                choices: ['For', 'Against', 'Abstain'],
                 start: start,
                 end: end,
                 snapshot: currentBlockNumber,
@@ -78,7 +78,7 @@ const CreateProposalConfirmationModal: React.FC<CreateProposalConfirmationModalP
                     username: hiveUser?.hiveUser?.name,
                     title: title,
                     body: '> ProPost !' + proposalBody,
-                    parent_perm: "blog",
+                    parent_perm: "hive-173115",
                     json_metadata: JSON.stringify({
                         format: "markdown", description: "", tags: ['skatehive', 'skateboarding', 'proposal', 'dao', 'skatehive-proposal'], image: 'https://skatehive.com/images/skatehive-logo.png',
                     }),
@@ -104,11 +104,12 @@ const CreateProposalConfirmationModal: React.FC<CreateProposalConfirmationModalP
 
             const response = await commentWithKeychain(hivePostMetadata);
             if (response?.success) {
-                const receipt = await createProposal(web3, proposalData);
+                await createProposal(web3, proposalData);
                 setState({ currentBlockNumber, confetti: true });
-
+                onClose();
             } else {
                 throw new Error('Hive post unsuccessful');
+                onClose();
             }
         } catch (error: any) {
             console.error("Failed to create proposal:", error);
@@ -117,33 +118,46 @@ const CreateProposalConfirmationModal: React.FC<CreateProposalConfirmationModalP
     }, [web3, proposalBody, title, hiveUser, fetchCurrentBlockNumber]);
 
     return (
-        <>
+        <Modal isOpen={isOpen} onClose={onClose}>
             {state.confetti && <Confetti />}
-            <Modal isOpen={isOpen} onClose={onClose}>
-                <ModalOverlay />
-                <ModalContent minH={"60vh"} color={"white"} border={'1px solid limegreen'} bg={'black'}>
-                    <ModalHeader>Proposal Preview</ModalHeader>
-                    <ModalCloseButton />
-                    <ModalBody>
-                        <ReactMarkdown
-                            components={MarkdownRenderers}
-                            remarkPlugins={[remarkGfm]}
-                            rehypePlugins={[rehypeRaw]}
-                        >
-                            {proposalBody}
-                        </ReactMarkdown>
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button variant="outline" colorScheme="green" mr={3} onClick={handleCreateProposal}>
-                            Confirm
-                        </Button>
-                        <Button variant="outline" colorScheme="red" mr={3} onClick={onClose}>
-                            Close
-                        </Button>
-                    </ModalFooter>
-                </ModalContent>
-            </Modal>
-        </>
+            <ModalOverlay
+                style={{
+                    backdropFilter: 'blur(10px)',
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                }}
+            />
+            <ModalContent
+                maxW={{ base: "95%", md: "70%" }}
+                w="auto"
+                color="white"
+                border="1px solid limegreen"
+                bg="black"
+            >
+                <Center>
+                    <ModalHeader fontSize={"28px"}>
+                        Proposal Preview
+                    </ModalHeader>
+                </Center>
+                <ModalCloseButton />
+                <ModalBody>
+                    <ReactMarkdown
+                        components={MarkdownRenderers}
+                        remarkPlugins={[remarkGfm]}
+                        rehypePlugins={[rehypeRaw]}
+                    >
+                        {proposalBody}
+                    </ReactMarkdown>
+                </ModalBody>
+                <ModalFooter>
+                    <Button variant="outline" color="limegreen" mr={3} onClick={handleCreateProposal}>
+                        Confirm
+                    </Button>
+                    <Button variant="outline" colorScheme="red" mr={3} onClick={onClose}>
+                        Close
+                    </Button>
+                </ModalFooter>
+            </ModalContent>
+        </Modal>
     );
 };
 

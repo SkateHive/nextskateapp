@@ -55,6 +55,15 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
     return (
         <Box
         >
+            {isConfirmationModalOpen && (
+                <CreateProposalConfirmationModal
+                    proposalBody={value}
+                    isOpen={isConfirmationModalOpen}
+                    connectedUserAddress={connectedUserAddress}
+                    onClose={() => setIsConfirmationModalOpen(false)}
+                    title={title}
+                />
+            )}
             {useBreakpointValue({
                 base: (
                     <VStack spacing="4" w={'100%'} p={0}>
@@ -66,6 +75,8 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
                             setIsUploading={setIsUploading}
                             PINATA_GATEWAY_TOKEN={PINATA_GATEWAY_TOKEN}
                         />
+
+
                         {title !== "" ? (
                             <Text color={"white"}>
                                 {title}
@@ -74,6 +85,17 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
                             <Text color={"white"}>Proposal Preview</Text>
                         )}
                         <ProposalPreview value={value} />
+                        <Button
+                            width={"100%"}
+                            mt={4}
+                            colorScheme="green"
+                            variant={"outline"}
+                            onClick={() => {
+                                setIsConfirmationModalOpen(true);
+                            }}
+                        >
+                            Create Proposal
+                        </Button>
                     </VStack>
                 ),
                 md: (
@@ -87,6 +109,28 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
                                 setIsUploading={setIsUploading}
                                 PINATA_GATEWAY_TOKEN={PINATA_GATEWAY_TOKEN}
                             />
+                            <Button
+                                width={"100%"}
+                                mt={4}
+                                colorScheme="green"
+                                variant={"outline"}
+                                onClick={() => {
+                                    setIsConfirmationModalOpen(true);
+                                }}
+                            >
+                                Create Proposal
+                            </Button>
+                            <Button
+                                width={"100%"}
+                                mt={4}
+                                colorScheme="green"
+                                variant={"outline"}
+                                onClick={() => {
+                                    console.log(spaceInfo);
+                                }}
+                            >
+                                Log Space Details
+                            </Button>
                         </Box>
                         <Box
                             width="50%"
@@ -106,37 +150,8 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
                 )
 
             })}
-            <Button
-                width={"100%"}
-                mt={4}
-                colorScheme="green"
-                variant={"outline"}
-                onClick={() => {
-                    setIsConfirmationModalOpen(true);
-                }}
-            >
-                Create Proposal
-            </Button>
-            <Button
-                width={"100%"}
-                mt={4}
-                colorScheme="green"
-                variant={"outline"}
-                onClick={() => {
-                    console.log(spaceInfo);
-                }}
-            >
-                Log Space Details
-            </Button>
-            {isConfirmationModalOpen && (
-                <CreateProposalConfirmationModal
-                    proposalBody={value}
-                    isOpen={isConfirmationModalOpen}
-                    connectedUserAddress={connectedUserAddress}
-                    onClose={() => setIsConfirmationModalOpen(false)}
-                    title={title}
-                />
-            )}
+
+
         </Box>
     );
 };
