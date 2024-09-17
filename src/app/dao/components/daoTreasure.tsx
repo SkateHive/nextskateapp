@@ -20,7 +20,7 @@ import { FaEthereum } from 'react-icons/fa';
 import { mainnet } from 'viem/chains';
 import { useBalance } from 'wagmi';
 
-const HOT_ADDRESS = '0xB4964e1ecA55Db36a94e8aeFfsBFBAb48529a2f6c' as `0x${string}`;
+const HOT_ADDRESS = '0xB4964e1ecA55Db36a94e8aeFfsBFBAb48529a2f6c'
 const OLD_MULTISIG_ADDRESS = '0x5501838d869B125EFd90daCf45cDFAC4ea192c12' as `0x${string}`;
 const NEW_MULTISIG_ADDRESS = '0xc1afa4c0a70b622d7b71d42241bb4d52b6f3e218' as `0x${string}`;
 const BASE_USDC_TOKEN_ADDRESS = '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913' as `0x${string}`;
@@ -49,8 +49,9 @@ const DaoTreasure = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
+                console.log("Fetching hot wallet balance for: ", HOT_ADDRESS);
                 const response = await axios.get(`https://pioneers.dev/api/v1/portfolio/${HOT_ADDRESS}`);
-                console.log(response.data);
+                console.log("Pioneer response:", response);
                 setHotWalletBalance(response.data.totalNetWorth || "0");
             } catch (error) {
                 console.error("Error fetching hot wallet balance:", error);
