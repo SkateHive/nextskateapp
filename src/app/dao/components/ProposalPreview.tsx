@@ -18,7 +18,7 @@ const ProposalPreview: React.FC<ProposalPreviewProps> = ({ value }) => {
             overflow={'auto'}
             borderRadius={8}
             p={4}
-            height="55vh"
+            h={{ base: '60vh', md: '80vh' }}
         >
             <ReactMarkdown
                 components={MarkdownRenderers}

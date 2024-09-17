@@ -72,6 +72,7 @@ const ProposalEditor: React.FC<ProposalEditorProps> = ({ value, setValue, title,
 
     return (
         <Box {...getRootProps()}
+            w={'100%'}
         >
             <Input
                 placeholder="Proposal Title"
@@ -82,6 +83,7 @@ const ProposalEditor: React.FC<ProposalEditorProps> = ({ value, setValue, title,
                 color={"limegreen"}
                 _placeholder={{ color: "limegreen", opacity: 0.4 }}
                 focusBorderColor="limegreen"
+                mb={2}
             />
             <input {...getInputProps()} id="md-image-upload" style={{ display: 'none' }} />
             {isUploading && <Center><Spinner /></Center>}

@@ -4,6 +4,7 @@ import {
     Box,
     Button,
     HStack,
+    Text,
     VStack, useBreakpointValue
 } from "@chakra-ui/react";
 import { Web3Provider } from '@ethersproject/providers';
@@ -33,8 +34,6 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
         setCurrentBlockNumber(blockNumber);
     };
 
-
-
     const fetchSpaceInfo = async () => {
         try {
             const response = await fetch('https://hub.snapshot.org/api/spaces/skatehive.eth');
@@ -55,11 +54,10 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
 
     return (
         <Box
-            height={"100vh"}
         >
             {useBreakpointValue({
                 base: (
-                    <VStack spacing="4">
+                    <VStack spacing="4" w={'100%'} p={0}>
                         <ProposalEditor
                             value={value}
                             setValue={setValue}
@@ -68,6 +66,13 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
                             setIsUploading={setIsUploading}
                             PINATA_GATEWAY_TOKEN={PINATA_GATEWAY_TOKEN}
                         />
+                        {title !== "" ? (
+                            <Text color={"white"}>
+                                {title}
+                            </Text>
+                        ) : (
+                            <Text color={"white"}>Proposal Preview</Text>
+                        )}
                         <ProposalPreview value={value} />
                     </VStack>
                 ),
@@ -84,7 +89,17 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
                             />
                         </Box>
                         <Box
-                            width="50%">
+                            width="50%"
+                        >
+                            {title !== "" ? (
+                                <Text color={"white"}>
+                                    {title}
+                                </Text>
+                            ) : (
+                                <Text color={"white"}>Proposal Preview</Text>
+                            )}
+
+
                             <ProposalPreview value={value} />
                         </Box>
                     </HStack>

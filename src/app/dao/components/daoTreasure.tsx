@@ -83,11 +83,12 @@ const DaoTreasure = () => {
         >
             <Center>
                 <CardHeader>
-                    <HStack spacing={'30%'}>
+                    <HStack spacing={10} >
                         <Box>
-                            <HStack>
-                                <FaEthereum size={36} />
-                                <Text>SkateHive Treasure</Text>
+                            <VStack>
+                                <Text>
+                                    Total:
+                                </Text>
                                 <Tooltip
                                     bg="black"
                                     color="white"
@@ -112,7 +113,7 @@ const DaoTreasure = () => {
                                         {totalJazz.toFixed(2)} USD
                                     </Badge>
                                 </Tooltip>
-                            </HStack>
+                            </VStack>
                         </Box>
                         {!isMobile && (
                             <Box>
