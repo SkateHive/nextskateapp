@@ -14,6 +14,7 @@ import { useDropzone } from "react-dropzone";
 import { HIVE_PARENT_AUTHOR, HIVE_PARENT_PERMLINK } from "@/lib/constants";
 
 function CastArea() {
+  const [castContent, setCastContent] = useState<string>();
   const [imageList, setImageList] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [medias, setMedias] = useState<File[]>([]);
@@ -62,11 +63,14 @@ function CastArea() {
     multiple: true,
   });
 
-  const handlePostClick = () => {
+  const handlePostClick = async () => {
+    setIsUploading(true);
+    const urls = await uploadMedia();
+
     const markdownString = (
-      postBodyRef.current?.value +
+      castContent +
       "\n" +
-      imageList.join("\n")
+      urls.join("\n")
     ).trim();
     if (markdownString === "") {
       alert("Please write something before posting");
@@ -75,14 +79,15 @@ function CastArea() {
       alert("Post is too long. To make longform content use our /mag section");
       return;
     } else {
-      handlePost(markdownString);
+      await handlePost(markdownString);
     }
+
+    setIsUploading(false);
   };
 
-  const uploadMedia = async (acceptedFiles: File[]) => {
-    setIsUploading(true);
+  const uploadMedia = async () => {
     const newImageList: string[] = [];
-    for (const file of acceptedFiles) {
+    for (const file of medias) {
       const ipfsData = await uploadFileToIPFS(file);
       if (ipfsData !== undefined) {
         const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}`;
@@ -92,8 +97,7 @@ function CastArea() {
         newImageList.push(markdownLink);
       }
     }
-    setImageList((prevList) => [...prevList, ...newImageList]);
-    setIsUploading(false);
+    return newImageList;
   };
 
   const handlePost = async (markdownString: string) => {
@@ -235,7 +239,9 @@ function CastArea() {
             }}
             overflow={"hidden"}
             resize={"vertical"}
-            ref={postBodyRef}
+            // ref={postBodyRef}
+            defaultValue={castContent}
+            onChange={(event) => setCastContent(event.target.value)}
             placeholder="Write your stuff..."
             onPaste={handlePaste}
           />
