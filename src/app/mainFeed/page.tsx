@@ -33,7 +33,7 @@ import AvatarList from "./components/AvatarList";
 import CommentList from "./components/CommentsList";
 import LoadingComponent from "./components/loadingComponent";
 import AvatarMediaModal from "./components/mediaModal";
-import ImageUploader from "@/components/Hive/PostCreation/ImageUpload";
+import MediaUploader from "@/components/Hive/PostCreation/MediaUpload";
 import MediaDisplay from "@/components/Hive/PostCreation/MediaDisplay";
 import CastArea from "@/components/Feed/CastArea";
 

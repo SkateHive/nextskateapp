@@ -2,18 +2,18 @@ import { Box, Button, Input } from "@chakra-ui/react";
 import React, { useRef } from "react";
 import { FaImage } from "react-icons/fa";
 
-interface ImageUploaderProps {
+interface MediaUploaderProps {
   onUpload: (files: File[]) => void;
   disabled?: boolean;
 }
 
-const ImageUploader: React.FC<ImageUploaderProps> = ({
+const MediaUploader: React.FC<MediaUploaderProps> = ({
   onUpload,
   disabled = false,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleMediaUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
     onUpload(files);
   };
@@ -60,12 +60,12 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         ref={inputRef}
         type="file"
         multiple
-        accept="image/*"
-        onChange={handleImageUpload}
+        accept="image/*,video/*"
+        onChange={handleMediaUpload}
         hidden
       />
     </Box>
   );
 };
 
-export default ImageUploader;
+export default MediaUploader;

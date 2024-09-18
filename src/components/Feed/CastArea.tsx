@@ -1,7 +1,7 @@
 "use client";
 
 import { uploadFileToIPFS } from "@/app/upload/utils/uploadToIPFS";
-import ImageUploader from "@/components/Hive/PostCreation/ImageUpload";
+import MediaUploader from "@/components/Hive/PostCreation/MediaUpload";
 import MediaDisplay from "@/components/Hive/PostCreation/MediaDisplay";
 import UserAvatar from "@/components/UserAvatar";
 import { useHiveUser } from "@/contexts/UserContext";
@@ -11,7 +11,6 @@ import { Box, Button, Flex, HStack, Textarea } from "@chakra-ui/react";
 import { CommentOperation, CommentOptionsOperation } from "@hiveio/dhive";
 import React, { useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { MdAddComment } from "react-icons/md";
 
 const parent_author = process.env.NEXT_PUBLIC_MAINFEED_AUTHOR || "skatehacker";
 const parent_permlink =
@@ -35,8 +34,6 @@ function CastArea() {
     event: React.ClipboardEvent<HTMLTextAreaElement>
   ) => {
     const clipboardItems = event.clipboardData.items;
-    const newImageList: string[] = [];
-
     for (const item of clipboardItems) {
       if (item.type.startsWith("image/")) {
         const blob = item.getAsFile();
@@ -47,18 +44,14 @@ function CastArea() {
             type: blob.type,
           });
 
-          handleImageUpload([file]);
+          addImages([file]);
         }
       }
     }
-
-    if (newImageList.length > 0) {
-      setImageList((prevList) => [...prevList, ...newImageList]);
-      setIsUploading(false);
-    }
+    setIsUploading(false);
   };
 
-  const handleImageUpload = (images: File[]) => {
+  const addImages = (images: File[]) => {
     console.log("New images added", [images]);
     setImages((prev) => [...prev, ...images]);
   };
@@ -218,7 +211,7 @@ function CastArea() {
         if (postBodyRef.current) {
           postBodyRef.current.value = "";
         }
-        MdAddComment(postData);
+        addComment(postData);
         setHasPosted(true);
         setImageList([]);
       } catch (error) {
@@ -229,54 +222,53 @@ function CastArea() {
 
   return (
     <Box p={4} width={"100%"} bg="black" color="white">
-      <div>
-        <Flex>
-          <UserAvatar
-            /* @ts-ignore */
-            hiveAccount={user.hiveUser || {}}
-            boxSize={12}
-            borderRadius={5}
-          />
-          <Flex flexDir="column" w="100%">
-            <Textarea
-              border="none"
-              _focus={{
-                border: "none",
-                boxShadow: "none",
-              }}
-              overflow={"hidden"}
-              resize={"vertical"}
-              ref={postBodyRef}
-              placeholder="Write your stuff..."
-              onPaste={handlePaste}
-            />
-          </Flex>
-        </Flex>
-        <MediaDisplay
-          imageList={images}
-          handleRemoveImage={(index) =>
-            setImages((prevImages) => prevImages.filter((_, i) => i !== index))
-          }
+      <Flex>
+        <UserAvatar
+          /* @ts-ignore */
+          hiveAccount={user.hiveUser || {}}
+          boxSize={12}
+          borderRadius={5}
         />
-
-        <HStack justifyContent="space-between" marginTop={2}>
-          <ImageUploader onUpload={handleImageUpload} disabled={isUploading} />
-          <Button
-            color="#ABE4B8"
-            variant="ghost"
-            ml="auto"
-            onClick={handlePostClick}
-            isLoading={isUploading}
-            _hover={{
-              color: "limegreen",
-              textShadow: "0 0 10px 0 limegreen",
-              transition: "all 0.2s",
+        <Flex flexDir="column" w="100%">
+          <Textarea
+            border="none"
+            _focus={{
+              border: "none",
+              boxShadow: "none",
             }}
-          >
-            Post
-          </Button>
-        </HStack>
-      </div>
+            overflow={"hidden"}
+            resize={"vertical"}
+            ref={postBodyRef}
+            placeholder="Write your stuff..."
+            onPaste={handlePaste}
+          />
+        </Flex>
+      </Flex>
+
+      <MediaDisplay
+        imageList={images}
+        handleRemoveImage={(index) =>
+          setImages((prevImages) => prevImages.filter((_, i) => i !== index))
+        }
+      />
+
+      <HStack justifyContent="space-between" marginTop={2}>
+        <MediaUploader onUpload={addImages} disabled={isUploading} />
+        <Button
+          color="#ABE4B8"
+          variant="ghost"
+          ml="auto"
+          onClick={handlePostClick}
+          isLoading={isUploading}
+          _hover={{
+            color: "limegreen",
+            textShadow: "0 0 10px 0 limegreen",
+            transition: "all 0.2s",
+          }}
+        >
+          Post
+        </Button>
+      </HStack>
     </Box>
   );
 }

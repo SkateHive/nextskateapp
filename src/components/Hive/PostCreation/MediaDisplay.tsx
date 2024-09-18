@@ -16,7 +16,7 @@ function MediaDisplay({ imageList, handleRemoveImage }: MediaDisplayProps) {
         const url = URL.createObjectURL(item);
 
         return (
-          <Box key={index} position="relative" aspectRatio={"1/1"}>
+          <Box key={index} position="relative" display={"flex"}>
             <IconButton
               aria-label="Remove image"
               icon={<FaTimes style={{ color: "black", strokeWidth: 1 }} />}
@@ -38,7 +38,7 @@ function MediaDisplay({ imageList, handleRemoveImage }: MediaDisplayProps) {
                 alt="uploaded-image"
                 w={"100%"}
                 h={"100%"}
-                objectFit="cover"
+                objectFit="contain"
               />
             )}
             {isVideo && <video src={url} controls muted width="100%" />}
