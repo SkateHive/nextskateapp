@@ -13,24 +13,12 @@ const MediaUploader: React.FC<MediaUploaderProps> = ({
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleMediaUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []);
-    onUpload(files);
-  };
-
-  const triggerFileInput = () => {
-    if (inputRef.current) {
-      inputRef.current.click();
-    }
-  };
-
   return (
     <Box>
       <Button
         _active={{ borderColor: "border" }}
-        // variant="ghost"
         isDisabled={disabled}
-        onClick={triggerFileInput}
+        onClick={() => inputRef.current?.click()}
         color="#ABE4B8"
         variant="ghost"
         ml="auto"
@@ -61,7 +49,7 @@ const MediaUploader: React.FC<MediaUploaderProps> = ({
         type="file"
         multiple
         accept="image/*,video/*"
-        onChange={handleMediaUpload}
+        onChange={(event) => onUpload(Array.from(event.target.files || []))}
         hidden
       />
     </Box>

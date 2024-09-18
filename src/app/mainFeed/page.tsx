@@ -1,45 +1,29 @@
 "use client";
-import UserAvatar from "@/components/UserAvatar";
+
 import { useHiveUser } from "@/contexts/UserContext";
 import { useComments } from "@/hooks/comments";
 import { vote } from "@/lib/hive/client-functions";
-import { commentWithPrivateKey } from "@/lib/hive/server-functions";
 import { getTotalPayout } from "@/lib/utils";
 import {
-  Box,
-  Button,
   Divider,
-  Flex,
   HStack,
-  IconButton,
-  Image,
-  Input,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
   Text,
-  Textarea,
   VStack,
 } from "@chakra-ui/react";
-import * as dhive from "@hiveio/dhive";
-import { useMemo, useRef, useState } from "react";
-import { useDropzone } from "react-dropzone";
-import { FaHistory, FaImage, FaMoneyBill, FaTimes } from "react-icons/fa";
+import { useMemo, useState } from "react";
+import { FaHistory, FaMoneyBill } from "react-icons/fa";
 import { FaArrowRightArrowLeft } from "react-icons/fa6";
 import { IoFilter } from "react-icons/io5";
-import { uploadFileToIPFS } from "../upload/utils/uploadToIPFS";
 import AvatarList from "./components/AvatarList";
 import CommentList from "./components/CommentsList";
 import LoadingComponent from "./components/loadingComponent";
 import AvatarMediaModal from "./components/mediaModal";
-import MediaUploader from "@/components/Hive/PostCreation/MediaUpload";
-import MediaDisplay from "@/components/Hive/PostCreation/MediaDisplay";
 import CastArea from "@/components/Feed/CastArea";
-
-const parent_author = process.env.NEXT_PUBLIC_MAINFEED_AUTHOR || "skatehacker";
-const parent_permlink =
-  process.env.NEXT_PUBLIC_MAINFEED_PERMLINK || "test-advance-mode-post";
+import { HIVE_PARENT_AUTHOR, HIVE_PARENT_PERMLINK } from "@/lib/constants";
 
 export interface Comment {
   id: number;
@@ -54,8 +38,8 @@ export interface Comment {
 
 const SkateCast = () => {
   const { comments, addComment, isLoading } = useComments(
-    parent_author,
-    parent_permlink
+    HIVE_PARENT_AUTHOR,
+    HIVE_PARENT_PERMLINK
   );
   const [visiblePosts, setVisiblePosts] = useState<number>(2);
   const user = useHiveUser();

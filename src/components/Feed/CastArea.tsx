@@ -11,10 +11,7 @@ import { Box, Button, Flex, HStack, Textarea } from "@chakra-ui/react";
 import { CommentOperation, CommentOptionsOperation } from "@hiveio/dhive";
 import React, { useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
-
-const parent_author = process.env.NEXT_PUBLIC_MAINFEED_AUTHOR || "skatehacker";
-const parent_permlink =
-  process.env.NEXT_PUBLIC_MAINFEED_PERMLINK || "test-advance-mode-post";
+import { HIVE_PARENT_AUTHOR, HIVE_PARENT_PERMLINK } from "@/lib/constants";
 
 function CastArea() {
   const [imageList, setImageList] = useState<string[]>([]);
@@ -26,8 +23,8 @@ function CastArea() {
   const [hasPosted, setHasPosted] = useState<boolean>(false);
 
   const { comments, addComment, isLoading } = useComments(
-    parent_author,
-    parent_permlink
+    HIVE_PARENT_AUTHOR,
+    HIVE_PARENT_PERMLINK
   );
 
   const handlePaste = async (
@@ -37,9 +34,7 @@ function CastArea() {
     for (const item of clipboardItems) {
       if (item.type.startsWith("image/")) {
         const blob = item.getAsFile();
-
         if (blob) {
-          // Convert Blob to File
           const file = new File([blob], "pasted-image.png", {
             type: blob.type,
           });
