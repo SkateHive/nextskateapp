@@ -91,16 +91,16 @@ const ProposalListItem = ({
 
             {isSelected && (
                 <>
-                    <HStack p={4} color={"green.200"}>
+                    <HStack p={4} color={"green.200"} justifyContent={"space-between"}>
                         <VStack justifyContent="flex-start" w={'20%'} mr={2}>
-                            <ProposerAvatar authorAddress={proposal.author} />
+                            <ProposerAvatar authorAddress={proposal.author} boxSize={42} />
                             <Center>
-                                <Text color="blue.200" ml={2}>
+                                <Text color="blue.200" ml={2} fontSize={12}>
                                     {ensName || formatEthAddress(proposal.author)}
                                 </Text>
                             </Center>
                         </VStack>
-                        <Text fontSize={"18px"}>
+                        <Text fontSize={"18px"} ml={4} border={"1px solid limegreen"} p={4}>
                             {decodeURIComponent(proposal.summary ?? "")}
                         </Text>
                     </HStack>
@@ -142,7 +142,7 @@ const ProposalListItem = ({
                             </HStack>
                         )}
                     </Box>
-
+                    {/* 
                     <HStack justifyContent="space-between" m={2}>
                         <Text color={"white"}>
                             Start:{" "}
@@ -156,7 +156,7 @@ const ProposalListItem = ({
                                 {new Date(proposal.end * 1000).toLocaleDateString()}
                             </Badge>
                         </Text>
-                    </HStack>
+                    </HStack> */}
                 </>
             )}
         </Box>

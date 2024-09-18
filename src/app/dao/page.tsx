@@ -79,7 +79,6 @@ const DaoPage = () => {
       </Center>
     );
   }
-  console.log(proposals);
   return (
     <Box mt={5} h={"100vh"} w={"100%"} overflowY={"hidden"} overflowX={"hidden"}>
       {isCreateProposalModalOpen ? (
