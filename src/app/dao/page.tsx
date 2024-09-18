@@ -8,26 +8,22 @@ import DaoHeader from "./components/daoHeader";
 import ProposalListPanel from "./components/ProposalListPanel";
 import ProposalDetailPanel from "./components/ProposalDetailPanel";
 import fetchProposals, { Proposal } from "./utils/fetchProposals";
-import voteOnProposal from "./utils/voteOnProposal";
 
 const DaoPage = () => {
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [loadingProposals, setLoadingProposals] = useState(true);
-  const [loadingSummaries, setLoadingSummaries] = useState(false); // New state for summaries
+  const [loadingSummaries, setLoadingSummaries] = useState(false);
   const [mainProposal, setMainProposal] = useState<Proposal | null>(null);
   const { address: ethAccount } = useAccount();
   const [isCreateProposalModalOpen, setIsCreateProposalModalOpen] = useState(false);
-  const [selectedChoice, setSelectedChoice] = useState<number | null>(null);
-  const [reason, setReason] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(true); // New state for loading everything
-  const [progressValue, setProgressValue] = useState(0); // State for progress bar
+  const [isLoading, setIsLoading] = useState(true);
+  const [progressValue, setProgressValue] = useState(0);
 
   useEffect(() => {
-    // Fetch proposals and summaries
     fetchProposals({
       setProposals,
       setLoadingProposals,
-      setLoadingSummaries, // Pass setLoadingSummaries here
+      setLoadingSummaries,
     });
   }, []);
 
@@ -83,7 +79,7 @@ const DaoPage = () => {
       </Center>
     );
   }
-
+  console.log(proposals);
   return (
     <Box mt={5} h={"100vh"} w={"100%"} overflowY={"hidden"} overflowX={"hidden"}>
       {isCreateProposalModalOpen ? (
@@ -105,17 +101,13 @@ const DaoPage = () => {
               loadingProposals={loadingProposals}
               setMainProposal={setMainProposal}
               mainProposal={mainProposal}
+              ethAccount={ethAccount}
             />
           </Box>
           <Box w={"100%"} h={"100%"}>
             <ProposalDetailPanel
               mainProposal={mainProposal}
-              selectedChoice={selectedChoice}
-              reason={reason}
-              setReason={setReason}
-              ethAccount={ethAccount ?? null} // Use null if ethAccount is undefined
-              voteOnProposal={voteOnProposal}
-            />
+            />s
           </Box>
         </Flex>
       )}

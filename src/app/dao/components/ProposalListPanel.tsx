@@ -7,9 +7,10 @@ interface ProposalListPanelProps {
     loadingProposals: boolean;
     setMainProposal: (proposal: Proposal) => void;
     mainProposal: Proposal | null;
+    ethAccount: any;
 }
 
-const ProposalListPanel = ({ proposals, loadingProposals, setMainProposal, mainProposal }: ProposalListPanelProps) => {
+const ProposalListPanel = ({ proposals, loadingProposals, setMainProposal, mainProposal, ethAccount }: ProposalListPanelProps) => {
     return (
         <Box mt={2} h={'85vh'}>
             <Stack
@@ -33,7 +34,7 @@ const ProposalListPanel = ({ proposals, loadingProposals, setMainProposal, mainP
                             proposal={proposal}
                             isSelected={proposal === mainProposal}
                             onSelect={() => setMainProposal(proposal)}
-                            setSelectedChoice={() => { }}
+                            ethAccount={ethAccount}
                         />
                     ))
                 )}

@@ -38,20 +38,11 @@ interface Vote {
 
 interface ProposalDetailPanelProps {
     mainProposal: Proposal | null;
-    selectedChoice: number | null;
-    reason: string;
-    setReason: (reason: string) => void;
-    ethAccount: string | null;
-    voteOnProposal: (ethAccount: string | null, proposalId: string, choice: number, reason: string) => void;
 }
 
 const ProposalDetailPanel = ({
     mainProposal,
-    selectedChoice,
-    reason,
-    setReason,
-    ethAccount,
-    voteOnProposal,
+
 }: ProposalDetailPanelProps) => {
     const [votes, setVotes] = useState<Vote[]>([]); // New state to hold votes
     const [loadingVotes, setLoadingVotes] = useState(false); // Loading state for votes

@@ -5,6 +5,19 @@ import { useEnsName } from "wagmi";
 import { checkProposalOutcome } from "../utils/checkProposalOutcome";
 import { Proposal } from "../utils/fetchProposals";
 import ProposerAvatar from "./proposerAvatar";
+import voteOnProposal from '../utils/voteOnProposal';
+import VoteConfirmationModal from './voteWithReasonModal';
+
+
+// interface VoteConfirmationModalProps {
+//     isOpen: boolean;
+//     onClose: () => void;
+//     onConfirm: (reason: string) => void;
+//     choice: string;
+//     setReason: (reason: string) => void;
+//     reason: string;
+// }
+
 
 const formatEthAddress = (address: string) => {
     return `${address.slice(0, 4)}...${address.slice(-4)}`;
@@ -22,12 +35,13 @@ const ProposalListItem = ({
     proposal,
     isSelected,
     onSelect,
-    setSelectedChoice
+
+    ethAccount
 }: {
     proposal: Proposal;
     isSelected: boolean;
     onSelect: () => void;
-    setSelectedChoice: (choice: number) => void;
+    ethAccount: any;
 }) => {
     const { data: ensName } = useEnsName({
         address: proposal.author as `0x${string}`,
@@ -36,12 +50,16 @@ const ProposalListItem = ({
 
     const outcome = checkProposalOutcome(proposal);
     const isActive = isProposalActive(proposal);
-
+    const [selected, setSelectedChoice] = React.useState(0);
     // Calculate percentages for "For" and "Against" votes
     const totalVotes = proposal.scores[0] + proposal.scores[1];
     const forPercentage = (proposal.scores[0] / totalVotes) * 100;
     const againstPercentage = (proposal.scores[1] / totalVotes) * 100;
-
+    const [isModalOpen, setIsModalOpen] = React.useState(false);
+    const onClickVote = (choice: number) => {
+        setSelectedChoice(choice);
+        setIsModalOpen(true);
+    }
     return (
         <Box
             cursor="pointer"
@@ -52,6 +70,9 @@ const ProposalListItem = ({
             borderRadius="10px"
             border="0.6px solid gray"
         >
+            {isModalOpen && (
+                <VoteConfirmationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} choice={String(selected)} proposalId={proposal.id} ethAccount={ethAccount} />
+            )}
             <HStack justifyContent={"space-between"}>
 
                 <Box maxW={"80%"} justifyContent={"flex-start"}>
@@ -111,7 +132,9 @@ const ProposalListItem = ({
                                         colorScheme={choice.toUpperCase() === "FOR" ? "green" : "red"}
                                         variant="outline"
                                         key={choiceIndex}
-                                        onClick={() => setSelectedChoice(choiceIndex)}
+                                        onClick={() =>
+                                            onClickVote(choiceIndex)
+                                        }
                                     >
                                         {choice.toUpperCase()}
                                     </Button>

@@ -11,21 +11,24 @@ import {
     Textarea,
 } from "@chakra-ui/react";
 import React from "react";
+import voteOnProposal from "../utils/voteOnProposal";
 
 
 interface VoteConfirmationModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onConfirm: (reason: string) => void;
     choice: string;
-    setReason: (reason: string) => void;
-    reason: string;
+    ethAccount: any;
+    proposalId: string;
+
 }
 
 
 const VoteConfirmationModal: React.FC<VoteConfirmationModalProps> = ({
-    isOpen, onClose, onConfirm, choice, setReason, reason
+    isOpen, onClose, choice, ethAccount, proposalId
 }) => {
+    const [reason, setReason] = React.useState('');
+    console.log("CHOICE: ", choice);
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
@@ -40,7 +43,6 @@ const VoteConfirmationModal: React.FC<VoteConfirmationModalProps> = ({
                     <Text>
                         {`Are you sure you want to vote "${choice.toUpperCase()}" on this proposal? This action cannot be undone.`}
                     </Text>
-
                     <Textarea
                         value={reason}
                         onChange={(event) => setReason(event.target.value)}
@@ -56,9 +58,11 @@ const VoteConfirmationModal: React.FC<VoteConfirmationModalProps> = ({
                     <Button colorScheme="red" mr={3} onClick={onClose}>
                         Cancel
                     </Button>
-                    <Button colorScheme="green" variant="outline" onClick={() => onConfirm(reason)}>
+                    <Button colorScheme="green" variant="outline" onClick={() => voteOnProposal(ethAccount, proposalId, Number(choice) + 1, reason)}>
                         Confirm
                     </Button>
+
+
 
                 </ModalFooter>
             </ModalContent>
