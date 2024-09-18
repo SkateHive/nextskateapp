@@ -16,13 +16,12 @@ import { HIVE_PARENT_AUTHOR, HIVE_PARENT_PERMLINK } from "@/lib/constants";
 function CastArea() {
   const [imageList, setImageList] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
-  const [images, setImages] = useState<File[]>([]);
+  const [medias, setMedias] = useState<File[]>([]);
   const user = useHiveUser();
   const username = user?.hiveUser?.name;
   const postBodyRef = useRef<HTMLTextAreaElement>(null);
   const [hasPosted, setHasPosted] = useState<boolean>(false);
-
-  const { comments, addComment, isLoading } = useComments(
+  const { addComment } = useComments(
     HIVE_PARENT_AUTHOR,
     HIVE_PARENT_PERMLINK
   );
@@ -47,28 +46,14 @@ function CastArea() {
   };
 
   const addImages = (images: File[]) => {
-    console.log("New images added", [images]);
-    setImages((prev) => [...prev, ...images]);
+    setMedias((prev) => [...prev, ...images]);
   };
 
-  const { getRootProps, getInputProps } = useDropzone({
+  const { getRootProps } = useDropzone({
     noClick: true,
     noKeyboard: true,
-    onDrop: async (acceptedFiles) => {
-      setIsUploading(true);
-      const newImageList: string[] = [];
-      for (const file of acceptedFiles) {
-        const ipfsData = await uploadFileToIPFS(file);
-        if (ipfsData !== undefined) {
-          const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}`;
-          const markdownLink = file.type.startsWith("video/")
-            ? `<iframe src="${ipfsUrl}" allowfullscreen></iframe>`
-            : `![Image](${ipfsUrl})`;
-          newImageList.push(markdownLink);
-        }
-      }
-      setImageList((prevList) => [...prevList, ...newImageList]);
-      setIsUploading(false);
+    onDrop: (acceptedFiles) => {
+      addImages(acceptedFiles);
     },
     accept: {
       "image/*": [".png", ".gif", ".jpeg", ".jpg"],
@@ -94,6 +79,23 @@ function CastArea() {
     }
   };
 
+  const uploadMedia = async (acceptedFiles: File[]) => {
+    setIsUploading(true);
+    const newImageList: string[] = [];
+    for (const file of acceptedFiles) {
+      const ipfsData = await uploadFileToIPFS(file);
+      if (ipfsData !== undefined) {
+        const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}`;
+        const markdownLink = file.type.startsWith("video/")
+          ? `<iframe src="${ipfsUrl}" allowfullscreen></iframe>`
+          : `![Image](${ipfsUrl})`;
+        newImageList.push(markdownLink);
+      }
+    }
+    setImageList((prevList) => [...prevList, ...newImageList]);
+    setIsUploading(false);
+  };
+
   const handlePost = async (markdownString: string) => {
     const permlink = new Date()
       .toISOString()
@@ -108,8 +110,8 @@ function CastArea() {
     }
 
     const postData = {
-      parent_author: parent_author,
-      parent_permlink: parent_permlink,
+      parent_author: HIVE_PARENT_AUTHOR,
+      parent_permlink: HIVE_PARENT_PERMLINK,
       author: username,
       permlink: permlink,
       title: "Cast",
@@ -183,8 +185,8 @@ function CastArea() {
       const postOperation: CommentOperation = [
         "comment",
         {
-          parent_author: parent_author,
-          parent_permlink: parent_permlink,
+          parent_author: HIVE_PARENT_AUTHOR,
+          parent_permlink: HIVE_PARENT_PERMLINK,
           author: String(username),
           permlink: permlink,
           title: "Cast",
@@ -216,7 +218,7 @@ function CastArea() {
   };
 
   return (
-    <Box p={4} width={"100%"} bg="black" color="white">
+    <Box p={4} width={"100%"} bg="black" color="white" {...getRootProps()}>
       <Flex>
         <UserAvatar
           /* @ts-ignore */
@@ -241,9 +243,9 @@ function CastArea() {
       </Flex>
 
       <MediaDisplay
-        imageList={images}
+        imageList={medias}
         handleRemoveImage={(index) =>
-          setImages((prevImages) => prevImages.filter((_, i) => i !== index))
+          setMedias((prevImages) => prevImages.filter((_, i) => i !== index))
         }
       />
 
