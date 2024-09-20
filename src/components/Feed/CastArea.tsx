@@ -15,7 +15,7 @@ import { HIVE_PARENT_AUTHOR, HIVE_PARENT_PERMLINK } from "@/lib/constants";
 import { uploadImages } from "@/app/upload/utils/mediaUpload";
 
 function CastArea() {
-  const [castContent, setCastContent] = useState<string>();
+  const [castContent, setCastContent] = useState<string>("");
   const [imageList, setImageList] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [medias, setMedias] = useState<File[]>([]);
@@ -73,6 +73,7 @@ function CastArea() {
       "\n" +
       urls.join("\n")
     ).trim();
+
     if (markdownString === "") {
       alert("Please write something before posting");
       return;
