@@ -49,9 +49,7 @@ const DaoTreasure = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                console.log("Fetching hot wallet balance for: ", HOT_ADDRESS);
                 const response = await axios.get(`https://pioneers.dev/api/v1/portfolio/${HOT_ADDRESS}`);
-                console.log("Pioneer response:", response);
                 setHotWalletBalance(response.data.totalNetWorth || "0");
             } catch (error) {
                 console.error("Error fetching hot wallet balance:", error);
@@ -66,8 +64,6 @@ const DaoTreasure = () => {
         const newMultisigValue = Number(newMultisigBalance?.formatted || 0) * ethPrice;
         const newUsdcValue = Number(newMultisigUsdcBalance?.formatted || 0);
         const hotWalletValue = Number(hotWalletBalance);
-        console.log(hotWalletValue, oldMultisigValue, newMultisigValue, newUsdcValue);
-        console.log(hotWalletBalance)
         return hotWalletValue + oldMultisigValue + newMultisigValue + newUsdcValue;
     }, [hotWalletBalance, oldMultisigBalance, newMultisigBalance, newMultisigUsdcBalance, ethPrice]);
     const isMobile = useMediaQuery("(max-width: 768px)")[0];

@@ -31,7 +31,6 @@ export default function Vote() {
     if (!hiveUser) return
 
     const vote_value = await voting_value2(hiveUser);
-    console.log(vote_value)
     setUserVotingValue(Number(vote_value.toFixed(2)));
 
     if (loginMethod === "keychain") {

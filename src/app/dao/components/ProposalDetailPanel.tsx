@@ -1,11 +1,7 @@
 import {
     Box,
     HStack,
-    Badge,
-    Flex,
-    Progress,
     Text,
-    Button,
     Tabs,
     TabList,
     TabPanels,
@@ -19,12 +15,11 @@ import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import { Proposal } from "../utils/fetchProposals";
-import VoteConfirmationModal from "./voteWithReasonModal";
-import { checkProposalOutcome } from "../utils/checkProposalOutcome";
 import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
 import { useEffect, useState } from "react";
 import { formatETHaddress } from "@/lib/utils";
 import ProposerAvatar from "./proposerAvatar";
+import { PropDates } from "./propDates";
 
 // Add a new type for vote data
 interface Vote {
@@ -44,15 +39,27 @@ const ProposalDetailPanel = ({
     mainProposal,
 
 }: ProposalDetailPanelProps) => {
-    const [votes, setVotes] = useState<Vote[]>([]); // New state to hold votes
+    const [votes, setVotes] = useState<Vote[]>([]); // State to hold votes
     const [loadingVotes, setLoadingVotes] = useState(false); // Loading state for votes
+    const [author, setAuthor] = useState<string | null>(null); // State for author
+    const [permlink, setPermlink] = useState<string | null>(null); // State for permlink
 
     // Fetch votes when the mainProposal changes
     useEffect(() => {
         if (mainProposal) {
             fetchVotes(mainProposal.id);
+            console.log(mainProposal.body);
+            const extractedData = extractAuthorAndPermlink(mainProposal.body);
+            if (extractedData) {
+                const { author, permlink } = extractedData;
+                if (author !== null && permlink !== null) {
+                    setAuthor(author);
+                    setPermlink(permlink);
+                }
+            }
         }
     }, [mainProposal]);
+
 
     const fetchVotes = async (proposalId: string) => {
         setLoadingVotes(true);
@@ -89,6 +96,22 @@ const ProposalDetailPanel = ({
         }
     };
 
+    function extractAuthorAndPermlink(proposal: string): { author: string, permlink: string } | null {
+        const regex = /---\s*user:\s*([^\s]+)\s*permLink:\s*([^\s]+)\s*---/;
+        const match = proposal.match(regex);
+        console.log(match);
+
+        if (match && match.length >= 3) {
+            const author = match[1];
+            const permlink = match[2];
+            return { author, permlink };
+        }
+
+        // Return null if no match is found
+        return null;
+    }
+
+
     return (
         <Box mt={2} w={{ base: '100%', md: '100%' }} color={"white"}>
             <Tabs isLazy isFitted variant="enclosed-colored">
@@ -96,7 +119,7 @@ const ProposalDetailPanel = ({
                     <TabList>
                         <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Proposal</Tab>
                         <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Votes</Tab>
-                        <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Report</Tab>
+                        <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }} onClick={() => extractAuthorAndPermlink(mainProposal?.body || '')} >Report</Tab>
                     </TabList>
                 </Center>
 
@@ -188,7 +211,7 @@ const ProposalDetailPanel = ({
                             </Center>
                         ) : (
                             <Box mt={2} h={"100%"}>
-                                <Center>SOON</Center>
+                                <PropDates author={author || ""} permlink={permlink || ""} />
                             </Box>
                         )}
                     </TabPanel>

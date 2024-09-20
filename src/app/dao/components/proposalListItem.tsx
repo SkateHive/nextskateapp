@@ -100,7 +100,7 @@ const ProposalListItem = ({
                                 </Text>
                             </Center>
                         </VStack>
-                        <Text fontSize={"18px"} ml={4} border={"1px solid limegreen"} p={4}>
+                        <Text fontSize={"18px"} ml={4} border={"1px solid limegreen"} p={4} >
                             {decodeURIComponent(proposal.summary ?? "")}
                         </Text>
                     </HStack>

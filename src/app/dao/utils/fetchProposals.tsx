@@ -42,7 +42,6 @@ const fetchProposals = async ({
                 return;
             }
             const fetchedProposals = data.data.proposals;
-            console.log('Fetched Proposals:', fetchedProposals);
             setProposals(fetchedProposals);
             setLoadingProposals(false);
             setLoadingSummaries(true);

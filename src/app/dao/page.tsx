@@ -35,10 +35,10 @@ const DaoPage = () => {
 
   // Set the loading state based on proposals and summaries loading status
   useEffect(() => {
-    if (!loadingProposals && !loadingSummaries) {
+    if (!loadingProposals) {
       setIsLoading(false);
     }
-  }, [loadingProposals, loadingSummaries]);
+  }, [loadingProposals]);
 
   // Progress bar animation logic
   useEffect(() => {

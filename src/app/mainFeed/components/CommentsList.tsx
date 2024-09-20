@@ -20,6 +20,7 @@ const CommentList = ({
   username,
   handleVote,
 }: CommentListProps) => {
+  console.log(comments);
   return (
     <Box width={"full"}>
       <InfiniteScroll
