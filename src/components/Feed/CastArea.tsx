@@ -12,6 +12,7 @@ import { CommentOperation, CommentOptionsOperation } from "@hiveio/dhive";
 import React, { useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { HIVE_PARENT_AUTHOR, HIVE_PARENT_PERMLINK } from "@/lib/constants";
+import { uploadImages } from "@/app/upload/utils/mediaUpload";
 
 function CastArea() {
   const [castContent, setCastContent] = useState<string>();
@@ -65,7 +66,7 @@ function CastArea() {
 
   const handlePostClick = async () => {
     setIsUploading(true);
-    const urls = await uploadMedia();
+    const urls = await uploadImages(medias, "hive");
 
     const markdownString = (
       castContent +
@@ -83,21 +84,6 @@ function CastArea() {
     }
 
     setIsUploading(false);
-  };
-
-  const uploadMedia = async () => {
-    const newImageList: string[] = [];
-    for (const file of medias) {
-      const ipfsData = await uploadFileToIPFS(file);
-      if (ipfsData !== undefined) {
-        const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}`;
-        const markdownLink = file.type.startsWith("video/")
-          ? `<iframe src="${ipfsUrl}" allowfullscreen></iframe>`
-          : `![Image](${ipfsUrl})`;
-        newImageList.push(markdownLink);
-      }
-    }
-    return newImageList;
   };
 
   const handlePost = async (markdownString: string) => {
