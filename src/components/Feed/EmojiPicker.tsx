@@ -10,6 +10,7 @@ interface EmojiPickerProps {
 function EmojiPicker({ postBodyRef }: EmojiPickerProps) {
   const [isPickingEmoji, setIsPickingEmoji] = useState<boolean>(false);
   const parentRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   const handleOutsideClick = (e: any) => {
     if (parentRef.current && !parentRef.current.contains(e.target)) {
@@ -23,6 +24,14 @@ function EmojiPicker({ postBodyRef }: EmojiPickerProps) {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
   }, []);
+
+  useEffect(() => {
+    if (isPickingEmoji && buttonRef.current && parentRef.current) {
+      const buttonRect = buttonRef.current.getBoundingClientRect();
+      parentRef.current.style.top = `${buttonRect.bottom + window.scrollY}px`;
+      parentRef.current.style.left = `${buttonRect.left + window.scrollX}px`;
+    }
+  }, [isPickingEmoji]);
 
   const handleEmojiClick = (emoji: { emoji: string }) => {
     let positionStart = postBodyRef.current?.selectionStart ?? null;
@@ -39,7 +48,6 @@ function EmojiPicker({ postBodyRef }: EmojiPickerProps) {
         ref={parentRef}
         style={{
           opacity: isPickingEmoji ? 1 : 0,
-          marginTop: 50,
           transition: "1s",
           zIndex: 10,
           position: "absolute",
@@ -52,6 +60,7 @@ function EmojiPicker({ postBodyRef }: EmojiPickerProps) {
         />
       </div>
       <Button
+        ref={buttonRef}
         name="md-select-emoji"
         variant="ghost"
         onClick={() => {
