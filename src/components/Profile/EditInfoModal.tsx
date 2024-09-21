@@ -155,13 +155,25 @@ export default function EditInfoModal({ isOpen, onClose, user, onUpdate }: EditM
           <Textarea placeholder="About" value={about} onChange={(e) => setAbout(e.target.value)} />
           <Text>Location</Text>
           <Select
+            styles={{
+              control: (provided, state) => ({
+                ...provided,
+                backgroundColor: 'white',
+                color: 'black',
+                borderColor: state.isFocused ? '#63b3ed' : 'black',
+                boxShadow: state.isFocused ? '0 0 0 1px #63b3ed' : 'none',
+                '&:hover': {
+                  borderColor: '#63b3ed',
+                },
+              }),
+            }}
             options={countryOptions}
             value={countryOptions.find(option => option.value === location)}
             onChange={(option: any) => setLocation(option.value)}
             formatOptionLabel={option => (
-              <div style={{ backgroundColor: 'black', display: 'flex', alignItems: 'center' }}>
-                <span style={{}}>{option.label}</span>
-                <span style={{ marginLeft: 10 }}>{option.value}</span>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <span style={{ color: "black" }}>{option.value} - </span>
+                <span style={{ color: "black", marginLeft: 10 }}>{option.label}</span>
               </div>
             )}
           />
