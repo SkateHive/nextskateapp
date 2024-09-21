@@ -13,6 +13,7 @@ import React, { useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { HIVE_PARENT_AUTHOR, HIVE_PARENT_PERMLINK } from "@/lib/constants";
 import { uploadImages } from "@/app/upload/utils/mediaUpload";
+import EmojiPicker from "./EmojiPicker";
 
 function CastArea() {
   const [castContent, setCastContent] = useState<string>("");
@@ -21,7 +22,7 @@ function CastArea() {
   const [medias, setMedias] = useState<File[]>([]);
   const user = useHiveUser();
   const username = user?.hiveUser?.name;
-  const postBodyRef = useRef<HTMLTextAreaElement>(null);
+  const postBodyRef = useRef<HTMLTextAreaElement | null>(null);
   const [hasPosted, setHasPosted] = useState<boolean>(false);
   const { addComment } = useComments(
     HIVE_PARENT_AUTHOR,
@@ -226,7 +227,7 @@ function CastArea() {
             }}
             overflow={"hidden"}
             resize={"vertical"}
-            // ref={postBodyRef}
+            ref={postBodyRef}
             defaultValue={castContent}
             onChange={(event) => setCastContent(event.target.value)}
             placeholder="Write your stuff..."
@@ -244,6 +245,7 @@ function CastArea() {
 
       <HStack justifyContent="space-between" marginTop={2}>
         <MediaUploader onUpload={addImages} disabled={isUploading} />
+        <EmojiPicker postBodyRef={postBodyRef} />
         <Button
           color="#ABE4B8"
           variant="ghost"
