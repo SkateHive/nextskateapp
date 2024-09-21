@@ -51,7 +51,7 @@ const DaoPage = () => {
         }
         return newValue;
       });
-    }, 420); // Change this to control the speed of the progress
+    }, 69); // Change this to control the speed of the progress
 
     return () => clearInterval(interval); // Cleanup the interval on unmount
   }, []);
@@ -80,15 +80,13 @@ const DaoPage = () => {
     );
   }
   return (
-    <Box mt={5} h={"100vh"} w={"100%"} overflowY={"hidden"} overflowX={"hidden"}>
+    <Box mt={5} w={"100%"} overflowY={"hidden"} overflowX={"hidden"}>
       {isCreateProposalModalOpen ? (
         <CreateProposalModal connectedUserAddress={ethAccount || ""} />
       ) : (
         <Flex gap={1} flexDirection={{ base: "column", md: "row" }}>
           <Box maxW={{ base: "100%", md: "40%" }} h={"100%"}>
             <DaoHeader
-              avatar={null}
-              connectedUserEnsName={null}
               isMobile={false}
               handleCreateProposalButton={handleCreateProposalButton}
               isCreateProposalModalOpen={isCreateProposalModalOpen}

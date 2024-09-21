@@ -14,14 +14,15 @@ import {
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
-import { Proposal } from "../utils/fetchProposals";
-import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
 import { useEffect, useState } from "react";
 import { formatETHaddress } from "@/lib/utils";
 import ProposerAvatar from "./proposerAvatar";
 import { PropDates } from "./propDates";
-
+import { useEnsName } from "wagmi";
+import { mainnet } from "viem/chains";
+import { Proposal } from "../utils/fetchProposals";
 // Add a new type for vote data
+import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
 interface Vote {
     id: string;
     voter: string;
@@ -35,31 +36,39 @@ interface ProposalDetailPanelProps {
     mainProposal: Proposal | null;
 }
 
+// VoterEnsName component to fetch ENS name of each voter
+const VoterEnsName = ({ voterAddress }: { voterAddress: string }) => {
+    const { data: ensName } = useEnsName({
+        address: voterAddress as `0x${string}`,
+        chainId: mainnet.id,
+    });
+
+    return <Text color={'blue.200'} fontSize={"26px"}>{ensName || formatETHaddress(voterAddress)}</Text>;
+};
+
 const ProposalDetailPanel = ({
     mainProposal,
-
 }: ProposalDetailPanelProps) => {
     const [votes, setVotes] = useState<Vote[]>([]); // State to hold votes
     const [loadingVotes, setLoadingVotes] = useState(false); // Loading state for votes
     const [author, setAuthor] = useState<string | null>(null); // State for author
     const [permlink, setPermlink] = useState<string | null>(null); // State for permlink
 
-    // Fetch votes when the mainProposal changes
     useEffect(() => {
-        if (mainProposal) {
-            fetchVotes(mainProposal.id);
-            console.log(mainProposal.body);
+        if (mainProposal && mainProposal.body) {
             const extractedData = extractAuthorAndPermlink(mainProposal.body);
             if (extractedData) {
-                const { author, permlink } = extractedData;
-                if (author !== null && permlink !== null) {
-                    setAuthor(author);
-                    setPermlink(permlink);
-                }
+                setAuthor(extractedData.author);
+                setPermlink(extractedData.permlink);
+            } else {
+                setAuthor(null);
+                setPermlink(null);
             }
+        } else {
+            setAuthor(null);
+            setPermlink(null);
         }
-    }, [mainProposal]);
-
+    }, [mainProposal?.body]);
 
     const fetchVotes = async (proposalId: string) => {
         setLoadingVotes(true);
@@ -97,20 +106,16 @@ const ProposalDetailPanel = ({
     };
 
     function extractAuthorAndPermlink(proposal: string): { author: string, permlink: string } | null {
-        const regex = /---\s*user:\s*([^\s]+)\s*permLink:\s*([^\s]+)\s*---/;
-        const match = proposal.match(regex);
-        console.log(match);
-
+        const regex1 = /---\s*user:\s*([^\s]+)\s*permLink:\s*([^\s]+)\s*---/;
+        const regex2 = /---\s*HiveUser:\s*([^\s]+)\s*PermLink:\s*([^\s]+)\s*---/;
+        const match = proposal.match(regex1) || proposal.match(regex2);
         if (match && match.length >= 3) {
             const author = match[1];
             const permlink = match[2];
             return { author, permlink };
         }
-
-        // Return null if no match is found
         return null;
     }
-
 
     return (
         <Box mt={2} w={{ base: '100%', md: '100%' }} color={"white"}>
@@ -124,7 +129,6 @@ const ProposalDetailPanel = ({
                 </Center>
 
                 <TabPanels>
-                    {/* First Tab: Proposal */}
                     <TabPanel>
                         {!mainProposal ? (
                             <Center>
@@ -156,7 +160,6 @@ const ProposalDetailPanel = ({
                         )}
                     </TabPanel>
 
-                    {/* Second Tab: Votes */}
                     <TabPanel>
                         {loadingVotes ? (
                             <Center>
@@ -180,15 +183,25 @@ const ProposalDetailPanel = ({
                                         mb={2}
                                     >
                                         <HStack>
-                                            <Text>
-                                                <ProposerAvatar authorAddress={vote.voter} /> {formatETHaddress(vote.voter)}
+                                            <Box mr={3}>
+                                                <ProposerAvatar authorAddress={vote.voter} boxSize={50} />
+                                            </Box>
+                                            <VoterEnsName voterAddress={vote.voter} /> {/* Display ENS name or address */}
+                                            <Text color={"white"} fontSize={"24px"}>has
+                                                voted
                                             </Text>
-                                            <Text>
-                                                voted {mainProposal?.choices[vote.choice - 1]} with {vote.vp}
+                                            <Text fontSize={'28px'} color={
+                                                vote.choice === 1 ? 'limegreen' :
+                                                    vote.choice === 2 ? 'red' :
+                                                        'white'
+                                            }>
+                                                {mainProposal?.choices[vote.choice - 1]}
                                             </Text>
+                                            <Text color={"white"} fontSize={"24px"}>with</Text>
+                                            <Text color={"yellow"} fontSize={"24px"}>{vote.vp} votes</Text>
                                         </HStack>
                                         {vote.reason && (
-                                            <Text mt={2} bg={"#451513"} p={2} borderRadius={5}>
+                                            <Text mt={2} bg={"#141414"} p={2} borderRadius={5}>
                                                 {vote.reason}
                                             </Text>
                                         )}
@@ -198,8 +211,7 @@ const ProposalDetailPanel = ({
                         )}
                     </TabPanel>
 
-                    {/* Third Tab: Report */}
-                    <TabPanel>
+                    <TabPanel h={"100%"}>
                         {!mainProposal ? (
                             <Center>
                                 <Image

@@ -28,7 +28,6 @@ const VoteConfirmationModal: React.FC<VoteConfirmationModalProps> = ({
     isOpen, onClose, choice, ethAccount, proposalId
 }) => {
     const [reason, setReason] = React.useState('');
-    console.log("CHOICE: ", choice);
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />

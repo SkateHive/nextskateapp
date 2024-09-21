@@ -99,7 +99,6 @@ export function useComments(
     setIsLoading(true);
     try {
       const fetchedComments = await fetchComments(author, permlink, recursive);
-      console.log(fetchedComments);
       setComments(fetchedComments);
       setIsLoading(false);
     } catch (err: any) {

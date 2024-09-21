@@ -34,10 +34,10 @@ export async function createProposal(web3: Web3Provider, proposalData: ProposalD
         const receipt = await client.proposal(web3, account, proposalData);
         console.log('Proposal receipt:', receipt);
         alert('Proposal submitted successfully!');
-        return receipt; 
+        return receipt;
     } catch (error: any) {
         console.error("Failed to create proposal:", error);
         alert("Error creating proposal: " + error.message);
-        throw error; 
+        throw error;
     }
 }

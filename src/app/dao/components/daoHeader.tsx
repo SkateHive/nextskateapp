@@ -5,21 +5,17 @@ import { FaEthereum } from "react-icons/fa";
 import { FaPencil } from "react-icons/fa6";
 
 interface DaoHeaderProps {
-    avatar: string | null;
-    connectedUserEnsName: string | null;
     isMobile: boolean;
     handleCreateProposalButton: () => void;
     isCreateProposalModalOpen: boolean;
 }
 
 const DaoHeader: React.FC<DaoHeaderProps> = ({
-    avatar,
-    connectedUserEnsName,
+
     isMobile,
     handleCreateProposalButton,
     isCreateProposalModalOpen,
 }) => {
-    console.log(connectedUserEnsName);
     return (
         <Box
             bg="black"

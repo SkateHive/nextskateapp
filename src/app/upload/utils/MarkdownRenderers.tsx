@@ -124,7 +124,7 @@ export const MarkdownRenderers = {
     </div>
   ),
   a: ({ href, children, ...props }: RendererProps) => (
-    <a style={{ color: "yellow", textWrap: "wrap", wordBreak: "break-all" }} href={href} {...props}>{children}</a>
+    <a style={{ color: "yellow", textWrap: "wrap", wordBreak: "break-all" }} href={href} target="_blank" rel="noopener noreferrer" {...props}>{children}</a>
   ),
   h1: ({ children, ...props }: RendererProps) => (
     <h1 {...props} style={{ fontWeight: 'bold', color: '#A5D6A7', fontSize: '28px', paddingBottom: '10px', paddingTop: "10px", paddingLeft: '8px' }}>{children}</h1>

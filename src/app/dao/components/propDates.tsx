@@ -14,8 +14,6 @@ export function PropDates({ author, permlink }: PropDatesProps) {
     const updates = useComments(author, permlink + 'proposal');
     const filteredComments = updates.comments.filter(comment => comment.author === author);
 
-    console.log(filteredComments, author, permlink);
-
     return (
         <div>
             <CommentList
@@ -26,5 +24,5 @@ export function PropDates({ author, permlink }: PropDatesProps) {
                 handleVote={() => { }}
             />
         </div>
-    )
+    );
 }

@@ -12,7 +12,7 @@ interface ProposalListPanelProps {
 
 const ProposalListPanel = ({ proposals, loadingProposals, setMainProposal, mainProposal, ethAccount }: ProposalListPanelProps) => {
     return (
-        <Box mt={2} h={'85vh'}>
+        <Box mt={2} h={'85vh'} overflow={"auto"}>
             <Stack
                 overflow={"auto"}
                 sx={{
@@ -28,9 +28,9 @@ const ProposalListPanel = ({ proposals, loadingProposals, setMainProposal, mainP
                         </Text>
                     </Center>
                 ) : (
-                    proposals.map((proposal, i) => (
+                    proposals.map((proposal) => (
                         <ProposalListItem
-                            key={i}
+                            key={proposal.id}
                             proposal={proposal}
                             isSelected={proposal === mainProposal}
                             onSelect={() => setMainProposal(proposal)}

@@ -42,7 +42,7 @@ const SkateAirdropContract = '0x8bD8F0D46c84feCBFbF270bac4Ad28bFA2c78F05';
 
 const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => {
     const user = useHiveUser();
-    const [token, setToken] = useState("DEGEN");
+    const [token, setToken] = useState("SPACE");
     const [isCustomToken, setIsCustomToken] = useState(false);
     const [customTokenContract, setCustomTokenContract] = useState("");
     const account = useAccount();

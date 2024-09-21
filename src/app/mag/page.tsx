@@ -32,7 +32,6 @@ export default function Mag() {
   }
 
   if (error) {
-    console.log("here")
     return "Error"
   }
 
