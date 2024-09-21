@@ -245,7 +245,7 @@ function CastArea() {
 
       <HStack justifyContent="space-between" marginTop={2}>
         <MediaUploader onUpload={addImages} disabled={isUploading} />
-        <EmojiPicker postBodyRef={postBodyRef} />
+        <EmojiPicker postBodyRef={postBodyRef} setCastContent={setCastContent} />
         <Button
           color="#ABE4B8"
           variant="ghost"

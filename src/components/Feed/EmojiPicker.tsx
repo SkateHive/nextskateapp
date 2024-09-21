@@ -5,9 +5,10 @@ import ReactImagePicker, { Theme } from "emoji-picker-react";
 
 interface EmojiPickerProps {
   postBodyRef: React.RefObject<HTMLTextAreaElement>;
+  setCastContent: (content: string) => void
 }
 
-function EmojiPicker({ postBodyRef }: EmojiPickerProps) {
+function EmojiPicker({ postBodyRef, setCastContent }: EmojiPickerProps) {
   const [isPickingEmoji, setIsPickingEmoji] = useState<boolean>(false);
   const parentRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -40,6 +41,7 @@ function EmojiPicker({ postBodyRef }: EmojiPickerProps) {
     let textBefore = currentText?.substring(0, positionStart as number);
     let textAfter = currentText?.substring(positionEnd as number);
     postBodyRef.current!.value = textBefore + emoji.emoji + textAfter;
+    setCastContent(postBodyRef.current!.value);
   };
 
   return (
