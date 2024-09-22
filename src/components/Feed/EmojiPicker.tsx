@@ -35,13 +35,22 @@ function EmojiPicker({ postBodyRef, setCastContent }: EmojiPickerProps) {
   }, [isPickingEmoji]);
 
   const handleEmojiClick = (emoji: { emoji: string }) => {
-    let positionStart = postBodyRef.current?.selectionStart ?? null;
-    let positionEnd = postBodyRef.current?.selectionEnd ?? null;
-    let currentText = postBodyRef.current?.value;
-    let textBefore = currentText?.substring(0, positionStart as number);
-    let textAfter = currentText?.substring(positionEnd as number);
-    postBodyRef.current!.value = textBefore + emoji.emoji + textAfter;
-    setCastContent(postBodyRef.current!.value);
+    const positionStart = postBodyRef.current?.selectionStart ?? 0;
+    const positionEnd = postBodyRef.current?.selectionEnd ?? 0;
+    const currentText = postBodyRef.current?.value || '';
+  
+    const textBefore = currentText.substring(0, positionStart);
+    const textAfter = currentText.substring(positionEnd);
+  
+    const newText = textBefore + emoji.emoji + textAfter;
+    postBodyRef.current!.value = newText;
+  
+    setCastContent(newText);
+  
+    const newCursorPosition = positionStart + emoji.emoji.length;
+    postBodyRef.current!.setSelectionRange(newCursorPosition, newCursorPosition);
+  
+    postBodyRef.current!.focus();
   };
 
   return (
