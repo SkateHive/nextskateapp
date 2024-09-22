@@ -263,7 +263,7 @@ export default function UploadForm() {
           json_metadata: JSON.stringify({
             tags: ["skateboard"],
             app: "Skatehive App",
-            image: "/skatehive_square_green.png",
+            image: "/SKATE_HIVE_VECTOR_FIN.svg",
           }),
         },
       ];

@@ -201,7 +201,7 @@ export default memo(function Zine({ tag, query }: TestPageProps) {
               <Center m={20}>
                 <Image
                   boxSize={"auto"}
-                  src="/skatehive_square_green.png"
+                  src="/SKATE_HIVE_VECTOR_FIN.svg"
                   alt="SkateHive Logo"
                 />
               </Center>

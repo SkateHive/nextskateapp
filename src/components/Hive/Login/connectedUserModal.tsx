@@ -38,11 +38,11 @@ function ConnectedUserModal({ onClose }: { onClose: () => void }) {
             if (isStep1Completed) return 1
             return 0
         })()
-        console.log("newActiveStep", newActiveStep)
+        // console.log("newActiveStep", newActiveStep)
 
         if (newActiveStep !== activeStep) {
             setActiveStep(newActiveStep)
-            console.log("activeStep", activeStep)
+            // console.log("activeStep", activeStep)
         }
     }, [isStep1Completed, isStep2Completed, isStep3Completed, isStep4Completed, activeStep, userLevel])
 

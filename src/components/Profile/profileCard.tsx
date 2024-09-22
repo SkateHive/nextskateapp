@@ -122,7 +122,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                         >
                             <HStack justifyContent="space-between">
                                 <HStack justifyContent="flex-start">
-                                    <Image src="/skatehive_square_green.png" alt="Logo" boxSize="36px" />
+                                    <Image src="/SKATE_HIVE_VECTOR_FIN.svg" alt="Logo" boxSize="36px" />
                                     <Text fontWeight="bold" fontSize="18px">
                                         {user.name}
                                     </Text>
@@ -162,7 +162,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                                         </HStack>
                                         <HStack justify="space-between">
                                             <HStack>
-                                                <Image src="/skatehive_square_green.png" alt="Logo" boxSize="20px" />
+                                                <Image src="/SKATE_HIVE_VECTOR_FIN.svg" alt="Logo" boxSize="20px" />
                                                 <Text cursor="pointer">Exp:</Text>
                                             </HStack>
                                             <Text cursor="pointer">{userXp} XP</Text>

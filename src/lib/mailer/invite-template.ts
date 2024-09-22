@@ -1,25 +1,25 @@
 //invite-template
 export default function getMailTemplate_Invite(
-createdby: string, 
-desiredUsername:string, 
-masterPassword:string, 
-keys:any) {
+  createdby: string,
+  desiredUsername: string,
+  masterPassword: string,
+  keys: any) {
 
-let footer = `Account created on ${new Date().toUTCString()}\n`;
-footer += ` by ${createdby}\n`;
-footer += ` at SKATEHIVE!`;
+  let footer = `Account created on ${new Date().toUTCString()}\n`;
+  footer += ` by ${createdby}\n`;
+  footer += ` at SKATEHIVE!`;
 
-const MAIL_COMMUNITY_LOGO = 'https://skatehive.app/skatehive_square_green.png';
-const MAIL_BACKGROUND_COLOR1 = '#1e1e1e'; //dark gray      bring it from theme!
-const MAIL_BACKGROUND_COLOR2 = '#333';    //light gray
+  const MAIL_COMMUNITY_LOGO = 'https://skatehive.app/SKATE_HIVE_VECTOR_FIN.svg';
+  const MAIL_BACKGROUND_COLOR1 = '#1e1e1e'; //dark gray      bring it from theme!
+  const MAIL_BACKGROUND_COLOR2 = '#333';    //light gray
 
-const MAIL_FOREGROUND_COLOR1 = '#4caf50'; //green
-const MAIL_FOREGROUND_COLOR2 = '#e0e0e0'; //light
+  const MAIL_FOREGROUND_COLOR1 = '#4caf50'; //green
+  const MAIL_FOREGROUND_COLOR2 = '#e0e0e0'; //light
 
-const MAIL_BACKGROUND_HIGH = '#2e7d32'; //other green
-const MAIL_BACKGROUND_ALERT = '#d32f2f'; //red
+  const MAIL_BACKGROUND_HIGH = '#2e7d32'; //other green
+  const MAIL_BACKGROUND_ALERT = '#d32f2f'; //red
 
-const INVITE_MAIL_TEMPLATE = `
+  const INVITE_MAIL_TEMPLATE = `
 <div style="background-color:${MAIL_BACKGROUND_COLOR1}; color:${MAIL_FOREGROUND_COLOR2};margin:0;padding:0;">
   <div style="max-width:600px;margin:30px auto;border-radius:8px;box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); padding: 20px;">
     <div style="background-color:${MAIL_BACKGROUND_COLOR2}; padding:20px; border-radius:8px 8px 0 0; text-align:center;">
@@ -119,5 +119,5 @@ const INVITE_MAIL_TEMPLATE = `
 </div>
 `;
 
-    return INVITE_MAIL_TEMPLATE;
+  return INVITE_MAIL_TEMPLATE;
 }

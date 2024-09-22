@@ -210,7 +210,7 @@ export default function Navbar() {
             <Image
               onClick={onOpen}
               boxSize={"58px"}
-              src="skatehive_square_green.png"
+              src="SKATE_HIVE_VECTOR_FIN.svg"
               alt="SkateHive"
               borderRadius={"5px"}
               _hover={{ cursor: "pointer" }}

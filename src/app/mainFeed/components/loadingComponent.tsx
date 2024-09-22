@@ -14,14 +14,9 @@ const randomSentences = [
   "bless up",
   "skate or die",
   "take back the internet!",
-  "stack clips, stack crypto",
+  "Never lose your bros clips",
   "support your local skateshops!",
-  "home of the cryptoskater",
- 
-
-
-
-
+  "Peoples Thrasher",
 ];
 
 const LoadingComponent = () => {
