@@ -64,7 +64,7 @@ function CastArea({ addComment }: CastAreaProps) {
 
   const handlePostClick = async () => {
     setIsUploading(true);
-    const urls = await uploadImages(medias, "ipfs");
+    const urls = await uploadImages(medias, "hive");
 
     const markdownString = (castContent + "\n" + urls.join("\n")).trim();
 
