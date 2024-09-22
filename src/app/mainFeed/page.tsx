@@ -102,7 +102,7 @@ const SkateCast = () => {
       />
       <AvatarList sortedComments={sortedComments} />
 
-      <CastArea />
+      <CastArea addComment={addComment} />
       <Divider />
 
       <HStack width="full" justifyContent="flex-end" m={-2} mr={4}>

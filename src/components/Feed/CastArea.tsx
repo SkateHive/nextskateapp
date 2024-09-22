@@ -1,11 +1,9 @@
 "use client";
 
-import { uploadFileToIPFS } from "@/app/upload/utils/uploadToIPFS";
 import MediaUploader from "@/components/Hive/PostCreation/MediaUpload";
 import MediaDisplay from "@/components/Hive/PostCreation/MediaDisplay";
 import UserAvatar from "@/components/UserAvatar";
 import { useHiveUser } from "@/contexts/UserContext";
-import { useComments } from "@/hooks/comments";
 import { commentWithPrivateKey } from "@/lib/hive/server-functions";
 import { Box, Button, Flex, HStack, Textarea } from "@chakra-ui/react";
 import { CommentOperation, CommentOptionsOperation } from "@hiveio/dhive";
@@ -14,20 +12,19 @@ import { useDropzone } from "react-dropzone";
 import { HIVE_PARENT_AUTHOR, HIVE_PARENT_PERMLINK } from "@/lib/constants";
 import { uploadImages } from "@/app/upload/utils/mediaUpload";
 import EmojiPicker from "./EmojiPicker";
+import { Comment } from "@/hooks/comments";
 
-function CastArea() {
+interface CastAreaProps {
+  addComment: (newComment: Comment) => void;
+}
+
+function CastArea({ addComment }: CastAreaProps) {
   const [castContent, setCastContent] = useState<string>("");
-  const [imageList, setImageList] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [medias, setMedias] = useState<File[]>([]);
   const user = useHiveUser();
   const username = user?.hiveUser?.name;
   const postBodyRef = useRef<HTMLTextAreaElement | null>(null);
-  const [hasPosted, setHasPosted] = useState<boolean>(false);
-  const { addComment } = useComments(
-    HIVE_PARENT_AUTHOR,
-    HIVE_PARENT_PERMLINK
-  );
 
   const handlePaste = async (
     event: React.ClipboardEvent<HTMLTextAreaElement>
@@ -67,13 +64,9 @@ function CastArea() {
 
   const handlePostClick = async () => {
     setIsUploading(true);
-    const urls = await uploadImages(medias, "hive");
+    const urls = await uploadImages(medias, "ipfs");
 
-    const markdownString = (
-      castContent +
-      "\n" +
-      urls.join("\n")
-    ).trim();
+    const markdownString = (castContent + "\n" + urls.join("\n")).trim();
 
     if (markdownString === "") {
       alert("Please write something before posting");
@@ -142,7 +135,8 @@ function CastArea() {
               postBodyRef.current.value = "";
             }
             addComment(postData);
-            setImageList([]);
+            setCastContent("");
+            setMedias([]);
           }
         } catch (error) {
           console.error("Error posting comment:", (error as Error).message);
@@ -201,8 +195,8 @@ function CastArea() {
           postBodyRef.current.value = "";
         }
         addComment(postData);
-        setHasPosted(true);
-        setImageList([]);
+        setCastContent("");
+        setMedias([]);
       } catch (error) {
         console.error("Error posting comment:", (error as Error).message);
       }
@@ -245,7 +239,10 @@ function CastArea() {
 
       <HStack justifyContent="space-between" marginTop={2}>
         <MediaUploader onUpload={addImages} disabled={isUploading} />
-        <EmojiPicker postBodyRef={postBodyRef} setCastContent={setCastContent} />
+        <EmojiPicker
+          postBodyRef={postBodyRef}
+          setCastContent={setCastContent}
+        />
         <Button
           color="#ABE4B8"
           variant="ghost"
