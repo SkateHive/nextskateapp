@@ -18,6 +18,16 @@ export default function AuthorAvatar({ username, borderRadius, hover, boxSize }:
     const [profileImage, setProfileImage] = useState("/loading.gif");
     const [userData, setUserData] = useState<any>({});
 
+    // Helper function to check if the image exists
+    const checkImageExists = async (url: string) => {
+        try {
+            const response = await fetch(url, { method: 'HEAD' });
+            return response.ok; // Return true if the image exists
+        } catch {
+            return false; // Return false if an error occurs
+        }
+    };
+
     const fetchProfileImage = useCallback(async () => {
         if (profileImageCache[username]) {
             setProfileImage(profileImageCache[username]);
@@ -40,8 +50,16 @@ export default function AuthorAvatar({ username, borderRadius, hover, boxSize }:
                     profileImageUrl = metadata.profile?.profile_image || "";
                 }
 
-                profileImageCache[username] = profileImageUrl || "/loading.gif";
-                setProfileImage(profileImageUrl || "/loading.gif");
+                // First, check if the Ecency avatar exists
+                const defaultAvatarUrl = `https://images.ecency.com/webp/u/${username}/avatar/small`;
+                const ecencyAvatarExists = await checkImageExists(defaultAvatarUrl);
+
+                // Use Ecency avatar if it exists, otherwise fallback to profile image from metadata
+                const finalImageUrl = ecencyAvatarExists ? defaultAvatarUrl : profileImageUrl || defaultAvatarUrl;
+
+                // Store the verified image URL in cache
+                profileImageCache[username] = finalImageUrl;
+                setProfileImage(finalImageUrl);
             }
         }
     }, [username]);

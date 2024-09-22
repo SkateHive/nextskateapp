@@ -147,7 +147,8 @@ const SidebarDesktop = () => {
       >
         <Heading size="md">
           <Image
-            boxSize={"48px"}
+            width={"48px"}
+            height={"auto"}
             src="/SKATE_HIVE_VECTOR_FIN.svg"
             alt="SkateHive"
             borderRadius={"5px"}
