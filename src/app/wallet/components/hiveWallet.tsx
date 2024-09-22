@@ -18,11 +18,10 @@ import {
     SkeletonText,
     Text,
     Tooltip,
-    VStack
+    VStack,
 } from "@chakra-ui/react";
 import { Asset } from "@hiveio/dhive";
 import { SendIcon } from "lucide-react";
-import { useEffect, useState } from "react";
 import { useEffect, useState } from "react";
 import { BsArrowDownCircle, BsArrowUpCircle } from "react-icons/bs";
 
@@ -258,7 +257,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                             </MenuItem>
                                         </Tooltip>
                                         <Tooltip display="none" label="Un-stake your HIVE by Powering-down in 13 week chunks. i. e. if you power down 1300 HP, you will get 100 HIVE back per week, for 13 weeks.">
-                                            <MenuItem bg="black" icon={<BsArrowDownCircle size="28px" />} _hover={{ bg: "red" }} onClick={() => setIsHPPowerModalOpened(true)}>
+                                            <MenuItem bg="black" icon={<BsArrowDownCircle size="28px" />} _hover={{ bg: "red" }} onClick={() => setIsHPPowerModalOpened(true)} />
                                             <MenuItem bg="black" icon={<BsArrowDownCircle size="28px" />} _hover={{ bg: "red" }} onClick={() => setIsHPPowerModalOpened(true)}>
                                                 Power Down
                                             </MenuItem>
@@ -384,7 +383,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                         <MenuItem bg="black" icon={<GiPiggyBank size="32px" />} _hover={{ bg: "red" }} onClick={() => setIsDepositHbdSavingsModalOpened(true)}>
                                             Deposit HBD
                                         </MenuItem>
-                                        <MenuItem bg="black" icon={<GiReceiveMoney size="32px" />} _hover={{ bg: "red" }} onClick={() => setIsWithdrawHbdModalOp(true)}>
+                                        <MenuItem bg="black" icon={<GiReceiveMoney size="32px" />} _hover={{ bg: "red" }} onClick={() => setIsWithdrawHbdModalOp(true)} />
                                         <MenuItem bg="black" icon={<GiReceiveMoney size="32px" />} _hover={{ bg: "red" }} onClick={() => setIsWithdrawHbdModalOp(true)}>
                                             Withdraw HBD
                                         </MenuItem>
