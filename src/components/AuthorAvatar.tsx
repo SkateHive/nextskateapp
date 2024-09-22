@@ -16,7 +16,7 @@ const profileImageCache: { [key: string]: string } = {};
 
 export default function AuthorAvatar({ username, borderRadius, hover, boxSize }: AuthorAvatarProps) {
     const [profileImage, setProfileImage] = useState("/loading.gif");
-    const [userData, setUserData] = useState({} as any);
+    const [userData, setUserData] = useState<any>({});
 
     const fetchProfileImage = useCallback(async () => {
         if (profileImageCache[username]) {
@@ -26,7 +26,7 @@ export default function AuthorAvatar({ username, borderRadius, hover, boxSize }:
             const userData = await hiveClient.database.getAccounts([String(username)]);
             if (userData.length > 0) {
                 const user = userData[0];
-                setUserData(userData[0]);
+                setUserData(user);
 
                 let profileImageUrl = "";
 
@@ -35,7 +35,7 @@ export default function AuthorAvatar({ username, borderRadius, hover, boxSize }:
                     profileImageUrl = metadata.profile?.profile_image || "";
                 }
 
-                if (profileImageUrl === "" && user.json_metadata) {
+                if (!profileImageUrl && user.json_metadata) {
                     const metadata = JSON.parse(user.json_metadata);
                     profileImageUrl = metadata.profile?.profile_image || "";
                 }
@@ -51,32 +51,23 @@ export default function AuthorAvatar({ username, borderRadius, hover, boxSize }:
         threshold: 0.1,
     });
 
-    // useEffect(() => {
-    //     if (inView) {
-    //         fetchProfileImage();
-    //     }
-    // }, [inView, fetchProfileImage]);
-
-    function setProfileImageifNecessary() {
+    useEffect(() => {
         if (inView) {
             fetchProfileImage();
         }
-        return profileImage;
-    }
+    }, [inView, fetchProfileImage]);
 
     return (
-        <>
-            <Avatar
-                ref={ref}
-                onClick={() => window.open(`/skater/${username}`, "_blank", "noreferrer noopener")}
-                name={username}
-                src={inView ? `https://images.hive.blog/u/${username}/avatar/sm` : setProfileImageifNecessary()}
-                boxSize={boxSize || 12}
-                bg="transparent"
-                loading="lazy"
-                borderRadius={borderRadius || 5}
-                _hover={hover || { transform: "scale(1.05)", cursor: "pointer" }}
-            />
-        </>
+        <Avatar
+            ref={ref}
+            onClick={() => window.open(`/skater/${username}`, "_blank", "noreferrer noopener")}
+            name={username}
+            src={profileImage}
+            boxSize={boxSize || 12}
+            bg="transparent"
+            loading="lazy"
+            borderRadius={borderRadius || 5}
+            _hover={hover || { transform: "scale(1.05)", cursor: "pointer" }}
+        />
     );
 }

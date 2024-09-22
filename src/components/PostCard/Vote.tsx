@@ -62,7 +62,6 @@ export default function Vote() {
     if (!isVoted) reward()
     setIsVoted((isVoted) => !isVoted)
   }
-  console.log(post.active_votes.length)
   return (
     <Flex w={"100%"} justify={"space-between"} align={"center"} mt={2}>
       <Tooltip color={"limegreen"} background={"black"} border={"1px dashed #A5D6A7"} label="Vote for this">

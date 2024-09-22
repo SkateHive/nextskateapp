@@ -21,6 +21,7 @@ import LoginModal from '../Hive/Login/LoginModal';
 import UserAvatar from '../UserAvatar';
 import useGnarsBalance from '@/hooks/useGnarsBalance';
 import { Boxes } from 'lucide-react';
+import AuthorAvatar from '../AuthorAvatar';
 
 interface ProfileCardProps {
     user: HiveAccount
@@ -137,7 +138,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                                 <VStack>
                                     <Center>
                                         <Box borderRadius={14} border="3px solid black">
-                                            <UserAvatar hiveAccount={user} borderRadius={10} boxSize={230} />
+                                            <AuthorAvatar username={user.name} borderRadius={10} boxSize={230} />
                                         </Box>
                                     </Center>
                                 </VStack>

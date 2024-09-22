@@ -42,7 +42,7 @@ const ProfileDashboard = ({ user }: ProfileDashboardProps) => {
     }
 
     const updateAvailableXp = useCallback((xp: number) => {
-        console.log(`Updating available XP to: ${xp}`);
+        // console.log(`Updating available XP to: ${xp}`);
         setAvailableXp(xp);
     }, []);
 
@@ -85,8 +85,8 @@ const ProfileDashboard = ({ user }: ProfileDashboardProps) => {
         if (userLevel < 1) {
             setIsLoginModalOpen(true);
         } else {
-            console.log("User Level: ", userLevel)
-            console.log(user_posting_metadata)
+            // console.log("User Level: ", userLevel)
+            // console.log(user_posting_metadata)
             if (loginMethod === 'keychain') {
                 const newLevel = calculateLevel(availableXp);  // Calculate the new level based on available XP
 
