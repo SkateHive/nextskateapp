@@ -23,7 +23,8 @@ export default function Home() {
   return (
     <>
       <SkateCast />
-      {isMounted && isMobile ? <MagLayout /> : <div style={{ maxWidth: "400px", width: "100%", height: "101vh" }} />}
+      {isMobile && <MagLayout />}
+
     </>
   );
 }
