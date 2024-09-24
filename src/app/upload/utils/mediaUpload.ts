@@ -50,6 +50,7 @@ export async function uploadImages(images: File[], uploadTo: uploadTo) {
  * @returns Request response data
  */
 export const uploadFileToIPFS = async (file: File) => {
+  console.log("Upload video to IPFS");
   const formData = new FormData();
   formData.append("file", file);
 
@@ -84,6 +85,7 @@ export const uploadFileToIPFS = async (file: File) => {
  * @returns
  */
 export async function uploadImageToHive(file: File): Promise<string> {
+  console.log("Upload video to Hive");
   const signatureUser = APP_HIVE_USER;
 
   const formData = new FormData();
