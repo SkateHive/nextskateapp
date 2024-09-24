@@ -45,7 +45,7 @@ const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = ()
   const [isEyeClicked, setIsEyeClicked] = useState(false);
   const [isCommentFormVisible, setIsCommentFormVisible] = useState(false);
   const [shouldShowAllComments, setShouldShowAllComments] = useState(false);
-  const user = useHiveUser();
+
   const { comments } = useComments(comment.author, comment.permlink);
 
   const toggleValueTooltip = () => {

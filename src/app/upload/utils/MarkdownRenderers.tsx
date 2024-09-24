@@ -1,7 +1,7 @@
 'use client'
 import { Divider, Image } from '@chakra-ui/react';
 import React, { useEffect, useRef, useState } from 'react';
-
+import { SkateHivePreviewCard } from '@/app/mainFeed/components/SkatehivePreviewCard';
 type MarkdownProps = {
   node?: any;
   alt?: any;
@@ -123,9 +123,23 @@ export const MarkdownRenderers = {
       {children}
     </div>
   ),
-  a: ({ href, children, ...props }: RendererProps) => (
-    <a style={{ color: "yellow", textWrap: "wrap", wordBreak: "break-all" }} href={href} target="_blank" rel="noopener noreferrer" {...props}>{children}</a>
-  ),
+  a: ({ href, children, ...props }: RendererProps) => {
+    const skateHivePostRegex = /https:\/\/www\.skatehive\.app\/post\/([^/]+)\/@([^/]+)\/([^/]+)/;
+    const match = skateHivePostRegex.exec(href);
+
+    if (match) {
+      const [fullMatch, parentPermlink, username, postPermlink] = match;  // postPermlink is now the last part
+      return (
+        <SkateHivePreviewCard postId={postPermlink} username={username} />
+      );
+    }
+    return (
+      <a style={{ color: "yellow", textWrap: "wrap", wordBreak: "break-all" }} href={href} target="_blank" rel="noopener noreferrer" {...props}>
+        {children}
+      </a>
+    );
+  },
+
   h1: ({ children, ...props }: RendererProps) => (
     <h1 {...props} style={{ fontWeight: 'bold', color: '#A5D6A7', fontSize: '28px', paddingBottom: '10px', paddingTop: "10px", paddingLeft: '8px' }}>{children}</h1>
   ),

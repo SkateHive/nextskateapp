@@ -1,5 +1,6 @@
 import { Comment } from "@/app/mainFeed/page"
 import { isNaN } from "lodash"
+import HiveClient from "./hive/hiveclient"
 
 export function getWebsiteURL() {
   return process.env.NEXT_PUBLIC_WEBSITE_URL || ""
@@ -135,3 +136,16 @@ export const getTotalPayout = (comment: Comment): number => {
   );
   return payout + pendingPayout + curatorPayout;
 };
+
+export async function fetchSkateHivePostMetadata(postId: string, username: string) {
+  try {
+    const post = await HiveClient.database.call('get_content', [
+      username,  // No need to trim the username if it already has the right format
+      postId,
+    ]);
+    return post;
+  } catch (error) {
+    console.error('Error fetching post metadata:', error);
+    return null;
+  }
+}

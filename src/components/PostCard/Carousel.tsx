@@ -63,7 +63,6 @@ function PostCarousel() {
       carouselRef.current.next()
     }
   }
-  console.log("filteredImages", filteredImages)
   return (
     <div style={{ justifyContent: "center" }}>
       <Box m={2} height={"auto"}>
