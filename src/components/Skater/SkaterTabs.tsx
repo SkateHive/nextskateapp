@@ -5,29 +5,42 @@ import ProfilePosts from "../Profile/ProfilePosts";
 import VideoParts from "../Profile/profileVideos";
 import { QueryProvider } from "@/contexts/QueryContext";
 import ProfileDashboard from "../Profile/profileDashboard";
+import { useSearchParams, useRouter } from "next/navigation";
 
 interface ProfilePageProps {
   user: HiveAccount;
 }
 
+const tabNames = ["card", "zine", "posts", "videoparts"];
+
 export default function SkaterTabs({ user }: ProfilePageProps) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const tab = searchParams.get('tab');
+  const tabIndex = tabNames.indexOf(tab || "card");
+
+  const handleTabChange = (index: number) => {
+    const params = new URLSearchParams(searchParams);
+    params.set('tab', tabNames[index]);
+    router.replace(`?${params.toString()}`);
+  };
+
   return (
     <QueryProvider query="blog" tag={[{ tag: user.name, limit: 20 }]}>
       <Box>
-        <Tabs isLazy isFitted variant="enclosed-colored">
+        <Tabs
+          isLazy
+          isFitted
+          variant="enclosed-colored"
+          index={tabIndex >= 0 ? tabIndex : 0}
+          onChange={handleTabChange}
+        >
           <TabList color={"white"} mb="1em">
-            <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>
-              Card
-            </Tab>
-            <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>
-              Zine
-            </Tab>
-            <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>
-              Posts
-            </Tab>
-            <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>
-              VideoParts
-            </Tab>
+            <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Card</Tab>
+            <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Zine</Tab>
+            <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Posts</Tab>
+            <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>VideoParts</Tab>
           </TabList>
           <TabPanels>
             <TabPanel>
