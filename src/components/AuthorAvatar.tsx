@@ -4,17 +4,20 @@ import { Avatar, SystemStyleObject } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 
+type Quality = 'small' | 'medium' | 'large';
+
 interface AuthorAvatarProps {
     username: string;
     borderRadius?: number;
     hover?: SystemStyleObject;
     boxSize?: number;
+    quality?: Quality
 }
 
 // Create a cache object to store profile images
 const profileImageCache: { [key: string]: string } = {};
 
-export default function AuthorAvatar({ username, borderRadius, hover, boxSize }: AuthorAvatarProps) {
+export default function AuthorAvatar({ username, borderRadius, hover, boxSize, quality }: AuthorAvatarProps) {
     const [profileImage, setProfileImage] = useState("/loading.gif");
     const [userData, setUserData] = useState<any>({});
 
@@ -51,7 +54,7 @@ export default function AuthorAvatar({ username, borderRadius, hover, boxSize }:
                 }
 
                 // First, check if the Ecency avatar exists
-                const defaultAvatarUrl = `https://images.ecency.com/webp/u/${username}/avatar/small`;
+                const defaultAvatarUrl = `https://images.ecency.com/webp/u/${username}/avatar/${quality || 'small'}`;
                 const ecencyAvatarExists = await checkImageExists(defaultAvatarUrl);
 
                 // Use Ecency avatar if it exists, otherwise fallback to profile image from metadata

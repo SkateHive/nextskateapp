@@ -138,7 +138,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                                 <VStack>
                                     <Center>
                                         <Box borderRadius={14} border="3px solid black">
-                                            <AuthorAvatar username={user.name} borderRadius={10} boxSize={230} />
+                                            <AuthorAvatar username={user.name} borderRadius={10} boxSize={230} quality={'large'} />
                                         </Box>
                                     </Center>
                                 </VStack>
