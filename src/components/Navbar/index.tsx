@@ -3,7 +3,6 @@
 import NotificationsPage from "@/app/notifications/page"
 import AuthorSearchBar from "@/app/upload/components/searchBar"
 import { useHiveUser } from "@/contexts/UserContext"
-import { claimRewards } from "./utils/claimRewards"
 import { formatEthereumAddress } from "@/lib/web3"
 import { Link } from "@chakra-ui/next-js"
 import {
@@ -33,11 +32,14 @@ import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
 import { FaBell, FaHive, FaHome, FaSpeakap, FaUser, FaWallet } from "react-icons/fa"
 import { FaEthereum } from "react-icons/fa6"
+import { useReward } from "react-rewards"
 import { useAccount } from "wagmi"
 import LoginModal from "../Hive/Login/LoginModal"
 import CommunityTotalPayout from "../communityTotalPayout"
 import AvatarLogin from "./AvatarLogin"
 import checkRewards from "./utils/checkReward"
+import { claimRewards } from "./utils/claimRewards"
+
 const blink = keyframes`
   0% { opacity: 1; }
   50% { opacity: 0.1; }
@@ -63,7 +65,10 @@ export default function Navbar() {
 
   const [isSmallerThan400] = useMediaQuery("(max-width: 400px)")
 
-
+  const { reward: confettiReward } = useReward("rewardId", "emoji", {
+    emoji: ["$", "*", "#"],
+    spread: 60,
+  });
 
   useEffect(() => {
     if (hiveUser !== null) {
@@ -73,9 +78,10 @@ export default function Navbar() {
 
   const handleClaimRewards = () => {
     if (hiveUser) {
-      claimRewards(hiveUser)
+      claimRewards(hiveUser);
+      confettiReward();
     }
-  }
+  };
 
   const handleNotifications = () => {
     setNotifications(!notifications)
