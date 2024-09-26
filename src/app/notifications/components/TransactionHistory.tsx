@@ -134,7 +134,7 @@ const TransactionHistory = () => {
                                 post
                             </a>
 
-                            Weight: {details.weight}
+                            Weight: {(details.weight / 100).toFixed(2)}%
                         </Text>
                     </HStack>
                 );

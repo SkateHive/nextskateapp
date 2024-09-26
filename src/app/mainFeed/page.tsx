@@ -4,6 +4,7 @@ import { useHiveUser } from "@/contexts/UserContext";
 import { useComments } from "@/hooks/comments";
 import { vote } from "@/lib/hive/client-functions";
 import { commentWithPrivateKey } from "@/lib/hive/server-functions";
+import { CommentOperation } from "@hiveio/dhive";
 import { getTotalPayout } from "@/lib/utils";
 import EmojiPicker, { Theme } from 'emoji-picker-react';
 import {
@@ -23,7 +24,7 @@ import {
   Textarea,
   VStack,
 } from "@chakra-ui/react";
-import * as dhive from "@hiveio/dhive";
+import { CommentOptionsOperation } from "@hiveio/dhive";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { FaHistory, FaImage, FaMoneyBill, FaTimes } from "react-icons/fa";
@@ -58,8 +59,6 @@ const SkateCast = () => {
   const postBodyRef = useRef<HTMLTextAreaElement>(null);
   const user = useHiveUser();
   const username = user?.hiveUser?.name;
-  const [mediaModalOpen, setMediaModalOpen] = useState<boolean>(false);
-  const [media, setMedia] = useState<string[]>([]);
   const [hasPosted, setHasPosted] = useState<boolean>(false);
   const [sortMethod, setSortMethod] = useState<string>("chronological");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -241,7 +240,7 @@ const SkateCast = () => {
         }
       }
     } else if (loginMethod === "privateKey") {
-      const commentOptions: dhive.CommentOptionsOperation = [
+      const commentOptions: CommentOptionsOperation = [
         "comment_options",
         {
           author: String(username),
@@ -266,7 +265,7 @@ const SkateCast = () => {
         },
       ];
 
-      const postOperation: dhive.CommentOperation = [
+      const postOperation: CommentOperation = [
         "comment",
         {
           parent_author: parent_author,
