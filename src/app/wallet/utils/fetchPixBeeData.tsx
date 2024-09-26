@@ -14,6 +14,30 @@ export const fetchPixBeeData = async () => {
     }
 };
 
+// useEffect(() => {
+//     const fetchPixBeeData = async () => {
+//         try {
+//             const response = await fetch('https://aphid-glowing-fish.ngrok-free.app/hbdticker');
+//             const data = await response.json();
+//             setPixBeeData(data);
+//             setCurrentHBDPrice(parseFloat(data.HBDPriceBRL) || 0);
+//         } catch (error) {
+//             console.error("Failed to fetch updated PixBee data:", error);
+//         }
+//     };
+
+//     const interval = setInterval(() => {
+//         setCountdown(prevCountdown => prevCountdown - 1);
+//     }, 1000);
+
+//     if (countdown === 0) {
+//         fetchPixBeeData();
+//         setCountdown(30); // Reseta o countdown após a atualização
+//     }
+
+//     return () => clearInterval(interval);
+// }, [countdown]);
+
 export const formatCPF = (cpf: string) => cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
 
 export const formatCNPJ = (cnpj: string) => cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
@@ -42,10 +66,10 @@ export const validateCPF = (cpf: string) => {
 };
 
 export const validatePhone = (phone: string) => {
-    
+
     const cleanPhone = phone.replace(/[^\d]+/g, '');
 
-    const phoneRegex = /^\d{10,11}$/; 
+    const phoneRegex = /^\d{10,11}$/;
 
     if (!phoneRegex.test(cleanPhone)) {
         return false;
@@ -61,9 +85,9 @@ export const validatePhone = (phone: string) => {
 export const formatRandomKey = (key: string) => {
     // Remove qualquer caractere não hexadecimal
     const cleanKey = key.replace(/[^a-fA-F0-9]/g, '');
-    
+
     // Adiciona traços no formato UUID
-    return cleanKey.length === 32 
+    return cleanKey.length === 32
         ? `${cleanKey.slice(0, 8)}-${cleanKey.slice(8, 12)}-${cleanKey.slice(12, 16)}-${cleanKey.slice(16, 20)}-${cleanKey.slice(20)}`
         : cleanKey;
 };
