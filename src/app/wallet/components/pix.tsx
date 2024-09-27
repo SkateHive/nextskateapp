@@ -514,20 +514,16 @@ const Pix = ({ user }: PixProps) => {
                                                 fontSize={{ base: "sm", md: "md" }}
                                                 textAlign="center"
                                                 mb={4}
-
                                             >
                                                 Seu Saldo disponível: {userHiveBalance.HBDUsdValue} HBD
                                             </Text>
 
-
                                             <Input
-                                                placeholder="Digite sua chave pix"
+                                                placeholder="Digite sua chave PIX"
                                                 value={userFormatedPixKey}
                                                 onChange={handlePixKeyChange}
                                                 sx={{
-                                                    '::placeholder': {
-                                                        color: 'white',
-                                                    },
+                                                    '::placeholder': { color: 'white' },
                                                 }}
                                                 color="white"
                                                 fontSize={{ base: "sm", md: "md" }}
@@ -547,26 +543,24 @@ const Pix = ({ user }: PixProps) => {
                                             <InputGroup
                                                 display="flex"
                                                 alignItems="center"
-                                                justifyContent="flex-start"
+                                                justifyContent="space-between" 
                                                 w="100%"
+                                               
                                             >
                                                 <Input
                                                     placeholder="0.000"
                                                     value={userInputHBD}
                                                     onChange={handleAmountChange}
                                                     type="text"
-                                                    flex="1"
                                                     sx={{
-                                                        '::placeholder': {
-                                                            color: 'white',
-                                                        },
+                                                        '::placeholder': { color: 'white' },
                                                     }}
                                                     color="white"
                                                     borderColor="limegreen"
                                                     _hover={{ borderColor: "white" }}
                                                     _focus={{ borderColor: "limegreen", boxShadow: "0 0 0 1px limegreen" }}
-                                                    mr={{ base: 0, md: 2 }}
-                                                    w="100%"
+                                                    flex="1" 
+                                                    
                                                     isDisabled={isInputDisabled}
                                                 />
                                                 <InputRightAddon
@@ -580,52 +574,52 @@ const Pix = ({ user }: PixProps) => {
                                                 >
                                                     HBD
                                                 </InputRightAddon>
-
-                                                <HStack
-                                                    spacing={2}
-                                                    justifyContent={{ base: "space-around", md: "center" }}
-                                                    mb={4}
-                                                >
-                                                    <Button
-                                                        onClick={setMinAmount}
-                                                        color="limegreen"
-                                                        bg="black"
-                                                        fontSize={{ base: "xs", md: "sm" }}
-                                                        _hover={{ color: "limegreen", bg: "black" }}
-                                                        _active={{ color: "limegreen", bg: "black" }}
-                                                        _focus={{ color: "limegreen", bg: "black" }}
-                                                        isDisabled={isMinButtonDisabled}
-                                                    >
-                                                        Mín
-                                                    </Button>
-                                                    <Button
-                                                        onClick={setHalfAmount}
-                                                        color="limegreen"
-                                                        bg="black"
-                                                        fontSize={{ base: "xs", md: "sm" }}
-                                                        _hover={{ color: "limegreen", bg: "black" }}
-                                                        _active={{ color: "limegreen", bg: "black" }}
-                                                        _focus={{ color: "limegreen", bg: "black" }}
-                                                        isDisabled={isHalfButtonDisabled}
-                                                    >
-                                                        Méd
-                                                    </Button>
-                                                    <Button
-                                                        onClick={setMaxAmount}
-                                                        color="limegreen"
-                                                        bg="black"
-                                                        fontSize={{ base: "xs", md: "sm" }}
-                                                        _hover={{ color: "limegreen", bg: "black" }}
-                                                        _active={{ color: "limegreen", bg: "black" }}
-                                                        _focus={{ color: "limegreen", bg: "black" }}
-                                                        isDisabled={isMaxButtonDisabled}
-
-                                                    >
-                                                        Max
-                                                    </Button>
-
-                                                </HStack>
                                             </InputGroup>
+
+                                            <HStack
+                                                justifyContent="space-between"
+                                                flexDirection="row"
+                                            >
+                                                <Button
+                                                    onClick={setMinAmount}
+                                                    color="limegreen"
+                                                    bg="black"
+                                                    fontSize={{ base: "xs", md: "sm" }}
+                                                    _hover={{ color: "limegreen", bg: "black" }}
+                                                    _active={{ color: "limegreen", bg: "black" }}
+                                                    _focus={{ color: "limegreen", bg: "black" }}
+                                                    isDisabled={isMinButtonDisabled}
+                                                    w={{ base: "32%", md: "auto" }}
+                                                >
+                                                    Mín
+                                                </Button>
+                                                <Button
+                                                    onClick={setHalfAmount}
+                                                    color="limegreen"
+                                                    bg="black"
+                                                    fontSize={{ base: "xs", md: "sm" }}
+                                                    _hover={{ color: "limegreen", bg: "black" }}
+                                                    _active={{ color: "limegreen", bg: "black" }}
+                                                    _focus={{ color: "limegreen", bg: "black" }}
+                                                    isDisabled={isHalfButtonDisabled}
+                                                    w={{ base: "32%", md: "auto" }}
+                                                >
+                                                    Méd
+                                                </Button>
+                                                <Button
+                                                    onClick={setMaxAmount}
+                                                    color="limegreen"
+                                                    bg="black"
+                                                    fontSize={{ base: "xs", md: "sm" }}
+                                                    _hover={{ color: "limegreen", bg: "black" }}
+                                                    _active={{ color: "limegreen", bg: "black" }}
+                                                    _focus={{ color: "limegreen", bg: "black" }}
+                                                    isDisabled={isMaxButtonDisabled}
+                                                    w={{ base: "32%", md: "auto" }}
+                                                >
+                                                    Max
+                                                </Button>
+                                            </HStack>
 
                                             <Badge
                                                 colorScheme="green"
@@ -656,11 +650,11 @@ const Pix = ({ user }: PixProps) => {
                                                 _active={{ color: "limegreen", bg: "black" }}
                                                 _focus={{ color: "limegreen", bg: "black" }}
                                                 isDisabled={isSendButtonDisabled || userInputHBD === "" || parseFloat(userInputHBD) > userHiveBalance.HBDUsdValue}
-
                                             >
                                                 Enviar Hive Dollars
                                             </Button>
                                         </>
+
                                     ) :
                                         (
                                             <>
