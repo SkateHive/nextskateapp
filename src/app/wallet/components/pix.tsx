@@ -88,43 +88,20 @@ const Pix = ({ user }: PixProps) => {
     const [displayModal, setDisplayModal] = useState(false);
     const [userInputHBD, setUserInputHBD] = useState("");   // user input hbd value for pix
     const userHiveBalance = useHiveBalance(user);
-
+    const [errorPixDeposit, setErrorPixDeposit] = useState<string | null>("");
+    const [qrCodeValue, setQrCodeValue] = useState<string | null>(null);
+    const [isInputDisabled, setIsInputDisabled] = useState(false);
+    const [isMinButtonDisabled, setIsMinButtonDisabled] = useState(false);
+    const [isHalfButtonDisabled, setIsHalfButtonDisabled] = useState(false);
+    const [isMaxButtonDisabled, setIsMaxButtonDisabled] = useState(false);
+    const [isSendButtonDisabled, setIsSendButtonDisabled] = useState(false);
     const [pixbeeData, setPixbeeData] = useState<PixBeeData | null>(null);
     const [pixTotalPayment, setPixTotalPayment] = useState("0.000");
     const [pixKey, setPixKey] = useState("");
     const [userFormatedPixKey, setUserFormatedPixKey] = useState("");
     const [pixKeyType, setPixKeyType] = useState("Desconhecido");
-    const [qrCodeValue, setQrCodeValue] = useState('');
     const [qrCodePayload, setQrCodePayload] = useState<string | null>(null);
     const toast = useToast();
-
-    // const userHBDAvailable = //pixbeeInputPixKey ? parseFloat(pixbeeInputPixKey.balanceHbd) : 0;
-    // const [currentHBDPrice, setCurrentHBDPrice] = useState<number>(0);
-    // const [countdown, setCountdown] = useState<number>(30);
-
-    // useEffect(() => {
-    //     const fetchPixBeeData = async () => {
-    //         try {
-    //             const response = await fetch('https://aphid-glowing-fish.ngrok-free.app/hbdticker');
-    //             const data = await response.json();
-    //             setPixBeeData(data);
-    //             setCurrentHBDPrice(parseFloat(data.HBDPriceBRL) || 0);
-    //         } catch (error) {
-    //             console.error("Failed to fetch updated PixBee data:", error);
-    //         }
-    //     };
-
-    //     const interval = setInterval(() => {
-    //         setCountdown(prevCountdown => prevCountdown - 1);
-    //     }, 1000);
-
-    //     if (countdown === 0) {
-    //         fetchPixBeeData();
-    //         setCountdown(30); // Reseta o countdown após a atualização
-    //     }
-
-    //     return () => clearInterval(interval);
-    // }, [countdown]);
 
     useEffect(() => {
         if (pixbeeData && userHiveBalance) {
@@ -143,21 +120,37 @@ const Pix = ({ user }: PixProps) => {
 
 
     useEffect(() => {
-        if (pixbeeData && pixbeeData.depositMinLimit /*&& userHiveBalance*/) {
-            // const userInputHBD = userInputHBD;
-            console.log("userInputHBD " + userInputHBD);
-            const pixValue = calculateTotalPixPayment(userInputHBD != "" ? userInputHBD : 0);
-            console.log(pixValue);
-            const isLessMinimum = (pixValue < pixbeeData.depositMinLimit);
-            console.log("isLessMinimum " + isLessMinimum);
-            console.log("pixValue " + pixValue + "< " + pixbeeData.depositMinLimit);
+        if (pixbeeData && pixbeeData.depositMinLimit && userHiveBalance) {
+            const userHBDValue = parseFloat(userInputHBD);
+
+            const pixValue = calculateTotalPixPayment(userHBDValue);
+            const isLessMinimum = pixValue < pixbeeData.depositMinLimit;
 
             setIsLessMinimum(isLessMinimum);
 
+            const exceedsBalance = userHBDValue > userHiveBalance.HBDUsdValue;
+
             if (isLessMinimum) {
-                setError("O valor inserido menor que " + pixbeeData.depositMinLimit);
+                setError(`O valor inserido é menor que o limite mínimo de R$ ${pixbeeData.depositMinLimit}`);
+                setIsSendButtonDisabled(true);
+                setIsInputDisabled(false);
+                setIsMinButtonDisabled(false);
+                setIsHalfButtonDisabled(false);
+                setIsMaxButtonDisabled(false);
+            } else if (exceedsBalance) {
+                setError("O valor inserido excede o saldo disponível.");
+                setIsSendButtonDisabled(true);
+                setIsInputDisabled(false);
+                setIsMinButtonDisabled(false);
+                setIsHalfButtonDisabled(false);
+                setIsMaxButtonDisabled(false);
             } else {
                 setError(null);
+                setIsSendButtonDisabled(false);
+                setIsInputDisabled(false);
+                setIsMinButtonDisabled(false);
+                setIsHalfButtonDisabled(false);
+                setIsMaxButtonDisabled(false);
             }
         }
     }, [userInputHBD, pixbeeData, userHiveBalance]);
@@ -188,13 +181,36 @@ const Pix = ({ user }: PixProps) => {
         const generateQrCode = async () => {
             try {
                 if (!pixbeeData?.pixbeePixKey) {
-                    throw new Error('Chave PIX não definida.');
+                    setErrorPixDeposit('Chave PIX não definida.');
+                    setQrCodeValue(null);
+                    setQrCodePayload(null);
+                    return;
                 }
+
                 if (!userInputHBD || isNaN(parseFloat(userInputHBD))) {
-                    throw new Error('Quantidade HBD inválida.');
+                    setErrorPixDeposit('Coloque um valor desejável.');
+                    setQrCodeValue(null);
+                    setQrCodePayload(null);
+                    return;
                 }
 
                 const valueHBD = parseFloat(userInputHBD);
+                const balance = parseFloat(pixbeeData.balanceHbd);
+
+                if (valueHBD <= 0) {
+                    setErrorPixDeposit('Valor de HBD deve ser maior que zero.');
+                    setQrCodeValue(null);
+                    setQrCodePayload(null);
+                    return;
+                }
+
+                if (valueHBD > balance) {
+                    setErrorPixDeposit('Não temos esse valor disponível na Skatebank.');
+                    setQrCodeValue(null);
+                    setQrCodePayload(null);
+                    return;
+                }
+
                 const valueBRL = parseFloat((valueHBD * parseFloat(pixbeeData.HBDPriceBRL)).toFixed(2));
 
                 console.log('Chave PIX:', pixbeeData?.pixbeePixKey);
@@ -203,7 +219,7 @@ const Pix = ({ user }: PixProps) => {
 
                 const qrCodePix = QrCodePix({
                     version: '01',
-                    key: pixbeeData?.pixbeePixKey || '',
+                    key: pixbeeData?.pixbeePixKey,
                     name: "PixBee",
                     city: '',
                     message: `${user.name}`,
@@ -223,26 +239,24 @@ const Pix = ({ user }: PixProps) => {
 
                 if (qrCodeBase64 && qrCodeBase64.startsWith('data:image/png;base64,')) {
                     setQrCodeValue(qrCodeBase64);
+                    setErrorPixDeposit(null);
                 } else {
-                    throw new Error('QR code Base64 string inválido.');
+                    setErrorPixDeposit('QR code Base64 string inválido.');
+                    setQrCodeValue(null);
+                    setQrCodePayload(null);
                 }
-            } catch (error) {
+            } catch (error: any) {
                 console.error('Erro ao gerar QR code PIX:', error);
+                setErrorPixDeposit(error.message);
+                setQrCodeValue(null);
+                setQrCodePayload(null);
             }
         };
 
         if (!isSell) {
             generateQrCode();
         }
-    }, [userInputHBD, pixbeeData?.pixbeePixKey, user.name, isSell]);
-
-    useEffect(() => {
-        fetchPixBeeData().then((data) => {
-            setPixbeeData(data);
-        }).catch(error => {
-            console.error("Failed to fetch PixBee data:", error);
-        });
-    }, []);
+    }, [userInputHBD, pixbeeData?.pixbeePixKey, user.name, isSell, pixbeeData?.HBDPriceBRL, userHiveBalance.HBDUsdValue]);
 
     const formatValue = (value: string): string => {
         // Remove qualquer caractere não numérico ou ponto
@@ -476,7 +490,7 @@ const Pix = ({ user }: PixProps) => {
             <Center mt="20px"  >
                 <Container maxW="container.lg">
                     <VStack mt={1} spacing={4} flexDirection={{ base: "column", xl: "row" }}>
-                        <Card w="full" fontFamily={'Joystix'} bg="black">
+                        <Card w="100%" fontFamily={'Joystix'} bg="black" border="1px solid white">
                             <CardHeader>
                                 <Center>
                                     <VStack spacing={2}>
@@ -499,28 +513,25 @@ const Pix = ({ user }: PixProps) => {
                                                 color="white"
                                                 fontSize={{ base: "sm", md: "md" }}
                                                 textAlign="center"
-                                                display="flex"
-                                                justifyContent="center"
-                                                alignItems="center"
-
+                                                mb={4}
                                             >
                                                 Seu Saldo disponível: {userHiveBalance.HBDUsdValue} HBD
                                             </Text>
 
-
                                             <Input
-                                                placeholder="Digite sua chave pix"
+                                                placeholder="Digite sua chave PIX"
                                                 value={userFormatedPixKey}
                                                 onChange={handlePixKeyChange}
                                                 sx={{
-                                                    '::placeholder': {
-                                                        color: 'white',
-                                                    },
+                                                    '::placeholder': { color: 'white' },
                                                 }}
                                                 color="white"
                                                 fontSize={{ base: "sm", md: "md" }}
-                                                mt={2}
-                                                w={{ base: "100%", md: "100%" }}
+                                                mb={4}
+                                                w="100%"
+                                                borderColor="limegreen"
+                                                _hover={{ borderColor: "white" }}
+                                                _focus={{ borderColor: "limegreen", boxShadow: "0 0 0 1px limegreen" }}
                                             />
 
                                             {pixKeyType && (
@@ -530,85 +541,96 @@ const Pix = ({ user }: PixProps) => {
                                             )}
 
                                             <InputGroup
+                                                display="flex"
                                                 alignItems="center"
-                                                justifyContent="center"
-                                                flexDirection={{ base: "column", md: "row" }}
-                                                gap={{ base: 2, md: 0 }}
-                                                mt={4}
+                                                justifyContent="space-between" 
+                                                w="100%"
+                                               
                                             >
                                                 <Input
                                                     placeholder="0.000"
                                                     value={userInputHBD}
                                                     onChange={handleAmountChange}
                                                     type="text"
-                                                    w={{ base: "100%", md: "50%" }}
                                                     sx={{
-                                                        '::placeholder': {
-                                                            color: 'white',
-                                                        },
+                                                        '::placeholder': { color: 'white' },
                                                     }}
                                                     color="white"
-                                                    fontSize={{ base: "sm", md: "md" }}
+                                                    borderColor="limegreen"
+                                                    _hover={{ borderColor: "white" }}
+                                                    _focus={{ borderColor: "limegreen", boxShadow: "0 0 0 1px limegreen" }}
+                                                    flex="1" 
+                                                    
+                                                    isDisabled={isInputDisabled}
                                                 />
                                                 <InputRightAddon
                                                     color="white"
                                                     bg="black"
-                                                    fontSize={{ base: "xs", md: "sm" }}
-                                                    mt={{ base: 2, md: 0 }}
+                                                    borderColor="limegreen"
+                                                    px={4}
+                                                    fontSize={{ base: "sm", md: "md" }}
+                                                    w="auto"
+                                                    flexShrink={0}
                                                 >
                                                     HBD
                                                 </InputRightAddon>
-
-                                                <HStack
-                                                    spacing={{ base: 2, md: 1 }}
-                                                    mt={{ base: 2, md: 0 }}
-                                                >
-                                                    <Button
-                                                        onClick={setMinAmount}
-                                                        color="limegreen"
-                                                        bg="black"
-                                                        fontSize={{ base: "xs", md: "sm" }}
-                                                        _hover={{ color: "limegreen", bg: "black" }}
-                                                        _active={{ color: "limegreen", bg: "black" }}
-                                                        _focus={{ color: "limegreen", bg: "black" }}
-                                                    >
-                                                        Mín
-                                                    </Button>
-                                                    <Button
-                                                        onClick={setHalfAmount}
-                                                        color="limegreen"
-                                                        bg="black"
-                                                        fontSize={{ base: "xs", md: "sm" }}
-                                                        _hover={{ color: "limegreen", bg: "black" }}
-                                                        _active={{ color: "limegreen", bg: "black" }}
-                                                        _focus={{ color: "limegreen", bg: "black" }}
-                                                    >
-                                                        Méd
-                                                    </Button>
-                                                    <Button
-                                                        onClick={setMaxAmount}
-                                                        color="limegreen"
-                                                        bg="black"
-                                                        fontSize={{ base: "xs", md: "sm" }}
-                                                        _hover={{ color: "limegreen", bg: "black" }}
-                                                        _active={{ color: "limegreen", bg: "black" }}
-                                                        _focus={{ color: "limegreen", bg: "black" }}
-                                                    >
-                                                        Max
-                                                    </Button>
-                                                </HStack>
                                             </InputGroup>
+
+                                            <HStack
+                                                justifyContent="space-between"
+                                                flexDirection="row"
+                                            >
+                                                <Button
+                                                    onClick={setMinAmount}
+                                                    color="limegreen"
+                                                    bg="black"
+                                                    fontSize={{ base: "xs", md: "sm" }}
+                                                    _hover={{ color: "limegreen", bg: "black" }}
+                                                    _active={{ color: "limegreen", bg: "black" }}
+                                                    _focus={{ color: "limegreen", bg: "black" }}
+                                                    isDisabled={isMinButtonDisabled}
+                                                    w={{ base: "32%", md: "auto" }}
+                                                >
+                                                    Mín
+                                                </Button>
+                                                <Button
+                                                    onClick={setHalfAmount}
+                                                    color="limegreen"
+                                                    bg="black"
+                                                    fontSize={{ base: "xs", md: "sm" }}
+                                                    _hover={{ color: "limegreen", bg: "black" }}
+                                                    _active={{ color: "limegreen", bg: "black" }}
+                                                    _focus={{ color: "limegreen", bg: "black" }}
+                                                    isDisabled={isHalfButtonDisabled}
+                                                    w={{ base: "32%", md: "auto" }}
+                                                >
+                                                    Méd
+                                                </Button>
+                                                <Button
+                                                    onClick={setMaxAmount}
+                                                    color="limegreen"
+                                                    bg="black"
+                                                    fontSize={{ base: "xs", md: "sm" }}
+                                                    _hover={{ color: "limegreen", bg: "black" }}
+                                                    _active={{ color: "limegreen", bg: "black" }}
+                                                    _focus={{ color: "limegreen", bg: "black" }}
+                                                    isDisabled={isMaxButtonDisabled}
+                                                    w={{ base: "32%", md: "auto" }}
+                                                >
+                                                    Max
+                                                </Button>
+                                            </HStack>
 
                                             <Badge
                                                 colorScheme="green"
-                                                fontSize={{ base: "2xl", md: "3xl" }}
+                                                fontSize={{ base: "xl", md: "2xl" }}
                                                 variant="outline"
-                                                w={'full'}
-                                                mt={4}
+                                                w="100%"
+                                                textAlign="center"
+                                                py={2}
+                                                mb={4}
                                             >
-                                                <Text textAlign="center">
-                                                    {pixTotalPayment}
-                                                </Text>
+                                                {pixTotalPayment}
                                             </Badge>
 
                                             {error && (
@@ -618,16 +640,21 @@ const Pix = ({ user }: PixProps) => {
                                             )}
 
                                             <Button
-                                                w={'100%'}
-                                                variant={'outline'}
+                                                w="100%"
+                                                variant="outline"
                                                 color="limegreen"
                                                 onClick={handleSubmit}
                                                 fontSize={{ base: "sm", md: "md" }}
                                                 mt={4}
+                                                _hover={{ color: "limegreen", bg: "black" }}
+                                                _active={{ color: "limegreen", bg: "black" }}
+                                                _focus={{ color: "limegreen", bg: "black" }}
+                                                isDisabled={isSendButtonDisabled || userInputHBD === "" || parseFloat(userInputHBD) > userHiveBalance.HBDUsdValue}
                                             >
                                                 Enviar Hive Dollars
                                             </Button>
                                         </>
+
                                     ) :
                                         (
                                             <>
@@ -640,11 +667,15 @@ const Pix = ({ user }: PixProps) => {
                                                 </Box>
                                                 {qrCodePayload && (
                                                     <Box mt={4}>
-                                                        <Button colorScheme="blue" onClick={handleCopy} filter={isBlurred ? "blur(5px)" : "none"}
-                                                            isDisabled={isBlurred}>
+                                                        <Button colorScheme="blue" onClick={handleCopy} filter={isBlurred ? "blur(5px)" : "none"} isDisabled={isBlurred}>
                                                             PIX Copia e Cola
                                                         </Button>
                                                     </Box>
+                                                )}
+                                                {errorPixDeposit && (
+                                                    <Text color="red.500" mt={2}>
+                                                        {errorPixDeposit}
+                                                    </Text>
                                                 )}
                                                 <Input
                                                     placeholder="Digite a quantidade de HBD"
