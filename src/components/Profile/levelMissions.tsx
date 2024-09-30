@@ -184,7 +184,7 @@ export default function LevelMissions({ initialLevel, user, updateAvailableXp }:
     };
 
     return (
-        <VStack w="100%">
+        <VStack minWidth={'500px'}>
             <HStack>
                 <Button
                     _hover={{ background: "transparent" }}
@@ -208,7 +208,7 @@ export default function LevelMissions({ initialLevel, user, updateAvailableXp }:
             </HStack>
             <TableContainer w="100%">
                 <Box borderRadius="15px" border="1px solid white" minW="220px">
-                    <Table variant="unstyled" mt={2} color="white" w="80%">
+                    <Table variant="unstyled" mt={2} color="white" w="100%">
                         <Thead>
                             <Tr>
                                 <Th w="80%"><Center>Mission</Center></Th>

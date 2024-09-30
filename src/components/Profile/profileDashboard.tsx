@@ -92,7 +92,7 @@ const ProfileDashboard = ({ user }: ProfileDashboardProps) => {
                                 </VStack>
                             </Center>
                         </Box>
-                        <Box>
+                        <Box width={'100%'}>
                             {/*<Center>
                                  <HStack>
                                     <Text fontSize={'26px'}>
