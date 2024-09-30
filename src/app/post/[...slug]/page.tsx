@@ -5,6 +5,7 @@ import { transform3SpeakContent, transformIPFSContent } from '@/lib/utils';
 import {
   Badge,
   Box,
+  Button,
   Center,
   Container,
   Divider,
@@ -21,6 +22,8 @@ import {
 } from '@chakra-ui/react';
 import { Metadata } from 'next';
 import ClientMarkdownRenderer from '../ClientMarkdownRenderer';
+import { handleVote } from '@/app/mainFeed/utils/handleFeedVote';
+import VoteButton from '../VoteButton';
 
 export const revalidate = 600;
 
@@ -81,7 +84,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
 
   return (
     <Box
-    width={{ base: '100%', md: '60%' }}
+      width={{ base: '100%', md: '60%' }}
       color="white"
       display="flex"
       flexDir={{ base: 'column', lg: 'row' }}
@@ -89,8 +92,8 @@ export default async function Page({ params }: { params: { slug: string } }) {
     >
       <Box
         width={{ base: '100%', md: '60%' }}
-        maxWidth={{ base: '100%', md: '60%' }} 
-        mx="auto" 
+        maxWidth={{ base: '100%', md: '60%' }}
+        mx="auto"
       >
         <Heading mt={8} size="md" border="1px solid grey" borderRadius={5}>
           <Box bg="#201d21" borderRadius={5}>
@@ -109,21 +112,22 @@ export default async function Page({ params }: { params: { slug: string } }) {
           <ClientMarkdownRenderer content={transformIPFSContent(transform3SpeakContent(post.body))} />
           <Divider mt={5} />
           <Center>
-            <Text fontSize="12px">{transformDate(post?.created)}</Text>
+            <Text color={'white'} fontSize="12px">{transformDate(post?.created)}</Text>
           </Center>
         </Container>
       </Box>
 
       <Box
         width={{ base: '100%', md: '40%' }}
-        maxWidth={{ base: '100%', md: '40%' }} 
+        maxWidth={{ base: '100%', md: '40%' }}
         mt={5}
-        mx="auto" 
-        overflow="hidden" 
-        paddingBottom="40px" 
+        mx="auto"
+        overflow="hidden"
+        paddingBottom="40px"
       >
         <Center>
           <VStack width="90%">
+            <VoteButton author={post.author} permlink={post.permlink} username={user.substring(3)} />
             <Badge
               border="1px solid grey"
               width="100%"
@@ -163,14 +167,14 @@ export default async function Page({ params }: { params: { slug: string } }) {
           </Text>
         </Center>
 
-        <Box 
-          maxW="100%" 
+        <Box
+          maxW="100%"
           overflow="hidden"
-           padding="0"
+          padding="0"
         >
           <CommentsComponent author={user.substring(3)} permlink={postId} />
         </Box>
       </Box>
-    </Box>
+    </Box >
   );
 }
