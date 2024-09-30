@@ -14,9 +14,10 @@ interface VoteButtonProps {
 const VoteButton = ({ author, permlink }: VoteButtonProps) => {
     const [voteWeight, setVoteWeight] = useState(10000); // Default to 1000
     const user = useHiveUser();
+    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
     if (!user) return null;
     const username = user?.hiveUser?.name;
-    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const handleVoteClick = async () => {
         if (!username) {
             setIsLoginModalOpen(true);
