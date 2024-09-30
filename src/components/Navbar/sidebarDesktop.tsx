@@ -236,7 +236,7 @@ const SidebarDesktop = () => {
                   gap={0}
                   leftIcon={<Icon as={FaHive} />}
                   ml={-2}
-                  p={2}
+                  p={1.5}
                   justifyContent={"center"}
                   color="gold"
                   variant="outline"

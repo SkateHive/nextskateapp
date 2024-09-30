@@ -3,12 +3,25 @@ import { HiveAccount } from "@/lib/useHiveAuth"
 import { Avatar } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
 
-export default function UserAvatar({ hiveAccount, borderRadius, boxSize }: { hiveAccount: HiveAccount, borderRadius: number, boxSize: number }) {
+type UserAvatarProps = {
+  hiveAccount: HiveAccount;
+  borderRadius: number;
+  boxSize: number;
+  size?: string | undefined;
+};
+
+export default function UserAvatar({
+  hiveAccount,
+  borderRadius,
+  boxSize,
+  size = 'small'
+}: UserAvatarProps) {
+  //export default function UserAvatar({ hiveAccount, borderRadius, boxSize, size="small" }: { hiveAccount: HiveAccount, borderRadius: number, boxSize: number, size: string }) {
   const [userAvatar, setUserAvatar] = useState<string>("")
   const metadata = JSON.parse(hiveAccount.posting_json_metadata || hiveAccount.json_metadata || "{}")
 
   useEffect(() => {
-    const defaultAvatarUrl = `https://images.ecency.com/webp/u/${hiveAccount.name}/avatar/small`;
+    const defaultAvatarUrl = `https://images.ecency.com/webp/u/${hiveAccount.name}/avatar/${size}`;
 
     // Function to check if the Ecency avatar exists
     const checkAvatarExists = async (url: string) => {

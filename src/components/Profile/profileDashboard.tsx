@@ -1,27 +1,26 @@
 'use client';
-import { updateProfile } from '@/lib/hive/client-functions';
 import { HiveAccount } from '@/lib/useHiveAuth';
 import { Box, Button, Center, Flex, HStack, Step, StepDescription, StepIndicator, StepSeparator, StepStatus, StepTitle, Stepper, Tag, Text, VStack, useSteps } from '@chakra-ui/react';
 import { useCallback, useState } from 'react';
-import { FaHive } from 'react-icons/fa';
 import LevelMissions from './levelMissions';
 import ProfileCard from './profileCard';
 
 interface ProfileDashboardProps {
     user: HiveAccount;
 }
-const xpThresholds = [0, 180, 270, 540, 720, 900, 1080];
 
 const ProfileDashboard = ({ user }: ProfileDashboardProps) => {
     const user_metadata = JSON.parse(user.json_metadata || '{}');
-    const user_posting_metadata = JSON.parse(user.posting_json_metadata || '{}');
+    // const user_posting_metadata = JSON.parse(user.posting_json_metadata || '{}');
     const extensions = user_metadata.extensions;
-    const userLevel = extensions?.level || 0;
+    const userLevel = extensions?.level || 1;
+    //const userLevel = 4;
+
     const userXp = extensions?.staticXp || 0;
     const [availableXp, setAvailableXp] = useState(userXp);
 
     const steps = [
-        { title: 'Level 1', description: 'current' },
+        { title: 'Level 1', description: 'start' },
         { title: 'Level 2', description: 'min. 180 xp' },
         { title: 'Level 3', description: 'min. 270 xp' },
         { title: 'Level 4', description: 'min. 540 xp' },
@@ -29,17 +28,16 @@ const ProfileDashboard = ({ user }: ProfileDashboardProps) => {
         { title: 'Level 6', description: 'min. 900 xp' },
         { title: 'Level 7', description: 'min. 1080 xp' },
     ];
-    function calculateLevel(xp: number): number {
-        let level = 0;
-        for (let i = 0; i < xpThresholds.length; i++) {
-            if (xp >= xpThresholds[i]) {
-                level = i + 1;
-            } else {
-                break;
-            }
-        }
-        return level;
-    }
+
+    const filteredSteps = steps.filter((step, index) => {
+        const start = Math.max(0, userLevel - 2);
+        var end = 0;
+        if (userLevel >= 1)
+            end = Math.min(steps.length - 1, userLevel + 2);
+        else
+            end = Math.min(steps.length - 1, userLevel + 3);
+        return index >= start && index <= end;
+      });
 
     const updateAvailableXp = useCallback((xp: number) => {
         // console.log(`Updating available XP to: ${xp}`);
@@ -47,28 +45,29 @@ const ProfileDashboard = ({ user }: ProfileDashboardProps) => {
     }, []);
 
     function Levels() {
+        var activeLevel = userLevel;
+        activeLevel = filteredSteps.indexOf(steps[userLevel])-1;
+
         const { activeStep } = useSteps({
-            index: userLevel - 1 || 0,
+            index: activeLevel,
             count: steps.length,
         });
 
         return (
             <Box m={10}>
                 <Stepper sx={{
-                    "&::-webkit-scrollbar": {
-                        display: "none",
-                    }
-                }}
+                    "&::-webkit-scrollbar": {display: "none",}}}
                     overflowX="auto" size='lg' colorScheme='green' index={activeStep}>
-                    {steps.map((step, index) => (
+
+                    {filteredSteps.map((step, index) => (
                         <Step key={index}>
                             <StepIndicator>
-                                <StepStatus complete={`🛹`} incomplete={`💀`} active={`📍`} />
+                                <StepStatus complete={`🛹`} incomplete={`🚧`} active={`📍`} />
                             </StepIndicator>
 
                             <Box flexShrink='0'>
                                 <StepTitle>{step.title}</StepTitle>
-                                <StepDescription>{step.description}</StepDescription>
+                                <StepDescription>{activeLevel === index ? 'current' : step.description}</StepDescription>
                             </Box>
 
                             <StepSeparator />
@@ -78,38 +77,8 @@ const ProfileDashboard = ({ user }: ProfileDashboardProps) => {
             </Box>
         );
     }
-    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-    const handleUpdateXPClick = () => {
-        const loginMethod = localStorage.getItem('LoginMethod');
 
-        if (userLevel < 1) {
-            setIsLoginModalOpen(true);
-        } else {
-            // console.log("User Level: ", userLevel)
-            // console.log(user_posting_metadata)
-            if (loginMethod === 'keychain') {
-                const newLevel = calculateLevel(availableXp);  // Calculate the new level based on available XP
-
-                updateProfile(
-                    String(user.name),
-                    user_posting_metadata.profile.name,
-                    user_posting_metadata.profile.about,
-                    user_posting_metadata.profile.location,
-                    user_posting_metadata.profile.cover_image,
-                    user_posting_metadata.profile.profile_image,
-                    user_posting_metadata.profile.website,
-                    user_metadata.extensions.eth_address,
-                    user_metadata.extensions.video_parts,
-                    newLevel,         // Pass the new level
-                    availableXp,      // Pass the updated XP
-                    user_metadata.extensions.cumulativeXp
-                );
-            } else if (loginMethod === 'privatekey') {
-                // Handle the private key method if necessary
-            }
-        }
-    };
-
+    // const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
     return (
         <Box>
@@ -119,31 +88,22 @@ const ProfileDashboard = ({ user }: ProfileDashboardProps) => {
                         <Box>
                             <Center mb={3}>
                                 <VStack>
-                                    <HStack>
-                                        <Text fontSize={'26px'}>
-                                            Total XP:
-                                        </Text>
-                                        <Tag bg={'limegreen'} color={'black'} fontSize={'26px'}> {userXp}/{availableXp}</Tag>
-                                    </HStack>
                                     <ProfileCard user={user} />
-                                    <Button
-                                        _hover={{ background: "transparent" }}
-                                        leftIcon={<FaHive size={"22px"} />}
-                                        color="yellow.200"
-                                        border={"1px solid white"}
-                                        width={"100%"}
-                                        mt={2}
-                                        variant={"outline"}
-                                        w={"auto"}
-                                        onClick={handleUpdateXPClick}
-                                    >
-                                        Update XP
-                                    </Button>
                                 </VStack>
                             </Center>
                         </Box>
                         <Box>
-                            <LevelMissions user={user} initialLevel={userLevel + 1} updateAvailableXp={updateAvailableXp} />
+                            {/*<Center>
+                                 <HStack>
+                                    <Text fontSize={'26px'}>
+                                        Total XP:
+                                    </Text>
+                                    <Tag bg={'limegreen'} color={'black'} fontSize={'26px'}>
+                                        {userXp}/{availableXp}
+                                    </Tag>
+                                </HStack>
+                            </Center> */}
+                            <LevelMissions user={user} initialLevel={userLevel} updateAvailableXp={updateAvailableXp} />
                         </Box>
                     </Flex>
                 </VStack>

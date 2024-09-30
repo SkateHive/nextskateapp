@@ -129,12 +129,23 @@ export default function EditInfoModal({ isOpen, onClose, user, onUpdate }: EditM
         <ModalBody>
           <VStack>
             <Image boxSize={"128px"} src="https://img.gatenft.io/image/85d4d2e56f120f13834792477666294e.gif" alt="eth" />
-            <Badge fontSize={"14px"} m={5}>{connectedWallet}</Badge>
+            {connectedWallet ? (
+              <Badge fontSize={"14px"} m={5}>{connectedWallet}</Badge>
+            ) : (
+              <Badge fontSize={"14px"} m={5}>{"Connect your Wallet first!"}</Badge>
+            )}
           </VStack>
-          <Button colorScheme="green" variant={"outline"} w={'100%'} onClick={() => {
-            handleClickAddEthAddress();
-            setIsEthSetupModalOpen(false);
-          }}>Confirm Address</Button>
+          {connectedWallet ? (
+              <Button colorScheme="green" variant={"outline"} w={'100%'} onClick={() => {
+                handleClickAddEthAddress();
+                setIsEthSetupModalOpen(false);
+              }}>Confirm Address</Button>
+            ) : (
+              <Button colorScheme="green" variant={"outline"} w={'100%'} onClick={() => {
+                setIsEthSetupModalOpen(false);
+              }}>Latter</Button>
+            )}
+          
         </ModalBody>
       </ModalContent>
     </Modal>
