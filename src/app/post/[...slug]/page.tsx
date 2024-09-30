@@ -127,7 +127,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
       >
         <Center>
           <VStack width="90%">
-            <VoteButton author={post.author} permlink={post.permlink} username={user.substring(3)} />
+            <VoteButton author={post.author} permlink={post.permlink} />
             <Badge
               border="1px solid grey"
               width="100%"
