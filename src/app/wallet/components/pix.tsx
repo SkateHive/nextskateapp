@@ -468,9 +468,9 @@ const Pix = ({ user }: PixProps) => {
         const exchangePer = pixbeeData.OurExchangePer;
         const exchangeFee = pixbeeData.OurExchangeFee;
 
-        const liquid = (realValue * (1 - exchangePer) - exchangeFee);    //fixed from 2 to 3, 19.99 bug vaipraonde?
+        const liquid = (realValue * (1 - exchangePer) - exchangeFee).toFixed(3);//#vaipraonde 3 decimals important
 
-        return liquid;
+        return parseFloat(liquid);
     }
 
     //return HBD brute deposit value
@@ -481,15 +481,15 @@ const Pix = ({ user }: PixProps) => {
 
         const epsilon = 0.001;
         let hbdDeposit = 0;
-        let countWhile = 0;
+        // let countWhile = 0;
 
         if (token === "HBD") {
             const hbdPriceBRL = pixbeeData.HBDPriceBRL;
-            hbdDeposit = parseFloat((liquidPlusTax / hbdPriceBRL).toFixed(3));
+            hbdDeposit = parseFloat((liquidPlusTax / hbdPriceBRL).toFixed(3)); //#vaipraonde 3 decimals important
 
-            while (calculateLiquidDeposit(liquidPlusTax) < valorPix) { //19.99
+            while (calculateLiquidDeposit(liquidPlusTax) < valorPix) {
                 hbdDeposit += epsilon;
-                liquidPlusTax = parseFloat((hbdDeposit * hbdPriceBRL).toFixed(2));
+                liquidPlusTax = parseFloat((hbdDeposit * hbdPriceBRL).toFixed(3));//#vaipraonde 3 decimals important
                 // countWhile++;
                 // const diferenca = calculateLiquidDeposit(liquidPlusTax) - valorPix;
                 // if (diferenca < -0.01) {
