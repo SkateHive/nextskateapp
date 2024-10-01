@@ -1,24 +1,7 @@
-import {
-    KeychainSDK,
-    Transfer
-} from "keychain-sdk";
-
-
-import {
-    Box,
-    Button,
-    Image,
-    Modal,
-    ModalBody,
-    ModalCloseButton,
-    ModalContent,
-    ModalFooter,
-    ModalHeader,
-    ModalOverlay,
-    Spinner,
-    Text,
-    useToast
-} from '@chakra-ui/react';
+import { KeychainSDK, Transfer } from "keychain-sdk";
+import { Box, Button, Image, Modal, ModalBody,
+         ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, 
+         Spinner, Text, useToast } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 
 interface SendHBDModalProps {
@@ -62,7 +45,7 @@ const SendHBDModal: React.FC<SendHBDModalProps> = ({
 
         keychain.transfer(formParamsAsObject.data as Transfer).then((resultado) => {
             if (resultado?.success == true) {
-                console.log(resultado); //debug
+                // console.log(resultado); //debug
                 setTransactionStatus('success');
                 toast({
                     title: "Solicitacao Pix Enviada com Sucesso.",
@@ -78,7 +61,7 @@ const SendHBDModal: React.FC<SendHBDModalProps> = ({
                 setLoading(false);
             }
         }).catch((err) => {
-            console.log(err); //debug
+            // console.log(err); //debug
             setError("Houve um problema ao realizar a transferência.");
             setTransactionStatus('failure');
             toast({
@@ -91,9 +74,7 @@ const SendHBDModal: React.FC<SendHBDModalProps> = ({
             setLoading(false);
             onClose();
         });
-
-        console.log("aguardando resposta");
-
+        // console.log("aguardando resposta");
     };
 
     useEffect(() => {
