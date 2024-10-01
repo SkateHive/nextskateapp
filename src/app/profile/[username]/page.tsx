@@ -1,10 +1,11 @@
 'use client'
 
 import ETHprofile from "@/components/Profile/ETHprofile";
-import ProfileHeader from "@/components/Profile/ProfileHeader";
+// import ProfileHeader from "@/components/Profile/ProfileHeader";
 import ProfileTabs from "@/components/Profile/profileTabs";
 import useHiveAccount from "@/hooks/useHiveAccount";
 import { Box, Center } from "@chakra-ui/react";
+import { useState, useEffect } from 'react';
 
 interface ProfilePageProps {
   params: {
@@ -13,7 +14,13 @@ interface ProfilePageProps {
 }
 
 export default function ProfilePage({ params }: ProfilePageProps) {
-  const { hiveAccount } = useHiveAccount(params.username);
+  const [isLoading, setIsLoading] = useState(true);
+  const { hiveAccount, error } = useHiveAccount(params.username);
+
+  useEffect(() => {
+    setIsLoading(false);
+  }, [hiveAccount]);
+
   if (params.username.length === 42 && params.username.startsWith("0x")) {
     return (
       <Box w="100%">
@@ -21,17 +28,6 @@ export default function ProfilePage({ params }: ProfilePageProps) {
       </Box>
     );
   }
-
-  if (!hiveAccount) {
-    return (
-      <Box w="100%">
-        <Center>
-          Account not found
-        </Center>
-      </Box>
-    );
-  }
-
 
   return (
     <Box
@@ -42,8 +38,21 @@ export default function ProfilePage({ params }: ProfilePageProps) {
       id="SkaterPage"
       mt={4}
     >
-      <ProfileHeader user={hiveAccount} />
-      <ProfileTabs user={hiveAccount} />
+      {(isLoading) ? (
+        <Center>
+          Loading...
+        </Center>
+      ) : error != null ? (
+        <Center>
+          Error: {error}
+        </Center>
+      ) : hiveAccount ? (
+        <Box>
+          {hiveAccount && <ProfileTabs user={hiveAccount} />}
+        </Box>
+      ) : (
+        error
+      )}
     </Box>
   );
 }

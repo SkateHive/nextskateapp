@@ -129,7 +129,9 @@ export async function transferWithKeychain(username: string, destination: string
     console.log({ error });
   }
 }
-export async function updateProfile(username: string, name: string, about: string, location: string, coverImageUrl: string, avatarUrl: string, website: string, ethAddress: string, videoParts: VideoPart[], level: number, staticXp?: number, cumulativeXp?: number) {
+export async function updateProfile(username: string, name: string, about: string, location: string, 
+    coverImageUrl: string, avatarUrl: string, website: string, ethAddress: string, videoParts: VideoPart[], 
+    level: number, staticXp?: number, cumulativeXp?: number) {
   try {
     const keychain = new KeychainSDK(window);
 
@@ -173,10 +175,11 @@ export async function updateProfile(username: string, name: string, about: strin
       },
     };
 
-    const broadcast = await keychain.broadcast(formParamsAsObject.data as unknown as Broadcast);
-    console.log('Broadcast success:', broadcast);
+    return await keychain.broadcast(formParamsAsObject.data as unknown as Broadcast);
+    // console.log('Broadcast success:', broadcast);
   } catch (error) {
-    console.error('Profile update failed:', error);
+    // console.error('Profile update failed:', error);
+    return false
   }
 }
 export async function checkCommunitySubscription(username: string) {
