@@ -32,7 +32,7 @@ const VotingButton = ({
             return;
         } else {
             const newIsVoted = !isVoted;
-            await handleVote(comment.author, comment.permlink, username ?? "");
+            await handleVote(comment.author, comment.permlink, username ?? "", 10000);
             setIsVoted(newIsVoted);
             toggleValueTooltip();
             setVoteCount((prevVoteCount: number) =>
