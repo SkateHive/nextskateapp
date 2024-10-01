@@ -2,6 +2,7 @@ import useHiveBalance from '@/hooks/useHiveBalance';
 // import { convertVestingSharesToHivePower } from "@/app/wallet/utils/calculateHP";
 import { HiveAccount } from '@/lib/useHiveAuth';
 import { updateProfile } from '@/lib/hive/client-functions';
+import { updateProfileWithPrivateKey } from '@/lib/hive/server-functions';
 import { Box, Button, Card, CardBody, CardFooter, CardHeader, Center, Flex,
          HStack, Image, Text, useDisclosure, VStack
         } from '@chakra-ui/react';
@@ -116,17 +117,17 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
     }
 
     const handleLevelUp = () => {
+        // console.log("User Level: ", userLevel);
+        // console.log(userPostingMetadata);
+
+        var newuserXP = calculateTotalXp(user);
+        const newLevel = calculateLevel(newuserXP);  // Calculate the new level based on available XP
+
+        setUserXp(newuserXP);
+        setUserLvl(newLevel);
+
         const loginMethod = localStorage.getItem('LoginMethod');
-
-        console.log("User Level: ", userLevel)
-        console.log(userPostingMetadata)
         if (loginMethod === 'keychain') {
-            var newuserXP = calculateTotalXp(user);
-            const newLevel = calculateLevel(newuserXP);  // Calculate the new level based on available XP
-
-            setUserXp(newuserXP);
-            setUserLvl(newLevel);
-
             updateProfile(
                 String(user.name),
                 userPostingMetadata.profile.name,
@@ -150,6 +151,41 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
         }
         else if (loginMethod === 'privatekey') {
             // Handle the private key method if necessary
+
+            // updateProfileWithPrivateKey(
+            //     encryptedPrivateKey: string | null, 
+            //     username: string,
+            //     name: string, 
+            //     about: string, 
+            //     location: string, 
+            //     coverImageUrl: string, 
+            //     avatarUrl: string, 
+            //     website: string, 
+            //     ethAddress: string, 
+            //     videoParts: VideoPart[], 
+            //     level: number
+            // ): Promise<
+
+            const encryptedPrivateKey = localStorage.getItem("EncPrivateKey");
+            updateProfileWithPrivateKey(
+                encryptedPrivateKey,
+                String(user.name),
+                userPostingMetadata.profile.name,
+                userPostingMetadata.profile.about,
+                userPostingMetadata.profile.location,
+                userPostingMetadata.profile.cover_image,
+                userPostingMetadata.profile.profile_image,
+                userPostingMetadata.profile.website,
+                userMetadata.extensions?.eth_address,
+                userMetadata.extensions?.video_parts,
+                newLevel,           // Pass the new level
+                newuserXP,          // Pass the updated XP
+            ).then( (result) => {
+                if(!result) {
+                    setUserLvl(userLevel);
+                    setUserXp(userXp);
+                }
+            });
         }
     };
 
