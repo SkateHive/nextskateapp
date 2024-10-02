@@ -362,6 +362,12 @@ const Pix = ({ user }: PixProps) => {
         return decimalPart ? `${formattedIntegerPart}.${formattedDecimalPart}` : formattedIntegerPart;
     };
 
+    const handlePIXOnBlur = (event: React.ChangeEvent<HTMLInputElement>) => {
+            var currentValue = event.target.value;
+            if (currentValue=="") currentValue="0";
+            event.target.value = toFixedTrunc(currentValue, 2);
+            setUserInputPIX(event.target.value);
+    }
 
     const handlePIXAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const rawValue = event.target.value;
@@ -560,6 +566,15 @@ const Pix = ({ user }: PixProps) => {
         }
     };
 
+    function toFixedTrunc(x:any, n:number) {
+        const v = (typeof x === 'string' ? x : x.toString()).split('.');
+        if (n <= 0) return v[0];
+        let f = v[1] || '';
+        if (f.length > n) return `${v[0]}.${f.substr(0,n)}`;
+        while (f.length < n) f += '0';
+        return `${v[0]}.${f}`
+      }
+
     function calculateTotalPixPayment(amountHBD: any): number {
         if (!pixbeeData) {
             throw new Error('SkateBankData não está definido');
@@ -571,7 +586,7 @@ const Pix = ({ user }: PixProps) => {
             const fee = (hbdtoBrl * amountHBD) * 0.01 + 2;
             var totalPayment = hbdtoBrl * amountHBD - fee;
             if (totalPayment < 0) totalPayment = 0;
-            return parseFloat(totalPayment.toFixed(2));
+            return toFixedTrunc(totalPayment, 2);
         } catch {
             // console.log("amount HBD nao eh numero valido");
             return 0;
@@ -857,6 +872,7 @@ const Pix = ({ user }: PixProps) => {
                                                         placeholder="0.00"
                                                         value={userInputPIX}
                                                         onChange={handlePIXAmountChange}
+                                                        onBlur={handlePIXOnBlur}
                                                         type="text"
                                                         sx={{
                                                             '::placeholder': { color: 'white' },
