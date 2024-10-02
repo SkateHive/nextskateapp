@@ -363,10 +363,10 @@ const Pix = ({ user }: PixProps) => {
     };
 
     const handlePIXOnBlur = (event: React.ChangeEvent<HTMLInputElement>) => {
-            var currentValue = event.target.value;
-            if (currentValue=="") currentValue="0";
-            event.target.value = toFixedTrunc(currentValue, 2);
-            setUserInputPIX(event.target.value);
+        var currentValue = event.target.value;
+        if (currentValue=="") currentValue="0";
+        event.target.value = toFixedTrunc(currentValue, 2);
+        setUserInputPIX(event.target.value);
     }
 
     const handlePIXAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -918,6 +918,7 @@ const Pix = ({ user }: PixProps) => {
                                 username={user.name}
                                 userInputHBD={userInputHBD}
                                 memo={userFormatedPixKey || ''}
+                                keyType={pixKeyType}
                                 valueTotalPIX={pixTotalPayment.toString()}
                                 onClose={() => setDisplayModal(false)}
                                 visible={displayModal}

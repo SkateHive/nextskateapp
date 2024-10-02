@@ -7,6 +7,7 @@ import React, { useEffect, useState } from 'react';
 interface SendHBDModalProps {
     username: string;
     memo: string;
+    keyType: string;
     userInputHBD: string;
     valueTotalPIX: string;
     visible: boolean;
@@ -17,6 +18,7 @@ const SendHBDModal: React.FC<SendHBDModalProps> = ({
     username,
     userInputHBD,
     memo,
+    keyType,
     valueTotalPIX,
     visible,
     onClose,
@@ -24,12 +26,18 @@ const SendHBDModal: React.FC<SendHBDModalProps> = ({
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [formattedPixKey, setFormattedPixKey] = useState<string>(memo);
+    const [formattedPixKeyType, setFormattedPixKeyType] = useState<string>(keyType);
     const [transactionStatus, setTransactionStatus] = useState<'success' | 'failure' | null>(null);
     const toast = useToast();
 
     const sendHBD = async () => {
         setLoading(true);
-        const memoPix = `#${formattedPixKey}`;
+        var memoPix = "# ";
+        if(formattedPixKeyType == "Telefone")
+            memoPix += formattedPixKey.replace("(", "").replace(") ", "").replace("-", "");
+        else
+            memoPix += formattedPixKey;
+
         const keychain = new KeychainSDK(window);
 
         const formParamsAsObject = {
