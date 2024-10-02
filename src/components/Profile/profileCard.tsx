@@ -149,7 +149,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
             });
             
         }
-        else if (loginMethod === 'privatekey') {
+        else if (loginMethod === 'privateKey') {
             // Handle the private key method if necessary
 
             // updateProfileWithPrivateKey(
@@ -421,31 +421,40 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
 
                         <HStack justify="center">
                             <Box className={`box-level-${userLevel}`} 
-                                w={230} 
                                 border="1px solid white" 
                                 borderRadius="10px"
-                                p={2}
+                                minH={200}
+                                minW={250}
                             >
-                                {userPostingMetadata.profile?.about || "I'm too lazy to write a bio."}
+                                {userPostingMetadata.profile?.about.length > 235
+                                    ? userPostingMetadata.profile?.about.substr(0, 235) + '...'
+                                    : userPostingMetadata.profile?.about 
+                                    || "I'm too lazy to write a bio."
+                                }
                             </Box>
                         </HStack>
 
-                        <HStack justify="center">
+                    </CardBody>
+
+
+                    <CardFooter id='frontSideFooter'
+                        fontSize="16px" fontWeight="bold"
+                        color="white"
+                        style={{ backfaceVisibility: 'hidden', }}
+                    >
+                        <VStack w="100%">
+                            <Flex justify="center">
                             <Box className={`box-level-${userLevel}`}  
                                 border="1px solid white" 
                                 borderRadius="10px"
-                                w={230}
                                 p={2}
-                                marginTop={5}
                             >
                                 <Text fontWeight="bold" fontSize="18px">
                                     XP {userXp}
-                                </Text>
+                                    </Text>
                             </Box>
-                        </HStack>
-                    </CardBody>
-
-                    <CardFooter id='backSideFooter'>
+                            </Flex>
+                        </VStack>
                     </CardFooter>
                 </Card>
 
