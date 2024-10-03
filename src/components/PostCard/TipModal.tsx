@@ -2,25 +2,14 @@ import { memberABI } from "@/lib/abi/memberABI";
 import { nogsABI } from "@/lib/abi/nogsABI";
 import { formatETHaddress } from "@/lib/utils";
 import {
-    Box,
-    Button,
-    Image,
-    Input,
-    InputGroup,
-    InputLeftElement,
-    Modal,
-    ModalBody,
-    ModalCloseButton,
-    ModalContent,
-    ModalFooter,
-    ModalHeader,
-    ModalOverlay,
-    Text
+    Box, Button, Image, Input, InputGroup, InputLeftElement, Modal, ModalBody,
+    ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text
 } from "@chakra-ui/react";
 import React from "react";
 import { parseUnits } from "viem";
 import { useAccount, useWriteContract } from "wagmi";
 import { SenditABI } from "../../lib/abi/senditABI";
+
 interface TipModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -28,18 +17,46 @@ interface TipModalProps {
     author: string;
     authorETHwallet: string;
 }
+
 export interface TokenInfo {
     address: `0x${string}`;
     abi: any[];
     tokenLogo?: string;
 }
 
-
 const TipModal: React.FC<TipModalProps> = ({ isOpen, onClose, token, author, authorETHwallet }) => {
     const account = useAccount();
     const { data: hash, writeContract } = useWriteContract();
     const [amount, setAmount] = React.useState<string>("0");
 
+    const handleAmountOnBlur = (event: React.ChangeEvent<HTMLInputElement>) => {
+        var currentValue = event.target.value;
+        if (currentValue=="") currentValue="0";
+        // event.target.value = currentValue.toFixed(18);
+        setAmount(event.target.value);
+    }
+
+    const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        // const rawValue = event.target.value;
+        // const newRawValue = [];
+      
+        // for (let i = 0; i < rawValue.length; i++) {
+        //   const char = rawValue[i];
+        //   if (char === 'Backspace') {
+        //     // ignore backspace key press
+        //     if (newRawValue.length > 0) {
+        //       newRawValue.pop();
+        //     }
+        //   } else if (/\d/.test(char) || char === '.') {
+        //     newRawValue.push(char);
+        //   } else if (char === ',') {
+        //     newRawValue.push('.');
+        //   }
+        // }
+        // const formattedValue = newRawValue.join('');
+        // setAmount(formattedValue);
+    };
+    
 
     const tokenDictionary: { [key: string]: TokenInfo } = {
         SENDIT: {
@@ -60,7 +77,6 @@ const TipModal: React.FC<TipModalProps> = ({ isOpen, onClose, token, author, aut
     };
 
     const sendToken = async (amount: string, tokenKey: string) => {
-
         if (tokenKey in tokenDictionary) {
             const { address, abi } = tokenDictionary[tokenKey];
             try {
@@ -90,7 +106,6 @@ const TipModal: React.FC<TipModalProps> = ({ isOpen, onClose, token, author, aut
                     <Text>From: {formatETHaddress(String(account.address))}</Text>
                     <Text>To: {formatETHaddress(String(authorETHwallet))}</Text>
 
-
                     <Box mt={5}>
                         <InputGroup>
                             <InputLeftElement>
@@ -100,17 +115,18 @@ const TipModal: React.FC<TipModalProps> = ({ isOpen, onClose, token, author, aut
                             </InputLeftElement>
                             <Input
                                 type="number"
-                                placeholder="Amount"
-                                value={amount}
-                                onChange={(e) => setAmount(e.target.value)}
-                                style={{ direction: 'rtl' }}
+                                placeholder="0.000000000000000000"
+                                // value={amount}
+                                textAlign={'right'}
+                                onBlur={handleAmountOnBlur}
+                                onChange={handleAmountChange}
                             />
                         </InputGroup>
 
                     </Box>
                 </ModalBody>
-                <ModalFooter>
 
+                <ModalFooter>
                     <Button onClick={() => token && sendToken(amount, token)} variant="outline" border="1px solid #A5D6A7">
                         Send
                     </Button>
