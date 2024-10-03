@@ -36,28 +36,6 @@ const TipModal: React.FC<TipModalProps> = ({ isOpen, onClose, token, author, aut
         setAmount(event.target.value);
     }
 
-    const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        // const rawValue = event.target.value;
-        // const newRawValue = [];
-      
-        // for (let i = 0; i < rawValue.length; i++) {
-        //   const char = rawValue[i];
-        //   if (char === 'Backspace') {
-        //     // ignore backspace key press
-        //     if (newRawValue.length > 0) {
-        //       newRawValue.pop();
-        //     }
-        //   } else if (/\d/.test(char) || char === '.') {
-        //     newRawValue.push(char);
-        //   } else if (char === ',') {
-        //     newRawValue.push('.');
-        //   }
-        // }
-        // const formattedValue = newRawValue.join('');
-        // setAmount(formattedValue);
-    };
-    
-
     const tokenDictionary: { [key: string]: TokenInfo } = {
         SENDIT: {
             address: '0xBa5B9B2D2d06a9021EB3190ea5Fb0e02160839A4',
@@ -116,10 +94,8 @@ const TipModal: React.FC<TipModalProps> = ({ isOpen, onClose, token, author, aut
                             <Input
                                 type="number"
                                 placeholder="0.000000000000000000"
-                                // value={amount}
                                 textAlign={'right'}
                                 onBlur={handleAmountOnBlur}
-                                onChange={handleAmountChange}
                             />
                         </InputGroup>
 

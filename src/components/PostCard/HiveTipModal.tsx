@@ -1,22 +1,9 @@
 import { usePostContext } from '@/contexts/PostContext';
 import { useHiveUser } from '@/contexts/UserContext';
 import { transferWithKeychain } from '@/lib/hive/client-functions';
-import {
-    Box,
-    Button,
-    ButtonGroup,
-    Image,
-    Input,
-    InputGroup,
-    InputLeftElement,
-    Modal,
-    ModalBody,
-    ModalCloseButton,
-    ModalContent,
-    ModalFooter,
-    ModalHeader,
-    ModalOverlay,
-    Text
+import { Box,Button, ButtonGroup, Image, Input, InputGroup, InputLeftElement, Modal, ModalBody,
+    ModalCloseButton, ModalContent,
+    ModalFooter, ModalHeader, ModalOverlay, Text
 } from "@chakra-ui/react";
 import React, { useState } from 'react';
 
@@ -42,7 +29,7 @@ const HiveTipModal: React.FC<HiveTipModalProps> = ({ isOpen, onClose, author }) 
             String(user.hiveUser?.name),
             author,
             fixedAmount,
-            "Tip for your post",
+            "Tip for your post: " + post.title,
             currency
         );
         onClose();
@@ -54,27 +41,6 @@ const HiveTipModal: React.FC<HiveTipModalProps> = ({ isOpen, onClose, author }) 
         e.target.value = parseFloat(currentValue).toFixed(3);
         setAmount(e.target.value);
     }
-
-    const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        // const rawValue = e.target.value;
-        // const newRawValue = [];
-
-        // for (let i = 0; i < rawValue.length; i++) {
-        //     const char = rawValue[i];
-        //     if (char === 'Backspace') {
-        //         // ignore backspace key press
-        //         if (newRawValue.length > 0) {
-        //             newRawValue.pop();
-        //         }
-        //     } else if (/\d/.test(char) || char === '.') {
-        //         newRawValue.push(char);
-        //     } else if (char === ',') {
-        //         newRawValue.push('.');
-        //     }
-        // }
-        // const formattedValue = newRawValue.join('');
-        // setAmount(formattedValue);
-    };
 
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
@@ -113,11 +79,8 @@ const HiveTipModal: React.FC<HiveTipModalProps> = ({ isOpen, onClose, author }) 
                             <Input
                                 type="number"
                                 placeholder="0.000"
-                                // value={amount}
                                 textAlign={'right'}
                                 onBlur={handleAmountBlur}
-                                onChange={handleAmountChange}
-                            // style={{ direction: 'rtl' }}
                             />
                         </InputGroup>
                     </Box>
