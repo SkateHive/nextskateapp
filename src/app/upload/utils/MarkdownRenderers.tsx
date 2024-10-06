@@ -1,7 +1,12 @@
 'use client'
-import { Divider, Image } from '@chakra-ui/react';
+import { Box, Divider, Image } from '@chakra-ui/react';
 import React, { useEffect, useRef, useState } from 'react';
 import { SkateHivePreviewCard } from '@/app/mainFeed/components/SkatehivePreviewCard';
+
+import ProfileLink from './ProfileLink';
+
+
+
 type MarkdownProps = {
   node?: any;
   alt?: any;
@@ -127,19 +132,35 @@ export const MarkdownRenderers = {
     const skateHivePostRegex = /https:\/\/www\.skatehive\.app\/post\/([^/]+)\/@([^/]+)\/([^/]+)/;
     const match = skateHivePostRegex.exec(href);
 
+    // Profile link example: skatehive.app/skater/barracaoshop or skatehive.app/profile/barracaoshop
+    const skatehiveProfileRegex = /https:\/\/(www\.)?(skatehive\.app|beta\.skatehive\.app)\/(profile|skater)\/([^/]+)/;
+    const profileMatch = skatehiveProfileRegex.exec(href);
+
     if (match) {
-      const [fullMatch, parentPermlink, username, postPermlink] = match;  // postPermlink is now the last part
+      const [fullMatch, parentPermlink, username, postPermlink] = match;
+      return <SkateHivePreviewCard postId={postPermlink} username={username} />;
+    } else if (profileMatch) {
+      const [fullMatch, subdomain, type, username] = profileMatch;
+
       return (
-        <SkateHivePreviewCard postId={postPermlink} username={username} />
+        <Box>
+          <ProfileLink username={username} />
+        </Box>
       );
     }
+
     return (
-      <a style={{ color: "yellow", textWrap: "wrap", wordBreak: "break-all" }} href={href} target="_blank" rel="noopener noreferrer" {...props}>
+      <a
+        style={{ color: 'yellow', textWrap: 'wrap', wordBreak: 'break-all' }}
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        {...props}
+      >
         {children}
       </a>
     );
   },
-
   h1: ({ children, ...props }: RendererProps) => (
     <h1 {...props} style={{ fontWeight: 'bold', color: '#A5D6A7', fontSize: '28px', paddingBottom: '10px', paddingTop: "10px", paddingLeft: '8px' }}>{children}</h1>
   ),
