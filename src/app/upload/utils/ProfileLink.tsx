@@ -9,7 +9,7 @@ type ProfileLinkProps = {
 
 const ProfileLink: React.FC<ProfileLinkProps> = ({ username }) => {
     const { hiveAccount, isLoading, error } = useHiveAccount(username);
-
+    console.log(hiveAccount);
     if (isLoading) {
         return <Spinner size="sm" color="yellow" />;
     }

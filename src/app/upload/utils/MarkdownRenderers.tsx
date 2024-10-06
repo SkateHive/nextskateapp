@@ -140,7 +140,7 @@ export const MarkdownRenderers = {
       const [fullMatch, parentPermlink, username, postPermlink] = match;
       return <SkateHivePreviewCard postId={postPermlink} username={username} />;
     } else if (profileMatch) {
-      const [fullMatch, subdomain, type, username] = profileMatch;
+      const [fullMatch, something, subdomain, type, username] = profileMatch;
 
       return (
         <Box>
