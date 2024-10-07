@@ -1,17 +1,10 @@
 import { usePostContext } from "@/contexts/PostContext";
 import HiveClient from "@/lib/hive/hiveclient";
-import {
-    Button,
-    Image,
-    Menu,
-    MenuButton,
-    MenuItem,
-    MenuList,
-    Tooltip
-} from "@chakra-ui/react";
+import { Button, Image, Menu, MenuButton, MenuItem, MenuList, Tooltip } from "@chakra-ui/react";
 import { useState } from "react";
 import HiveTipModal from "./HiveTipModal";
 import TipModal from "./TipModal";
+
 interface TipButtonProps {
     author: string;
 }
@@ -19,11 +12,13 @@ interface TipButtonProps {
 interface UserData {
     json_metadata: string;
 }
+
 export const getUserData = async (username: string) => {
     const response = await HiveClient.database.call('get_accounts', [[username]]);
     const userData = response[0];
     return userData;
 };
+
 export default function TipButton({ author }: TipButtonProps) {
     const [isTipModalOpen, setIsTipModalOpen] = useState(false);
     const [token, setToken] = useState<string>("");

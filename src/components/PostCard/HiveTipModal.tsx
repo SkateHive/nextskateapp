@@ -1,22 +1,9 @@
 import { usePostContext } from '@/contexts/PostContext';
 import { useHiveUser } from '@/contexts/UserContext';
 import { transferWithKeychain } from '@/lib/hive/client-functions';
-import {
-    Box,
-    Button,
-    ButtonGroup,
-    Image,
-    Input,
-    InputGroup,
-    InputLeftElement,
-    Modal,
-    ModalBody,
-    ModalCloseButton,
-    ModalContent,
-    ModalFooter,
-    ModalHeader,
-    ModalOverlay,
-    Text
+import { Box,Button, ButtonGroup, Image, Input, InputGroup, InputLeftElement, Modal, ModalBody,
+    ModalCloseButton, ModalContent,
+    ModalFooter, ModalHeader, ModalOverlay, Text
 } from "@chakra-ui/react";
 import React, { useState } from 'react';
 
@@ -42,14 +29,18 @@ const HiveTipModal: React.FC<HiveTipModalProps> = ({ isOpen, onClose, author }) 
             String(user.hiveUser?.name),
             author,
             fixedAmount,
-            "Tip for your post",
+            "Tip for your post: " + post.title,
             currency
         );
         onClose();
     }
-    const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+    const handleAmountBlur = (e: React.ChangeEvent<HTMLInputElement>) => {
+        var currentValue = e.target.value;
+        if (currentValue == "") currentValue = "0";
+        e.target.value = parseFloat(currentValue).toFixed(3);
         setAmount(e.target.value);
-    };
+    }
 
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
@@ -71,37 +62,36 @@ const HiveTipModal: React.FC<HiveTipModalProps> = ({ isOpen, onClose, author }) 
                         </Button>
                     </ButtonGroup>
                 </ModalHeader>
+
                 <ModalCloseButton />
+
                 <ModalBody>
                     <Box mb={4}>
                         <Text>Amount of {currency}</Text>
                         <InputGroup>
-                            <InputLeftElement
-
-                            >
+                            <InputLeftElement>
                                 {currency === "HBD" ? (
                                     <Image alt='HBD' mr={3} boxSize={"20px"} src="https://i.ibb.co/C6TPhs3/HBD.png" />
                                 ) : (
                                     <Image alt="HBD" mr={3} boxSize={"20px"} src="https://cryptologos.cc/logos/hive-blockchain-hive-logo.png" />
-
-
                                 )}
                             </InputLeftElement>
                             <Input
                                 type="number"
-                                placeholder="0.00"
-                                value={amount}
-                                onChange={handleAmountChange}
-                                style={{ direction: 'rtl' }}
+                                placeholder="0.000"
+                                textAlign={'right'}
+                                onBlur={handleAmountBlur}
                             />
                         </InputGroup>
                     </Box>
                 </ModalBody>
+
                 <ModalFooter>
                     <Button colorScheme="red" variant="outline" mr={3} onClick={handleTip}>
                         Send {amount} of {currency} to @{author}
                     </Button>
                 </ModalFooter>
+
             </ModalContent>
         </Modal>
     );

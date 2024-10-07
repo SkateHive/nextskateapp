@@ -4,23 +4,9 @@ import { uploadFileToIPFS } from "@/app/upload/utils/uploadToIPFS";
 import { updateProfile } from "@/lib/hive/client-functions";
 import { updateProfileWithPrivateKey } from "@/lib/hive/server-functions";
 import { HiveAccount, VideoPart } from "@/lib/models/user";
-import {
-  Badge,
-  Button,
-  Flex,
-  HStack,
-  Image,
-  Input,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Text,
-  Textarea,
-  VStack
+import {  Badge,  Button,  Flex,  HStack,  Image,  Input,
+  Modal,  ModalBody,  ModalCloseButton,  ModalContent,  ModalFooter,  ModalHeader,  ModalOverlay,
+  Text,  Textarea,  VStack
 } from "@chakra-ui/react";
 import { ChangeEvent, useState } from "react";
 import { FaUpload } from 'react-icons/fa';
@@ -105,7 +91,9 @@ export default function EditInfoModal({ isOpen, onClose, user, onUpdate }: EditM
       onUpdate(); // Call onUpdate after closing the modal
     } else if (loginMethod === "privateKey") {
       const encryptedPrivateKey = localStorage.getItem("EncPrivateKey");
-      await updateProfileWithPrivateKey(encryptedPrivateKey, user.name, name, about, location, coverImageUrl, avatarUrl, website, ethAddress, videoParts, level);
+      await updateProfileWithPrivateKey(encryptedPrivateKey, user.name, 
+        name, about, location, coverImageUrl, avatarUrl, website, 
+        ethAddress, videoParts, level, staticXp);
       if (window) {
         window.location.reload();
       }

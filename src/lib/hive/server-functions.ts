@@ -173,7 +173,8 @@ export async function updateProfileWithPrivateKey(
   website: string,
   ethAddress: string,
   videoParts: VideoPart[],
-  level: number
+  level: number,
+  staticXp:number,
 ) {
 
   if (encryptedPrivateKey === null) throw new Error("Private key not found");
@@ -196,7 +197,8 @@ export async function updateProfileWithPrivateKey(
     extensions: {
       eth_address: ethAddress,
       video_parts: videoParts,
-      level: level
+      level: level,
+      staticXp: staticXp,
     }
   }
 
@@ -210,14 +212,15 @@ export async function updateProfileWithPrivateKey(
     }
   ]
 
-  HiveClient.broadcast
-    .sendOperations([updateInfo], dhive.PrivateKey.from(privateKey))
-    .then((result) => {
-      console.log(result)
-    })
-    .catch((error) => {
-      console.error(error)
-    })
+  return await HiveClient.broadcast.sendOperations([updateInfo], dhive.PrivateKey.from(privateKey))
+    // .then((result) => {
+    //   console.log(result)
+    //   return result
+    // })
+    // .catch((error) => {
+    //   console.error(error)
+    //   return error
+    // })
 
 }
 

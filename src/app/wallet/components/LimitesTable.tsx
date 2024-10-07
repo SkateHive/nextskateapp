@@ -15,12 +15,10 @@ interface PixProps {
 
 export const LimitsTable: React.FC<PixBeeData> = ({ balancePix, balanceHbd, depositMinLimit, OurExchangePer, OurExchangeFee }) => {
     return (
-        <Center p="12" mb="12"
-        >
+        <Center p="12" mb="12">
             <VStack mt={1} spacing={4} flexDirection={{ base: "column", xl: "row" }}  >
 
-                <Box
-                    w="100%"
+                <Box w="100%"
                     fontFamily={'Joystix'}
                     bg="black"
                     border="1px solid white"
@@ -30,42 +28,49 @@ export const LimitsTable: React.FC<PixBeeData> = ({ balancePix, balanceHbd, depo
                             <Table variant="simple" mb="4">
                                 <Thead>
                                     <Tr>
-                                        <Th color="white"> SkateBank PIX</Th>
-                                        <Th color="white"> SkateBank HBD</Th>
+                                        <Th color="white" colSpan={2} fontSize="20px" textAlign={'center'}>
+                                            SkateBank
+                                        </Th>
                                     </Tr>
                                 </Thead>
-                                <Tbody fontSize="20px">
+                                <Tbody>
                                     <Tr>
-                                        <Td>{balancePix} </Td>
-                                        <Td>{balanceHbd} </Td>
+                                        <Td fontSize="20px">{balancePix} </Td>
+                                        <Td color="white" fontSize="15px">PIX</Td>
+                                    </Tr>
+                                    <Tr>
+                                        <Td fontSize="20px">{balanceHbd} </Td>
+                                        <Td color="white" fontSize="15px" >HBD</Td>
                                     </Tr>
                                 </Tbody>
                             </Table>
-                            <Table>
+
+                            <Table marginTop={'10'}>
                                 <Thead>
                                     <Tr>
                                         <Th color="white">Operação</Th>
                                         <Th color="white">Limite/Taxa</Th>
                                     </Tr>
                                 </Thead>
-                                <Tbody fontSize="10px">
+                                <Tbody fontSize="12px">
                                     <Tr>
-                                        <Th color="white">Compra Mínimo</Th>
-                                        <Th color="white">{depositMinLimit} PIX</Th>
+                                        <Td color="white">Depósito Mínimo</Td>
+                                        <Td color="white">{depositMinLimit} PIX</Td>
                                     </Tr>
                                     <Tr>
-                                        <Th color="white">Taxa Fixa</Th>
-                                        <Th color="white">{OurExchangeFee} PIX</Th>
+                                        <Td color="white">Taxa Fixa</Td>
+                                        <Td color="white">{OurExchangeFee} PIX</Td>
                                     </Tr>
                                     <Tr>
-                                        <Th color="white">Taxa Variável</Th>
-                                        <Th color="white">{OurExchangePer * 100}%</Th>
+                                        <Td color="white">Taxa Variável</Td>
+                                        <Td color="white">{OurExchangePer * 100}%</Td>
                                     </Tr>
                                 </Tbody>
                             </Table>
                         </CardBody>
                     </Card>
                 </Box>
+
             </VStack>
         </Center>
     );

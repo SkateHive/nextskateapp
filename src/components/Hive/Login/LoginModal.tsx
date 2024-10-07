@@ -31,6 +31,7 @@ function LoginModal({
       await loginWithHive(username, useLoginAs, privateKey)
       refreshUser() // Refresh user data after login
       onClose()
+      setIsLogginIn(false)
       console.log(hiveUser)
     } catch (error) {
       console.error(error)
