@@ -50,6 +50,7 @@ function AccountCreation() {
     const handleCheck = async () => {
         var isValidAccountName = null;
         var isAvailable = false;
+        var isEmailOk = false;
 
         setBroadcastResult(false);
         setBMessage("");
@@ -62,10 +63,12 @@ function AccountCreation() {
         if(desiredEmail==""){
             setBroadcastResult(true);
             setBMessage("You forgot the fill up the email");
-            return
+            // isEmailOk = false;
+            // return
         } else {
             setBroadcastResult(false);
             setBMessage("");
+            isEmailOk = true;
         }
 
         if (desiredUsername) {
@@ -94,16 +97,22 @@ function AccountCreation() {
                 // console.log("isAvailable: "+isAvailable);
                 //setShowSecondForm(true);
                 setAccountAvailable(true);
-                setAreKeysDownloaded(true);
-                handleGenerateKeys();
+                // setAreKeysDownloaded(true);
+                // handleGenerateKeys();
             } else {
                 // console.log("Not Available");
                 // console.log("isValidAccountName :"+isValidAccountName);
                 // console.log("isAvailable :"+isAvailable);
                 // console.log('Account already exists. Please choose a different desiredUsername.');
                 //setShowSecondForm(false);
+                
                 setAccountAvailable(false);
-                setAreKeysDownloaded(false);
+                // setAreKeysDownloaded(false);
+            }
+
+            if (isEmailOk && isAvailable && (isValidAccountName === null)) {
+                setAreKeysDownloaded(true);
+                handleGenerateKeys();
             }
         } else {
             // console.log('Please enter a username.');
