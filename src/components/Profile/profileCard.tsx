@@ -6,7 +6,7 @@ import { updateProfileWithPrivateKey } from '@/lib/hive/server-functions';
 import { Box, Button, Card, CardBody, CardFooter, CardHeader, Center, Flex,
          HStack, Image, Text, useDisclosure, VStack, useToast,
         } from '@chakra-ui/react';
-import React, { useMemo, useState, useRef } from 'react';
+import React, { useMemo, useState } from 'react';
 import { FaHive } from 'react-icons/fa';
 import { FaPencil } from "react-icons/fa6"
 import UserAvatar from '../UserAvatar';
