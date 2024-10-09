@@ -4,7 +4,7 @@ import { HiveAccount } from '@/lib/useHiveAuth';
 import { updateProfile } from '@/lib/hive/client-functions';
 import { updateProfileWithPrivateKey } from '@/lib/hive/server-functions';
 import { Box, Button, Card, CardBody, CardFooter, CardHeader, Center, Flex,
-         HStack, Image, Text, useDisclosure, VStack
+         HStack, Image, Text, useDisclosure, VStack, useToast,
         } from '@chakra-ui/react';
 import React, { useMemo, useState, useRef } from 'react';
 import { FaHive } from 'react-icons/fa';
@@ -13,7 +13,6 @@ import UserAvatar from '../UserAvatar';
 import useGnarsBalance from '@/hooks/useGnarsBalance';
 import EditInfoModal from "./EditInfoModal"
 import '../../styles/profile-card-styles.css';
-
 
 import { dummyMissions, xpThresholds } from './missionsData';
 import { useHiveUser } from '@/contexts/UserContext';
@@ -42,9 +41,12 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
     // console.log(connectedUser);
 
     const canEditProfile = (connectedUser.hiveUser?.name == user.name);
+    const toast = useToast();
 
     // const user_posting_metadata = JSON.parse(user.posting_json_metadata || '{}');
     // const userLevel = 4;    //debug lvl
+
+    const onDoubleClickHandler = () => {}
 
     const handleClick = () => {
         setIsFlipped(!isFlipped);
@@ -126,26 +128,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
     const handleProfileUpdate = () => {
     }
 
-    const handleLevelUp = () => {
-        console.log(levelingUp);
-        if(levelingUp) return;
-        levelingUp = true;
-
-        setButtonDisabled(true); // Set the button to be disabled
-
-        // console.log("User Level: ", userLevel);
-        // console.log(userPostingMetadata);
-        //Debug reset level
-        // const newuserXP = 0;
-        // const newLevel = 1;
-
-        var newuserXP = calculateTotalXp(user);
-        const newLevel = calculateLevel(newuserXP);  // Calculate the new level based on available XP
-        if(newLevel == userLevel) {
-            levelingUp = false;
-            return;
-        }
-
+    function levelUpUser(newuserXP:number, newLevel:number){
         const loginMethod = localStorage.getItem('LoginMethod');
         if (loginMethod === 'keychain') {
             updateProfile(
@@ -162,6 +145,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                 newuserXP,          // Pass the updated XP
                 newuserXP,          // Pass the cumulative XP ??????
             ).then( (result) => {
+                console.log(result);
                 if(result) {
                     setUserXp(newuserXP);
                     setUserLvl(newLevel);
@@ -169,7 +153,6 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                 setButtonDisabled(false); // Set the button to be enabled
                 levelingUp = false;
             });
-            
         }
         else if (loginMethod === 'privateKey') {
             // Handle the private key method if necessary
@@ -196,6 +179,35 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                 levelingUp = false;
             });
         }
+    }
+
+    const handleLevelUp = () => {
+        // console.log(levelingUp);
+        if(levelingUp)
+            return;
+        
+        // prevent double click
+        levelingUp = true;
+        setButtonDisabled(true); // Set the button to be disabled
+
+        // calculate new xp and level
+        var newuserXP = calculateTotalXp(user);
+        const newLevel = calculateLevel(newuserXP);  // Calculate the new level based on available XP
+        if((newLevel == userLevel)) {
+            toast({
+                title: "Can´t upgrade yet.",
+                description: "Earn more XP before upgrading level",
+                status: "loading",
+                duration: 5000,
+                isClosable: true,
+            });
+            levelingUp = false;         //end level up
+            setButtonDisabled(false); // enable button back
+            return;
+        }
+
+        // levelUpUser(0, 0);
+        levelUpUser(newuserXP, newLevel);
     };
 
     return (<>
@@ -354,6 +366,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                                             zIndex: 15              // button high above others divs
                                         }}
                                         disabled={buttonDisabled}
+                                        onDoubleClick={onDoubleClickHandler}
                                         onClick={(event) => {
                                             event.stopPropagation();
                                             handleLevelUp();
