@@ -6,7 +6,7 @@ import { updateProfileWithPrivateKey } from '@/lib/hive/server-functions';
 import { Box, Button, Card, CardBody, CardFooter, CardHeader, Center, Flex,
          HStack, Image, Text, useDisclosure, VStack
         } from '@chakra-ui/react';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useRef } from 'react';
 import { FaHive } from 'react-icons/fa';
 import { FaPencil } from "react-icons/fa6"
 import UserAvatar from '../UserAvatar';
@@ -14,7 +14,9 @@ import useGnarsBalance from '@/hooks/useGnarsBalance';
 import EditInfoModal from "./EditInfoModal"
 import '../../styles/profile-card-styles.css';
 
-import { dummyMissions } from './missionsData';
+
+import { dummyMissions, xpThresholds } from './missionsData';
+import { useHiveUser } from '@/contexts/UserContext';
 
 interface ProfileCardProps {
     user: HiveAccount
@@ -34,6 +36,13 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
     const [userLevel, setUserLvl] = useState(userMetadata.extensions?.level || 1);
     const [userVideoParts, setUserVideoParts] = useState(userMetadata.extensions?.video_parts?.length || 0);
 
+    const [buttonDisabled, setButtonDisabled] = useState(false);
+    var levelingUp = false;
+    const connectedUser = useHiveUser();
+    // console.log(connectedUser);
+
+    const canEditProfile = (connectedUser.hiveUser?.name == user.name);
+
     // const user_posting_metadata = JSON.parse(user.posting_json_metadata || '{}');
     // const userLevel = 4;    //debug lvl
 
@@ -47,8 +56,6 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
         }
         return `/public/${url}`;
     };
-
-    const xpThresholds = [0, 180, 270, 540, 720, 900, 1080];
 
     function calculateLevel(xp: number): number {
         let level = 1;
@@ -69,9 +76,10 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
     };
 
     function isMissionCompleted(user: any): number{
-        var totalXP = xpThresholds[userLevel-1];
+        var totalXP = userXp; //xpThresholds[userLevel-1];
         var json = safeParse(user.posting_json_metadata)
         var ext =  safeParse(user.json_metadata)
+        // console.log("Before totalXP: " + totalXP);
         if(userLevel == 1) {
             if(json.profile?.profile_image)
                 totalXP += dummyMissions[userLevel][0].xp;
@@ -102,9 +110,12 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
             if(user.post_count > 100)
                 totalXP += dummyMissions[userLevel][2].xp;
         } else if (userLevel == 4){
+            // totalXP += dummyMissions[userLevel][0].xp;
             if (parseFloat(user.savings_hbd_balance.replace(/[^0-9.]/g, '')) >= 100)
-                totalXP += dummyMissions[userLevel][2].xp;
+                totalXP += dummyMissions[userLevel][1].xp;
+            // totalXP += dummyMissions[userLevel][2].xp;
         }
+        // console.log(totalXP);
         return totalXP;
     }
 
@@ -113,18 +124,27 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
     };
 
     const handleProfileUpdate = () => {
-
     }
 
     const handleLevelUp = () => {
+        console.log(levelingUp);
+        if(levelingUp) return;
+        levelingUp = true;
+
+        setButtonDisabled(true); // Set the button to be disabled
+
         // console.log("User Level: ", userLevel);
         // console.log(userPostingMetadata);
+        //Debug reset level
+        // const newuserXP = 0;
+        // const newLevel = 1;
 
         var newuserXP = calculateTotalXp(user);
         const newLevel = calculateLevel(newuserXP);  // Calculate the new level based on available XP
-
-        setUserXp(newuserXP);
-        setUserLvl(newLevel);
+        if(newLevel == userLevel) {
+            levelingUp = false;
+            return;
+        }
 
         const loginMethod = localStorage.getItem('LoginMethod');
         if (loginMethod === 'keychain') {
@@ -142,30 +162,17 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                 newuserXP,          // Pass the updated XP
                 newuserXP,          // Pass the cumulative XP ??????
             ).then( (result) => {
-                if(!result) {
-                    setUserLvl(userLevel);
-                    setUserXp(userXp);
+                if(result) {
+                    setUserXp(newuserXP);
+                    setUserLvl(newLevel);
                 }
+                setButtonDisabled(false); // Set the button to be enabled
+                levelingUp = false;
             });
             
         }
         else if (loginMethod === 'privateKey') {
             // Handle the private key method if necessary
-
-            // updateProfileWithPrivateKey(
-            //     encryptedPrivateKey: string | null, 
-            //     username: string,
-            //     name: string, 
-            //     about: string, 
-            //     location: string, 
-            //     coverImageUrl: string, 
-            //     avatarUrl: string, 
-            //     website: string, 
-            //     ethAddress: string, 
-            //     videoParts: VideoPart[], 
-            //     level: number
-            // ): Promise<
-
             const encryptedPrivateKey = localStorage.getItem("EncPrivateKey");
             updateProfileWithPrivateKey(
                 encryptedPrivateKey,
@@ -181,10 +188,12 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                 newLevel,           // Pass the new level
                 newuserXP,          // Pass the updated XP
             ).then( (result) => {
-                if(!result) {
-                    setUserLvl(userLevel);
-                    setUserXp(userXp);
+                if(result) {
+                    setUserXp(newuserXP);
+                    setUserLvl(newLevel);
                 }
+                setButtonDisabled(false); // Set the button to be enabled
+                levelingUp = false;
             });
         }
     };
@@ -246,10 +255,10 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                                     {user.name}
                                 </Text>
                             </HStack>
-                            <Text fontWeight="bold" fontSize="18px"
+                            {/* <Text fontWeight="bold" fontSize="18px"
                                   textShadow="2px 2px 1px rgba(0,0,0,1)">
                                 XP {userXp}
-                            </Text>
+                            </Text> */}
                             <Text fontWeight="bold" fontSize="18px"
                                   textShadow="2px 2px 1px rgba(0,0,0,1)">
                                 Lvl {userLevel}
@@ -311,6 +320,8 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                         <VStack w="100%">
                             <Flex justify="center">
                                 <div style={{ zIndex: 10 }}>
+                                    {canEditProfile && (
+                                        <>
                                     <Button className={`box-level-${userLevel} btn-profile-card`}
                                         // _hover={{ background: "black", color:"white!important" }}
                                         // color="white"
@@ -342,13 +353,13 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                                             position: 'relative',
                                             zIndex: 15              // button high above others divs
                                         }}
+                                        disabled={buttonDisabled}
                                         onClick={(event) => {
                                             event.stopPropagation();
                                             handleLevelUp();
                                         }}
-                                    >
-                                        Upgrade
-                                    </Button>
+                                    >Upgrade</Button>
+                                    </>)}
                                 </div>
                             </Flex>
                         </VStack>
@@ -381,10 +392,10 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                                     {user.name}
                                 </Text>
                             </HStack>
-                            <Text fontWeight="bold" fontSize="18px"
+                            {/* <Text fontWeight="bold" fontSize="18px"
                                   textShadow="2px 2px 1px rgba(0,0,0,1)">
                                 XP {userXp}
-                            </Text>
+                            </Text> */}
                             <Text fontWeight="bold" fontSize="18px"
                                   textShadow="2px 2px 1px rgba(0,0,0,1)">
                                 Lvl {userLevel}
