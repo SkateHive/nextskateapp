@@ -18,7 +18,7 @@ import {
 } from "@chakra-ui/react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { Mission, dummyMissions, recurringTasks } from './missionsData';
+import { Mission, dummyMissions, xpThresholds, recurringTasks } from './missionsData';
 
 interface LevelMissionsProps {
     initialLevel: number;
@@ -243,7 +243,7 @@ export default function LevelMissions({ initialLevel, user, updateAvailableXp }:
                 {/* <Tag colorScheme="green" fontSize="24px">Recurring Tasks</Tag> */}
             </Center>
 
-            <TableContainer w="100%">
+            {/* <TableContainer w="100%">
                 <Box borderRadius="15px" border="1px solid white" minW="100%">
                     <Table variant="unstyled" mt={2} color="white" w="100%">
                         <Thead>
@@ -273,8 +273,9 @@ export default function LevelMissions({ initialLevel, user, updateAvailableXp }:
                             ))}
                         </Tbody>
                     </Table>
+
                 </Box>
-            </TableContainer>
+            </TableContainer> */}
         </VStack>
     );
 }

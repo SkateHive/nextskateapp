@@ -5,6 +5,8 @@ export interface Mission {
     imcompleted: string;
 }
 
+export const xpThresholds = [0, 180, 270, 670, 1320, 1720, 2370];
+
 export const dummyMissions: { [key: number]: Mission[] } = {
     1: [
         { name: "Add Profile Picture", xp: 30, completed: "You Looks Good", imcompleted: "You look better with a profile pic" },

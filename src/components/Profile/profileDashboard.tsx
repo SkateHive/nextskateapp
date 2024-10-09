@@ -5,6 +5,8 @@ import { useCallback, useState } from 'react';
 import LevelMissions from './levelMissions';
 import ProfileCard from './profileCard';
 
+import { Mission, dummyMissions, xpThresholds, recurringTasks } from './missionsData';
+
 interface ProfileDashboardProps {
     user: HiveAccount;
 }
@@ -19,15 +21,14 @@ const ProfileDashboard = ({ user }: ProfileDashboardProps) => {
     const userXp = extensions?.staticXp || 0;
     const [availableXp, setAvailableXp] = useState(userXp);
 
-    const steps = [
-        { title: 'Level 1', description: 'start' },
-        { title: 'Level 2', description: 'min. 180 xp' },
-        { title: 'Level 3', description: 'min. 270 xp' },
-        { title: 'Level 4', description: 'min. 540 xp' },
-        { title: 'Level 5', description: 'min. 720 xp' },
-        { title: 'Level 6', description: 'min. 900 xp' },
-        { title: 'Level 7', description: 'min. 1080 xp' },
-    ];
+    const steps = [{ title: 'Level 1', description: 'start' },];
+    for (let i = 2; i <= xpThresholds.length; i++) {
+        const step = {
+            title: `Level ${i}`,
+            description: `min. ${xpThresholds[i]} xp`
+        };
+        steps.push(step);
+    }
 
     const filteredSteps = steps.filter((step, index) => {
         const start = Math.max(0, userLevel - 2);
@@ -37,7 +38,7 @@ const ProfileDashboard = ({ user }: ProfileDashboardProps) => {
         else
             end = Math.min(steps.length - 1, userLevel + 3);
         return index >= start && index <= end;
-      });
+    });
 
     const updateAvailableXp = useCallback((xp: number) => {
         // console.log(`Updating available XP to: ${xp}`);
@@ -46,7 +47,7 @@ const ProfileDashboard = ({ user }: ProfileDashboardProps) => {
 
     function Levels() {
         var activeLevel = userLevel;
-        activeLevel = filteredSteps.indexOf(steps[userLevel])-1;
+        activeLevel = filteredSteps.indexOf(steps[userLevel]) - 1;
 
         const { activeStep } = useSteps({
             index: activeLevel,
@@ -56,7 +57,8 @@ const ProfileDashboard = ({ user }: ProfileDashboardProps) => {
         return (
             <Box m={10}>
                 <Stepper sx={{
-                    "&::-webkit-scrollbar": {display: "none",}}}
+                    "&::-webkit-scrollbar": { display: "none", }
+                }}
                     overflowX="auto" size='lg' colorScheme='green' index={activeStep}>
 
                     {filteredSteps.map((step, index) => (
