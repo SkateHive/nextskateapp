@@ -238,6 +238,8 @@ export async function checkFollow(follower: string, following: string): Promise<
 }
 export async function changeFollow(follower: string, following: string) {
   const keychain = new KeychainSDK(window);
+  if(!keychain.isKeychainInstalled()) return false;
+
   const status = await checkFollow(follower, following)
   let type = ''
   if (status) {
@@ -263,11 +265,14 @@ export async function changeFollow(follower: string, following: string) {
     },
   };
   try {
-    const custom = await keychain.custom(formParamsAsObject.data as unknown as Custom);
+    await keychain.custom(formParamsAsObject.data as unknown as Custom);
+    return type;
     //const broadcast = await keychain.broadcast(formParamsAsObject.data as unknown as Broadcast);
-    console.log('Broadcast success:', custom);
+    // console.log('Broadcast success:', custom);
   } catch (error) {
-    console.error('Profile update failed:', error);
+    return false;
+    // return {"success": false};
+    // console.error('Profile update failed:', error);
   }
 
 }

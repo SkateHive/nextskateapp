@@ -4,7 +4,8 @@ import { useHiveUser } from "@/contexts/UserContext"
 import { changeFollow, checkFollow } from "@/lib/hive/client-functions"
 import { changeFollowWithPassword } from "@/lib/hive/server-functions"
 import { HiveAccount } from "@/lib/models/user"
-import { Button, Center, Flex, HStack, Image, Text, VStack, useDisclosure, useMediaQuery } from "@chakra-ui/react"
+import { Button, Center, Flex, HStack, Image, Text, VStack, 
+    useDisclosure, useMediaQuery, useToast } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
 import AuthorAvatar from "../AuthorAvatar"
 
@@ -15,7 +16,8 @@ interface ProfileProps {
 export default function SkaterHeader({ user }: ProfileProps) {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const hiveUser = useHiveUser()
-    const metadata = user.json_metadata ? JSON.parse(user.json_metadata) : (user.posting_json_metadata ? JSON.parse(user.posting_json_metadata) : {});
+    const metadata_extended = user.json_metadata ? JSON.parse(user.json_metadata) : {};
+    const metadata = user.posting_json_metadata ? JSON.parse(user.posting_json_metadata) : {};
     const isMobile = useMediaQuery("(max-width: 400px)")[0];
     const coverImageUrl = metadata?.profile?.cover_image || "https://i.pinimg.com/originals/4b/c7/91/4bc7917beb4aac43d2d405b05911e35f.gif";
     const profileName = metadata?.profile?.name || user.name;
@@ -47,10 +49,24 @@ export default function SkaterHeader({ user }: ProfileProps) {
     const handleFollowButton = async () => {
         const loginMethod = localStorage.getItem("LoginMethod")
         if (hiveUser.hiveUser?.name && user.name) {
-
             if (loginMethod === "keychain") {
-                await changeFollow(hiveUser.hiveUser?.name, user.name)
-                setIsFollowing(!isFollowing)
+
+                changeFollow(hiveUser.hiveUser?.name, user.name).then( result => {
+                    if(result)
+                        setIsFollowing(result == "blog");
+                    else {
+                        const toast = useToast();
+                        toast({
+                            title: "Error Broadcasting.",
+                            description: "Check if your Keychain is Enabled.",
+                            status: "error",
+                            duration: 5000,
+                            isClosable: true,
+                        });
+                        return;
+                    }
+
+                })
             }
             else if (loginMethod === "privateKey") {
                 const encKey = localStorage.getItem("encryptedPrivateKey")
