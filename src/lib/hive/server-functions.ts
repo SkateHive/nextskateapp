@@ -283,12 +283,12 @@ async function checkFollow(follower: string, following: string): Promise<boolean
 
 export async function changeFollowWithPassword(encryptedPrivateKey: string | null, follower: string, following: string) {
   const status = await checkFollow(follower, following)
+  
   let type = ''
-  if (status) {
-    type = ''
-  } else {
+  if (!status) {
     type = 'blog'
   }
+
   const json = JSON.stringify([
     'follow',
     {
@@ -297,19 +297,42 @@ export async function changeFollowWithPassword(encryptedPrivateKey: string | nul
       what: [type], //null value for unfollow, 'blog' for follow
     },
   ]);
+
   const data = {
     id: 'follow',
-    json: json,
     required_auths: [],
     required_posting_auths: [follower],
+    json: json,
   };
-  const operation: dhive.Operation =
-    [
-      'custom_json',
-      data
-    ]
 
+  const operation: dhive.Operation = ['custom_json', data]
   sendHiveOperation(encryptedPrivateKey, [operation])
+}
+
+//toogle follow 
+export async function toogleFollowWithPassword(encryptedPrivateKey: string | null, follower: string, following: string, status: boolean) {
+  // const status = await checkFollow(follower, following)
+  let type = ''
+  if (!status) {
+    type = 'blog'
+  }
+
+  const json = JSON.stringify(['follow',{
+      follower: follower,
+      following: following,
+      what: [type], //null value for unfollow, 'blog' for follow
+    },]);
+
+  const data = {
+    id: 'follow',
+    required_auths: [],
+    required_posting_auths: [follower],
+    json: json,
+  };
+
+  const operation: dhive.Operation = ['custom_json', data]
+  sendHiveOperation(encryptedPrivateKey, [operation])
+  return type;
 }
 
 export async function signImageHash(hash: string): Promise<string> {

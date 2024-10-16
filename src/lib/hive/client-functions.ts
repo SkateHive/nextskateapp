@@ -220,37 +220,74 @@ export async function communitySubscribeKeyChain(username: string) {
     console.error('Profile update failed:', error);
   }
 }
+
 export async function checkFollow(follower: string, following: string): Promise<boolean> {
   try {
     const status = await HiveClient.call('bridge', 'get_relationship_between_accounts', [
       follower,
       following
     ]);
-    if (status.follows) {
-      return true
-    } else {
-      return false
-    }
+    return status.follows;    
   } catch (error) {
-    console.log(error)
-    return false
+    console.log(error);
+    return false;
   }
 }
+
+// toogleFollow
+// if return "blog", following;
+// if return "" not following;
+// if return false, error
+export async function toogleFollow(follower: string, following: string, status: boolean) {
+  const keychain = new KeychainSDK(window);
+  if(!keychain.isKeychainInstalled()) return false;
+
+  // status = followstate, if set True, start following, other, stop following
+  var type = '';
+  if (status) 
+    type = 'blog';
+
+  const json = JSON.stringify(['follow', {
+      follower: follower,
+      following: following,
+      what: [type], // '' empty value for unfollow; 'blog' for follow
+  }]);
+
+  const formParamsAsObject = {data: {
+      username: follower,
+      id: "follow",
+      method: KeychainKeyTypes.posting,
+      json: json
+  }};
+
+  try {
+    await keychain.custom(formParamsAsObject.data as unknown as Custom);
+    return type;
+  } catch (error) {
+    return 'error';
+  }
+
+}
+
+// if return "blog", following;
+// if return "" not following;
+// if return false, error
 export async function changeFollow(follower: string, following: string) {
   const keychain = new KeychainSDK(window);
+  if(!keychain.isKeychainInstalled()) return false;
+
   const status = await checkFollow(follower, following)
   let type = ''
-  if (status) {
-    type = ''
-  } else {
+  if (!status) {
     type = 'blog'
   }
+
   const json = JSON.stringify([
     'follow',
     {
       follower: follower,
       following: following,
-      what: [type], //null value for unfollow, 'blog' for follow
+      what: [type], // '' empty value for unfollow; 'blog' for follow
     },
   ]);
 
@@ -259,15 +296,19 @@ export async function changeFollow(follower: string, following: string) {
       username: follower,
       id: "follow",
       method: KeychainKeyTypes.posting,
-      json: JSON.stringify(json)
+      json: json
     },
   };
+
   try {
-    const custom = await keychain.custom(formParamsAsObject.data as unknown as Custom);
+    await keychain.custom(formParamsAsObject.data as unknown as Custom);
+    return type;
     //const broadcast = await keychain.broadcast(formParamsAsObject.data as unknown as Broadcast);
-    console.log('Broadcast success:', custom);
+    // console.log('Broadcast success:', custom);
   } catch (error) {
-    console.error('Profile update failed:', error);
+    return false;
+    // return {"success": false};
+    // console.error('Profile update failed:', error);
   }
 
 }
