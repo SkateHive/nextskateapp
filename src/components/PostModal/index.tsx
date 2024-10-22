@@ -9,6 +9,7 @@ import {
   Box,
   Center,
   Flex,
+  HStack,
   Menu,
   MenuButton,
   MenuItem,
@@ -29,6 +30,7 @@ import Header from "../PostCard/Header";
 import Vote from "../PostCard/Vote";
 import CommandPrompt from "./commentPrompt";
 import CommentsSection from "./commentSection";
+import TipButton from "../PostCard/TipButton";
 
 interface PostModalInterface {
   isOpen: boolean;
@@ -116,9 +118,12 @@ export function PostModal({ isOpen, onClose }: PostModalInterface) {
             )}
           </Box>
           <Box minW="50%">
-            <Flex mr={"35px"} justifyContent={"right"}>
+            <HStack ml={"10px"} mr={"35px"} justifyContent={"space-between"}>
+              <Box mr={5} mt={1} >
+                <TipButton author={post.author} />
+              </Box>
               <Vote />
-            </Flex>
+            </HStack>
             <CommandPrompt post={post} addComment={addComment} />
             <Center><Text fontSize="2xl">Comments</Text></Center>
             <CommentsSection comments={comments} />

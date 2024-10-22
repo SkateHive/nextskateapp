@@ -1,0 +1,125 @@
+.front-card-profile {
+  /* position: absolute; */
+  width: 100%;
+  height: 100%;
+  padding: 0.50em;
+  margin: 0em;
+
+  transform: rotateY(0deg) translateZ(1px);
+  /* transition: 0.6s; */
+  perspective: 2000px;
+  will-change: transform;
+
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible; /* Safari */
+}
+
+.back-card-profile {
+  /* position: absolute; */
+  width: 100%;
+  height: 100%;
+  padding: 0.50em;
+  margin: 0em;
+
+  background: transparent;
+  color: white;
+
+  /* border:2px solid white;
+  border-radius:"20px"; */
+
+  perspective: 2000px;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;      /* fix hack Safari  */ 
+
+  transition: 0.6s;
+  transition: opacity 0.7s;                 /* fix hack  */
+  transition-delay: 0.2s;                   /* fix hack  */
+  transform-style: 'preserve-3d';           /* fix hack  */
+  transform: rotateY(180deg) translateZ(1px); /* Fix hack MUST have dont know why translateZ(1px) */
+}
+
+
+.level-1 {
+  background-size: cover;
+}
+
+.level-2 {
+    box-shadow: inset 0 0 10px #333, inset 10px 0 40px #333, inset -10px 0 40px #333, inset 10px 0 150px #333, inset -10px 0 150px #333, 0 0 30px #333, -5px 0 300px #333, 5px 0 40px #333;
+    /* background-image: url(''); */
+    background-size: cover;
+}
+
+.level-3 {
+    box-shadow: inset 0 0 20px #6600cc, inset 10px 0 40px #6600cc, inset -10px 0 40px #6600cc, inset 10px 0 150px #6600cc, inset -10px 0 150px #6600cc, 0 0 30px #333, -5px 0 300px #6600cc, 5px 0 40px #6600cc;
+    background-image: url('https://media.wired.com/photos/593240ca58b0d64bb35d07ce/master/w_1600%2Cc_limit/hexwave.gif');
+    background-size: cover;
+}
+
+.level-4 {
+  box-shadow: inset 0 0 30px #003366, inset 10px 0 40px #003366, inset -10px 0 40px #003366, inset 10px 0 150px #003366, inset -10px 0 150px #003366, 0 0 30px #333, -5px 0 300px #003366, 5px 0 40px #003366;
+  background-image: url('https://i.pinimg.com/originals/19/39/59/193959e347745645326f8928b807aa24.gif');
+  background-size: cover;
+}
+
+.level-5 {
+  box-shadow: inset 0 0 40px #cc00ff, inset 10px 0 40px #cc00ff, inset -10px 0 40px #cc00ff, inset 10px 0 150px #cc00ff, inset -10px 0 150px #cc00ff, 0 0 30px #cc00ff, -5px 0 300px #cc00ff, 5px 0 40px #cc00ff;
+  background-image: url('https://i.gifer.com/origin/b2/b2e9e60e42d7d26fc912d7de30e07aa4_w200.gif');
+  background-size: cover;
+}
+
+.level-6 {
+  box-shadow: inset 0 0 50px #ff3300, inset 10px 0 40px #ff3300, inset -10px 0 40px #ff3300, inset 10px 0 150px #ff3300, inset -10px 0 150px #ff3300, 0 0 30px #ff3300, -5px 0 300px #ff3300, 5px 0 40px #ff3300;
+  background-image: url('https://i.pinimg.com/originals/18/9f/db/189fdb5d2fc52eac4fa2a6de6edaf222.gif');
+  background-size: cover;
+}
+
+.level-7 {
+  box-shadow: inset 0 0 60px #66ff33, inset 10px 0 40px #66ff33, inset -10px 0 40px #66ff33, inset 10px 0 150px #66ff33, inset -10px 0 150px #66ff33, 0 0 30px #66ff33, -5px 0 300px #66ff33, 5px 0 40px #66ff33;
+  background-image: url('https://i.pinimg.com/originals/06/a5/12/06a51219a313e73ed70785ac4b9d8024.gif');
+  background-size: cover;
+}
+
+.level-8 {
+  box-shadow: inset 0 0 80px #08095a, inset 10px 0 40px #103d5a, inset -10px 0 40px #0c3f6e, inset 10px 0 150px #2a3131, inset -10px 0 150px #6200ff, 0 0 30px #112766, -5px 0 300px #361563, 5px 0 40px #3700ff;
+  background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Computer-screen-code-glitch-animation-gif-background-free.gif/1280px-Computer-screen-code-glitch-animation-gif-background-free.gif');
+  background-size: cover;
+}
+
+
+.box-level-1, 
+.box-level-2, 
+.box-level-3, 
+.box-level-5 { 
+  border:1px solid white;
+  border-radius:10px;
+  background:rgba(0, 0, 0, 0.3);
+}
+
+.box-level-6 { 
+  border:1px solid white;
+  border-radius:10px;
+  background:rgba(26, 1, 29, 0.9);
+}
+
+.box-level-4 {
+  border:1px solid rgb(5, 17, 185);
+  border-radius:10px;
+  background:hsla(240, 84%, 13%, 0.753);
+}
+
+.box-level-7 {
+  color:rgb(27, 134, 235)!important;                    /*light color*/
+  border:1px solid rgb(27, 134, 235)!important;         /*light color*/
+  background:hsla(216, 90%, 8%, 0.863);       /*background transp dark color*/
+  border-radius:10px!important;                           /* keep 10px*/
+}
+
+.btn-profile-card {
+  color: silver!important;
+}
+
+.btn-profile-card:hover {
+  background: black!important;
+  color: white!important;
+}

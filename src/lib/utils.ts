@@ -86,6 +86,7 @@ export function transformIPFSContent(content: string): string {
             </video>`;
   });
 }
+
 export function transformEcencyImages(content: string): string {
   const regex = /https:\/\/images\.ecency\.com\/p\/([\w-?=&.]+)/g;
 

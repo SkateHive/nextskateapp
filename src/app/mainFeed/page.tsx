@@ -2,7 +2,7 @@
 import UserAvatar from "@/components/UserAvatar";
 import { useHiveUser } from "@/contexts/UserContext";
 import { useComments } from "@/hooks/comments";
-import { vote } from "@/lib/hive/client-functions";
+import { getFileSignature, uploadImage, vote } from "@/lib/hive/client-functions";
 import { commentWithPrivateKey } from "@/lib/hive/server-functions";
 import { CommentOperation } from "@hiveio/dhive";
 import { getTotalPayout } from "@/lib/utils";
@@ -101,12 +101,17 @@ const SkateCast = () => {
       setIsUploading(true);
       const newImageList: string[] = [];
       for (const file of acceptedFiles) {
-        const ipfsData: IPFSData | undefined = await uploadFileToIPFS(file);
-        if (ipfsData !== undefined) {
-          const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}`;
-          const markdownLink = file.type.startsWith("video/")
-            ? `<iframe src="${ipfsUrl}" allowfullscreen></iframe>`
-            : `![Image](${ipfsUrl})`;
+        if (file.type.startsWith("video/")) {
+          const ipfsData: IPFSData | undefined = await uploadFileToIPFS(file);
+          if (ipfsData !== undefined) {
+            const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}`;
+            const markdownLink = `<iframe src="${ipfsUrl}" allowfullscreen></iframe>`;
+            newImageList.push(markdownLink);
+          }
+        } else {
+          const signature = await getFileSignature(file);
+          const uploadUrl = await uploadImage(file, signature);
+          const markdownLink = `![Image](${uploadUrl})`;
           newImageList.push(markdownLink);
         }
       }

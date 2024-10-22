@@ -6,6 +6,8 @@ import CryptoJS from "crypto-js"
 import { VideoPart } from "../models/user"
 import { HiveAccount } from "../useHiveAuth"
 import HiveClient from "./hiveclient"
+import { PrivateKey } from '@hiveio/dhive';
+import { Buffer } from 'buffer';
 
 const communityTag = process.env.NEXT_PUBLIC_HIVE_COMMUNITY_TAG;
 
@@ -171,7 +173,8 @@ export async function updateProfileWithPrivateKey(
   website: string,
   ethAddress: string,
   videoParts: VideoPart[],
-  level: number
+  level: number,
+  staticXp:number,
 ) {
 
   if (encryptedPrivateKey === null) throw new Error("Private key not found");
@@ -194,7 +197,8 @@ export async function updateProfileWithPrivateKey(
     extensions: {
       eth_address: ethAddress,
       video_parts: videoParts,
-      level: level
+      level: level,
+      staticXp: staticXp,
     }
   }
 
@@ -208,14 +212,15 @@ export async function updateProfileWithPrivateKey(
     }
   ]
 
-  HiveClient.broadcast
-    .sendOperations([updateInfo], dhive.PrivateKey.from(privateKey))
-    .then((result) => {
-      console.log(result)
-    })
-    .catch((error) => {
-      console.error(error)
-    })
+  return await HiveClient.broadcast.sendOperations([updateInfo], dhive.PrivateKey.from(privateKey))
+    // .then((result) => {
+    //   console.log(result)
+    //   return result
+    // })
+    // .catch((error) => {
+    //   console.error(error)
+    //   return error
+    // })
 
 }
 
@@ -278,12 +283,12 @@ async function checkFollow(follower: string, following: string): Promise<boolean
 
 export async function changeFollowWithPassword(encryptedPrivateKey: string | null, follower: string, following: string) {
   const status = await checkFollow(follower, following)
+  
   let type = ''
-  if (status) {
-    type = ''
-  } else {
+  if (!status) {
     type = 'blog'
   }
+
   const json = JSON.stringify([
     'follow',
     {
@@ -292,17 +297,54 @@ export async function changeFollowWithPassword(encryptedPrivateKey: string | nul
       what: [type], //null value for unfollow, 'blog' for follow
     },
   ]);
+
   const data = {
     id: 'follow',
-    json: json,
     required_auths: [],
     required_posting_auths: [follower],
+    json: json,
   };
-  const operation: dhive.Operation =
-    [
-      'custom_json',
-      data
-    ]
 
+  const operation: dhive.Operation = ['custom_json', data]
   sendHiveOperation(encryptedPrivateKey, [operation])
+}
+
+//toogle follow 
+export async function toogleFollowWithPassword(encryptedPrivateKey: string | null, follower: string, following: string, status: boolean) {
+  // const status = await checkFollow(follower, following)
+  let type = ''
+  if (!status) {
+    type = 'blog'
+  }
+
+  const json = JSON.stringify(['follow',{
+      follower: follower,
+      following: following,
+      what: [type], //null value for unfollow, 'blog' for follow
+    },]);
+
+  const data = {
+    id: 'follow',
+    required_auths: [],
+    required_posting_auths: [follower],
+    json: json,
+  };
+
+  const operation: dhive.Operation = ['custom_json', data]
+  sendHiveOperation(encryptedPrivateKey, [operation])
+  return type;
+}
+
+export async function signImageHash(hash: string): Promise<string> {
+  const wif = process.env.HIVE_POSTING_KEY;
+
+  if (!wif) {
+      throw new Error("HIVE_POSTING_KEY is not set in the environment");
+  }
+
+  const key = PrivateKey.fromString(wif);
+  const hashBuffer = Buffer.from(hash, 'hex');  // Convert the hex string back to a buffer
+  const signature = key.sign(hashBuffer);
+
+  return signature.toString();
 }

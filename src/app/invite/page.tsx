@@ -50,6 +50,7 @@ function AccountCreation() {
     const handleCheck = async () => {
         var isValidAccountName = null;
         var isAvailable = false;
+        var isEmailOk = false;
 
         setBroadcastResult(false);
         setBMessage("");
@@ -62,10 +63,12 @@ function AccountCreation() {
         if(desiredEmail==""){
             setBroadcastResult(true);
             setBMessage("You forgot the fill up the email");
-            return
+            // isEmailOk = false;
+            // return
         } else {
             setBroadcastResult(false);
             setBMessage("");
+            isEmailOk = true;
         }
 
         if (desiredUsername) {
@@ -94,16 +97,22 @@ function AccountCreation() {
                 // console.log("isAvailable: "+isAvailable);
                 //setShowSecondForm(true);
                 setAccountAvailable(true);
-                setAreKeysDownloaded(true);
-                handleGenerateKeys();
+                // setAreKeysDownloaded(true);
+                // handleGenerateKeys();
             } else {
                 // console.log("Not Available");
                 // console.log("isValidAccountName :"+isValidAccountName);
                 // console.log("isAvailable :"+isAvailable);
                 // console.log('Account already exists. Please choose a different desiredUsername.');
                 //setShowSecondForm(false);
+                
                 setAccountAvailable(false);
-                setAreKeysDownloaded(false);
+                // setAreKeysDownloaded(false);
+            }
+
+            if (isEmailOk && isAvailable && (isValidAccountName === null)) {
+                setAreKeysDownloaded(true);
+                handleGenerateKeys();
             }
         } else {
             // console.log('Please enter a username.');
@@ -258,7 +267,7 @@ function AccountCreation() {
       // need to login
       return (
         <Flex style={{
-        backgroundImage: "url('https://images.hive.blog/0x0/https://media3.giphy.com/media/jLGwKuxeloeTYfahcT/giphy.gif?cid=53fbcc77tro039zxx7rfnyxlkrdbxx07bopfjh2zmsmlwt90&ep=v1_gifs_search&rid=giphy.gif&ct=g')",
+        backgroundImage: "url('/boardslideerro404.gif')",
         backgroundSize: '65%',
         backgroundPosition: 'top center',
         backgroundRepeat: 'no-repeat',
@@ -315,7 +324,7 @@ function AccountCreation() {
       // user is in
       return (
 <Flex style={{
-        backgroundImage: "url('https://i.ibb.co/Lv5C8rZ/nft-unscreen.gif')",
+        backgroundImage: "url('/nft-unscreen.gif')",
         backgroundSize: '20%',
         backgroundPosition: 'top center',
         backgroundRepeat: 'no-repeat',

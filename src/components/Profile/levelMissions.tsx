@@ -18,7 +18,7 @@ import {
 } from "@chakra-ui/react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { Mission, dummyMissions, recurringTasks } from './missionsData';
+import { Mission, dummyMissions, xpThresholds, recurringTasks } from './missionsData';
 
 interface LevelMissionsProps {
     initialLevel: number;
@@ -44,7 +44,7 @@ export default function LevelMissions({ initialLevel, user, updateAvailableXp }:
     const [user_has_ethereum_address, setUserHasEthereumAddress] = useState(false);
     const [user_posts, setUserPosts] = useState([]);
     const userLatestPostDate = user.last_post;
-    const { hivePower } = useHiveBalance(user);
+    const { hivePower, savingsUSDvalue } = useHiveBalance(user);
 
     const [completedMissions, setCompletedMissions] = useState({
         hasProfilePic: false,
@@ -57,7 +57,9 @@ export default function LevelMissions({ initialLevel, user, updateAvailableXp }:
         hasVotedOnSkateHiveProposal: false,
         hasMoraThanFivePosts: false,
         hasUserPostedLastWeek: false,
-        hasMoreThan50HP: false
+        hasMoreThan50HP: false,
+        hasMoreThan100Posts: false,
+        hasMoreThan100HBDSavings: true
     });
 
     const calculateTotalXp = useCallback(() => {
@@ -79,34 +81,54 @@ export default function LevelMissions({ initialLevel, user, updateAvailableXp }:
     useEffect(() => {
         const newCompletedMissions = { ...completedMissions };
 
+        // lvl 1
         if (user_posting_metadata) {
             newCompletedMissions.hasProfilePic = !!user_posting_metadata.profile?.profile_image;
         }
+
         if (user_posting_metadata?.profile?.name && user_posting_metadata?.profile?.about) {
             newCompletedMissions.hasCompletedProfile = true;
         }
+
         if (user?.last_post) {
             newCompletedMissions.hasPosted = true;
         }
+
+        // lvl 2
         if (user_posting_metadata?.extensions?.level >= 1) {
             newCompletedMissions.hasCompletedLevel1 = true;
         }
+
         if (user_has_voted_in_skatehive_witness) {
             newCompletedMissions.hasVotedForSkateHiveWitness = true;
         }
+
         if (user_json_metadata?.extensions?.eth_address) {
             setUserHasEthereumAddress(true);
             newCompletedMissions.hasAddedEthereumAddress = true;
         }
+
         if (user.post_count > 5) {
             newCompletedMissions.hasMoreThanFivePosts = true;
         }
+
+        // lvl 3
         if (userLatestPostDate && new Date(userLatestPostDate).getTime() > Date.now() - 7 * 24 * 60 * 60 * 1000) {
             newCompletedMissions.hasUserPostedLastWeek = true;
         }
+
         if (hivePower > 50) {
             newCompletedMissions.hasMoreThan50HP = true;
         }
+
+        if (user.post_count > 100) {
+            newCompletedMissions.hasMoreThan100Posts = true;
+        }
+
+        if (savingsUSDvalue >= 100) {
+            newCompletedMissions.hasMoreThan100HBDSavings = true;
+        }
+
         setCompletedMissions(newCompletedMissions);
     }, [user, hivePower]);
 
@@ -152,13 +174,17 @@ export default function LevelMissions({ initialLevel, user, updateAvailableXp }:
                 return completedMissions.hasUserPostedLastWeek;
             case "More than 50 HP":
                 return completedMissions.hasMoreThan50HP;
+            case "More than 100 Posts":
+                return completedMissions.hasMoreThan100Posts;
+            case "Savings HBD $100":
+                return completedMissions.hasMoreThan100HBDSavings;
             default:
                 return false;
         }
     };
 
     return (
-        <VStack w="100%">
+        <VStack minWidth={'500px'}>
             <HStack>
                 <Button
                     _hover={{ background: "transparent" }}
@@ -181,25 +207,25 @@ export default function LevelMissions({ initialLevel, user, updateAvailableXp }:
                 </Button>
             </HStack>
             <TableContainer w="100%">
-                <Box borderRadius="15px" border="1px solid white" minW="100%">
+                <Box borderRadius="15px" border="1px solid white" minW="220px">
                     <Table variant="unstyled" mt={2} color="white" w="100%">
                         <Thead>
                             <Tr>
-                                <Th w="50%"><Center>Mission</Center></Th>
-                                <Th w="30%"><Center> Reward</Center></Th>
+                                <Th w="80%"><Center>Mission</Center></Th>
+                                <Th w="20%"><Center> Reward</Center></Th>
                             </Tr>
                         </Thead>
                         <Tbody overflowX={'auto'}>
                             {activeMissions.map((mission, index) => (
                                 <Tr key={index}>
-                                    <Td minWidth="150px" maxWidth="200px">
+                                    <Td>
                                         <Text as={isMissionCompleted(mission.name) ? "s" : "span"}>
                                             {mission.name}
                                         </Text>
                                     </Td>
-                                    <Td minWidth="150px" maxWidth="200px">
+                                    <Td>
                                         {isMissionCompleted(mission.name) ? (
-                                            <Tag colorScheme="green">Completed</Tag>
+                                            <Tag colorScheme="green" w="100%">Completed</Tag>
                                         ) : (
                                             <Button colorScheme="green" h="24px" w="100%">
                                                 {mission.xp} XP
@@ -214,29 +240,29 @@ export default function LevelMissions({ initialLevel, user, updateAvailableXp }:
             </TableContainer>
 
             <Center mt={3}>
-                <Tag colorScheme="green" fontSize="24px">Recurring Tasks</Tag>
+                {/* <Tag colorScheme="green" fontSize="24px">Recurring Tasks</Tag> */}
             </Center>
 
-            <TableContainer w="100%">
+            {/* <TableContainer w="100%">
                 <Box borderRadius="15px" border="1px solid white" minW="100%">
                     <Table variant="unstyled" mt={2} color="white" w="100%">
                         <Thead>
                             <Tr>
-                                <Th w="50%"> <Center> Task</Center></Th>
-                                <Th w="30%"> <Center> Action</Center></Th>
+                                <Th w="80%"> <Center> Recurring Tasks</Center></Th>
+                                <Th w="20%"> <Center> Action</Center></Th>
                             </Tr>
                         </Thead>
                         <Tbody>
                             {recurringTasks['1'].map((task, index) => (
                                 <Tr key={index}>
-                                    <Td minWidth="200px" maxWidth="400px">
+                                    <Td>
                                         <Text as={isMissionCompleted(task.name) ? "s" : "span"}>
                                             {task.name}
                                         </Text>
                                     </Td>
-                                    <Td minWidth="150px" maxWidth="200px">
+                                    <Td>
                                         {isMissionCompleted(task.name) ? (
-                                            <Tag colorScheme="green">Completed</Tag>
+                                            <Tag colorScheme="green" w="100%">Completed</Tag>
                                         ) : (
                                             <Button colorScheme="green" h="24px" w="100%">
                                                 {task.xp} XP
@@ -247,8 +273,9 @@ export default function LevelMissions({ initialLevel, user, updateAvailableXp }:
                             ))}
                         </Tbody>
                     </Table>
+
                 </Box>
-            </TableContainer>
+            </TableContainer> */}
         </VStack>
     );
 }

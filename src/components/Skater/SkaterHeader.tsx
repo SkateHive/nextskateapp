@@ -1,27 +1,31 @@
 'use client'
 
-import { useHiveUser } from "@/contexts/UserContext"
-import { changeFollow, checkFollow } from "@/lib/hive/client-functions"
-import { changeFollowWithPassword } from "@/lib/hive/server-functions"
 import { HiveAccount } from "@/lib/models/user"
-import { Button, Center, Flex, HStack, Image, Text, VStack, useDisclosure, useMediaQuery } from "@chakra-ui/react"
+import { Center, HStack, Image, Text, VStack, useDisclosure, useMediaQuery } from "@chakra-ui/react"
+// import { Button, Center, Flex, HStack, Image, Text, VStack, useMediaQuery, useToast } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
 import AuthorAvatar from "../AuthorAvatar"
+// import { useHiveUser } from "@/contexts/UserContext"
+// import { changeFollow, checkFollow } from "@/lib/hive/client-functions"
+// import { changeFollowWithPassword } from "@/lib/hive/server-functions"
 
 interface ProfileProps {
     user: HiveAccount
 }
 
 export default function SkaterHeader({ user }: ProfileProps) {
-    const { isOpen, onOpen, onClose } = useDisclosure()
-    const hiveUser = useHiveUser()
-    const metadata = user.json_metadata ? JSON.parse(user.json_metadata) : (user.posting_json_metadata ? JSON.parse(user.posting_json_metadata) : {});
-    const isMobile = useMediaQuery("(max-width: 400px)")[0];
+    const metadata = user.posting_json_metadata ? JSON.parse(user.posting_json_metadata) : {};
     const coverImageUrl = metadata?.profile?.cover_image || "https://i.pinimg.com/originals/4b/c7/91/4bc7917beb4aac43d2d405b05911e35f.gif";
     const profileName = metadata?.profile?.name || user.name;
     const [isSmallerThan400] = useMediaQuery("(max-width: 400px)");
+
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    // const hiveUser = useHiveUser();
+    // const metadata_extended = user.json_metadata ? JSON.parse(user.json_metadata) : {};
+    // const isMobile = useMediaQuery("(max-width: 400px)")[0];
     const [boxSize, setBoxSize] = useState(20)
-    const [isFollowing, setIsFollowing] = useState(false)
+    // const [isFollowing, setIsFollowing] = useState(false)
+    // const toast = useToast();
 
     useEffect(() => {
         if (isSmallerThan400) {
@@ -32,33 +36,58 @@ export default function SkaterHeader({ user }: ProfileProps) {
         }
     }, [isSmallerThan400])
 
+    // useEffect(() => {
+    //     const fetchFollowStatus = async () => {
+    //         if (hiveUser.hiveUser?.name && user.name) {
+    //             const isFollowing = await checkFollow(hiveUser.hiveUser?.name, user.name)
+    //             setIsFollowing(isFollowing)
+    //         }
+    //     }
+    //     fetchFollowStatus()
+    // }, [hiveUser.hiveUser?.name, user.name])
 
-    useEffect(() => {
-        const fetchFollowStatus = async () => {
-            if (hiveUser.hiveUser?.name && user.name) {
-                const isFollowing = await checkFollow(hiveUser.hiveUser?.name, user.name)
-                setIsFollowing(isFollowing)
-            }
-        }
-        fetchFollowStatus()
-    }, [hiveUser.hiveUser?.name, user.name])
 
+    // const handleFollowButton = async () => {
+    //     const loginMethod = localStorage.getItem("LoginMethod")
+    //     var errCheckKeychain = false;
+        
+    //     if (hiveUser.hiveUser?.name && user.name) {
+    //         if (loginMethod === "keychain") {
+    //             try {
+    //                 if(window && window.hive_keychain) {
+    //                     changeFollow(hiveUser.hiveUser?.name, user.name)
+    //                         .then( result => {
+    //                             if(result) {
+    //                                 console.log(result == "blog")
+    //                                 setIsFollowing(result == "blog");
+    //                             }
+    //                         })
+    //                         .catch(()=> {
+    //                             errCheckKeychain = true;
+    //                         });
+    //                 } else {
+    //                     errCheckKeychain = true;
+    //                 } 
+    //             } catch (error) {
+    //                 errCheckKeychain = true;
+    //             }
 
-    const handleFollowButton = async () => {
-        const loginMethod = localStorage.getItem("LoginMethod")
-        if (hiveUser.hiveUser?.name && user.name) {
-
-            if (loginMethod === "keychain") {
-                await changeFollow(hiveUser.hiveUser?.name, user.name)
-                setIsFollowing(!isFollowing)
-            }
-            else if (loginMethod === "privateKey") {
-                const encKey = localStorage.getItem("encryptedPrivateKey")
-                await changeFollowWithPassword(encKey, hiveUser.hiveUser?.name, user.name)
-                setIsFollowing(!isFollowing)
-            }
-        }
-    }
+    //             if(errCheckKeychain)
+    //                 toast({
+    //                     title: "Error Broadcasting.",
+    //                     description: "Check if your Keychain is Enabled.",
+    //                     status: "error",
+    //                     duration: 5000,
+    //                     isClosable: true,
+    //                 });
+    //         }
+    //         else if (loginMethod === "privateKey") {
+    //             const encKey = localStorage.getItem("encryptedPrivateKey")
+    //             await changeFollowWithPassword(encKey, hiveUser.hiveUser?.name, user.name)
+    //             setIsFollowing(!isFollowing)
+    //         }
+    //     }
+    // }
 
     return (
         <>
@@ -81,22 +110,16 @@ export default function SkaterHeader({ user }: ProfileProps) {
                         hover={{ cursor: "pointer" }}
                         boxSize={100}
                     />
-
                 </Center>
-
                 <HStack cursor={'pointer'} onClick={onOpen} ml={2} align={"start"}>
                     <br />
                     <Text mb={3} fontSize={{ base: "sm", lg: "xl" }} fontWeight={"bold"}>
                         {profileName}
                     </Text>
-
-
                 </HStack>
-
-
             </VStack>
 
-            {isMobile ? null :
+            {/* {isMobile ? null :
                 <Flex justifyContent={"flex-end"}>
                     <Button mt={"-85px"} mr={'15px'} mb={"75px"}
                         variant={"solid"}
@@ -107,8 +130,7 @@ export default function SkaterHeader({ user }: ProfileProps) {
                         {isFollowing ? "Unfollow" : "Follow"}
                     </Button>
                 </Flex >
-            }
-
+            } */}
         </>
     )
 }
