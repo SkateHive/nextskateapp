@@ -81,6 +81,11 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
             address: '0xFUCKTHEGOVERMENT',
             abi: [],
             tokenLogo: "https://cryptologos.cc/logos/hive-blockchain-hive-logo.png"
+        },
+        HBD: {
+            address: '0xHBDFUCKTHEGOVERMENT',
+            abi: [],
+            tokenLogo: "/logos/hbd.svg"
         }
 
     };
@@ -102,9 +107,10 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
     const handleHiveBulkTransfer = async () => {
         try {
             const operations: Operation[] = [];
-            const amount = String(dividedAmount.toFixed(3)) + " HIVE"
+            const currency = token === "HBD" ? "HBD" : "HIVE";
+            const amount = String(dividedAmount.toFixed(3)) + ` ${currency}`;
+    
             addressDict.forEach((element: any) => {
-
                 const operation: Operation =
                     [
                         "transfer",
@@ -114,47 +120,47 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                             "amount": amount,
                             "memo": `you just got a skatehive airdrop triggered by ${user.hiveUser?.name}`
                         }
-                    ]
-                operations.push(operation)
-
+                    ];
+                operations.push(operation);
             });
-            const loginMethod = localStorage.getItem("LoginMethod")
+    
+            const loginMethod = localStorage.getItem("LoginMethod");
             if (!user) {
-                console.error("Username is missing")
-                return
+                console.error("Username is missing");
+                return;
             }
             if (loginMethod === "keychain") {
                 try {
                     const keychain = new KeychainSDK(window);
-                    undefined
                     const formParamsAsObject = {
                         "data": {
                             "username": user.hiveUser?.name,
                             "operations": operations,
                             "method": KeychainKeyTypes.active
                         }
-                    }
-
-                    const broadcast = await keychain
-                        .broadcast(
-                            formParamsAsObject.data as Broadcast);
+                    };
+    
+                    const broadcast = await keychain.broadcast(
+                        formParamsAsObject.data as Broadcast
+                    );
                     console.log({ broadcast });
                     setShowConfetti(true);
-
+    
                 } catch (error) {
                     console.log({ error });
                 }
-
+    
             } else if (loginMethod === "privateKey") {
                 const encryptedPrivateKey = localStorage.getItem("EncPrivateKey");
-                sendHiveOperation(encryptedPrivateKey, operations)
+                sendHiveOperation(encryptedPrivateKey, operations);
                 setShowConfetti(true);
             }
-
+    
         } catch (error) {
             console.error("Error handling bulk transfer:", error);
         }
     };
+    
 
     useEffect(() => {
         console.log(isConfirmed, isConfirming)
@@ -171,45 +177,50 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
 
     const handleBulkTransfer = async () => {
         try {
-            if (!account.isConnected) {
+            if (!account.isConnected && (token !== "HIVE" && token !== "HBD")) {
                 console.error("Wallet not connected");
                 return;
             }
-
+    
+            if (token === "HIVE" || token === "HBD") {
+                handleHiveBulkTransfer(); 
+                return;
+            }
+    
             const dividedAmountList = ethAddressListFormatted.map(() => dividedAmountFormatted);
+    
             if (allowance?.data < amount) {
                 try {
                     writeContract({
                         address: tokenDictionary[token].address,
                         abi: tokenDictionary[token].abi,
                         functionName: 'approve',
-                        args: [SkateAirdropContract, "1000000000000000000000000"], // String representation
+                        args: [SkateAirdropContract, "1000000000000000000000000"], 
                     });
                     if (error) {
                         console.error("Error approving tokens:", error.message);
                     }
-
                 } catch (error) {
                     console.error("Error approving tokens:", error);
-
                 }
             }
+    
             writeContract({
                 address: SkateAirdropContract,
                 abi: airdropABI,
                 functionName: 'bulkTransfer',
                 args: [tokenDictionary[token].address, ethAddressListFormatted, dividedAmountList],
             });
-
-
+    
             if (error) {
                 console.error("Error sending tokens:", error.message);
-                console.log(allowance.data, dividedAmountFormatted)
+                console.log(allowance.data, dividedAmountFormatted);
             }
         } catch (error) {
             console.error("Error handling bulk transfer:", error);
         }
     };
+    
 
 
     return (
@@ -298,6 +309,18 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                                     <Image alt="hive-logo" mr={3} boxSize="20px" src="https://cryptologos.cc/logos/hive-blockchain-hive-logo.png" />
                                     $HIVE
                                 </MenuItem>
+                                <MenuItem
+                                    bg="black"
+                                    _hover={{ bg: "red.500", color: "black" }}
+                                    onClick={() => {
+                                        setToken("HBD");
+                                        setIsCustomToken(false);
+                                    }}
+                                >
+                                    <Image alt="hive-dollar-logo" mr={3} boxSize="20px" src="/logos/hbd.svg" />
+                                    $HBD
+                                </MenuItem>
+
                             </MenuList>
                         </Menu>
                     </Box>
