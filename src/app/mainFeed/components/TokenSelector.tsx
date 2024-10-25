@@ -50,6 +50,7 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
     const ethAddressList = Object.values<AuthorEthAddress>(addressDict).map((item: AuthorEthAddress) => item.ethAddress);
     const dividedAmount = ethAddressList.length > 0 ? (Number(amount) / ethAddressList.length) : 0;
     const { data: hash, error, isPending, writeContract } = useWriteContract();
+    const [hasApproved, setHasApproved] = useState(false); 
 
     const tokenDictionary: { [key: string]: TokenInfo } = {
         SENDIT: {
@@ -114,7 +115,7 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
             const operations: Operation[] = [];
             const currency = token === "HBD" ? "HBD" : "HIVE";
             const amount = String(dividedAmount.toFixed(3)) + ` ${currency}`;
-    
+
             addressDict.forEach((element: any) => {
                 const operation: Operation =
                     [
@@ -128,7 +129,7 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                     ];
                 operations.push(operation);
             });
-    
+
             const loginMethod = localStorage.getItem("LoginMethod");
             if (!user) {
                 console.error("Username is missing");
@@ -144,28 +145,28 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                             "method": KeychainKeyTypes.active
                         }
                     };
-    
+
                     const broadcast = await keychain.broadcast(
                         formParamsAsObject.data as Broadcast
                     );
                     console.log({ broadcast });
                     setShowConfetti(true);
-    
+
                 } catch (error) {
                     console.log({ error });
                 }
-    
+
             } else if (loginMethod === "privateKey") {
                 const encryptedPrivateKey = localStorage.getItem("EncPrivateKey");
                 sendHiveOperation(encryptedPrivateKey, operations);
                 setShowConfetti(true);
             }
-    
+
         } catch (error) {
             console.error("Error handling bulk transfer:", error);
         }
     };
-    
+
 
     useEffect(() => {
         console.log(isConfirmed, isConfirming)
@@ -180,7 +181,7 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
         args: [account.address, SkateAirdropContract],
     });
 
-    const handleBulkTransfer = async () => {
+    const handleBulkTransfer = async (inputValue: string) => {
         try {
             if (!account.isConnected && (token !== "HIVE" && token !== "HBD")) {
                 console.error("Wallet not connected");
@@ -191,40 +192,45 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                 handleHiveBulkTransfer(); 
                 return;
             }
-    
-            const dividedAmountList = ethAddressListFormatted.map(() => dividedAmountFormatted);
-    
-            if (allowance?.data < amount) {
-                try {
-                    writeContract({
-                        address: tokenDictionary[token].address,
-                        abi: tokenDictionary[token].abi,
-                        functionName: 'approve',
-                        args: [SkateAirdropContract, "1000000000000000000000000"], 
-                    });
-                    if (error) {
-                        console.error("Error approving tokens:", error.message);
-                    }
-                } catch (error) {
-                    console.error("Error approving tokens:", error);
-                }
+
+
+            const value = parseFloat(inputValue);
+            
+            if (isNaN(value) || value <= 0) {
+                console.error("Valor inválido. Insira um número positivo.");
+                return;
             }
     
-            writeContract({
+            const adjustedAmount = token === "USDC" ? BigInt(Math.round(value * 1e6)) : BigInt(Math.round(value * 1e18));
+    
+            console.log("Valor inserido:", value);
+            console.log("Valor ajustado (em smallest unit):", adjustedAmount.toString());
+    
+            const dividedAmount = ethAddressList.length > 0 ? adjustedAmount / BigInt(ethAddressList.length) : BigInt(0);
+            const dividedAmountList = ethAddressListFormatted.map(() => dividedAmount);
+    
+            if (allowance?.data < adjustedAmount) {
+                await writeContract({
+                    address: tokenDictionary[token].address,
+                    abi: tokenDictionary[token].abi,
+                    functionName: 'approve',
+                    args: [SkateAirdropContract, adjustedAmount.toString()],
+                });
+            }
+    
+            await writeContract({
                 address: SkateAirdropContract,
                 abi: airdropABI,
                 functionName: 'bulkTransfer',
                 args: [tokenDictionary[token].address, ethAddressListFormatted, dividedAmountList],
             });
     
-            if (error) {
-                console.error("Error sending tokens:", error.message);
-                console.log(allowance.data, dividedAmountFormatted);
-            }
+            setShowConfetti(true);
         } catch (error) {
-            console.error("Error handling bulk transfer:", error);
+            console.error("Error during bulk transfer:", error);
         }
     };
+    
     
 
 
@@ -280,17 +286,7 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                                     <Image alt="nogs" mr={3} boxSize="20px" src="/logos/nog.png" />
                                     $NOGS
                                 </MenuItem>
-                                {/* <MenuItem
-                                    bg="black"
-                                    _hover={{ bg: "teal.500" }}
-                                    onClick={() => {
-                                        setToken("MEMBER");
-                                        setIsCustomToken(false);
-                                    }}
-                                >
-                                    <Image alt="member" mr={3} boxSize="20px" src="https://member.clinic/images/01-1.jpg" />
-                                    $MEMBER
-                                </MenuItem> */}
+
                                 <MenuItem
                                     bg="black"
                                     _hover={{ bg: "purple.500" }}
@@ -302,19 +298,19 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                                     <Image alt="degen" mr={3} boxSize="20px" src={tokenDictionary['DEGEN'].tokenLogo} />
                                     $DEGEN
                                 </MenuItem>
-                                
+
                                 <MenuItem
-                                  bg="black"
-                                  _hover={{ bg: "purple.500" }}
-                                  onClick={() => {
-                                      setToken("USDC");
-                                      setIsCustomToken(false);
-                                  }}
-                                 
+                                    bg="black"
+                                    _hover={{ bg: "purple.500" }}
+                                    onClick={() => {
+                                        setToken("USDC");
+                                        setIsCustomToken(false);
+                                    }}
+
                                 >
                                     <Image alt="usdc" mr={3} boxSize="20px" src="https://cdn.zerion.io/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png" />
-   
-                                 $USDC
+
+                                    $USDC
                                 </MenuItem>
                                 <MenuItem
                                     bg="black"
@@ -383,11 +379,11 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                 colorScheme="green"
                 variant={"outline"}
                 onClick={() => {
-                    if (token == "HIVE") {
+                    if (token === "HIVE") {
                         handleHiveBulkTransfer();
                     } else {
                         if (account.isConnected) {
-                            handleBulkTransfer();
+                            handleBulkTransfer(amount); 
                         } else {
                             console.error("Wallet not connected");
                         }
@@ -396,6 +392,7 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
             >
                 Send {amount} {token} to {ethAddressList.length} skaters !!!
             </Button>
+
             <Text color="white" fontSize="sm">
                 {isConfirmed ? "Airdrop sent!" : isConfirming ? "Sending airdrop..." : ""}
             </Text>
