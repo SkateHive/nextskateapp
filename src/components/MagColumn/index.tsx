@@ -2,7 +2,7 @@ import AuthorSearchBar from "@/app/upload/components/searchBar";
 import { useHiveUser } from "@/contexts/UserContext";
 import usePosts from "@/hooks/usePosts";
 import PostModel from "@/lib/models/post";
-import { border, Box, Button, ButtonGroup, Flex, Grid, useMediaQuery, VStack } from "@chakra-ui/react";
+import { border, Box, Button, ButtonGroup, color, filter, Flex, Grid, useMediaQuery, VStack } from "@chakra-ui/react";
 import Image from "next/image";
 import { useCallback, useMemo, useState } from "react";
 import { FaBook, FaBookOpen } from "react-icons/fa";
@@ -12,7 +12,11 @@ import '../../styles/fonts.css';
 import LoginModal from "../Hive/Login/LoginModal";
 import Post from "../PostCard";
 import PostSkeleton from "../PostCard/Skeleton";
-
+import { blockedUsers } from "@/lib/constants";
+import { includes, map, size, slice } from "lodash";
+import { url } from "inspector";
+import next from "next";
+import style from "styled-jsx/style";
 const SKATEHIVE_TAG = [{ tag: "hive-173115", limit: 30 }];
 
 interface PostFeedProps {
@@ -23,6 +27,7 @@ interface PostFeedProps {
 }
 
 const PostFeed: React.FC<PostFeedProps> = ({ posts, visiblePosts, setVisiblePosts, query }) => {
+  const filteredPosts = posts ? posts.filter(post => !blockedUsers.includes(post.author)) : [];
   return (
     <Box overflow={"auto"}>
       <InfiniteScroll
@@ -30,13 +35,13 @@ const PostFeed: React.FC<PostFeedProps> = ({ posts, visiblePosts, setVisiblePost
         next={() => {
           setVisiblePosts(visiblePosts + 2);
         }}
-        hasMore={visiblePosts < posts.length}
+        hasMore={visiblePosts < filteredPosts.length}
         loader={<Flex justify="center"><BeatLoader size={8} color="darkgrey" /></Flex>}
         style={{ overflow: "hidden" }}
       >
         <Grid templateColumns="repeat(1, 1fr)" gap={0}>
-          {posts.length > 0 &&
-            posts.slice(0, visiblePosts).map((post, i) => (
+          {filteredPosts.length > 0 &&
+            filteredPosts.slice(0, visiblePosts).map((post, i) => (
               <Post key={`${query}-${post.url}`} postData={PostModel.newFromDiscussion(post)} />
             ))}
         </Grid>

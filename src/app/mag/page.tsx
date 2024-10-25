@@ -11,6 +11,7 @@ import { FaBook, FaBookOpen } from "react-icons/fa"
 import InfiniteScroll from "react-infinite-scroll-component"
 import { BeatLoader } from "react-spinners"
 import AuthorSearchBar from "../upload/components/searchBar"
+import { blockedUsers } from "@/lib/constants";  // Import the blocklist
 
 export default function Mag() {
   const SKATEHIVE_TAG = [{ tag: "hive-173115", limit: 60 }]
@@ -67,6 +68,9 @@ export default function Mag() {
     )
   }
 
+  // Filter posts based on blocked users
+  const filteredPosts = posts.filter(post => !blockedUsers.includes(post.author));
+
   const handleCreateClick = () => {
     if (!hiveUser.hiveUser) {
       setIsLoginModalOpen(true)
@@ -108,8 +112,6 @@ export default function Mag() {
         },
       }}
     >
-
-
       <Center mt={2} mb={1}>
         <Button
           size={"lg"}
@@ -194,7 +196,7 @@ export default function Mag() {
       <InfiniteScroll
         dataLength={visiblePosts}
         next={() => setVisiblePosts(visiblePosts + 3)}
-        hasMore={visiblePosts < posts.length}
+        hasMore={visiblePosts < filteredPosts.length}
         loader={
           <Flex justify="center">
             <BeatLoader size={8} color="darkgrey" />
@@ -211,8 +213,8 @@ export default function Mag() {
           }}
           gap={0}
         >
-          {posts.length > 0 &&
-            posts
+          {filteredPosts.length > 0 &&
+            filteredPosts
               .slice(0, visiblePosts)
               .map((post, i) => (
                 <Post

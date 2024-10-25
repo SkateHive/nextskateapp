@@ -16,6 +16,7 @@ import {
   Center,
   Container,
   Divider,
+  filter,
   Flex,
   Heading,
   HStack,
@@ -31,6 +32,8 @@ import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import { Comment } from "../../../app/mainFeed/page";
 import { FullMagazineRenderers } from "../FullMagazineRenderers";
+import { blockedUsers } from "@/lib/constants";
+import { includes } from "lodash";
 
 const pageStyles = {
   backgroundColor: "black",
@@ -138,6 +141,7 @@ export default function FullMag({ tag, query }: TestPageProps) {
       </Flex>
     );
   }
+  const filteredPosts = posts ? posts.filter(post => !blockedUsers.includes(post.author)) : [];
 
   return (
     <VStack justify="center" align="center" w="100%" h="100vh" p={5}>
@@ -184,7 +188,7 @@ export default function FullMag({ tag, query }: TestPageProps) {
             <Text color={'limegreen'} fontSize={36}> issue #0 </Text>
           </Flex>
         </Box>
-        {posts
+        {filteredPosts
           .sort((a, b) => Number(getTotalPayout(b as Comment)) - Number(getTotalPayout(a as Comment)))
           .map((post: Discussion) => (
             <Box key={post.id} sx={pageStyles}>
