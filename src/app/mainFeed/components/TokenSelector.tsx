@@ -77,6 +77,11 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
             abi: memberABI as unknown as any[],
             tokenLogo: "https://cdn.zerion.io/8c5eea78-246d-4fe2-9ab6-5bcd75ef0fb7.png"
         },
+        USDC: {
+            address: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+            abi: memberABI as unknown as any[],
+            tokenLogo: "https://cdn.zerion.io/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png"
+        },
         HIVE: {
             address: '0xFUCKTHEGOVERMENT',
             abi: [],
@@ -296,6 +301,20 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                                 >
                                     <Image alt="degen" mr={3} boxSize="20px" src={tokenDictionary['DEGEN'].tokenLogo} />
                                     $DEGEN
+                                </MenuItem>
+                                
+                                <MenuItem
+                                  bg="black"
+                                  _hover={{ bg: "purple.500" }}
+                                  onClick={() => {
+                                      setToken("USDC");
+                                      setIsCustomToken(false);
+                                  }}
+                                 
+                                >
+                                    <Image alt="usdc" mr={3} boxSize="20px" src="https://cdn.zerion.io/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png" />
+   
+                                 $USDC
                                 </MenuItem>
                                 <MenuItem
                                     bg="black"
