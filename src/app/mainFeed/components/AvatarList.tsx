@@ -1,10 +1,10 @@
 "use client"
 import AuthorAvatar from "@/components/AuthorAvatar"
 import { Avatar, Box, Divider, HStack, Link, Tooltip } from "@chakra-ui/react"
-import { useState } from "react"
-import AirdropModal from "./airdropModal"
-import { useAccount } from "wagmi"
 import { useRouter } from "next/navigation"
+import { useState } from "react"
+import { useAccount } from "wagmi"
+import AirdropModal from "./airdropModal"
 interface AvatarListProps {
   sortedComments: any[]
 }
