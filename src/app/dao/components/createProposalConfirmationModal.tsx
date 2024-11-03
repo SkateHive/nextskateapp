@@ -93,7 +93,7 @@ const CreateProposalConfirmationModal: React.FC<CreateProposalConfirmationModalP
                         extensions: [
                             [0, {
                                 beneficiaries: [{
-                                    account: 'steemskate',
+                                    account: 'skatehive',
                                     weight: 5000
                                 }]
                             }]

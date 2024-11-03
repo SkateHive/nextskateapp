@@ -37,7 +37,7 @@ export default function Upload() {
     const [value, setValue] = useState('');
     const [isUploading, setIsUploading] = useState(false);
     const { hiveUser } = useAuthHiveUser();
-    const defaultTags = ["skatehive", "skateboarding", "leofinance", "sportstalk", "hive-engine"];
+    const defaultTags = ["skatehive", "skateboarding", "skate", "inleo", "neoxian", "sportstalk"];
     const [tags, setTags] = useState([...defaultTags]);
     const [showAdvanced, setShowAdvanced] = useState(false);
     const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
