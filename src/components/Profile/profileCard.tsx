@@ -1,24 +1,26 @@
+import useGnarsBalance from '@/hooks/useGnarsBalance';
 import useHiveBalance from '@/hooks/useHiveBalance';
-import { HiveAccount } from '@/lib/useHiveAuth';
 import { updateProfile } from '@/lib/hive/client-functions';
 import { updateProfileWithPrivateKey } from '@/lib/hive/server-functions';
+import { HiveAccount } from '@/lib/useHiveAuth';
 import {
     Box, Button, Card, CardBody, CardFooter, CardHeader, Center, Flex,
-    HStack, Image, Text, useDisclosure, VStack, useToast,
+    HStack, Image, Text, useDisclosure,
+    useToast,
+    VStack,
 } from '@chakra-ui/react';
 import React, { useMemo, useState } from 'react';
 import { FaHive } from 'react-icons/fa';
-import { FaPencil } from "react-icons/fa6"
-import UserAvatar from '../UserAvatar';
-import useGnarsBalance from '@/hooks/useGnarsBalance';
-import EditInfoModal from "./EditInfoModal"
+import { FaPencil } from "react-icons/fa6";
 import '../../styles/profile-card-styles.css';
+import UserAvatar from '../UserAvatar';
+import EditInfoModal from "./EditInfoModal";
 
-import { dummyMissions, xpThresholds } from './missionsData';
 import { useHiveUser } from '@/contexts/UserContext';
+import { dummyMissions, xpThresholds } from './missionsData';
 
-import { toogleFollowWithPassword } from "@/lib/hive/server-functions"
-import { toogleFollow, checkFollow } from "@/lib/hive/client-functions"
+import { checkFollow, toogleFollow } from "@/lib/hive/client-functions";
+import { toogleFollowWithPassword } from "@/lib/hive/server-functions";
 
 interface ProfileCardProps {
     user: HiveAccount
@@ -48,7 +50,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
     const canEditProfile = (connectedUser.hiveUser?.name == user.name);
     const [isFollowing, setIsFollowing] = useState(() => fetchFollowState());
     const [stateFollowing, setStateFollowing] = useState(false);
-    
+
 
     async function fetchFollowState() {
         if (!canEditProfile) {
@@ -78,8 +80,8 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                     // setIsFollowing(checkFollow(connectedUserName, user.name))
                     if (window && window.hive_keychain) {
                         toogleFollow(connectedUserName, user.name, !result)
-                            .then((result)=>{
-                                if(result != 'error')
+                            .then((result) => {
+                                if (result != 'error')
                                     setStateFollowing(result == 'blog')
                             })
                             .catch(() => {
@@ -94,8 +96,8 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
             checkFollow(connectedUserName, user.name)
                 .then(result => {
                     toogleFollowWithPassword(encKey, connectedUserName, user.name, !result)
-                        .then((result)=>{
-                            if(result != 'error')
+                        .then((result) => {
+                            if (result != 'error')
                                 setStateFollowing(result == 'blog')
                         })
                 }).catch(() => {
@@ -528,11 +530,11 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                                 minH={200}
                                 minW={250}
                             >
-                                {userPostingMetadata.profile?.about.length > 235
-                                    ? userPostingMetadata.profile?.about.substr(0, 235) + '...'
-                                    : userPostingMetadata.profile?.about
-                                    || "I'm too lazy to write a bio."
+                                {typeof userPostingMetadata.profile?.about === "string" && userPostingMetadata.profile.about.length > 235
+                                    ? userPostingMetadata.profile.about.substr(0, 235) + '...'
+                                    : userPostingMetadata.profile?.about || "I'm too lazy to write a bio."
                                 }
+
                             </Box>
                         </HStack>
 
