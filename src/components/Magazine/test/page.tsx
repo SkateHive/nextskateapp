@@ -1,7 +1,8 @@
 "use client";
 import AuthorAvatar from "@/components/AuthorAvatar";
 import TipButton from "@/components/PostCard/TipButton";
-import usePosts from "@/hooks/usePosts";
+import { MagModal } from "@/components/Profile/MagModal";
+import { useQueryResult } from "@/contexts/QueryContext";
 import {
   getTotalPayout,
   transform3SpeakContent,
@@ -31,8 +32,6 @@ import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import { Comment } from "../../../app/mainFeed/page";
 import { MagazineRenderers } from "../MagazineRenderers";
-import { useQueryResult } from "@/contexts/QueryContext";
-import { MagModal } from "@/components/Profile/MagModal";
 interface Post extends Discussion {
   post_id: number;
   pending_payout_value: string;
@@ -235,7 +234,7 @@ export default memo(function Zine({ tag, query }: TestPageProps) {
                 <Text color="yellow" mt={2}>
                   ${Number(getTotalPayout(post as Comment)).toFixed(2)} USD
                 </Text>
-                <TipButton author={post.author} />
+                <TipButton author={post.author} permlink={post.permlink} />
               </HStack>
               <Divider mt={4} mb={4} />
               <Text fontSize={"8px"} color="white" mt={-2}>
