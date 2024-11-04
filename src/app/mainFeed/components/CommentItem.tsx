@@ -139,7 +139,7 @@ const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = ()
             Edit
           </Button>
         ) : (
-          <TipButton author={comment.author} />
+          <TipButton author={comment.author} permlink={comment.permlink} />
         )}
         <Button
           _hover={{

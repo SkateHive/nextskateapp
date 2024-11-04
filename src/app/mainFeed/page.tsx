@@ -4,9 +4,7 @@ import { useHiveUser } from "@/contexts/UserContext";
 import { useComments } from "@/hooks/comments";
 import { getFileSignature, uploadImage, vote } from "@/lib/hive/client-functions";
 import { commentWithPrivateKey } from "@/lib/hive/server-functions";
-import { CommentOperation } from "@hiveio/dhive";
 import { getTotalPayout } from "@/lib/utils";
-import EmojiPicker, { Theme } from 'emoji-picker-react';
 import {
   Box,
   Button,
@@ -24,7 +22,8 @@ import {
   Textarea,
   VStack,
 } from "@chakra-ui/react";
-import { CommentOptionsOperation } from "@hiveio/dhive";
+import { CommentOperation, CommentOptionsOperation } from "@hiveio/dhive";
+import EmojiPicker, { Theme } from 'emoji-picker-react';
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { FaHistory, FaImage, FaMoneyBill, FaTimes } from "react-icons/fa";
@@ -34,7 +33,6 @@ import { uploadFileToIPFS } from "../upload/utils/uploadToIPFS";
 import AvatarList from "./components/AvatarList";
 import CommentList from "./components/CommentsList";
 import LoadingComponent from "./components/loadingComponent";
-import AvatarMediaModal from "./components/mediaModal";
 
 const parent_author = process.env.NEXT_PUBLIC_MAINFEED_AUTHOR || "skatehacker";
 const parent_permlink = process.env.NEXT_PUBLIC_MAINFEED_PERMLINK || "test-advance-mode-post";

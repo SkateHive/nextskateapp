@@ -1,12 +1,12 @@
-import { usePostContext } from "@/contexts/PostContext";
 import HiveClient from "@/lib/hive/hiveclient";
 import { Button, Image, Menu, MenuButton, MenuItem, MenuList, Tooltip } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import HiveTipModal from "./HiveTipModal";
 import TipModal from "./TipModal";
 
 interface TipButtonProps {
     author: string;
+    permlink: string;
 }
 
 interface UserData {
@@ -15,23 +15,36 @@ interface UserData {
 
 export const getUserData = async (username: string) => {
     const response = await HiveClient.database.call('get_accounts', [[username]]);
-    const userData = response[0];
-    return userData;
+    return response[0];
 };
 
-export default function TipButton({ author }: TipButtonProps) {
+export const getPost = async (author: string, permlink: string) => {
+    const response = await HiveClient.database.call('get_content', [author, permlink]);
+    return response;
+};
+
+export default function TipButton({ author, permlink }: TipButtonProps) {
+    console.log("TipButton props:", { author, permlink });
+    const [isHiveTipModalOpen, setIsHiveTipModalOpen] = useState(false);
+    const [post, setPost] = useState<any>(null);
+    const [userData, setUserData] = useState<UserData | null>(null);
+    const [isUserEthWalletSet, setIsUserEthWalletSet] = useState(false);
     const [isTipModalOpen, setIsTipModalOpen] = useState(false);
     const [token, setToken] = useState<string>("");
-    const { post } = usePostContext();
-    const [userData, setUserData] = useState<UserData | null>(null);
     const [authorETHwallet, setAuthorETHwallet] = useState<string>("");
-    const [isHiveTipModalOpen, setIsHiveTipModalOpen] = useState(false);
-    const [isUserEthWalletSet, setIsUserEthWalletSet] = useState(false);
+
+    useEffect(() => {
+        console.log("TipButton mounted with author:", author, "and permlink:", permlink);
+    }, [author, permlink]);
 
     const fetchUserData = async () => {
-        const data = await getUserData(author); // Use the new getUserData function
-        setUserData(data);
-        handleCheckUserEthWallet(data);
+        if (author) {
+            const data = await getUserData(author);
+            setUserData(data);
+            handleCheckUserEthWallet(data);
+        } else {
+            console.warn("Author is empty, unable to fetch user data.");
+        }
     };
 
     const handleCheckUserEthWallet = (data: UserData) => {
@@ -51,8 +64,27 @@ export default function TipButton({ author }: TipButtonProps) {
         }
     };
 
-    const handleHiveTipClick = () => {
-        setIsHiveTipModalOpen(true);
+    const loadPost = async () => {
+        console.log("Loading post with:", author, permlink);
+
+
+
+        try {
+            const loadedPost = await getPost(author, permlink);
+            console.log("Post loaded successfully:", loadedPost);
+            setPost(loadedPost);
+        } catch (error) {
+            console.error("Failed to load post:", error);
+        }
+    };
+
+    const handleHiveTipClick = async () => {
+        await loadPost();
+        if (post) {
+            setIsHiveTipModalOpen(true);
+        } else {
+            console.warn("The post was not found.");
+        }
     };
 
     return (
@@ -63,9 +95,16 @@ export default function TipButton({ author }: TipButtonProps) {
                 color={"limegreen"}
                 border={"1px dashed #A5D6A7"}
             >
-                <MenuButton _active={{ bg: 'transparent' }} onClick={fetchUserData} w={"auto"} as={Button} color="green.200" variant={"ghost"} _hover={{
-                    background: "none",
-                }} size="sm">
+                <MenuButton
+                    _active={{ bg: 'transparent' }}
+                    onClick={fetchUserData}
+                    w={"auto"}
+                    as={Button}
+                    color="green.200"
+                    variant={"ghost"}
+                    _hover={{ background: "none" }}
+                    size="sm"
+                >
                     ⌐◨-◨
                 </MenuButton>
             </Tooltip>
@@ -107,7 +146,6 @@ export default function TipButton({ author }: TipButtonProps) {
                     </>
                 )}
             </MenuList>
-
             <TipModal
                 isOpen={isTipModalOpen}
                 onClose={() => setIsTipModalOpen(false)}
@@ -118,7 +156,9 @@ export default function TipButton({ author }: TipButtonProps) {
             <HiveTipModal
                 isOpen={isHiveTipModalOpen}
                 onClose={() => setIsHiveTipModalOpen(false)}
-                author={author}
+                author={post?.author}
+                permlink={post?.permlink}
+                post={post}
             />
         </Menu>
     );
