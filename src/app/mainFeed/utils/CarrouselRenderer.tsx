@@ -24,7 +24,7 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
     const carouselRef = useRef<any>(null);
     const [isFullScreen, setIsFullScreen] = useState(false);
     const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
-    const videoRef = useRef<HTMLVideoElement | null>(null);
+    const videoRefs = useRef<Array<HTMLVideoElement | null>>([]);
 
     const extractMediaItems = (markdown: string): MediaItem[] => {
         const imageRegex = /!\[.*?\]\((.*?)\)/g;
@@ -59,18 +59,28 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
         }
     };
 
-    const handleMediaClick = (media: MediaItem) => {
+    const handleMediaClick = (media: MediaItem, index: number) => {
         setSelectedMedia(media);
         setIsFullScreen(true);
+
+        if (media.type === 'video' && videoRefs.current[index]) {
+            videoRefs.current[index]?.pause();
+        }
     };
 
     const closeModal = () => {
+        if (selectedMedia?.type === 'video') {
+            const index = mediaItems.findIndex((item) => item.url === selectedMedia.url);
+            if (index !== -1 && videoRefs.current[index]) {
+                videoRefs.current[index]!.currentTime = 0;
+            }
+        }
         setIsFullScreen(false);
         setSelectedMedia(null);
     };
 
     const handleOverlayClick = (e: React.MouseEvent) => {
-        if (selectedMedia && selectedMedia.type === 'video' && videoRef.current && videoRef.current.contains(e.target as Node)) {
+        if (selectedMedia && selectedMedia.type === 'video') {
             return;
         }
         closeModal();
@@ -91,15 +101,18 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
             alignItems="center"
             height="100%"
             overflow="hidden"
-            onClick={() => handleMediaClick(media)}
+            onClick={() => handleMediaClick(media, index)}
             cursor="pointer"
         >
             {media.type === 'video' ? (
                 <video
-                    src={media.url}
-                    controls
-                    style={{ width: "100%", height: "100%", borderRadius: "8px", maxHeight: '445px', aspectRatio: "16/9" }}
-                />
+                ref={(el) => {
+                    videoRefs.current[index] = el; 
+                }}
+                src={media.url}
+                controls={false} 
+                style={{ width: "100%", height: "100%", borderRadius: "8px", maxHeight: '445px', aspectRatio: "16/9" }}
+            />
             ) : (
                 <Image
                     src={media.url}
@@ -140,7 +153,7 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
 
             {selectedMedia && (
                 <Modal isOpen={isFullScreen} onClose={closeModal} size="full">
-                    <ModalOverlay onClick={handleOverlayClick} />
+                    <ModalOverlay onClick={handleOverlayClick} bg="rgba(0, 0, 0, 0.7)" />
                     <ModalContent
                         bg="transparent"
                         padding="0"
@@ -150,7 +163,7 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
                         justifyContent="center"
                         maxWidth="80vw"
                         maxHeight="80vh"
-
+                        onClick={closeModal}
                         overflow="hidden"
                         position="relative">
 
@@ -158,7 +171,6 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
                         {selectedMedia.type === 'video' ? (
 
                             <video
-                                ref={videoRef}
                                 src={selectedMedia.url}
                                 controls
                                 style={{
@@ -169,6 +181,7 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
                                     borderRadius: '8px',
                                     objectFit: 'contain'
                                 }}
+                                onClick={(e) => e.stopPropagation()}
                             />
                         ) : (
                             <Image
@@ -181,6 +194,7 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
                                     borderRadius: '8px',
                                     objectFit: 'contain'
                                 }}
+
                             />
                         )}
                     </ModalContent>
