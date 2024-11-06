@@ -60,7 +60,7 @@ const coverStyles = {
   backgroundColor: "darkblue",
   color: "white",
   backgroundImage:
-    "url(https://media1.giphy.com/media/9ZsHm0z5QwSYpV7g01/giphy.gif?cid=6c09b952uxaerotyqa9vct5pkiwvar6l6knjgsctieeg0sh1&ep=v1_gifs_search&rid=giphy.gif&ct=g)",
+    "url(https://i.pinimg.com/originals/c6/ea/8e/c6ea8e9623abb4ca57e0594e5766c872.gif)",
   backgroundSize: "cover",
   textAlign: "center",
 };
@@ -75,13 +75,7 @@ const backCoverStyles = {
     "url(https://media1.giphy.com/media/9ZsHm0z5QwSYpV7g01/giphy.gif?cid=6c09b952uxaerotyqa9vct5pkiwvar6l6knjgsctieeg0sh1&ep=v1_gifs_search&rid=giphy.gif&ct=g)",
   backgroundSize: "cover",
 };
-const textStyles = {
-  position: "absolute",
-  bottom: "20px",
-  width: "100%",
-  textAlign: "center",
-  color: "white",
-};
+
 
 export interface TestPageProps {
   tag: { tag: string; limit: number }[];
@@ -179,13 +173,11 @@ export default function FullMag({ tag, query }: TestPageProps) {
       >
         <Box sx={coverStyles}>
           <Flex direction="column" align="center" justify="center">
-            <Heading mb={5}>
-              <Image src="/skatehive-banner.png" alt="SkateHive Logo" />
-            </Heading>
-            <Image src="/cover.png" alt="SkateHive Logo" height={800} />
+            {/* <Image src="/skatehive-banner.png" alt="SkateHive Logo" mb="5" /> */}
+            <Image src="https://ipfs.skatehive.app/ipfs/QmR7KVsGDQH93eU3C8CSCejnbuXrmku2RkyodSdJn61RAN" alt="SkateHive Logo" height={750} />
           </Flex>
           <Flex justifyContent={'right'}>
-            <Text color={'limegreen'} fontSize={36}> issue #0 </Text>
+            <Text color={'limegreen'} fontSize={36}> issue ∞ </Text>
           </Flex>
         </Box>
         {filteredPosts
@@ -193,14 +185,14 @@ export default function FullMag({ tag, query }: TestPageProps) {
           .map((post: Discussion) => (
             <Box key={post.id} sx={pageStyles}>
               <HStack spacing={2}>
-                <VStack bg="#0c0c0d" p={2} borderRadius={5} width={"20%"}>
-                  <AuthorAvatar username={post.author} boxSize={50} borderRadius={100} />
-                  <Text color={"white"} mt={0}>
+                <VStack p={1} borderRadius={5} width={"20%"} >
+                  <AuthorAvatar username={post.author} boxSize={30} borderRadius={100} />
+                  <Text color={"white"} mt={0} fontSize={10}>
                     {post.author}
                   </Text>
                 </VStack>
                 <Text
-                  fontSize={'26px'}
+                  fontSize={'16px'}
                   color={"white"}
                   whiteSpace="nowrap"
                   overflow="hidden"
@@ -209,12 +201,24 @@ export default function FullMag({ tag, query }: TestPageProps) {
                   p={2}
                   borderRadius={5}
                   w={"80%"}
+                  pl={5}
                 >
                   {post.title}
                 </Text>
+                <Badge
+                  variant={"outline"}
+                  h={"30px"}
+                  width={"20%"}
+                  cursor={"pointer"}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Center>
+                    <Text fontSize={'22px'}> ${Number(getTotalPayout(post as Comment)).toFixed(2)}</Text>
+                  </Center>
+                </Badge>
               </HStack>
 
-              <Divider mt={4} mb={4} />
+              <Divider mt={2} mb={2} />
               <ReactMarkdown
                 key={post.id}
                 className="page"

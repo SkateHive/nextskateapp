@@ -85,12 +85,12 @@ const VideoRenderer = ({ src, ...props }: RendererProps) => {
                 <video
                     {...props}
                     muted={true}
-                    loop={false}
+                    loop={true}
                     ref={videoRef}
                     src={src}
                     poster={poster}
                     crossOrigin='anonymous'
-                    playsInline={true}
+                    playsInline={false}
                     style={{ background: 'transparent', borderRadius: '10px', marginBottom: '20px', border: '0px grey solid', width: '100%', minHeight: '50%', maxHeight: '420px' }}
                 />
             </picture>
@@ -167,6 +167,9 @@ export const FullMagazineRenderers = {
         const listType = ordered ? "1" : "decimal";
         return <ul {...props} data-ordered={listType} style={{ padding: '5%', paddingLeft: '10%', color: 'white' }}>{children}</ul>;
     },
+    li: ({ children, ...props }: RendererProps) => (
+        <li {...props} style={{ paddingBottom: '5px', color: '#A5D6A7' }}>{children}</li>
+    ),
     sub: ({ children, ...props }: RendererProps) => (
         <sub {...props} style={{ color: 'gray' }}>{children}</sub>
     ),
@@ -213,7 +216,21 @@ export const FullMagazineRenderers = {
             />
         </center>
     ),
-    video: VideoRenderer, // Use the new VideoRenderer component
+    video: ({ src, ...props }: RendererProps) => (
+        <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', paddingTop: '10px', minWidth: '100%', minHeight: 'auto' }}>
+            <picture>
+                <video
+                    {...props}
+                    muted={true}
+                    loop={true}
+                    src={src}
+                    crossOrigin='anonymous'
+                    playsInline={false}
+                    style={{ background: 'transparent', borderRadius: '10px', marginBottom: '20px', border: '0px grey solid', width: '100%', minHeight: '50%', maxHeight: '420px' }}
+                />
+            </picture>
+        </div>
+    ),
     table: ({ children, ...props }: RendererProps) => (
         <div style={{
             display: 'flex', justifyContent: 'center',
