@@ -4,7 +4,6 @@ import {
     Badge,
     Box,
     Card,
-    CardBody,
     CardHeader,
     Center,
     Divider,
@@ -15,9 +14,9 @@ import {
     VStack
 } from "@chakra-ui/react";
 import axios from 'axios';
-import { useEffect, useState, useMemo } from 'react';
-import { FaEthereum } from 'react-icons/fa';
+import { useEffect, useMemo, useState } from 'react';
 import { mainnet } from 'viem/chains';
+import { formatUnits } from 'viem/utils';
 import { useBalance } from 'wagmi';
 
 const HOT_ADDRESS = '0xB4964e1ecA55Db36a94e8aeFfBFBAb48529a2f6c'
@@ -42,15 +41,16 @@ const DaoTreasure = () => {
         token: BASE_USDC_TOKEN_ADDRESS
     });
 
-    const [hotWalletBalance, setHotWalletBalance] = useState("0");
+    const [hotWalletBalance, setHotWalletBalance] = useState<number>(0);
     const ethPrice = useETHPrice() || 2400;
 
-    // Fetch the hot wallet balance
+    const toEther = (balanceInWei: bigint): number => Number(formatUnits(balanceInWei, 18));
+
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await axios.get(`https://pioneers.dev/api/v1/portfolio/${HOT_ADDRESS}`);
-                setHotWalletBalance(response.data.totalNetWorth || "0");
+                setHotWalletBalance(parseFloat(response.data.totalNetWorth) || 0);
             } catch (error) {
                 console.error("Error fetching hot wallet balance:", error);
             }
@@ -58,14 +58,13 @@ const DaoTreasure = () => {
         fetchData();
     }, []);
 
-    // Memoize totalJazz calculation for efficiency
     const totalJazz = useMemo(() => {
-        const oldMultisigValue = Number(oldMultisigBalance?.formatted || 0) * ethPrice;
-        const newMultisigValue = Number(newMultisigBalance?.formatted || 0) * ethPrice;
-        const newUsdcValue = Number(newMultisigUsdcBalance?.formatted || 0);
-        const hotWalletValue = Number(hotWalletBalance);
-        return hotWalletValue + oldMultisigValue + newMultisigValue + newUsdcValue;
+        const oldMultisigValue: number = oldMultisigBalance?.value ? toEther(oldMultisigBalance.value) * ethPrice : 0;
+        const newMultisigValue: number = newMultisigBalance?.value ? toEther(newMultisigBalance.value) * ethPrice : 0;
+        const newUsdcValue: number = newMultisigUsdcBalance?.value ? Number(formatUnits(newMultisigUsdcBalance.value, 6)) : 0;
+        return Number(hotWalletBalance + oldMultisigValue + newMultisigValue + newUsdcValue);
     }, [hotWalletBalance, oldMultisigBalance, newMultisigBalance, newMultisigUsdcBalance, ethPrice]);
+
     const isMobile = useMediaQuery("(max-width: 768px)")[0];
 
     return (
@@ -80,19 +79,19 @@ const DaoTreasure = () => {
         >
             <Center>
                 <CardHeader>
-                    <HStack spacing={10} >
+                    <HStack spacing={10} align="center" wrap={isMobile ? "wrap" : "nowrap"}>
                         <Box>
                             <VStack>
-                                <Text>
-                                    Total:
+                                <Text fontSize="xl" fontWeight="bold">
+                                    Total Assets:
                                 </Text>
                                 <Tooltip
-                                    bg="black"
+                                    bg="gray.800"
                                     color="white"
                                     border="1px solid white"
                                     label={
                                         <Center>
-                                            <VStack>
+                                            <VStack spacing={1}>
                                                 <Text>{HOT_ADDRESS}</Text>
                                                 <Text>{OLD_MULTISIG_ADDRESS}</Text>
                                                 <Text>{NEW_MULTISIG_ADDRESS}</Text>
@@ -101,33 +100,38 @@ const DaoTreasure = () => {
                                     }
                                 >
                                     <Badge
-                                        ml={2}
-                                        bg="black"
-                                        border="1px solid #A5D6A7"
-                                        color="#A5D6A7"
-                                        fontSize="22px"
+                                        bg="gray.800"
+                                        border="1px solid lime"
+                                        color="lime"
+                                        fontSize="xl"
+                                        px={2}
+                                        py={1}
+                                        borderRadius="md"
                                     >
-                                        {totalJazz.toFixed(2)} USD
+                                        ${Number(totalJazz).toFixed(2)}
                                     </Badge>
                                 </Tooltip>
                             </VStack>
                         </Box>
                         {!isMobile && (
                             <Box>
-                                <HStack justifyContent="space-between">
+                                <HStack spacing={4} justifyContent="space-between">
                                     {["For DIY", "For Dev", "Sponsors"].map((label, index) => (
-                                        <VStack m={2} key={index}>
-                                            <Text fontSize="12px" color="white">{label}</Text>
+                                        <VStack m={2} key={index} spacing={1}>
+                                            <Text fontSize="sm" color="white">{label}</Text>
                                             <Divider />
                                             <Badge
                                                 colorScheme="green"
-                                                bg="black"
-                                                border="1px solid #A5D6A7"
-                                                color="#A5D6A7"
+                                                bg="gray.800"
+                                                border="1px solid lime"
+                                                color="lime"
                                                 fontWeight="bold"
-                                                fontSize="12px"
+                                                fontSize="md"
+                                                px={2}
+                                                py={1}
+                                                borderRadius="md"
                                             >
-                                                {(totalJazz / (index === 1 ? 2 : 4)).toFixed(2)} USD
+                                                ${(Number(totalJazz) / (index === 1 ? 2 : 4)).toFixed(2)}
                                             </Badge>
                                         </VStack>
                                     ))}
@@ -137,7 +141,6 @@ const DaoTreasure = () => {
                     </HStack>
                 </CardHeader>
             </Center>
-
         </Card>
     );
 };
