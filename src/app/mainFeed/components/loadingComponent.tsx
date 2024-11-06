@@ -17,6 +17,8 @@ const randomSentences = [
   "Never lose your bros clips",
   "support your local skateshops!",
   "Peoples Thrasher",
+  "Stack HP, buy with HBD",
+  "Drop hills not bombs!",
 ];
 
 const LoadingComponent = () => {
