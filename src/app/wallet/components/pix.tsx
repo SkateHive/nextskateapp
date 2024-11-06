@@ -1,9 +1,9 @@
 import useHiveBalance from "@/hooks/useHiveBalance";
 import { HiveAccount } from "@/lib/useHiveAuth";
-import { Badge, Box, Button, Card, CardBody, CardHeader, Center, Container, HStack,
-         Image, Input, InputGroup, InputRightAddon, Switch, Text, VStack,
-        //  useToast 
-       } from "@chakra-ui/react";
+import {
+    Badge, Box, Button, Card, CardBody, CardHeader, Center, Container, HStack,
+    Image, Input, InputGroup, InputRightAddon, Switch, Text, VStack,
+} from "@chakra-ui/react";
 import { QrCodePix } from 'qrcode-pix';
 import React, { useEffect, useState } from "react";
 import { fetchPixBeeData, formatCNPJ, formatCPF, formatRandomKey, formatTelephone } from "../utils/fetchPixBeeData";
@@ -159,8 +159,8 @@ const Pix = ({ user }: PixProps) => {
                                     const qrCodePix = QrCodePix({
                                         version: '01',
                                         key: pixbeeData?.pixbeePixKey,
-                                        name: '',
-                                        city: '',
+                                        name: user.name,
+                                        city: 'cidade',
                                         message: `${user.name}`,
                                         value: parseFloat(userInputPIX),
                                     });
