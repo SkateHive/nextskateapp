@@ -60,9 +60,11 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
     };
 
     const handleMediaClick = (media: MediaItem, index: number) => {
-        setSelectedMedia(media);
-        setIsFullScreen(true);
-
+        if (media.type === 'image') { 
+            setSelectedMedia(media);
+            setIsFullScreen(true);
+        }
+    
         if (media.type === 'video' && videoRefs.current[index]) {
             videoRefs.current[index]?.pause();
         }
@@ -110,7 +112,7 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
                     videoRefs.current[index] = el; 
                 }}
                 src={media.url}
-                controls={false} 
+                controls
                 style={{ width: "100%", height: "100%", borderRadius: "8px", maxHeight: '445px', aspectRatio: "16/9" }}
             />
             ) : (
