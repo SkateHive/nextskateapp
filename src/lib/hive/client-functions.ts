@@ -4,6 +4,7 @@ import { VideoPart } from "../models/user";
 import HiveClient from "./hiveclient";
 import crypto from 'crypto';
 import { signImageHash } from "./server-functions";
+import { Operation, PrivateKey } from "@hiveio/dhive";
 
 interface HiveKeychainResponse {
   success: boolean
@@ -129,9 +130,9 @@ export async function transferWithKeychain(username: string, destination: string
     console.log({ error });
   }
 }
-export async function updateProfile(username: string, name: string, about: string, location: string, 
-    coverImageUrl: string, avatarUrl: string, website: string, ethAddress: string, videoParts: VideoPart[], 
-    level: number, staticXp?: number, cumulativeXp?: number) {
+export async function updateProfile(username: string, name: string, about: string, location: string,
+  coverImageUrl: string, avatarUrl: string, website: string, ethAddress: string, videoParts: VideoPart[],
+  level: number, staticXp?: number, cumulativeXp?: number) {
   try {
     const keychain = new KeychainSDK(window);
 
@@ -227,7 +228,7 @@ export async function checkFollow(follower: string, following: string): Promise<
       follower,
       following
     ]);
-    return status.follows;    
+    return status.follows;
   } catch (error) {
     console.log(error);
     return false;
@@ -240,25 +241,27 @@ export async function checkFollow(follower: string, following: string): Promise<
 // if return false, error
 export async function toogleFollow(follower: string, following: string, status: boolean) {
   const keychain = new KeychainSDK(window);
-  if(!keychain.isKeychainInstalled()) return false;
+  if (!keychain.isKeychainInstalled()) return false;
 
   // status = followstate, if set True, start following, other, stop following
   var type = '';
-  if (status) 
+  if (status)
     type = 'blog';
 
   const json = JSON.stringify(['follow', {
-      follower: follower,
-      following: following,
-      what: [type], // '' empty value for unfollow; 'blog' for follow
+    follower: follower,
+    following: following,
+    what: [type], // '' empty value for unfollow; 'blog' for follow
   }]);
 
-  const formParamsAsObject = {data: {
+  const formParamsAsObject = {
+    data: {
       username: follower,
       id: "follow",
       method: KeychainKeyTypes.posting,
       json: json
-  }};
+    }
+  };
 
   try {
     await keychain.custom(formParamsAsObject.data as unknown as Custom);
@@ -274,7 +277,7 @@ export async function toogleFollow(follower: string, following: string, status: 
 // if return false, error
 export async function changeFollow(follower: string, following: string) {
   const keychain = new KeychainSDK(window);
-  if(!keychain.isKeychainInstalled()) return false;
+  if (!keychain.isKeychainInstalled()) return false;
 
   const status = await checkFollow(follower, following)
   let type = ''
@@ -331,37 +334,67 @@ export async function witnessVoteWithKeychain(username: string, witness: string)
   }
 
 }
+
+// TODO: Review and test this function with privatekey login 
+export async function witnessVoteWithPrivateKey(username: string, witness: string, vote: boolean) {
+  const client = HiveClient
+  const privateKey = process.env.NEXT_PUBLIC_HIVE_ACTIVE_KEY
+
+  // Define the witness vote operation
+  const operation: Operation = [
+    'account_witness_vote',
+    {
+      account: username,
+      witness: witness,
+      approve: vote
+    }
+  ];
+
+  try {
+    // Broadcast the operation to the Hive blockchain
+    if (!privateKey) {
+      throw new Error('Private key is undefined');
+    }
+    const result = await client.broadcast.sendOperations([operation], PrivateKey.fromString(privateKey));
+    console.log('Witness vote broadcast result:', result);
+    return result;
+  } catch (error) {
+    console.error('Error broadcasting witness vote:', error);
+    return false;
+  }
+}
+
 export async function getAccountHistory(username: string, batchSize: number) {
   const accountHistory = await HiveClient.database.getAccountHistory(username, -1, batchSize * 2);
   return accountHistory;
 }
 
-export function getFileSignature (file: File): Promise<string> {
+export function getFileSignature(file: File): Promise<string> {
   return new Promise<string>(async (resolve, reject) => {
-      const reader = new FileReader();
+    const reader = new FileReader();
 
-      reader.onload = async () => {
-          if (reader.result) {
-              const content = Buffer.from(reader.result as ArrayBuffer);
-              const hash = crypto.createHash('sha256')
-                  .update('ImageSigningChallenge')
-                  .update(content)
-                  .digest('hex');
-              try {
-                  const signature = await signImageHash(hash);
-                  resolve(signature);
-              } catch (error) {
-                  console.error('Error signing the hash:', error);
-                  reject(error);
-              }
-          } else {
-              reject(new Error('Failed to read file.'));
-          }
-      };
-      reader.onerror = () => {
-          reject(new Error('Error reading file.'));
-      };
-      reader.readAsArrayBuffer(file);
+    reader.onload = async () => {
+      if (reader.result) {
+        const content = Buffer.from(reader.result as ArrayBuffer);
+        const hash = crypto.createHash('sha256')
+          .update('ImageSigningChallenge')
+          .update(new Uint8Array(content))
+          .digest('hex');
+        try {
+          const signature = await signImageHash(hash);
+          resolve(signature);
+        } catch (error) {
+          console.error('Error signing the hash:', error);
+          reject(error);
+        }
+      } else {
+        reject(new Error('Failed to read file.'));
+      }
+    };
+    reader.onerror = () => {
+      reject(new Error('Error reading file.'));
+    };
+    reader.readAsArrayBuffer(file);
   });
 }
 
@@ -370,38 +403,38 @@ export async function uploadImage(file: File, signature: string, index?: number,
   const signatureUser = process.env.NEXT_PUBLIC_HIVE_USER
 
   const formData = new FormData();
-        formData.append("file", file, file.name);
+  formData.append("file", file, file.name);
 
-        return new Promise((resolve, reject) => {
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', 'https://images.hive.blog/' + signatureUser + '/' + signature, true);
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'https://images.hive.blog/' + signatureUser + '/' + signature, true);
 
-            if (index && setUploadProgress) {
-              xhr.upload.onprogress = (event) => {
-                  if (event.lengthComputable) {
-                      const progress = (event.loaded / event.total) * 100;
-                      setUploadProgress((prevProgress: number[]) => {
-                          const updatedProgress = [...prevProgress];
-                          updatedProgress[index] = progress;
-                          return updatedProgress;
-                      });
-                  }
-              }
-            }
+    if (index && setUploadProgress) {
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const progress = (event.loaded / event.total) * 100;
+          setUploadProgress((prevProgress: number[]) => {
+            const updatedProgress = [...prevProgress];
+            updatedProgress[index] = progress;
+            return updatedProgress;
+          });
+        }
+      }
+    }
 
-            xhr.onload = () => {
-                if (xhr.status === 200) {
-                    const response = JSON.parse(xhr.responseText);
-                    resolve(response.url);
-                } else {
-                    reject(new Error('Failed to upload image'));
-                }
-            };
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        const response = JSON.parse(xhr.responseText);
+        resolve(response.url);
+      } else {
+        reject(new Error('Failed to upload image'));
+      }
+    };
 
-            xhr.onerror = () => {
-                reject(new Error('Failed to upload image'));
-            };
+    xhr.onerror = () => {
+      reject(new Error('Failed to upload image'));
+    };
 
-            xhr.send(formData);
-        });
+    xhr.send(formData);
+  });
 }
