@@ -106,6 +106,20 @@ export function transformNormalYoutubeLinksinIframes(content: string) {
     return `<iframe src="https://www.youtube.com/embed/${videoID}" allowfullscreen></iframe>`;
   });
 }
+
+export function autoEmbedZoraLink(content: string) {
+  // Adjust regex to capture the full Zora URL with contract address and token ID
+  const regex = /https:\/\/zora\.co\/collect\/(zora:[a-zA-Z0-9]+\/[0-9]+)/g;
+
+  return content.replace(regex, (match, tokenId) => {
+    // Construct the embed URL using the tokenId
+    const embedUrl = `https://zora.co/collect/${tokenId}/embed`;
+    // Return the iframe embed code with correct styles
+    return `<iframe src="${embedUrl}" style="border:0;background-color:transparent;position:absolute;inset:0" width="100%" height="100%" allowtransparency="true" allowfullscreen="true" sandbox="allow-pointer-lock allow-same-origin allow-scripts allow-popups"></iframe>`;
+  });
+}
+
+
 export function formatDate(date: string) {
   const now = new Date()
   const postDate = new Date(date)

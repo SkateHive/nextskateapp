@@ -6,7 +6,7 @@ import 'react-multi-carousel/lib/styles.css';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import { MarkdownRenderers } from '@/app/upload/utils/MarkdownRenderers';
-import { transformIPFSContent, transformNormalYoutubeLinksinIframes, transformShortYoutubeLinksinIframes } from '@/lib/utils';
+import { autoEmbedZoraLink, transformIPFSContent, transformNormalYoutubeLinksinIframes, transformShortYoutubeLinksinIframes } from '@/lib/utils';
 import CarouselContainer from '../components/CommentItem/CarouselContainer';
 import CustomLeftArrow from '../components/CommentItem/CustomLeftArrow';
 import CustomRightArrow from '../components/CommentItem/CustomRightArrow';
@@ -121,10 +121,10 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
                     rehypePlugins={[rehypeRaw]}
                     remarkPlugins={[remarkGfm]}
                 >
-                    {transformNormalYoutubeLinksinIframes(
+                    {autoEmbedZoraLink(transformNormalYoutubeLinksinIframes(
                         transformIPFSContent(
                             transformShortYoutubeLinksinIframes(editedCommentBody)
-                        )
+                        ))
                     )}
                 </ReactMarkdown>
             ) : (
