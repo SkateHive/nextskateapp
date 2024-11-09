@@ -1,5 +1,3 @@
-import { MarkdownRenderers } from '@/app/upload/utils/MarkdownRenderers';
-import { transformIPFSContent, transformNormalYoutubeLinksinIframes, transformShortYoutubeLinksinIframes } from '@/lib/utils';
 import { Box, Image, Modal, ModalContent, ModalOverlay } from '@chakra-ui/react';
 import React, { useMemo, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
@@ -62,11 +60,11 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
     };
 
     const handleMediaClick = (media: MediaItem, index: number) => {
-        if (media.type === 'image') { 
+        if (media.type === 'image') {
             setSelectedMedia(media);
             setIsFullScreen(true);
         }
-    
+
         if (media.type === 'video' && videoRefs.current[index]) {
             videoRefs.current[index]?.pause();
         }
@@ -110,13 +108,13 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
         >
             {media.type === 'video' ? (
                 <video
-                ref={(el) => {
-                    videoRefs.current[index] = el; 
-                }}
-                src={media.url}
-                controls
-                style={{ width: "100%", height: "100%", borderRadius: "8px", maxHeight: '445px', aspectRatio: "16/9" }}
-            />
+                    ref={(el) => {
+                        videoRefs.current[index] = el;
+                    }}
+                    src={media.url}
+                    controls
+                    style={{ width: "100%", height: "100%", borderRadius: "8px", maxHeight: '445px', aspectRatio: "16/9" }}
+                />
             ) : (
                 <Image
                     src={media.url}
