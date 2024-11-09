@@ -1,5 +1,7 @@
-import React, { useRef } from 'react';
-import { Box } from '@chakra-ui/react';
+import { MarkdownRenderers } from '@/app/upload/utils/MarkdownRenderers';
+import { transformIPFSContent, transformNormalYoutubeLinksinIframes, transformShortYoutubeLinksinIframes } from '@/lib/utils';
+import { Box, Image, Modal, ModalContent, ModalOverlay } from '@chakra-ui/react';
+import React, { useMemo, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
@@ -15,50 +17,43 @@ interface ContentRendererProps {
     editedCommentBody: string;
 }
 
+type MediaItem = {
+    type: 'video' | 'image';
+    url: string;
+};
+
 const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }) => {
-
-    const extractMarkdownLinks = (markdown: string, regex: RegExp) => {
-        const links = [];
-        let match;
-        while ((match = regex.exec(markdown))) {
-            links.push({ url: match[1] });
-        }
-        return links;
-    };
-
-    const extractLinksAndIFrames = (markdown: string) => {
-        const imageLinks = extractMarkdownLinks(markdown, /!\[.*?\]\((.*?)\)/g);
-        const iframeLinks = extractMarkdownLinks(markdown, /<iframe[^>]+src="([^"]+)"[^>]*>/g);
-        const uniqueImageUrls = new Set();
-        const filteredImages = imageLinks.filter((image) => {
-            if (!uniqueImageUrls.has(image.url)) {
-                uniqueImageUrls.add(image.url);
-                return true;
-            }
-            return false;
-        });
-
-        return { filteredImages, iframeLinks };
-    };
-
-    const { filteredImages, iframeLinks } = extractLinksAndIFrames(editedCommentBody);
-
-
-
     const carouselRef = useRef<any>(null);
+    const [isFullScreen, setIsFullScreen] = useState(false);
+    const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
+    const videoRefs = useRef<Array<HTMLVideoElement | null>>([]);
 
-    const markdownWithoutMedia = editedCommentBody
-        .replace(/!\[.*?\]\((.*?)\)/g, "")
-        .replace(/<iframe src="(.*?)"/g, "")
-        .replace(/allowfullscreen>/g, "")
-        .replace(/.gif/g, "")
-        .replace(/\)/g, " ");
+    const extractMediaItems = (markdown: string): MediaItem[] => {
+        const imageRegex = /!\[.*?\]\((.*?)\)/g;
+        const iframeRegex = /<iframe[^>]+src="([^"]+)"[^>]*>/g;
+        const mediaItems: MediaItem[] = [];
 
-    // Combine media items for the carousel
-    const mediaItems = [
-        ...iframeLinks.map((video) => ({ type: "video", url: video.url })),
-        ...filteredImages.map((image) => ({ type: "image", url: image.url }))
-    ];
+        let match;
+        while ((match = imageRegex.exec(markdown))) {
+            mediaItems.push({ type: 'image', url: match[1] });
+        }
+        while ((match = iframeRegex.exec(markdown))) {
+            mediaItems.push({ type: 'video', url: match[1] });
+        }
+
+        return mediaItems;
+    };
+
+    const mediaItems = useMemo(() => extractMediaItems(editedCommentBody), [editedCommentBody]);
+
+    const markdownWithoutMedia = useMemo(() => {
+        return editedCommentBody
+            .replace(/!\[.*?\]\((.*?)\)/g, "")
+            .replace(/<iframe[^>]*>/g, "")
+            .replace(/allowfullscreen>/g, "")
+            .replace(/.gif/g, "")
+            .replace(/\)/g, " ");
+    }, [editedCommentBody]);
 
     const handleCarouselNavigation = (direction: 'next' | 'prev') => {
         if (carouselRef.current) {
@@ -66,7 +61,35 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
         }
     };
 
-    // Responsive settings for the carousel
+    const handleMediaClick = (media: MediaItem, index: number) => {
+        if (media.type === 'image') { 
+            setSelectedMedia(media);
+            setIsFullScreen(true);
+        }
+    
+        if (media.type === 'video' && videoRefs.current[index]) {
+            videoRefs.current[index]?.pause();
+        }
+    };
+
+    const closeModal = () => {
+        if (selectedMedia?.type === 'video') {
+            const index = mediaItems.findIndex((item) => item.url === selectedMedia.url);
+            if (index !== -1 && videoRefs.current[index]) {
+                videoRefs.current[index]!.currentTime = 0;
+            }
+        }
+        setIsFullScreen(false);
+        setSelectedMedia(null);
+    };
+
+    const handleOverlayClick = (e: React.MouseEvent) => {
+        if (selectedMedia && selectedMedia.type === 'video') {
+            return;
+        }
+        closeModal();
+    };
+
     const responsive = {
         mobile: {
             breakpoint: { max: 4200, min: 0 },
@@ -74,91 +97,113 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
         },
     };
 
-    // Render individual media items
-    const renderMediaItem = (media: { type: string, url: string }, index: number) => {
-        const commonStyle = {
-            width: "100%",
-            height: "100%",
-            display: "block",
-            borderRadius: "8px",
-            maxHeight: '445px',
-        };
-
-        return (
-            <Box
-                key={index}
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-                style={{ height: "100%", overflow: "hidden", maxWidth: "100%" }}
-            >
-                {media.type === "video" ? (
-                    <video
-                        src={media.url}
-                        controls
-                        style={{ ...commonStyle, aspectRatio: "16/9" }}
-                    />
-                ) : (
-                    <img
-                        src={media.url}
-                        alt="Post media"
-                        style={{ ...commonStyle, objectFit: "cover" }}
-                    />
-                )}
-            </Box>
-        );
-    };
-
-
-    return (
-        <Box w="100%" color="white">
-
-            {/* Check if only one type of media exists and render accordingly */}
-            {((filteredImages.length <= 1 && iframeLinks.length === 0) ||
-                (iframeLinks.length <= 1 && filteredImages.length === 0)) ? (
-                <ReactMarkdown
-                    components={MarkdownRenderers}
-                    rehypePlugins={[rehypeRaw]}
-                    remarkPlugins={[remarkGfm]}
-                >
-                    {autoEmbedZoraLink(transformNormalYoutubeLinksinIframes(
-                        transformIPFSContent(
-                            transformShortYoutubeLinksinIframes(editedCommentBody)
-                        ))
-                    )}
-                </ReactMarkdown>
+    const renderMediaItem = (media: MediaItem, index: number) => (
+        <Box
+            key={index}
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            height="100%"
+            overflow="hidden"
+            onClick={() => handleMediaClick(media, index)}
+            cursor="pointer"
+        >
+            {media.type === 'video' ? (
+                <video
+                ref={(el) => {
+                    videoRefs.current[index] = el; 
+                }}
+                src={media.url}
+                controls
+                style={{ width: "100%", height: "100%", borderRadius: "8px", maxHeight: '445px', aspectRatio: "16/9" }}
+            />
             ) : (
-                <>
-                    <ReactMarkdown
-                        components={MarkdownRenderers}
-                        rehypePlugins={[rehypeRaw]}
-                        remarkPlugins={[remarkGfm]}
-                    >
-                        {transformNormalYoutubeLinksinIframes(
-                            transformIPFSContent(
-                                transformShortYoutubeLinksinIframes(markdownWithoutMedia)
-                            )
-                        )}
-                    </ReactMarkdown>
-                    {(filteredImages.length > 1 || iframeLinks.length > 1 || iframeLinks.length + filteredImages.length) && (
-                        <Box w="100%">
-                            <CarouselContainer>
-                                <Carousel
-                                    ref={carouselRef}
-                                    responsive={responsive}
-                                    arrows
-                                    customLeftArrow={<CustomLeftArrow onClick={() => handleCarouselNavigation('prev')} color='green' />}
-                                    customRightArrow={<CustomRightArrow onClick={() => handleCarouselNavigation('next')} color='green' />}
-                                    containerClass="carousel-container"
-                                >
-                                    {mediaItems.map((media, i) => renderMediaItem(media, i))}
-                                </Carousel>
-                            </CarouselContainer>
-                        </Box>
-                    )}
-                </>
+                <Image
+                    src={media.url}
+                    alt="Post media"
+                    borderRadius="8px"
+                    objectFit="cover"
+                    maxHeight="445px"
+                    style={{ cursor: 'pointer' }}
+                />
             )}
         </Box>
+    );
+
+    return (
+        <>
+            <Box w="100%" color="white">
+                <ReactMarkdown components={MarkdownRenderers} rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
+                    {autoEmbedZoraLink(transformNormalYoutubeLinksinIframes(transformIPFSContent(transformShortYoutubeLinksinIframes(markdownWithoutMedia))))}
+                </ReactMarkdown>
+                {mediaItems.length > 0 && (
+                    <Box w="100%">
+                        <CarouselContainer>
+                            <Carousel
+                                ref={carouselRef}
+                                responsive={responsive}
+                                arrows
+                                customLeftArrow={<CustomLeftArrow onClick={() => handleCarouselNavigation('prev')} color='green' />}
+                                customRightArrow={<CustomRightArrow onClick={() => handleCarouselNavigation('next')} color='green' />}
+                                containerClass="carousel-container"
+                            >
+                                {mediaItems.map(renderMediaItem)}
+                            </Carousel>
+                        </CarouselContainer>
+                    </Box>
+                )}
+            </Box>
+
+            {selectedMedia && (
+                <Modal isOpen={isFullScreen} onClose={closeModal} size="full">
+                    <ModalOverlay onClick={handleOverlayClick} bg="rgba(0, 0, 0, 0.7)" />
+                    <ModalContent
+                        bg="transparent"
+                        padding="0"
+                        color="white"
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                        maxWidth="80vw"
+                        maxHeight="80vh"
+                        onClick={closeModal}
+                        overflow="hidden"
+                        position="relative">
+
+
+                        {selectedMedia.type === 'video' ? (
+
+                            <video
+                                src={selectedMedia.url}
+                                controls
+                                style={{
+
+                                    width: '100%',
+                                    height: 'auto',
+                                    maxHeight: '80vh',
+                                    borderRadius: '8px',
+                                    objectFit: 'contain'
+                                }}
+                                onClick={(e) => e.stopPropagation()}
+                            />
+                        ) : (
+                            <Image
+                                src={selectedMedia.url}
+                                alt="Full screen media"
+                                style={{
+                                    width: '100%',
+                                    height: 'auto',
+                                    maxHeight: '80vh',
+                                    borderRadius: '8px',
+                                    objectFit: 'contain'
+                                }}
+
+                            />
+                        )}
+                    </ModalContent>
+                </Modal>
+            )}
+        </>
     );
 };
 

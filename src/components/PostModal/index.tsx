@@ -8,7 +8,6 @@ import { transform3SpeakContent, transformEcencyImages, transformIPFSContent, tr
 import {
   Box,
   Center,
-  Flex,
   HStack,
   Menu,
   MenuButton,
@@ -27,10 +26,10 @@ import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import Header from "../PostCard/Header";
+import TipButton from "../PostCard/TipButton";
 import Vote from "../PostCard/Vote";
 import CommandPrompt from "./commentPrompt";
 import CommentsSection from "./commentSection";
-import TipButton from "../PostCard/TipButton";
 
 interface PostModalInterface {
   isOpen: boolean;
@@ -120,7 +119,7 @@ export function PostModal({ isOpen, onClose }: PostModalInterface) {
           <Box minW="50%">
             <HStack ml={"10px"} mr={"35px"} justifyContent={"space-between"}>
               <Box mr={5} mt={1} >
-                <TipButton author={post.author} />
+                <TipButton author={post.author} permlink={post.permlink} />
               </Box>
               <Vote />
             </HStack>

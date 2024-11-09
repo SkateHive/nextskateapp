@@ -27,7 +27,8 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
         if (!query) return;
         setIsLoading(true);
         try {
-            const result = await client.database.call("lookup_accounts", [query, 5]);
+            const sanitizedQuery = query.startsWith('@') ? query.slice(1) : query;
+            const result = await client.database.call("lookup_accounts", [sanitizedQuery, 5]);
             setAuthors(result);
         } catch (error) {
             console.error(error);
@@ -40,7 +41,7 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
     }, 800), []);
 
     useEffect(() => {
-        if (username.trim() !== "") {
+        if (username.startsWith('@') && username.trim() !== "@") {
             debouncedFetchAuthors(username);
         } else {
             setAuthors([]);
@@ -84,7 +85,7 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
                     value={username}
                     onChange={(e) => {
                         setUsername(e.target.value);
-                        setIsListVisible(true);
+                        setIsListVisible(e.target.value.startsWith('@'));
                     }}
                     borderColor="green.600"
                     color="#A5D6A7"
@@ -94,7 +95,7 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
                 />
             </InputGroup>
 
-            {isListVisible && (
+            {isListVisible && authors.length > 0 && (
                 <List
                     position="absolute"
                     top="100%"

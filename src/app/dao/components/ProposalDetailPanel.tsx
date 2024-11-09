@@ -1,28 +1,28 @@
+import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
+import { formatETHaddress } from "@/lib/utils";
 import {
     Box,
-    HStack,
-    Text,
-    Tabs,
-    TabList,
-    TabPanels,
-    TabPanel,
-    Tab,
     Center,
     Divider,
-    Image
+    HStack,
+    Image,
+    Tab,
+    TabList,
+    TabPanel,
+    TabPanels,
+    Tabs,
+    Text
 } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
-import { useEffect, useState } from "react";
-import { formatETHaddress } from "@/lib/utils";
-import ProposerAvatar from "./proposerAvatar";
-import { PropDates } from "./propDates";
-import { useEnsName } from "wagmi";
 import { mainnet } from "viem/chains";
+import { useEnsName } from "wagmi";
 import { Proposal } from "../utils/fetchProposals";
-// Add a new type for vote data
-import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
+import { PropDates } from "./propDates";
+import ProposerAvatar from "./proposerAvatar";
+
 interface Vote {
     id: string;
     voter: string;
@@ -36,7 +36,6 @@ interface ProposalDetailPanelProps {
     mainProposal: Proposal | null;
 }
 
-// VoterEnsName component to fetch ENS name of each voter
 const VoterEnsName = ({ voterAddress }: { voterAddress: string }) => {
     const { data: ensName } = useEnsName({
         address: voterAddress as `0x${string}`,
@@ -49,10 +48,10 @@ const VoterEnsName = ({ voterAddress }: { voterAddress: string }) => {
 const ProposalDetailPanel = ({
     mainProposal,
 }: ProposalDetailPanelProps) => {
-    const [votes, setVotes] = useState<Vote[]>([]); // State to hold votes
-    const [loadingVotes, setLoadingVotes] = useState(false); // Loading state for votes
-    const [author, setAuthor] = useState<string | null>(null); // State for author
-    const [permlink, setPermlink] = useState<string | null>(null); // State for permlink
+    const [votes, setVotes] = useState<Vote[]>([]);
+    const [loadingVotes, setLoadingVotes] = useState(false);
+    const [author, setAuthor] = useState<string | null>(null);
+    const [permlink, setPermlink] = useState<string | null>(null);
 
     useEffect(() => {
         if (mainProposal && mainProposal.body) {
@@ -97,7 +96,7 @@ const ProposalDetailPanel = ({
                 body: JSON.stringify({ query, variables }),
             });
             const { data } = await response.json();
-            setVotes(data.votes); // Store the votes in state
+            setVotes(data.votes);
         } catch (error) {
             console.error("Error fetching votes:", error);
         } finally {
@@ -124,8 +123,11 @@ const ProposalDetailPanel = ({
 
     return (
         <Box mt={2} w={{ base: '100%', md: '100%' }} color={"white"}>
-            <Tabs isLazy isFitted variant="enclosed-colored">
+            <Tabs isLazy isFitted variant="enclosed-colored" onChange={(index) => {
+                if (index === 1 && mainProposal) fetchVotes(mainProposal.id); 
+            }}>
                 <Center>
+
                     <TabList bg={"black"}>
                         <Tab _selected={{ bg: "limegreen", color: "black" }}>Proposal</Tab>
                         <Tab _selected={{ bg: "limegreen", color: "black" }}>Votes</Tab>
@@ -191,10 +193,8 @@ const ProposalDetailPanel = ({
                                             <Box mr={3}>
                                                 <ProposerAvatar authorAddress={vote.voter} boxSize={50} />
                                             </Box>
-                                            <VoterEnsName voterAddress={vote.voter} /> {/* Display ENS name or address */}
-                                            <Text color={"white"} fontSize={"24px"}>has
-                                                voted
-                                            </Text>
+                                            <VoterEnsName voterAddress={vote.voter} />
+                                            <Text color={"white"} fontSize={"24px"}>has voted</Text>
                                             <Text fontSize={'28px'} color={
                                                 vote.choice === 1 ? 'limegreen' :
                                                     vote.choice === 2 ? 'red' :
