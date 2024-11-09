@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 import { Box } from '@chakra-ui/react';
 import ReactMarkdown from 'react-markdown';
 import Carousel from 'react-multi-carousel';
