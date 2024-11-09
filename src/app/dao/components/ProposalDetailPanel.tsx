@@ -116,16 +116,22 @@ const ProposalDetailPanel = ({
         return null;
     }
 
+    useEffect(() => {
+        fetchVotes(String(mainProposal?.id))
+        console.log("fetching votes")
+    }, []);
+
     return (
         <Box mt={2} w={{ base: '100%', md: '100%' }} color={"white"}>
             <Tabs isLazy isFitted variant="enclosed-colored" onChange={(index) => {
                 if (index === 1 && mainProposal) fetchVotes(mainProposal.id); 
             }}>
                 <Center>
-                    <TabList>
-                        <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Proposal</Tab>
-                        <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Votes</Tab>
-                        <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Report</Tab>
+
+                    <TabList bg={"black"}>
+                        <Tab _selected={{ bg: "limegreen", color: "black" }}>Proposal</Tab>
+                        <Tab _selected={{ bg: "limegreen", color: "black" }}>Votes</Tab>
+                        <Tab _selected={{ bg: "limegreen", color: "black" }} onClick={() => extractAuthorAndPermlink(mainProposal?.body || '')} >Report</Tab>
                     </TabList>
                 </Center>
 

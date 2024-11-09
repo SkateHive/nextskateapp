@@ -152,6 +152,7 @@ const SidebarDesktop = () => {
         display="flex"
         flexDirection="column"
         color={"white"}
+        fontSize={"20px"}
       >
         <Heading size="md">
           <Image
@@ -180,25 +181,25 @@ const SidebarDesktop = () => {
         />
         <CommunityTotalPayout />
 
-        <HStack padding={0} mt={8} gap={3} fontSize={"22px"}>
+        <HStack padding={0} mt={8} gap={3}>
           <FaSpeakap color="white" size={"22px"} />
           <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime' }} onClick={() => {
             window.location.href = "/";
           }}>Feed</Text>
         </HStack>
-        <HStack padding={0} gap={3} fontSize={"22px"}>
+        <HStack padding={0} gap={3} >
           <FaMapMarkerAlt color="white" size={"22px"} />
           <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime' }} onClick={() => {
             window.location.href = "/map";
           }}>Map</Text>
         </HStack>
-        <HStack padding={0} gap={3} fontSize={"22px"}>
+        <HStack padding={0} gap={3} >
           <FaBook color="white" size={"22px"} />
           <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime' }} onClick={() => {
             window.location.href = "/mag";
           }}>Magazine</Text>
         </HStack>
-        <HStack padding={0} gap={3} fontSize={"22px"}>
+        <HStack padding={0} gap={3} >
           <FaEthereum color={'white'} size={"22px"} />
           <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime' }} onClick={() => {
             window.location.href = "/dao";
@@ -206,7 +207,7 @@ const SidebarDesktop = () => {
         </HStack>
 
         {!hiveUser && (
-          <HStack padding={0} gap={3} fontSize={"22px"}>
+          <HStack padding={0} gap={3}>
             <FaDiscord size={"22px"} />
             <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime' }} as="a"
               href="https://discord.gg/G4bamNkZuE"
@@ -220,13 +221,13 @@ const SidebarDesktop = () => {
 
         {hiveUser ? (
           <>
-            <HStack padding={0} gap={3} fontSize={"22px"}>
+            <HStack padding={0} gap={3}>
               <FaUser color="white" size={"22px"} />
               <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime' }} onClick={() => {
                 window.location.href = `/profile/${hiveUser.name}`;
               }}>Profile</Text>
             </HStack>
-            <HStack padding={0} gap={3} fontSize={"22px"} _hover={{ color: 'lime' }}>
+            <HStack padding={0} gap={3} _hover={{ color: 'lime' }}>
               <FaWallet color="white" size={"22px"} />
               <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime' }} onClick={() => {
                 window.location.href = `/wallet`;
@@ -254,7 +255,7 @@ const SidebarDesktop = () => {
             </HStack>
 
 
-            <HStack padding={0} gap={3} fontSize={"22px"}>
+            <HStack padding={0} gap={3}>
               <FaDiscord size={"22px"} />
               <Text
                 fontFamily="Joystix"

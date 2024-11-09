@@ -107,7 +107,7 @@ const NavigationButtons: React.FC<NavigationButtonsProps> = ({ updateFeed, feedC
             <Box marginRight={3} >
               <Image src="/treboard.gif" alt="tre flip Skateboard icon" width={42} height={42} />
             </Box>
-            + Create
+            + Add to Mag
           </Button>
         </Box>
         <ButtonGroup size="sm" isAttached variant="outline" colorScheme="green">

@@ -19,6 +19,7 @@ import {
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Mission, dummyMissions, xpThresholds, recurringTasks } from './missionsData';
+import { witnessVoteWithKeychain, witnessVoteWithPrivateKey } from "@/lib/hive/client-functions";
 
 interface LevelMissionsProps {
     initialLevel: number;
@@ -182,7 +183,17 @@ export default function LevelMissions({ initialLevel, user, updateAvailableXp }:
                 return false;
         }
     };
+    const handleWitnessVote = () => {
+        // lets check which loginmethod the user used 
+        const loginMethod = localStorage.getItem("LoginMethod");
+        if (loginMethod === "keychain") {
+            witnessVoteWithKeychain(user.name, "skatehive");
+        }
+        else if (loginMethod === "privateKey") {
 
+            witnessVoteWithPrivateKey(user.name, "skatehive", true);
+        }
+    }
     return (
         <VStack minWidth={'500px'}>
             <HStack>
@@ -240,6 +251,11 @@ export default function LevelMissions({ initialLevel, user, updateAvailableXp }:
             </TableContainer>
 
             <Center mt={3}>
+                {completedMissions.hasVotedForSkateHiveWitness ? null : (
+                    <Button colorScheme="green" size="sm" onClick={handleWitnessVote}>
+                        Vote for SkateHive Witness
+                    </Button>
+                )}
                 {/* <Tag colorScheme="green" fontSize="24px">Recurring Tasks</Tag> */}
             </Center>
 

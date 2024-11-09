@@ -44,7 +44,7 @@ const AvatarList = ({ sortedComments }: AvatarListProps) => {
               src="/loading.gif"
               loading="lazy"
               borderRadius={5}
-              _hover={{ cursor: "pointer" }} />
+              cursor="pointer" />
           </Tooltip>
         </Link>
       </Box>
@@ -147,7 +147,7 @@ const AvatarList = ({ sortedComments }: AvatarListProps) => {
               border: "1px solid #A5D6A7",
             }}
             borderRadius={100}
-
+            quality="small"
           />
         )
       })}
