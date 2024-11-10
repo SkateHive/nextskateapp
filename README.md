@@ -47,4 +47,3 @@ pnpm i
 ```bash
 pnpm dev 
 ```
-> Copy and paste this in your terminal
