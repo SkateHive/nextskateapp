@@ -15,6 +15,8 @@ type RendererProps = MarkdownProps & {
     href?: any;
 };
 
+const pinata_url = process.env.NEXT_PUBLIC_PINATA_URL || "";
+
 const VideoRenderer = ({ src, ...props }: RendererProps) => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const [poster, setPoster] = useState<string>('/home_animation_body.gif');
@@ -87,7 +89,7 @@ const VideoRenderer = ({ src, ...props }: RendererProps) => {
                     muted={true}
                     loop={true}
                     ref={videoRef}
-                    src={src}
+                    src={src && typeof src === 'string' ? src.replace("ipfs.skatehive.app", pinata_url) : ""}
                     poster={poster}
                     crossOrigin='anonymous'
                     playsInline={false}
@@ -104,7 +106,7 @@ export const FullMagazineRenderers = {
             <Image
                 {...props}
                 alt={alt}
-                src={src}
+                src={src && typeof src === 'string' ? src.replace("ipfs.skatehive.app", pinata_url) : ""}
                 title={title}
                 style={{
                     display: 'inline-block',
@@ -211,7 +213,7 @@ export const FullMagazineRenderers = {
         <center>
             <iframe
                 {...props}
-                src={src}
+                src={src && typeof src === 'string' ? src.replace("ipfs.skatehive.app", pinata_url) : ""}
                 style={{ borderRadius: '10px', marginBottom: '10px', maxWidth: '100%', minWidth: '100%', aspectRatio: '16/9', height: '100%', border: '2px grey solid' }}
             />
         </center>
@@ -223,7 +225,7 @@ export const FullMagazineRenderers = {
                     {...props}
                     muted={true}
                     loop={true}
-                    src={src}
+                    src={src && typeof src === 'string' ? src.replace("ipfs.skatehive.app", pinata_url) : ""}
                     crossOrigin='anonymous'
                     playsInline={false}
                     style={{ background: 'transparent', borderRadius: '10px', marginBottom: '20px', border: '0px grey solid', width: '100%', minHeight: '50%', maxHeight: '420px' }}
