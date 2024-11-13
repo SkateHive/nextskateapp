@@ -9,6 +9,7 @@ import remarkGfm from 'remark-gfm';
 type ClientMarkdownRendererProps = {
     content: string;
 };
+const pinata_url = process.env.NEXT_PUBLIC_PINATA_URL || "";
 
 const ClientMarkdownRenderer: React.FC<ClientMarkdownRendererProps> = ({ content }) => {
     return (
@@ -17,8 +18,8 @@ const ClientMarkdownRenderer: React.FC<ClientMarkdownRendererProps> = ({ content
             rehypePlugins={[rehypeRaw]}
             remarkPlugins={[remarkGfm]}
         >
-            {content}
-        </ReactMarkdown>
+            {content.replace("ipfs.skatehive.app", pinata_url)}
+            </ReactMarkdown>
     );
 };
 
