@@ -76,13 +76,15 @@ export function transform3SpeakContent(content: string): string {
 export function formatETHaddress(address: string) {
   return `${address.slice(0, 4)}...${address.slice(-4)}`
 }
+const pinata_url = process.env.NEXT_PUBLIC_PINATA_URL || "";
+
 export function transformIPFSContent(content: string): string {
   const regex = /<iframe src="https:\/\/ipfs\.skatehive\.app\/ipfs\/([a-zA-Z0-9-?=&]+)"(?:(?!<\/iframe>).)*\sallowfullscreen><\/iframe>/g;
 
   return content.replace(regex, (match, videoID) => {
     return `<video controls muted loop> 
-                <source src="https://ipfs.skatehive.app/ipfs/${videoID}" type="video/mp4">
-                <source src="https://ipfs.skatehive.app/ipfs/${videoID}" type="video/quicktime">
+              <source src="https://${pinata_url}/ipfs/${videoID}" type="video/mp4">
+                <source src="https://${pinata_url}/ipfs/${videoID}" type="video/quicktime">
             </video>`;
   });
 }
