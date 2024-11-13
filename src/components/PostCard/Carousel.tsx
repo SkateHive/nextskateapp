@@ -7,13 +7,13 @@ import {
   extractIFrameLinks,
   extractLinksFromMarkdown,
 } from "@/lib/markdown"
+import { PINATA_URL } from "@/utils/config"
 import { Box, Image } from "@chakra-ui/react"
 import { useRef } from "react"
 import Carousel from "react-multi-carousel"
 import "react-multi-carousel/lib/styles.css"
 import "./Post.css"
 
-const pinata_url = process.env.NEXT_PUBLIC_PINATA_URL || "";
 
 
 const SKATEHIVE_DISCORD_IMAGE =
@@ -73,7 +73,7 @@ function PostCarousel() {
           {videoLinks.map((video, i) => (
             <iframe
               key={i}
-              src={video.url.replace("ipfs.skatehive.app", pinata_url)}
+              src={video.url.replace("ipfs.skatehive.app", PINATA_URL)}
               width={"100%"}
               height={"100%"}
               style={{ aspectRatio: "16/9", border: "0" }}
@@ -85,7 +85,7 @@ function PostCarousel() {
               border={"0"}
               w={"100%"}
               h={"100%"}
-              src={image.url.replace("ipfs.skatehive.app", pinata_url)}
+              src={image.url.replace("ipfs.skatehive.app", PINATA_URL)}
               aspectRatio={16 / 9}
               objectFit="cover"
               borderRadius="none"

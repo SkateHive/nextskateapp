@@ -10,6 +10,7 @@ import {
   transformNormalYoutubeLinksinIframes,
   transformShortYoutubeLinksinIframes,
 } from "@/lib/utils";
+import { PINATA_URL } from "@/utils/config";
 import {
   Badge,
   Box,
@@ -30,7 +31,6 @@ import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import { Comment } from "../../../app/mainFeed/page";
 import { FullMagazineRenderers } from "../FullMagazineRenderers";
-const pinata_url = process.env.NEXT_PUBLIC_PINATA_URL || "";
 
 const pageStyles = {
   backgroundColor: "black",
@@ -185,7 +185,7 @@ export default function FullMag({ tag, query }: TestPageProps) {
                 <VStack p={1} borderRadius={5} width={"20%"} >
                   <AuthorAvatar username={post.author} boxSize={30} borderRadius={100} />
                   <Text color={"white"} mt={0} fontSize={10}>
-                  {post.author.replace("ipfs.skatehive.app", pinata_url)}
+                  {post.author.replace("ipfs.skatehive.app", PINATA_URL)}
                   </Text>
                 </VStack>
                 <Text
@@ -231,7 +231,7 @@ export default function FullMag({ tag, query }: TestPageProps) {
                       ),
                     ),
                   ),
-                ).replace("ipfs.skatehive.app", pinata_url)}
+                ).replace("ipfs.skatehive.app", PINATA_URL)}
               </ReactMarkdown>
               <Divider mt={4} mb={4} />
               <Flex justifyContent={"space-between"}>
