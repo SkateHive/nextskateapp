@@ -1,7 +1,7 @@
 "use client";
 import AuthorAvatar from "@/components/AuthorAvatar";
-import TipButton from "@/components/PostCard/TipButton";
 import usePosts from "@/hooks/usePosts";
+import { blockedUsers } from "@/lib/constants";
 import {
   getTotalPayout,
   transform3SpeakContent,
@@ -14,15 +14,13 @@ import {
   Badge,
   Box,
   Center,
-  Container,
   Divider,
-  filter,
   Flex,
   Heading,
   HStack,
   Image,
   Text,
-  VStack,
+  VStack
 } from "@chakra-ui/react";
 import { Discussion } from "@hiveio/dhive";
 import { useEffect, useRef } from "react";
@@ -32,8 +30,7 @@ import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import { Comment } from "../../../app/mainFeed/page";
 import { FullMagazineRenderers } from "../FullMagazineRenderers";
-import { blockedUsers } from "@/lib/constants";
-import { includes } from "lodash";
+const pinata_url = process.env.NEXT_PUBLIC_PINATA_URL || "";
 
 const pageStyles = {
   backgroundColor: "black",
@@ -188,7 +185,7 @@ export default function FullMag({ tag, query }: TestPageProps) {
                 <VStack p={1} borderRadius={5} width={"20%"} >
                   <AuthorAvatar username={post.author} boxSize={30} borderRadius={100} />
                   <Text color={"white"} mt={0} fontSize={10}>
-                    {post.author}
+                  {post.author.replace("ipfs.skatehive.app", pinata_url)}
                   </Text>
                 </VStack>
                 <Text
@@ -230,11 +227,11 @@ export default function FullMag({ tag, query }: TestPageProps) {
                   transformIPFSContent(
                     transformEcencyImages(
                       transformNormalYoutubeLinksinIframes(
-                        transformShortYoutubeLinksinIframes(post.body),
+                        transformShortYoutubeLinksinIframes(post.body)
                       ),
                     ),
                   ),
-                )}
+                ).replace("ipfs.skatehive.app", pinata_url)}
               </ReactMarkdown>
               <Divider mt={4} mb={4} />
               <Flex justifyContent={"space-between"}>
