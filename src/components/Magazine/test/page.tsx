@@ -36,6 +36,8 @@ interface Post extends Discussion {
   post_id: number;
   pending_payout_value: string;
 }
+const pinata_url = process.env.NEXT_PUBLIC_PINATA_URL || "";
+
 
 // CSS styles as a constant
 const pageStyles = {
@@ -256,7 +258,7 @@ export default memo(function Zine({ tag, query }: TestPageProps) {
                       ),
                     ),
                   ),
-                )}
+                ).replace("ipfs.skatehive.app", pinata_url)}
               </ReactMarkdown>
               <Divider mt={4} mb={4} />
               <Text>Pending Payout: {post.pending_payout_value.toString()}</Text>
