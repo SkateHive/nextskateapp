@@ -14,6 +14,8 @@ type RendererProps = MarkdownProps & {
     ordered?: any;
     href?: any;
 };
+const pinata_url = process.env.NEXT_PUBLIC_PINATA_URL || "";
+
 
 const VideoRenderer = ({ src, ...props }: RendererProps) => {
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -87,7 +89,7 @@ const VideoRenderer = ({ src, ...props }: RendererProps) => {
                     muted={true}
                     loop={false}
                     ref={videoRef}
-                    src={src}
+                    src={src && typeof src === 'string' ? src.replace("ipfs.skatehive.app", pinata_url) : ""}
                     poster={poster}
                     crossOrigin='anonymous'
                     playsInline={true}
@@ -104,7 +106,7 @@ export const MagazineRenderers = {
             <Image
                 {...props}
                 alt={alt}
-                src={src}
+                src={src && typeof src === 'string' ? src.replace("ipfs.skatehive.app", pinata_url) : ""}
                 title={title}
                 style={{
                     display: 'inline-block',
@@ -205,7 +207,7 @@ export const MagazineRenderers = {
         <center>
             <iframe
                 {...props}
-                src={src}
+                src={src && typeof src === 'string' ? src.replace("ipfs.skatehive.app", pinata_url) : ""}
                 style={{ borderRadius: '10px', marginBottom: '10px', maxWidth: '100%', minWidth: '100%', aspectRatio: '16/9', height: '100%', border: '2px grey solid' }}
             />
         </center>
