@@ -1,6 +1,7 @@
 'use client';
 
 import { MarkdownRenderers } from '@/app/upload/utils/MarkdownRenderers';
+import { PINATA_URL } from '@/utils/config';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
@@ -17,8 +18,8 @@ const ClientMarkdownRenderer: React.FC<ClientMarkdownRendererProps> = ({ content
             rehypePlugins={[rehypeRaw]}
             remarkPlugins={[remarkGfm]}
         >
-            {content}
-        </ReactMarkdown>
+            {content.replace("ipfs.skatehive.app", PINATA_URL)}
+            </ReactMarkdown>
     );
 };
 

@@ -11,6 +11,7 @@ import {
   transformNormalYoutubeLinksinIframes,
   transformShortYoutubeLinksinIframes,
 } from "@/lib/utils";
+import { PINATA_URL } from "@/utils/config";
 import {
   Box,
   Center,
@@ -36,6 +37,7 @@ interface Post extends Discussion {
   post_id: number;
   pending_payout_value: string;
 }
+
 
 // CSS styles as a constant
 const pageStyles = {
@@ -256,7 +258,7 @@ export default memo(function Zine({ tag, query }: TestPageProps) {
                       ),
                     ),
                   ),
-                )}
+                ).replace("ipfs.skatehive.app", PINATA_URL)}
               </ReactMarkdown>
               <Divider mt={4} mb={4} />
               <Text>Pending Payout: {post.pending_payout_value.toString()}</Text>

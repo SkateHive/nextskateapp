@@ -1,4 +1,5 @@
 'use client'
+import { PINATA_URL } from '@/utils/config';
 import { Divider, Image } from '@chakra-ui/react';
 import React, { useEffect, useRef, useState } from 'react';
 
@@ -14,6 +15,7 @@ type RendererProps = MarkdownProps & {
     ordered?: any;
     href?: any;
 };
+
 
 const VideoRenderer = ({ src, ...props }: RendererProps) => {
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -87,7 +89,7 @@ const VideoRenderer = ({ src, ...props }: RendererProps) => {
                     muted={true}
                     loop={true}
                     ref={videoRef}
-                    src={src}
+                    src={src && typeof src === 'string' ? src.replace("ipfs.skatehive.app", PINATA_URL) : ""}
                     poster={poster}
                     crossOrigin='anonymous'
                     playsInline={false}
@@ -104,7 +106,7 @@ export const FullMagazineRenderers = {
             <Image
                 {...props}
                 alt={alt}
-                src={src}
+                src={src && typeof src === 'string' ? src.replace("ipfs.skatehive.app", PINATA_URL) : ""}
                 title={title}
                 style={{
                     display: 'inline-block',
@@ -211,7 +213,7 @@ export const FullMagazineRenderers = {
         <center>
             <iframe
                 {...props}
-                src={src}
+                src={src && typeof src === 'string' ? src.replace("ipfs.skatehive.app", PINATA_URL) : ""}
                 style={{ borderRadius: '10px', marginBottom: '10px', maxWidth: '100%', minWidth: '100%', aspectRatio: '16/9', height: '100%', border: '2px grey solid' }}
             />
         </center>
@@ -223,7 +225,7 @@ export const FullMagazineRenderers = {
                     {...props}
                     muted={true}
                     loop={true}
-                    src={src}
+                    src={src && typeof src === 'string' ? src.replace("ipfs.skatehive.app", PINATA_URL) : ""}
                     crossOrigin='anonymous'
                     playsInline={false}
                     style={{ background: 'transparent', borderRadius: '10px', marginBottom: '20px', border: '0px grey solid', width: '100%', minHeight: '50%', maxHeight: '420px' }}
