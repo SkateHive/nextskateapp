@@ -1,3 +1,6 @@
+import { MarkdownRenderers } from '@/app/upload/utils/MarkdownRenderers';
+import { autoEmbedZoraLink, transformIPFSContent, transformNormalYoutubeLinksinIframes, transformShortYoutubeLinksinIframes } from '@/lib/utils';
+import { PINATA_URL } from '@/utils/config';
 import { Box, Image, Modal, ModalContent, ModalOverlay } from '@chakra-ui/react';
 import React, { useMemo, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
@@ -5,8 +8,6 @@ import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
-import { MarkdownRenderers } from '@/app/upload/utils/MarkdownRenderers';
-import { autoEmbedZoraLink, transformIPFSContent, transformNormalYoutubeLinksinIframes, transformShortYoutubeLinksinIframes } from '@/lib/utils';
 import CarouselContainer from '../components/CommentItem/CarouselContainer';
 import CustomLeftArrow from '../components/CommentItem/CustomLeftArrow';
 import CustomRightArrow from '../components/CommentItem/CustomRightArrow';
@@ -14,6 +15,7 @@ import CustomRightArrow from '../components/CommentItem/CustomRightArrow';
 interface ContentRendererProps {
     editedCommentBody: string;
 }
+
 
 type MediaItem = {
     type: 'video' | 'image';
@@ -50,6 +52,7 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
             .replace(/<iframe[^>]*>/g, "")
             .replace(/allowfullscreen>/g, "")
             .replace(/.gif/g, "")
+            .replace(/ipfs\.skatehive\.app/g, PINATA_URL)  
             .replace(/\)/g, " ");
     }, [editedCommentBody]);
 
@@ -111,7 +114,7 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
                     ref={(el) => {
                         videoRefs.current[index] = el;
                     }}
-                    src={media.url}
+                    src={media.url.replace("ipfs.skatehive.app", PINATA_URL)}
                     controls
                     style={{ width: "100%", height: "100%", borderRadius: "8px", maxHeight: '445px', aspectRatio: "16/9" }}
                 />
@@ -167,13 +170,11 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
                         onClick={closeModal}
                         overflow="hidden"
                         position="relative">
-
-
                         {selectedMedia.type === 'video' ? (
 
                             <video
-                                src={selectedMedia.url}
-                                controls
+                            src={selectedMedia.url.replace("ipfs.skatehive.app", PINATA_URL)}
+                            controls
                                 style={{
 
                                     width: '100%',
