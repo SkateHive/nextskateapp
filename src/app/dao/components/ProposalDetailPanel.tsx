@@ -122,17 +122,37 @@ const ProposalDetailPanel = ({
     }, []);
 
     return (
-        <Box mt={2} w={{ base: '100%', md: '100%' }} color={"white"}>
+        <Box mt={2} w={{ base: '100%', md: '100%' }} color={"white"} bg="black">
             <Tabs isLazy isFitted variant="enclosed-colored" onChange={(index) => {
-                if (index === 1 && mainProposal) fetchVotes(mainProposal.id); 
+                if (index === 1 && mainProposal) fetchVotes(mainProposal.id);
             }}>
                 <Center>
-
-                    <TabList bg={"black"}>
-                        <Tab _selected={{ bg: "limegreen", color: "black" }}>Proposal</Tab>
-                        <Tab _selected={{ bg: "limegreen", color: "black" }}>Votes</Tab>
-                        <Tab _selected={{ bg: "limegreen", color: "black" }} onClick={() => extractAuthorAndPermlink(mainProposal?.body || '')} >Report</Tab>
-                    </TabList>
+                    <Box bg="black" w="100%">
+                        <TabList bg="black" borderBottom="2px solid limegreen">
+                            <Tab
+                                _selected={{ bg: "limegreen", color: "black" }}
+                                bg="gray.800"
+                                color="white"
+                            >
+                                Proposal
+                            </Tab>
+                            <Tab
+                                _selected={{ bg: "limegreen", color: "black" }}
+                                bg="gray.800"
+                                color="white"
+                            >
+                                Votes
+                            </Tab>
+                            <Tab
+                                _selected={{ bg: "limegreen", color: "black" }}
+                                bg="gray.800"
+                                color="white"
+                                onClick={() => extractAuthorAndPermlink(mainProposal?.body || '')}
+                            >
+                                Report
+                            </Tab>
+                        </TabList>
+                    </Box>
                 </Center>
 
                 <TabPanels>
@@ -154,7 +174,7 @@ const ProposalDetailPanel = ({
                                     <Text fontSize={24} fontWeight={"bold"} mt={5}>{mainProposal.title}</Text>
                                 </HStack>
                                 <Divider color={"white"} mt={5} />
-                                <Box mt={2} h={'85vh'} overflow={"auto"}>
+                                <Box mt={2} h={'85vh'} overflow={"auto"} bg="black" color="white">
                                     <ReactMarkdown
                                         components={MarkdownRenderers}
                                         rehypePlugins={[rehypeRaw]}
