@@ -40,16 +40,17 @@ interface HiveBoxProps {
     onNetWorthChange: (value: number) => void;
 }
 
-function formatToTreDecimals(value: string | number | Asset | undefined): string {
+function formatToOneDecimal(value: string | number | Asset | undefined): string {
     if (typeof value === "string") {
         const num = parseFloat(value);
-        return isNaN(num) ? "0.00" : num.toFixed(3);
+        return isNaN(num) ? "0.0" : num.toFixed(1); 
     }
     if (typeof value === "number") {
-        return value.toFixed(2);
+        return value.toFixed(1); 
     }
-    return "0.00";
+    return "0.0"; 
 }
+
 
 const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
     const { hiveUser } = useHiveUser();
@@ -99,37 +100,37 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
 
     useEffect(() => {
         if (balanceHive) {
-            setFormattedAmountHive(formatToTreDecimals(balanceHive));
+            setFormattedAmountHive(formatToOneDecimal(balanceHive));
         }
     }, [balanceHive]);
 
     useEffect(() => {
         if (balanceHBD) {
-            setFormattedAmountHbd(formatToTreDecimals(balanceHBD));
+            setFormattedAmountHbd(formatToOneDecimal(balanceHBD));
         }
     }, [balanceHBD]);
 
     useEffect(() => {
         if (balanceHivePower) {
-            setFormattedAmountHivePower(formatToTreDecimals(balanceHivePower));
+            setFormattedAmountHivePower(formatToOneDecimal(balanceHivePower));
         }
     }, [balanceHivePower]);
 
     useEffect(() => {
         if (DepositUSDvalue) {
-            setFormattedDepositHbd(formatToTreDecimals(DepositUSDvalue));
+            setFormattedDepositHbd(formatToOneDecimal(DepositUSDvalue));
         }
     }, [DepositUSDvalue])
 
     useEffect(() => {
         if (WithdrawHbdValue) {
-            setFormattedWithdrawHbd(formatToTreDecimals(WithdrawHbdValue));
+            setFormattedWithdrawHbd(formatToOneDecimal(WithdrawHbdValue));
         }
     }, [WithdrawHbdValue]);
 
     useEffect(() => {
         if (HpDelegate) {
-            setFormattedHpDelegates(formatToTreDecimals(HpDelegate));
+            setFormattedHpDelegates(formatToOneDecimal(HpDelegate));
         }
     }, [HpDelegate])
 
@@ -203,7 +204,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                             fontSize={{ base: 24, md: 34 }}
                                             textShadow="0 0 10px black, 0 0 20px black, 0 0 30px rgba(255, 255, 255, 0.4)"
                                         >
-                                            ${formatToTreDecimals(totalValue)}
+                                            ${formatToOneDecimal(totalValue)}
                                         </Text>
                                     </SkeletonText>
                                 </Box>
@@ -235,7 +236,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                                 <Text ml={'10px'} fontSize={{ base: 12, md: 14 }}
                                                     textShadow="0 0 10px black, 0 0 20px black, 0 0 10px red"
                                                 >
-                                                    {formatToTreDecimals(hivePower)}</Text>
+                                                    {formatToOneDecimal(hivePower)}</Text>
                                                 <Text>
                                                     HP
                                                 </Text>
@@ -244,7 +245,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                                     color={"green"}
                                                     variant="subtle">
                                                     <Text fontSize={{ base: 10, md: 12 }}>
-                                                        (~${formatToTreDecimals(HPUsdValue)})</Text>
+                                                        (~${formatToOneDecimal(HPUsdValue)})</Text>
                                                 </Badge>
                                             </HStack>
                                         </MenuButton>
@@ -280,7 +281,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                                 <Text ml={'10px'} fontSize={{ base: 12, md: 14 }}
                                                     textShadow="0 0 10px black, 0 0 20px black, 0 0 10px red"
                                                 >
-                                                    {formatToTreDecimals(hiveUser?.balance)}
+                                                    {formatToOneDecimal(hiveUser?.balance)}
                                                 </Text>
                                                 <Text>
                                                     HIVE
@@ -289,7 +290,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                                     colorScheme="green"
                                                     color={"green"}
                                                     variant="subtle">
-                                                    <Text fontSize={{ base: 10, md: 12 }}> (${formatToTreDecimals(hiveUsdValue)})</Text>
+                                                    <Text fontSize={{ base: 10, md: 12 }}> (${formatToOneDecimal(hiveUsdValue)})</Text>
                                                 </Badge>
                                             </HStack>
                                         </MenuButton>
@@ -322,7 +323,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                                 <Text ml={'10px'} fontSize={{ base: 12, md: 14 }}
                                                     textShadow="0 0 10px black, 0 0 20px black, 0 0 10px red"
                                                 >
-                                                    {formatToTreDecimals(hiveUser?.hbd_balance)}
+                                                    {formatToOneDecimal(hiveUser?.hbd_balance)}
                                                 </Text>
                                                 <Text>
                                                     HBD
@@ -331,7 +332,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                                     colorScheme="green"
                                                     color={"green"}
                                                     variant="subtle">
-                                                    <Text fontSize={{ base: 10, md: 12 }}> (${formatToTreDecimals(HBDUsdValue)})</Text>
+                                                    <Text fontSize={{ base: 10, md: 12 }}> (${formatToOneDecimal(HBDUsdValue)})</Text>
                                                 </Badge>
                                             </HStack>
                                         </MenuButton>
@@ -361,7 +362,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                                 <Text ml={'10px'} fontSize={{ base: 12, md: 14 }}
                                                     textShadow="0 0 10px black, 0 0 20px black, 0 0 10px red"
                                                 >
-                                                    {formatToTreDecimals(hiveUser?.savings_hbd_balance)}</Text>
+                                                    {formatToOneDecimal(hiveUser?.savings_hbd_balance)}</Text>
                                                 <Text>
                                                     Sav
                                                 </Text>
@@ -372,7 +373,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                                 >
 
                                                     <Text fontSize={{ base: 10, md: 12 }}>
-                                                        (~${formatToTreDecimals(savingsUSDvalue)})</Text>
+                                                        (~${formatToOneDecimal(savingsUSDvalue)})</Text>
                                                 </Badge>
                                             </HStack>
                                         </MenuButton>
