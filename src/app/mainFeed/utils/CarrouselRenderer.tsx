@@ -135,14 +135,9 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
     return (
         <>
             <Box w="100%" color="white">
-                <ReactMarkdown
-                    components={MarkdownRenderers}
-                    rehypePlugins={[rehypeRaw]}
-                    remarkPlugins={[remarkGfm]}
-                >
-                    {autoEmbedZoraLink(transformNormalYoutubeLinksinIframes(transformIPFSContent(transformShortYoutubeLinksinIframes(editedCommentBody))))}
+                <ReactMarkdown components={MarkdownRenderers} rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
+                    {autoEmbedZoraLink(transformNormalYoutubeLinksinIframes(transformIPFSContent(transformShortYoutubeLinksinIframes(markdownWithoutMedia))))}
                 </ReactMarkdown>
-
                 {mediaItems.length > 0 && (
                     <Box w="100%">
                         <CarouselContainer>
