@@ -24,7 +24,6 @@ export const getPost = async (author: string, permlink: string) => {
 };
 
 export default function TipButton({ author, permlink }: TipButtonProps) {
-    console.log("TipButton props:", { author, permlink });
     const [isHiveTipModalOpen, setIsHiveTipModalOpen] = useState(false);
     const [post, setPost] = useState<any>(null);
     const [userData, setUserData] = useState<UserData | null>(null);

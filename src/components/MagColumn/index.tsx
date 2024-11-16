@@ -27,27 +27,31 @@ interface PostFeedProps {
 }
 
 const PostFeed: React.FC<PostFeedProps> = ({ posts, visiblePosts, setVisiblePosts, query }) => {
-  const filteredPosts = posts ? posts.filter(post => !blockedUsers.includes(post.author)) : [];
-  return (
-    <Box overflow={"auto"}>
-      <InfiniteScroll
-        dataLength={visiblePosts}
-        next={() => {
-          setVisiblePosts(visiblePosts + 2);
-        }}
-        hasMore={visiblePosts < filteredPosts.length}
-        loader={<Flex justify="center"><BeatLoader size={8} color="darkgrey" /></Flex>}
-        style={{ overflow: "hidden" }}
-      >
-        <Grid templateColumns="repeat(1, 1fr)" gap={0}>
-          {filteredPosts.length > 0 &&
-            filteredPosts.slice(0, visiblePosts).map((post, i) => (
-              <Post key={`${query}-${post.url}`} postData={PostModel.newFromDiscussion(post)} />
-            ))}
-        </Grid>
-      </InfiniteScroll>
-    </Box>
-  );
+  const filteredPosts = posts
+    ? posts.filter(
+      (post) =>
+        !blockedUsers.includes(post.author) && post.body && post.body.length >= 240
+    )
+    : []; return (
+      <Box overflow={"auto"}>
+        <InfiniteScroll
+          dataLength={visiblePosts}
+          next={() => {
+            setVisiblePosts(visiblePosts + 2);
+          }}
+          hasMore={visiblePosts < filteredPosts.length}
+          loader={<Flex justify="center"><BeatLoader size={8} color="darkgrey" /></Flex>}
+          style={{ overflow: "hidden" }}
+        >
+          <Grid templateColumns="repeat(1, 1fr)" gap={0}>
+            {filteredPosts.length > 0 &&
+              filteredPosts.slice(0, visiblePosts).map((post, i) => (
+                <Post key={`${query}-${post.url}`} postData={PostModel.newFromDiscussion(post)} />
+              ))}
+          </Grid>
+        </InfiniteScroll>
+      </Box>
+    );
 };
 
 interface NavigationButtonsProps {
