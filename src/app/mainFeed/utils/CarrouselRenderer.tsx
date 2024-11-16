@@ -47,12 +47,13 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
     const mediaItems = useMemo(() => extractMediaItems(editedCommentBody), [editedCommentBody]);
 
     const markdownWithoutMedia = useMemo(() => {
+        console.log(editedCommentBody);
         return editedCommentBody
             .replace(/!\[.*?\]\((.*?)\)/g, "")
             .replace(/<iframe[^>]*>/g, "")
             .replace(/allowfullscreen>/g, "")
             .replace(/.gif/g, "")
-            .replace(/ipfs\.skatehive\.app/g, PINATA_URL)  
+            .replace(/ipfs\.skatehive\.app/g, PINATA_URL)
             .replace(/\)/g, " ");
     }, [editedCommentBody]);
 
@@ -134,9 +135,14 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
     return (
         <>
             <Box w="100%" color="white">
-                <ReactMarkdown components={MarkdownRenderers} rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
-                    {autoEmbedZoraLink(transformNormalYoutubeLinksinIframes(transformIPFSContent(transformShortYoutubeLinksinIframes(markdownWithoutMedia))))}
+                <ReactMarkdown
+                    components={MarkdownRenderers}
+                    rehypePlugins={[rehypeRaw]}
+                    remarkPlugins={[remarkGfm]}
+                >
+                    {autoEmbedZoraLink(transformNormalYoutubeLinksinIframes(transformIPFSContent(transformShortYoutubeLinksinIframes(editedCommentBody))))}
                 </ReactMarkdown>
+
                 {mediaItems.length > 0 && (
                     <Box w="100%">
                         <CarouselContainer>
@@ -173,8 +179,8 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
                         {selectedMedia.type === 'video' ? (
 
                             <video
-                            src={selectedMedia.url.replace("ipfs.skatehive.app", PINATA_URL)}
-                            controls
+                                src={selectedMedia.url.replace("ipfs.skatehive.app", PINATA_URL)}
+                                controls
                                 style={{
 
                                     width: '100%',
