@@ -26,6 +26,8 @@
     "@types/diff-match-patch": "^1.0.36",
     "@types/lodash.debounce": "^4.0.9",
     "@uiw/react-md-editor": "^4.0.4",
+    "@vercel/analytics": "^1.4.0",
+    "@vercel/speed-insights": "^1.1.0",
     "@wagmi/core": "^2.6.16",
     "@zoralabs/zdk": "^2.4.0",
     "alchemy-sdk": "^3.2.1",
