@@ -1,14 +1,14 @@
 "use client";
 
 import { Box, Flex } from "@chakra-ui/react";
-import InfiniteScroll from "react-infinite-scroll-component";
+import { useEffect, useRef } from "react";
 import { BeatLoader } from "react-spinners";
 import CommentItem from "./CommentItem";
 
 interface CommentListProps {
   comments: any[];
   visiblePosts: number;
-  setVisiblePosts: (posts: number) => void;
+  setVisiblePosts: React.Dispatch<React.SetStateAction<number>>;
   username?: string;
   handleVote: (author: string, permlink: string) => void;
 }
@@ -20,21 +20,36 @@ const CommentList = ({
   username,
   handleVote,
 }: CommentListProps) => {
+  const observerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const currentRef = observerRef.current;
+    if (!currentRef) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const target = entries[0];
+        if (target.isIntersecting) {
+          setVisiblePosts((prev: number) => prev + 5);
+        }
+      },
+      {
+        root: null,
+        rootMargin: "0px",
+        threshold: 0.1,
+      }
+    );
+
+    observer.observe(currentRef);
+
+    return () => {
+      if (currentRef) observer.unobserve(currentRef);
+    };
+  }, [setVisiblePosts]);
+
   return (
     <Box width={"full"}>
-      <InfiniteScroll
-        dataLength={visiblePosts}
-        next={() => {
-          setVisiblePosts(visiblePosts + 1);
-        }}
-        hasMore={visiblePosts < (comments?.length ?? 0)}
-        loader={
-          <Flex justify="center">
-            <BeatLoader size={8} color="darkgrey" />
-          </Flex>
-        }
-        scrollableTarget={"scrollableDiv"}
-      >
+      <Box>
         {comments
           ?.slice(0, visiblePosts)
           .map((comment) => (
@@ -45,7 +60,17 @@ const CommentList = ({
               handleVote={handleVote}
             />
           ))}
-      </InfiniteScroll>
+
+        {visiblePosts === 0 && comments.length === 0 && (
+          <Flex justify="center">
+            <BeatLoader size={8} color="darkgrey" />
+          </Flex>
+        )}
+
+        {visiblePosts < comments.length && (
+          <div ref={observerRef} style={{ height: "50px" }}></div>
+        )}
+      </Box>
     </Box>
   );
 };
