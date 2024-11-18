@@ -1,4 +1,7 @@
-import { Box, Button } from "@chakra-ui/react";
+"use client";
+
+import { Box } from "@chakra-ui/react";
+import { useCallback, useEffect, useRef } from "react";
 import CommentList from "./CommentsList";
 
 interface ToggleCommentsProps {
@@ -23,6 +26,41 @@ const ToggleComments = ({
   isCommentFormVisible
 }: ToggleCommentsProps) => {
   const shouldShowComments = isEyeClicked || shouldShowAllComments || isCommentFormVisible;
+
+  const observerRef = useRef<HTMLDivElement>(null);
+
+  const loadMoreComments = useCallback(() => {
+    if (visiblePosts < commentReplies.length) {
+      setVisiblePosts((prev) => prev + 5);
+    }
+  }, [visiblePosts, commentReplies.length, setVisiblePosts]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const target = entries[0];
+        if (target.isIntersecting) {
+          loadMoreComments();
+        }
+      },
+      {
+        root: null, 
+        rootMargin: "0px",
+        threshold: 1.0, 
+      }
+    );
+
+    if (observerRef.current) {
+      observer.observe(observerRef.current);
+    }
+
+    return () => {
+      if (observerRef.current) {
+        observer.unobserve(observerRef.current);
+      }
+    };
+  }, [loadMoreComments]);
+
   return (
     <>
       {shouldShowComments && (
@@ -35,16 +73,8 @@ const ToggleComments = ({
             handleVote={handleVote}
           />
 
-          {visiblePosts < commentReplies.length && !isCommentFormVisible && (
-            <Button
-              onClick={() => setVisiblePosts(visiblePosts + 5)}
-              variant="outline"
-              colorScheme="green"
-              size="sm"
-              mt={4}
-            >
-              Show More
-            </Button>
+          {visiblePosts < commentReplies.length && (
+            <div ref={observerRef} style={{ height: "1px" }}></div>
           )}
         </Box>
       )}
