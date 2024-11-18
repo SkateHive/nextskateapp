@@ -1,4 +1,5 @@
 'use client';
+import AuthorAvatar from "@/components/AuthorAvatar";
 import { useHiveUser } from "@/contexts/UserContext";
 import HiveClient from "@/lib/hive/hiveclient";
 import { formatETHaddress } from "@/lib/utils";
@@ -126,7 +127,14 @@ const AirdropModal = ({ sortedComments, isOpen, onClose }: AirdropModalProps) =>
                                                     <Tbody>
                                                         {walletDict.map(({ author, ethAddress }: AuthorWallets) => (
                                                             <Tr key={author}>
-                                                                <Td>{author}</Td>
+                                                                <Td>
+                                                                    <Center justifyContent={"flex-start"}>
+                                                                        <AuthorAvatar username={author} boxSize={8} />
+                                                                        <Text ml={2}>
+                                                                            {author}
+                                                                        </Text>
+                                                                    </Center>
+                                                                </Td>
                                                                 <Td>{formatETHaddress(ethAddress)}</Td>
                                                             </Tr>
                                                         ))}
