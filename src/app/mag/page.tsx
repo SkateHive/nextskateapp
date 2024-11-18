@@ -4,14 +4,12 @@ import Post from "@/components/PostCard"
 import PostSkeleton from "@/components/PostCard/Skeleton"
 import { useHiveUser } from "@/contexts/UserContext"
 import usePosts from "@/hooks/usePosts"
+import { blockedUsers } from "@/lib/constants"
 import PostModel from "@/lib/models/post"
-import { Box, Button, ButtonGroup, Center, Flex, Grid, Image, useMediaQuery } from "@chakra-ui/react"
-import { useState } from "react"
+import { Box, Button, ButtonGroup, Center, Grid, Image, useMediaQuery } from "@chakra-ui/react"
+import { useEffect, useRef, useState } from "react"
 import { FaBook, FaBookOpen } from "react-icons/fa"
-import InfiniteScroll from "react-infinite-scroll-component"
-import { BeatLoader } from "react-spinners"
 import AuthorSearchBar from "../upload/components/searchBar"
-import { blockedUsers } from "@/lib/constants";  // Import the blocklist
 
 export default function Mag() {
   const SKATEHIVE_TAG = [{ tag: "hive-173115", limit: 60 }]
@@ -26,11 +24,38 @@ export default function Mag() {
   const isMobile = useMediaQuery("(max-width: 768px)")[0];
   const [openBook, setOpenBook] = useState(false);
 
+  const observerRef = useRef<HTMLDivElement>(null);
+
   function updateFeed(query: string, tagParams: any[]) {
     setQuery(query)
     setQueryCategory(query)
     setDiscussionQuery(tagParams)
   }
+
+  useEffect(() => {
+    const currentRef = observerRef.current;
+    if (!currentRef) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const target = entries[0];
+        if (target.isIntersecting) {
+          setVisiblePosts((prev) => prev + 5);
+        }
+      },
+      {
+        root: null,
+        rootMargin: "0px",
+        threshold: 0.1,
+      }
+    );
+
+    observer.observe(currentRef);
+
+    return () => {
+      if (currentRef) observer.unobserve(currentRef);
+    };
+  }, [posts, visiblePosts]);
 
   if (error) {
     return "Error"
@@ -68,7 +93,6 @@ export default function Mag() {
     )
   }
 
-  // Filter posts based on blocked users
   const filteredPosts = posts.filter(post => !blockedUsers.includes(post.author));
 
   const handleCreateClick = () => {
@@ -175,11 +199,11 @@ export default function Mag() {
               }}
             >
               {openBook ? <FaBookOpen /> : <FaBook />}
-
             </Button>
           )}
         </ButtonGroup>
       </Center>
+
       <Center mt={2} mb={1}>
         <Box width={{ base: "62%", sm: "70%", md: "60%", lg: "40%", xl: "19%" }}>
           <AuthorSearchBar
@@ -187,43 +211,35 @@ export default function Mag() {
           />
         </Box>
       </Center>
+
       {isLoginModalOpen && (
         <LoginModal
           isOpen={isLoginModalOpen}
           onClose={() => setIsLoginModalOpen(false)}
         />
       )}
-      <InfiniteScroll
-        dataLength={visiblePosts}
-        next={() => setVisiblePosts(visiblePosts + 3)}
-        hasMore={visiblePosts < filteredPosts.length}
-        loader={
-          <Flex justify="center">
-            <BeatLoader size={8} color="darkgrey" />
-          </Flex>
-        }
-        style={{ overflow: "hidden" }}
+
+      <Grid
+        templateColumns={{
+          base: "repeat(1, 1fr)",
+          md: "repeat(2, 1fr)",
+          lg: "repeat(3, 1fr)",
+          xl: "repeat(4, 1fr)",
+        }}
+        gap={0}
       >
-        <Grid
-          templateColumns={{
-            base: "repeat(1, 1fr)",
-            md: "repeat(2, 1fr)",
-            lg: "repeat(3, 1fr)",
-            xl: "repeat(4, 1fr)",
-          }}
-          gap={0}
-        >
-          {filteredPosts.length > 0 &&
-            filteredPosts
-              .slice(0, visiblePosts)
-              .map((post, i) => (
-                <Post
-                  key={`${query}-${post.url}`}
-                  postData={PostModel.newFromDiscussion(post)}
-                />
-              ))}
-        </Grid>
-      </InfiniteScroll>
+        {filteredPosts.length > 0 &&
+          filteredPosts
+            .slice(0, visiblePosts)
+            .map((post, i) => (
+              <Post
+                key={`${query}-${post.url}`}
+                postData={PostModel.newFromDiscussion(post)}
+              />
+            ))}
+      </Grid>
+
+      <div ref={observerRef} style={{ height: "50px", width: "100%" }} />
     </Box>
   )
 }
