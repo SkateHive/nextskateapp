@@ -438,3 +438,25 @@ export async function uploadImage(file: File, signature: string, index?: number,
     xhr.send(formData);
   });
 }
+
+export async function getSkateHiveTotalPayout(): Promise<number | null> {
+  try {
+    const response = await HiveClient.call("bridge", "get_payout_stats", { limit: 250 });
+
+    if (!response || !response.items) {
+      throw new Error("Invalid response format from Hive API.");
+    }
+    console.log(response)
+    // Find SkateHive stats across all weeks
+    const skatehiveStats = response.items.filter((item: any[]) => item[1] === "SkateHive");
+
+    if (!skatehiveStats || skatehiveStats.length === 0) {
+      throw new Error("SkateHive community not found in the payout stats.");
+    }
+
+    return response.total; // Return the aggregated total
+  } catch (error) {
+    console.error("Error fetching SkateHive total payout stats:", error);
+    return null; // Return null in case of an error
+  }
+}

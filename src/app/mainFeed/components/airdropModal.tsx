@@ -26,7 +26,7 @@ import { useEffect, useState } from "react";
 import Confetti from 'react-confetti';
 import { BeatLoader } from "react-spinners";
 import TokenSelector from "./TokenSelector";
-
+import AuthorAvatar from "@/components/AuthorAvatar";
 interface AirdropModalProps {
     sortedComments: any[];
     isOpen: boolean;
@@ -120,7 +120,14 @@ const AirdropModal = ({ sortedComments, isOpen, onClose }: AirdropModalProps) =>
                                             <Tbody>
                                                 {walletDict.map(({ author, ethAddress }: AuthorWallets) => (
                                                     <Tr key={author}>
-                                                        <Td>{author}</Td>
+                                                        <Td>
+                                                            <Center justifyContent={"flex-start"}>
+                                                                <AuthorAvatar username={author} boxSize={8} />
+                                                                <Text ml={2}>
+                                                                    {author}
+                                                                </Text>
+                                                            </Center>
+                                                        </Td>
                                                         <Td>{formatETHaddress(ethAddress)}</Td>
                                                     </Tr>
                                                 ))}
