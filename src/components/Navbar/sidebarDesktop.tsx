@@ -13,7 +13,8 @@ import {
   Image,
   Text,
   keyframes,
-  useDisclosure
+  useDisclosure,
+  useToast
 } from "@chakra-ui/react";
 import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
 import { useEffect, useState } from "react";
@@ -35,6 +36,7 @@ import CommunityTotalPayout from "../communityTotalPayout";
 // import checkRewards from "./utils/checkReward";
 import { claimRewards } from "./utils/claimRewards";
 import Confetti from 'react-confetti';
+import getDynamicGlobalProperties from "@/lib/hive/hiveclient";
 
 const blink = keyframes`
   0% { color: gold; opacity: 1; }
@@ -54,8 +56,24 @@ const SidebarDesktop = () => {
   const { openConnectModal } = useConnectModal();
   const { openAccountModal } = useAccountModal();
   const [hiveAccount, setHiveAccount] = useState<HiveAccount>();
-  const client = HiveClient;
+  const [globalProps, setGlobalProps] = useState<any>(null); // Store global props
   const [showConfetti, setShowConfetti] = useState(false);
+  const toast = useToast();
+
+  const client = HiveClient;
+
+  useEffect(() => {
+    const fetchGlobalProps = async () => {
+      try {
+        const props = await client.database.getDynamicGlobalProperties();
+        setGlobalProps(props);
+      } catch (error) {
+        console.error("Failed to fetch global properties:", error);
+      }
+    };
+
+    fetchGlobalProps();
+  }, []);
 
   useEffect(() => {
     if (hiveUser?.name) {
@@ -66,8 +84,8 @@ const SidebarDesktop = () => {
             const account = userAccount[0];
 
             const getBalance = (balance: string | Asset): number => {
-              const balanceStr = typeof balance === 'string' ? balance : balance.toString();
-              return Number(balanceStr.split(' ')[0]);
+              const balanceStr = typeof balance === "string" ? balance : balance.toString();
+              return Number(balanceStr.split(" ")[0]);
             };
 
             const hbdBalance = getBalance(account.reward_hbd_balance);
@@ -75,9 +93,6 @@ const SidebarDesktop = () => {
             const vestingHive = getBalance(account.reward_vesting_hive);
 
             const hasRewards = hbdBalance > 0 || hiveBalance > 0 || vestingHive > 0;
-            // console.log(hasRewards ? "User has rewards" : "User has no rewards");
-            // return hasRewards;
-
             setHiveAccount(userAccount[0]);
             setHasRewards(hasRewards);
           }
@@ -99,29 +114,48 @@ const SidebarDesktop = () => {
   const [notifications, setNotifications] = useState(false);
   const [hasRewards, setHasRewards] = useState(false);
 
-  // useEffect(() => {
-  //   const checkUserRewards = async () => {
-  //     if (hiveUser) {
-  //       setHasRewards(await checkRewards(String(hiveUser.name)));
-  //     }
-  //   };
-
-  //   checkUserRewards();
-  // }, [hiveUser]);
-
-  const handleNotifications = () => {
-    setNotifications(!notifications);
-  };
-
   const handleClaimRewards = async () => {
-    if (hiveAccount) {
-      await claimRewards(hiveAccount);
-      setHasRewards(false);
-      setShowConfetti(true);
-      // after 5 seconds, hide the confetti
-      setTimeout(() => {
-        setShowConfetti(false);
-      }, 7000);
+    if (hiveAccount && globalProps) {
+      const { reward_hive_balance, reward_hbd_balance, reward_vesting_balance } = hiveAccount;
+
+      try {
+        const totalVestingShares = parseFloat(globalProps.total_vesting_shares.split(" ")[0]);
+        const totalVestingFundHive = parseFloat(globalProps.total_vesting_fund_hive.split(" ")[0]);
+
+        // Convert reward_vesting_balance to Hive Power
+        const vestingShares = parseFloat(reward_vesting_balance.toString().split(" ")[0]);
+        const hivePower = (vestingShares / totalVestingShares) * totalVestingFundHive;
+
+        // Claim rewards
+        await claimRewards(hiveAccount);
+
+        // Reset rewards state
+        setHasRewards(false);
+
+        // Display a success toast with the claimed amounts
+        toast({
+          title: "Rewards Claimed!",
+          description: `You claimed ${reward_hive_balance}, ${reward_hbd_balance}, and ${hivePower.toFixed(3)} HP.`,
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+
+        // Show confetti
+        setShowConfetti(true);
+        setTimeout(() => setShowConfetti(false), 7000);
+      } catch (error) {
+        console.error("Failed to claim rewards:", error);
+
+        // Display an error toast
+        toast({
+          title: "Error Claiming Rewards",
+          description: "There was an issue claiming your rewards. Please try again.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
     }
   };
 
@@ -135,6 +169,8 @@ const SidebarDesktop = () => {
       window.open(url, '_blank', 'noopener,noreferrer');
     }
   };
+
+
 
 
 

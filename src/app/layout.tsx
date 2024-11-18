@@ -1,5 +1,3 @@
-// src/app/RootLayout.tsx
-
 import Favicon from "@/components/FaviconLinks";
 import MobileNavbar from "@/components/Navbar/MobileNavbar";
 import { getWebsiteURL } from "@/lib/utils";
@@ -9,7 +7,8 @@ import { Share_Tech_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 import { Providers } from "./providers";
 import SidebarWrapper from "./SidebarWrapper";
-
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from "@vercel/speed-insights/next"
 const share_tech_mono = Share_Tech_Mono({ subsets: ["latin"], weight: "400" });
 
 const ColorModeScriptWrapper = dynamic(() => import('./ColorModeScriptWrapper'), { ssr: false });
@@ -87,6 +86,8 @@ export default function RootLayout({
             </div>
             {children}
           </Flex>
+          <Analytics />
+          <SpeedInsights />
         </Providers>
       </body>
     </html>
