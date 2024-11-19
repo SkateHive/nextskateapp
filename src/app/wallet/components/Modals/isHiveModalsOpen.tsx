@@ -156,6 +156,7 @@ const HiveModalOpen: React.FC<HiveModalOpenProps> = ({
                                 }
                             }
                         );
+
                     } else {
                         toast({
                             title: "Power-Up error.",
@@ -166,7 +167,6 @@ const HiveModalOpen: React.FC<HiveModalOpenProps> = ({
                         });
                     }
                 });
-
 
                 if (response.success) {
                     toast({
@@ -233,12 +233,20 @@ const HiveModalOpen: React.FC<HiveModalOpenProps> = ({
                             <Input
                                 placeholder="0.000"
                                 value={formattedAmountHive}
-                                onChange={(e) => setFormattedAmountHive(e.target.value)}
+                                onChange={(e) => {
+                                    const value = e.target.value.replace(/[^0-9.]/g, "");
+                                    setFormattedAmountHive(value);
+                                }}
+                                onBlur={() => {
+                                    const formattedValue = parseFloat(formattedAmountHive || "0").toFixed(3);
+                                    setFormattedAmountHive(formattedValue);
+                                }}
                                 bg="white"
                                 color="black"
                                 borderRadius="5px"
                                 variant="outline"
                             />
+
                             <Input
                                 placeholder="Memo (Optional)"
                                 value={memo}
@@ -335,12 +343,25 @@ const HiveModalOpen: React.FC<HiveModalOpenProps> = ({
                             <Input
                                 placeholder="0.000"
                                 value={formattedAmountHivePower}
-                                onChange={(e) => setFormattedAmountHivePower(e.target.value)}
+                                onChange={(e) => {
+                                    const value = e.target.value.replace(/[^0-9.]/g, "");
+
+                                    if ((value.match(/\./g) || []).length > 1) {
+                                        return;
+                                    }
+
+                                    setFormattedAmountHivePower(value);
+                                }}
+                                onBlur={() => {
+                                    const formattedValue = parseFloat(formattedAmountHivePower || "0").toFixed(3);
+                                    setFormattedAmountHivePower(formattedValue);
+                                }}
                                 bg="white"
                                 color="black"
                                 borderRadius="5px"
                                 variant="outline"
                             />
+
                             <Input
                                 placeholder="Memo (Optional)"
                                 value={memo}

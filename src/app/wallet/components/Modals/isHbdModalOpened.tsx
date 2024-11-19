@@ -44,7 +44,7 @@ const HBDSendModal: React.FC<isHbdSendProps> = ({
         }
     }, [recipient]);
 
-    
+
     const toast = useToast();
     // HBD
     const sendHBD = async () => {
@@ -138,7 +138,7 @@ const HBDSendModal: React.FC<isHbdSendProps> = ({
                         position="relative"
                     >
                         <VStack spacing={4} align="stretch">
-                        <Box display="flex" alignItems="center">
+                            <Box display="flex" alignItems="center">
                                 {previousRecipient == recipient && (
                                     <AuthorAvatar username={previousRecipient} borderRadius={100} />
                                 )}
@@ -156,7 +156,14 @@ const HBDSendModal: React.FC<isHbdSendProps> = ({
                             <Input
                                 placeholder="0.000"
                                 value={formattedAmountHbd}
-                                onChange={(e) => setFormattedAmountHbd(e.target.value)}
+                                onChange={(e) => {
+                                    const value = e.target.value.replace(/[^0-9.]/g, "");
+                                    setFormattedAmountHbd(value);
+                                }}
+                                onBlur={() => {
+                                    const formattedValue = parseFloat(formattedAmountHbd || "0").toFixed(3);
+                                    setFormattedAmountHbd(formattedValue);
+                                }}
                                 bg="white"
                                 color="black"
                                 borderRadius="5px"

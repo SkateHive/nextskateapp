@@ -92,13 +92,13 @@ const ProposalListItem = ({
                                 {new Date(proposal.start * 1000).toLocaleDateString()} -{" "}
                                 {new Date(proposal.end * 1000).toLocaleDateString()}
                             </Text>
-                            <Text fontSize="18px" ml={4} border="1px solid limegreen" p={4}>
+                            <Text fontSize="18px" ml={4} border="1px solid limegreen" p={4} color="limegreen"
+                            >
                                 {(() => {
                                     console.log("proposal.summary:", proposal.summary);
                                     return proposal.summary;
                                 })()}
                             </Text>
-
                         </VStack>
                     </HStack>
 

@@ -2,13 +2,15 @@ import {
     Avatar,
     Box,
     Input,
-    InputGroup, InputLeftElement,
-    List, ListItem,
+    InputGroup,
+    InputLeftElement,
+    List,
+    ListItem,
     Spinner,
-    Text
-} from '@chakra-ui/react';
+    Text,
+} from "@chakra-ui/react";
 import { Client } from "@hiveio/dhive";
-import debounce from 'lodash/debounce';
+import debounce from "lodash/debounce";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 
@@ -20,14 +22,16 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
     const [username, setUsername] = useState("");
     const [authors, setAuthors] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(false);
-    const client = new Client(["https://api.hive.blog"]);
     const [isListVisible, setIsListVisible] = useState(false);
+
+    const client = new Client(["https://api.hive.blog"]);
+    const containerRef = useRef<HTMLDivElement>(null);
 
     const fetchAuthors = async (query: string) => {
         if (!query) return;
         setIsLoading(true);
         try {
-            const sanitizedQuery = query.startsWith('@') ? query.slice(1) : query;
+            const sanitizedQuery = query.startsWith("@") ? query.slice(1) : query;
             const result = await client.database.call("lookup_accounts", [sanitizedQuery, 5]);
             setAuthors(result);
         } catch (error) {
@@ -36,12 +40,15 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
         setIsLoading(false);
     };
 
-    const debouncedFetchAuthors = useCallback(debounce((search: string) => {
-        fetchAuthors(search);
-    }, 800), []);
+    const debouncedFetchAuthors = useCallback(
+        debounce((search: string) => {
+            fetchAuthors(search);
+        }, 800),
+        []
+    );
 
     useEffect(() => {
-        if (username.startsWith('@') && username.trim() !== "@") {
+        if (username.trim()) {
             debouncedFetchAuthors(username);
         } else {
             setAuthors([]);
@@ -53,7 +60,6 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
         setAuthors([]);
         onSearch(selectedUsername);
     };
-    const containerRef = useRef<HTMLDivElement>(null);
 
     const hideList = (event: MouseEvent) => {
         if (!containerRef.current?.contains(event.target as Node)) {
@@ -61,13 +67,13 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
         }
     };
 
-
     useEffect(() => {
-        document.addEventListener('mousedown', hideList);
+        document.addEventListener("mousedown", hideList);
         return () => {
-            document.removeEventListener('mousedown', hideList);
+            document.removeEventListener("mousedown", hideList);
         };
     }, []);
+
     return (
         <Box position="relative" ref={containerRef}>
             <InputGroup>
@@ -84,8 +90,9 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
                     placeholder="Find a Skater/Photographer..."
                     value={username}
                     onChange={(e) => {
-                        setUsername(e.target.value);
-                        setIsListVisible(e.target.value.startsWith('@'));
+                        const value = e.target.value.replace(/^@/, "");
+                        setUsername(value);
+                        setIsListVisible(value.trim() !== "");
                     }}
                     borderColor="green.600"
                     color="#A5D6A7"
@@ -121,7 +128,12 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
                             alignItems="center"
                             _hover={{ bg: "#A5D6A7", color: "black" }}
                         >
-                            <Avatar borderRadius={"5px"} size="sm" src={`https://images.ecency.com/webp/u/${author}/avatar/small`} mr={2} />
+                            <Avatar
+                                borderRadius={"5px"}
+                                size="sm"
+                                src={`https://images.ecency.com/webp/u/${author}/avatar/small`}
+                                mr={2}
+                            />
                             <Text>{author}</Text>
                         </ListItem>
                     ))}
