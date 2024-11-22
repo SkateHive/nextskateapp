@@ -1,5 +1,6 @@
 import { SKATEHIVE_TAG } from "@/lib/constants";
 import { getSkateHiveTotalPayout } from "@/lib/hive/client-functions";
+import { getTotalPayout } from "@/lib/hive/hiveSQL";
 import { Box, Flex, Image, Text, VStack } from "@chakra-ui/react";
 import { useEffect, useMemo, useState } from "react";
 
@@ -28,7 +29,8 @@ function CommunityTotalPayout() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const totalPayout = await getSkateHiveTotalPayout();
+        //const totalPayout = await getSkateHiveTotalPayout();
+        const totalPayout = await getTotalPayout()
         console.log("Total payout:", totalPayout);
         if (totalPayout !== null) {
           setTotalHBDPayout(totalPayout);
