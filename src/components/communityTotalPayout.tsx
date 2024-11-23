@@ -1,6 +1,4 @@
 import { SKATEHIVE_TAG } from "@/lib/constants";
-import { getSkateHiveTotalPayout } from "@/lib/hive/client-functions";
-import { getTotalPayout } from "@/lib/hive/hiveSQL";
 import { Box, Flex, Image, Text, VStack } from "@chakra-ui/react";
 import { useEffect, useMemo, useState } from "react";
 
@@ -29,27 +27,34 @@ function CommunityTotalPayout() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        //const totalPayout = await getSkateHiveTotalPayout();
-        const totalPayout = await getTotalPayout()
-        console.log("Total payout:", totalPayout);
-        if (totalPayout !== null) {
-          setTotalHBDPayout(totalPayout);
-        } else {
-          setTotalHBDPayout(420.0); // Fallback value
+        const hiveHubResponse = await fetch(
+          `https://stats.hivehub.dev/communities?c=${SKATEHIVE_TAG}`
+        );
+        const resJson = await hiveHubResponse.json();
+        const hiveInfo = resJson[SKATEHIVE_TAG];
+        let totalPayoutNumber = 65666;
+        if (hiveInfo && hiveInfo.total_payouts_hbd) {
+          try {
+            totalPayoutNumber = parseFloat(
+              hiveInfo.total_payouts_hbd.replace("$", "")
+            );
+          } catch (error) {
+            console.error("Error reading 'total_payouts_hbd': ", error);
+            totalPayoutNumber = 65666;
+          }
         }
 
+        setTotalHBDPayout(totalPayoutNumber);
         setLoading(false);
       } catch (error: any) {
-        console.error("Error fetching data:", error.message);
+        setTotalHBDPayout(420.0);
         setError(error.message);
-        setTotalHBDPayout(420.0); // Error fallback value
         setLoading(false);
       }
     };
 
     fetchData();
   }, []);
-
 
   useEffect(() => {
     if (!loading && !error) {
