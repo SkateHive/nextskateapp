@@ -1,12 +1,33 @@
 'use server'
+
+/*
+CREATE TABLE payouts (
+    id SERIAL PRIMARY KEY,
+    date TIMESTAMP NOT NULL,
+    total_hbd_payout NUMERIC NOT NULL,
+    total_curator_payout NUMERIC NOT NULL,
+    total_payout NUMERIC NOT NULL
+);
+*/
+
 import sql from 'mssql';
-import fs from 'fs';
-import path from 'path';
+import { createClient } from '@supabase/supabase-js';
+
+// Initialize Supabase client
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error('Supabase URL or Key is not set in environment variables.');
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey);
+ 
 
 async function fetchAndSavePayouts() {
   const config: sql.config = {
-    user: 'Hive-skatehacker',
-    password: 'ZRNwN4dPS8HXdeZTa6BR',
+    user: process.env.HIVESQL_USER,
+    password: process.env.HIVESQL_PASSWORD,
     server: 'vip.hivesql.io',
     database: 'DBHive',
     options: {
@@ -49,31 +70,23 @@ async function fetchAndSavePayouts() {
 
     const data = {
       date: new Date().toISOString(),
-      totalHbdPayout,
-      totalCuratorPayout,
-      totalPayout,
+      total_hbd_payout: totalHbdPayout,
+      total_curator_payout: totalCuratorPayout,
+      total_payout: totalPayout,
     };
 
-    // Define file path
-    const filePath = path.join(process.cwd(), 'payouts.json');
+    // Save to Supabase
+    const { error } = await supabase
+      .from('payouts')
+      .insert(data);
 
-    // Check if the file exists, if not create it
-    if (!fs.existsSync(filePath)) {
-      fs.writeFileSync(filePath, JSON.stringify([], null, 2), 'utf-8');
+    if (error) {
+      throw new Error(`Error saving to Supabase: ${error.message}`);
     }
 
-    // Read existing data from the file
-    const existingData = JSON.parse(fs.readFileSync(filePath, 'utf-8')) as typeof data[];
-
-    // Append new data to the file
-    existingData.push(data);
-
-    // Save updated data back to the file
-    fs.writeFileSync(filePath, JSON.stringify(existingData, null, 2), 'utf-8');
-
-    //console.log('Payouts data saved successfully:', data);
-
+    //console.log('Payouts data saved to Supabase:', data);
     return data;
+
   } catch (error) {
     console.error('Error fetching or saving payouts:', error);
     throw error;
@@ -85,39 +98,34 @@ async function fetchAndSavePayouts() {
   }
 }
 
-/**
- * Reads the payouts JSON file, checks the date, and updates if necessary.
- * @returns {Promise<number>} The total payout.
- */
+// Fetch total payout from Supabase
 export async function getTotalPayout(): Promise<number> {
-  const filePath = path.join(process.cwd(), 'payouts.json');
-
   try {
-    // Check if the file exists
-    if (!fs.existsSync(filePath)) {
-      console.log('File does not exist. Fetching data...');
-      const { totalPayout } = await fetchAndSavePayouts();
-      return totalPayout;
+    // Fetch the latest record from the Supabase table
+    const { data, error } = await supabase
+      .from('payouts')
+      .select('*')
+      .order('date', { ascending: false })
+      .limit(1); // Removed .single()
+
+    if (error) {
+      console.error('Error fetching data from Supabase:', error.message);
+      throw error;
     }
 
-    // Read the file
-    const fileContent = fs.readFileSync(filePath, 'utf-8');
-    const data = JSON.parse(fileContent);
-
-    if (!Array.isArray(data) || data.length === 0) {
-      console.log('File is empty or invalid. Fetching data...');
-      const { totalPayout } = await fetchAndSavePayouts();
-      return totalPayout;
-    }
-
-    // Get the latest record
-    const latestRecord = data[data.length - 1];
-    const { date, totalPayout } = latestRecord;
-
-    if (!date || !totalPayout) {
-      console.log('Invalid data in the file. Fetching data...');
+    // If no record exists, invoke `fetchAndSavePayouts` to initialize data
+    if (!data || data.length === 0) {
+      //console.log('No data found in the table. Fetching fresh data...');
       const updatedData = await fetchAndSavePayouts();
-      return updatedData.totalPayout;
+      return updatedData.total_payout; // Correct property access
+    }
+
+    const { date, total_payout: totalPayout } = data[0]; // Access the first item in the array
+
+    if (!date || totalPayout === undefined) {
+      console.log('Invalid data in the table. Fetching fresh data...');
+      const updatedData = await fetchAndSavePayouts();
+      return updatedData.total_payout; // Correct property access
     }
 
     const lastUpdated = new Date(date);
@@ -130,10 +138,11 @@ export async function getTotalPayout(): Promise<number> {
     if (isOlderThan24Hours) {
       //console.log('Data is older than 24 hours. Fetching updated data...');
       const updatedData = await fetchAndSavePayouts();
-      return updatedData.totalPayout;
+      return updatedData.total_payout; // Correct property access
     }
 
-    //console.log('Returning the latest total payout from file:', totalPayout);
+    // Return the latest total payout
+    //console.log('Returning the latest total payout from Supabase:', totalPayout);
     return totalPayout;
 
   } catch (error) {
@@ -141,3 +150,5 @@ export async function getTotalPayout(): Promise<number> {
     throw error;
   }
 }
+
+
