@@ -1,7 +1,9 @@
+import {
+    Box, Button, Image, Modal, ModalBody,
+    ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay,
+    Spinner, Text, useToast
+} from '@chakra-ui/react';
 import { KeychainSDK, Transfer } from "keychain-sdk";
-import { Box, Button, Image, Modal, ModalBody,
-         ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, 
-         Spinner, Text, useToast } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 
 interface SendHBDModalProps {
@@ -32,8 +34,16 @@ const SendHBDModal: React.FC<SendHBDModalProps> = ({
 
     const sendHBD = async () => {
         setLoading(true);
+
+        toast({
+            title: "Retirada pedentente.",
+            description: "Estamos processando sua retirada via Pix.",
+            status: "info",
+            duration: 5000,
+            isClosable: true,
+        })
         var memoPix = "# ";
-        if(formattedPixKeyType == "Telefone")
+        if (formattedPixKeyType == "Telefone")
             memoPix += formattedPixKey.replace("(", "").replace(") ", "").replace("-", "");
         else
             memoPix += formattedPixKey;
@@ -51,25 +61,25 @@ const SendHBDModal: React.FC<SendHBDModalProps> = ({
             }
         }
 
-        keychain.transfer(formParamsAsObject.data as Transfer).then((resultado) => {
-            if (resultado?.success == true) {
-                // console.log(resultado); //debug
+        try {
+            const result = await keychain.transfer(formParamsAsObject.data as Transfer);
+
+            if (result?.success) {
                 setTransactionStatus('success');
                 toast({
-                    title: "Solicitacao Pix Enviada com Sucesso.",
-                    description: resultado?.message + resultado?.request_id,
-                    status: "error",
+                    title: "Pix retirada com sucesso!",
+                    description: `Retirada concluída: ${result?.message}`,
+                    status: "success",
                     duration: 5000,
                     isClosable: true,
                 });
                 setLoading(false);
                 onClose();
             } else {
-                console.error(resultado);
-                setLoading(false);
+                throw new Error("Erro ao processar a transferência.");
             }
-        }).catch((err) => {
-            // console.log(err); //debug
+       
+        } catch (err: any) {
             setError("Houve um problema ao realizar a transferência.");
             setTransactionStatus('failure');
             toast({
@@ -81,8 +91,7 @@ const SendHBDModal: React.FC<SendHBDModalProps> = ({
             });
             setLoading(false);
             onClose();
-        });
-        // console.log("aguardando resposta");
+        };
     };
 
     useEffect(() => {
