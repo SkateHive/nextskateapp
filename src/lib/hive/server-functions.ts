@@ -2,13 +2,12 @@
 
 import { Validation } from "@/types"
 import * as dhive from "@hiveio/dhive"
+import { PrivateKey } from '@hiveio/dhive'
+import { Buffer } from 'buffer'
 import CryptoJS from "crypto-js"
 import { VideoPart } from "../models/user"
 import { HiveAccount } from "../useHiveAuth"
 import HiveClient from "./hiveclient"
-import { PrivateKey } from '@hiveio/dhive';
-import { Buffer } from 'buffer';
-
 const communityTag = process.env.NEXT_PUBLIC_HIVE_COMMUNITY_TAG;
 
 interface ServerLoginResponse {
@@ -213,14 +212,14 @@ export async function updateProfileWithPrivateKey(
   ]
 
   return await HiveClient.broadcast.sendOperations([updateInfo], dhive.PrivateKey.from(privateKey))
-    // .then((result) => {
-    //   console.log(result)
-    //   return result
-    // })
-    // .catch((error) => {
-    //   console.error(error)
-    //   return error
-    // })
+  // .then((result) => {
+  //   console.log(result)
+  //   return result
+  // })
+  // .catch((error) => {
+  //   console.error(error)
+  //   return error
+  // })
 
 }
 
@@ -281,9 +280,55 @@ async function checkFollow(follower: string, following: string): Promise<boolean
   }
 }
 
+interface Transaction {
+  from: string;
+  to: string;
+  amount: string;
+  memo?: string;
+  timestamp: string;
+}
+export async function getTransactionHistory(username: string, searchAccount: string): Promise<Transaction[]> {
+  try {
+    const operationsBitmask: [number, number] = [4, 0];
+    const accountHistory = await HiveClient.database.getAccountHistory(
+      username,
+      -1,
+      1000,
+      operationsBitmask
+    );
+
+// Filter and map transfer transactions
+    const filteredTransactions = accountHistory
+      .filter(([_, operationDetails]) => {
+        const operationType = operationDetails.op[0];
+        const opDetails = operationDetails.op[1];
+        return (
+          operationType === "transfer" &&
+          (opDetails.from === searchAccount || opDetails.to === searchAccount)
+        );
+      })
+      .map(([_, operationDetails]) => {
+        const opDetails = operationDetails.op[1];
+        return {
+          from: opDetails.from,
+          to: opDetails.to,
+          amount: opDetails.amount,
+          memo: opDetails.memo || "",
+          timestamp: operationDetails.timestamp,
+        };
+      });
+// Revert so that the most recent transactions come first
+    return filteredTransactions.reverse();
+  } catch (error) {
+    console.error("Error fetching transaction history:", error);
+    return [];
+  }
+}
+
+
 export async function changeFollowWithPassword(encryptedPrivateKey: string | null, follower: string, following: string) {
   const status = await checkFollow(follower, following)
-  
+
   let type = ''
   if (!status) {
     type = 'blog'
@@ -318,10 +363,10 @@ export async function toogleFollowWithPassword(encryptedPrivateKey: string | nul
   }
 
   const json = JSON.stringify(['follow',{
-      follower: follower,
-      following: following,
-      what: [type], //null value for unfollow, 'blog' for follow
-    },]);
+    follower: follower,
+    following: following,
+    what: [type], //null value for unfollow, 'blog' for follow
+  },]);
 
   const data = {
     id: 'follow',
@@ -339,7 +384,7 @@ export async function signImageHash(hash: string): Promise<string> {
   const wif = process.env.HIVE_POSTING_KEY;
 
   if (!wif) {
-      throw new Error("HIVE_POSTING_KEY is not set in the environment");
+    throw new Error("HIVE_POSTING_KEY is not set in the environment");
   }
 
   const key = PrivateKey.fromString(wif);
