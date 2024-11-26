@@ -2,7 +2,6 @@ import { Comment } from "@/app/mainFeed/page"
 import { PINATA_URL } from "@/utils/config"
 import { isNaN } from "lodash"
 import HiveClient from "./hive/hiveclient"
-
 export function getWebsiteURL() {
   return process.env.NEXT_PUBLIC_WEBSITE_URL || ""
 }
@@ -111,7 +110,7 @@ export function transformNormalYoutubeLinksinIframes(content: string) {
 
 export function autoEmbedZoraLink(content: string) {
   const regex = /https:\/\/zora\.co\/collect\/([^\/\s?]+)(?:\/([^\/\s?]+))?(?:\?referrer=([^\/\s]+))?/g;
-
+  
   return content.replace(regex, (fullMatch, tokenId, extraPath, referrer) => {
     // Construct embed URL dynamically
     const embedUrl = `https://zora.co/collect/${tokenId}${extraPath ? `/${extraPath}` : ''}/embed${referrer ? `?referrer=${referrer}` : ''
@@ -123,10 +122,6 @@ export function autoEmbedZoraLink(content: string) {
     return `<iframe src="${embedUrl}" style="border:0;background-color:transparent;position:absolute;inset:0" width="100%" height="100%" allowtransparency="true" allowfullscreen="true" sandbox="allow-pointer-lock allow-same-origin allow-scripts allow-popups"></iframe>`;
   });
 }
-
-
-
-
 export function formatDate(date: string) {
   const now = new Date()
   const postDate = new Date(date)
@@ -150,12 +145,8 @@ export function formatDate(date: string) {
 
 export const getTotalPayout = (comment: Comment): number => {
   const payout = parseFloat(comment.total_payout_value?.split(" ")[0] || "0");
-  const pendingPayout = parseFloat(
-    comment.pending_payout_value?.split(" ")[0] || "0"
-  );
-  const curatorPayout = parseFloat(
-    comment.curator_payout_value?.split(" ")[0] || "0"
-  );
+  const pendingPayout = parseFloat(comment.pending_payout_value?.split(" ")[0] || "0");
+  const curatorPayout = parseFloat(comment.curator_payout_value?.split(" ")[0] || "0");
   return payout + pendingPayout + curatorPayout;
 };
 
