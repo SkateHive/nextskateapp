@@ -1,105 +1,170 @@
-import { uploadFileToIPFS } from "@/app/upload/utils/uploadToIPFS"
-import { useHiveUser } from "@/contexts/UserContext"
-import { Comment } from "@/hooks/comments"
-import PostModel from "@/lib/models/post"
-import { Box, Button, Center, Flex, Spinner, Tooltip } from "@chakra-ui/react"
-import MDEditor, { commands } from "@uiw/react-md-editor"
-import { useState } from "react"
-import { useDropzone } from "react-dropzone"
-import { FaImage, FaSave } from "react-icons/fa"
-import rehypeSanitize from "rehype-sanitize"
+"use client";
+import { uploadFileToIPFS } from "@/app/upload/utils/uploadToIPFS";
+import { useHiveUser } from "@/contexts/UserContext";
+import { Comment, useComments } from "@/hooks/comments";
+import { commentWithPrivateKey } from "@/lib/hive/server-functions";
+import PostModel from "@/lib/models/post";
+import {
+  Box,
+  Button,
+  Center,
+  Flex,
+  Spinner,
+  Text,
+  Tooltip,
+  useToast
+} from "@chakra-ui/react";
+import * as dhive from "@hiveio/dhive";
+import MDEditor, { commands } from "@uiw/react-md-editor";
+import { useState } from "react";
+import { useDropzone } from "react-dropzone";
+import { FaImage, FaSave } from "react-icons/fa";
+import rehypeSanitize from "rehype-sanitize";
 
 interface CommandPromptProps {
-  post: PostModel | Comment,
-  addComment: (comment: Comment) => void;
+  post: PostModel | Comment;
+  onClose: () => void;
+  author: string;
+  permlink: string;
+  onNewComment: (comment: any) => void;
+  addComment?: (comment: Comment) => void;
 }
 
-const CommandPrompt = ({ post, addComment }: CommandPromptProps) => {
-  const [isUploading, setIsUploading] = useState(false)
-  const [value, setValue] = useState("")
-  const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN
-  const parent_permlink = post?.permlink
-  const parent_author = post?.author
-  const user = useHiveUser()
+const CommandPrompt = ({ post, onClose, author, permlink, onNewComment }: CommandPromptProps) => {
+  const [isUploading, setIsUploading] = useState(false);
+  const [value, setValue] = useState("");
 
-  const submitComment = async () => {
-    if (!window.hive_keychain) {
-      console.error("Hive Keychain extension not found!")
-      return
-    }
+  const user = useHiveUser();
+  const [error, setError] = useState<string | null>(null);
+  const toast = useToast();
 
-    const username = user.hiveUser?.name
-    if (!username) {
-      console.error("Username is missing")
-      return
-    }
+  const { addComment, } = useComments(author, permlink);
 
+  const submitComment = async (commentBody: string) => {
+    const loginMethod = localStorage.getItem("LoginMethod");
+    const newPermLink = `comment-${Math.random().toString(36).substr(2, 9)}`;
 
-    const permlink = new Date()
-      .toISOString()
-      .replace(/[^a-zA-Z0-9]/g, "")
-      .toLowerCase()
+    try {
+      if (!user.hiveUser?.name) throw new Error("Username is missing");
 
-    const postData = {
-      parent_author: parent_author,
-      parent_permlink: parent_permlink,
-      author: username,
-      permlink: permlink,
-      title: "",
-      body: value,
-      json_metadata: JSON.stringify({
-        tags: ["skateboard"],
-        app: "skatehive",
-      }),
-    }
+      const postData: Comment = {
+        parent_author: author,
+        parent_permlink: permlink,
+        author: user.hiveUser.name,
+        permlink: newPermLink,
+        body: commentBody,
+        title: "Comment",
+        json_metadata: JSON.stringify({
+          tags: ["skateboard"],
+          app: "skatehive",
+        }),
+      };
 
 
-    const operations = [
-      [
-        "comment",
-        postData,
-      ],
-    ]
+      if (loginMethod === "keychain") {
+        if (!window.hive_keychain) throw new Error("Hive Keychain extension not found!");
 
-    window.hive_keychain.requestBroadcast(
-      username,
-      operations,
-      "posting",
-      async (response: any) => {
-        if (response.success) {
-          setValue("")
-          addComment(postData)
-          console.log("Comment posted successfully")
-        } else {
-          console.error("Error posting comment:", response.message)
-        }
+        const operations = [["comment", postData]];
+
+        window.hive_keychain.requestBroadcast(
+          user.hiveUser.name,
+          operations,
+          "posting",
+          (response: any) => {
+            if (response.success) {
+              toast({
+                title: "Comment posted successfully.",
+                status: "success",
+                duration: 3000,
+                isClosable: true,
+              });
+              setValue("");
+              onClose();
+            } else {
+              setError(`Error: ${response.message}`);
+              console.error("Error broadcasting transaction:", response.error);
+            }
+          }
+        );
+      } else if (loginMethod === "privateKey") {
+        const commentOptions: dhive.CommentOptionsOperation = [
+          "comment_options",
+          {
+            author: String(user.hiveUser?.name),
+            permlink: newPermLink,
+            max_accepted_payout: "10000.000 HBD",
+            percent_hbd: 10000,
+            allow_votes: true,
+            allow_curation_rewards: true,
+            extensions: [
+              [
+                0,
+                {
+                  beneficiaries: [{ account: "skatehacker", weight: 1000 }],
+                },
+              ],
+            ],
+          },
+        ];
+        const postOperation: dhive.CommentOperation = [
+          "comment",
+          {
+            parent_author: author,
+            parent_permlink: permlink,
+            author: String(user.hiveUser?.name),
+            permlink: newPermLink,
+            title: `Reply to ${author}`,
+            body: commentBody,
+            json_metadata: JSON.stringify({
+              tags: ["skateboard"],
+              app: "Skatehive App",
+              image: "/SKATE_HIVE_VECTOR_FIN.svg",
+            }),
+          },
+        ];
+        await commentWithPrivateKey(localStorage.getItem("EncPrivateKey")!, postOperation, commentOptions);
+        onNewComment({
+          ...postOperation[1],
+          id: newPermLink,
+        });
       }
-    )
-  }
+    } catch (err: any) {
+      setError(err.message);
+      toast({
+        title: "Failed to post comment.",
+        description: err.message,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      console.error("Error posting comment:", err);
+    }
+  };
 
   const { getRootProps, getInputProps } = useDropzone({
     noClick: true,
     noKeyboard: true,
     onDrop: async (acceptedFiles) => {
-      setIsUploading(true)
+      setIsUploading(true);
       for (const file of acceptedFiles) {
-        const ipfsData = await uploadFileToIPFS(file)
-        if (ipfsData !== undefined) {
-          const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}`
+        const ipfsData = await uploadFileToIPFS(file);
+        if (ipfsData) {
+          const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}`;
           const markdownLink = file.type.startsWith("video/")
             ? `<iframe src="${ipfsUrl}" allowFullScreen autoplay={false}></iframe>`
-            : `![Image](${ipfsUrl})`
-          setValue((prevMarkdown) => `${prevMarkdown}\n${markdownLink}\n`)
+            : `![Image](${ipfsUrl})`;
+
+          setValue((prevMarkdown) => `${prevMarkdown}\n${markdownLink}\n`);
         }
       }
-      setIsUploading(false)
+      setIsUploading(false);
     },
     accept: {
       "image/*": [".png", ".gif", ".jpeg", ".jpg"],
       "video/*": [".mp4", ".mov"],
     },
     multiple: false,
-  })
+  });
 
   const extraCommands = [
     {
@@ -113,10 +178,10 @@ const CommandPrompt = ({ post, addComment }: CommandPromptProps) => {
           </span>
         </Tooltip>
       ),
-      execute: (state: any, api: any) => {
-        const element = document.getElementById("md-image-upload")
+      execute: () => {
+        const element = document.getElementById("md-image-upload");
         if (element) {
-          element.click()
+          element.click();
         }
       },
     },
@@ -131,29 +196,30 @@ const CommandPrompt = ({ post, addComment }: CommandPromptProps) => {
           </span>
         </Tooltip>
       ),
-      execute: (state: any, api: any) => {
-        const element = document.createElement("a")
-        const file = new Blob([value], { type: "text/plain" })
-        element.href = URL.createObjectURL(file)
-        element.download = "draft.txt"
-        document.body.appendChild(element)
-        element.click()
+      execute: () => {
+        const element = document.createElement("a");
+        const file = new Blob([value], { type: "text/plain" });
+        element.href = URL.createObjectURL(file);
+        element.download = "draft.txt";
+        document.body.appendChild(element);
+        element.click();
       },
     },
-  ]
+  ];
 
   return (
-    <>
-      <Box p={5} color={'white'} marginTop="3" {...getRootProps()}>
+    <Box p={4} borderRadius="md" boxShadow="lg" color="white" {...getRootProps()}>
+      <Box p={4} bg="blackAlpha.800" borderRadius="md" boxShadow="sm" mb={4}>
         {isUploading && (
           <Center>
             <Spinner />
           </Center>
         )}
-
         <MDEditor
           value={value}
-          onChange={(value) => setValue(value || "")}
+          onChange={(value) => {
+            setValue(value || "");
+          }}
           commands={[
             commands.bold,
             commands.italic,
@@ -169,30 +235,41 @@ const CommandPrompt = ({ post, addComment }: CommandPromptProps) => {
           ]}
           extraCommands={extraCommands}
           previewOptions={{ rehypePlugins: [[rehypeSanitize]] }}
-          height="150px"
+          height="200px"
           preview="edit"
           style={{
-            border: "none",
-            padding: "10px",
-            backgroundColor: "black",
+            border: "1px solid #2D3748",
+            borderRadius: "8px",
+            padding: "15px",
+            backgroundColor: "#1A202C",
             color: "white",
+            minHeight: "150px",
+            fontSize: "16px",
+            lineHeight: "1.5",
           }}
         />
-        <Flex justifyContent={"flex-end"}>
-          <Button
-            colorScheme="green"
-            size="sm"
-            mt={2}
-            borderRadius={0}
-            onClick={submitComment}
-            alignSelf="flex-end"
-          >
-            Send it
-          </Button>
-        </Flex>
-      </Box>
-    </>
-  )
-}
 
-export default CommandPrompt
+      </Box>
+      <input
+        type="file"
+        id="md-image-upload"
+        {...getInputProps()}
+        style={{ display: "none" }}
+      />
+      <Flex justify="flex-end">
+        <Button
+          colorScheme="teal"
+          size="lg"
+          onClick={() => submitComment(value)}
+          isDisabled={!value.trim()}
+        >
+          Post Comment
+        </Button>
+      </Flex>
+      {error && <Text color="red.500">{error}</Text>}
+
+    </Box>
+  );
+};
+
+export default CommandPrompt;
