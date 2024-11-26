@@ -2,16 +2,16 @@
 
 import { useHiveUser } from "@/contexts/UserContext";
 import {
-    Box,
-    Flex,
-    Tab,
-    TabList,
-    TabPanel,
-    TabPanels,
-    Tabs
+  Box,
+  Flex,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs
 } from "@chakra-ui/react";
 import '../../styles/fonts.css';
-import Pix from "./components/Pix/pix";
+import Pix from "./components/Pix/Pix";
 import TotalValueBox from "./components/TotalWalletPage";
 function Wallet() {
   const user = useHiveUser();
