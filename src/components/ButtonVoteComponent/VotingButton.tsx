@@ -12,38 +12,46 @@ const VotingButton = ({
 }: {
   comment: any;
   username: string;
-  toggleValueTooltip: () => void; 
+  toggleValueTooltip: () => void;  // Function to toggle the value tooltip
 }) => {
-    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-    const [isVoteModalOpen, setIsVoteModalOpen] = useState(false);
-  
-    const initialIsVoted = comment.active_votes?.some(
-      (vote: any) => vote.voter === username
-    );
-    const [isVoted, setIsVoted] = useState(initialIsVoted);
-    const [voteCount, setVoteCount] = useState(comment.active_votes?.length );
-  
-    const rewardId = `reward-${comment.id}`;
-    const { reward, isAnimating } = useReward(rewardId, "emoji", {
-      emoji: ["$", "*", "#"],
-      spread: 60,
-    });
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isVoteModalOpen, setIsVoteModalOpen] = useState(false);
+  const [clickPosition, setClickPosition] = useState<{ x: number; y: number } | undefined>(undefined);
 
-  const handleVoteClick = () => {
+  const initialIsVoted = comment.active_votes?.some(
+    (vote: any) => vote.voter === username
+  );
+  const [isVoted, setIsVoted] = useState(initialIsVoted);
+  const [voteCount, setVoteCount] = useState(comment.active_votes?.length);
+
+  const rewardId = `reward-${comment.id}`;
+  const { reward, isAnimating } = useReward(rewardId, "emoji", {
+    emoji: ["$", "*", "#"],
+    spread: 60,
+  });
+
+  const handleVoteClick = (e: React.MouseEvent) => {
     if (!username) {
-        setIsLoginModalOpen(true); 
-        toggleValueTooltip();
-        return;
-      }
-      setIsVoteModalOpen(true);
-      toggleValueTooltip(); 
-    };
-  
-    const handleVoteSuccess = async () => {
-      setIsVoted(true); 
-      setVoteCount((prevVoteCount: number) => prevVoteCount + 1); 
-      reward(); 
-      setIsVoteModalOpen(false);
+      setIsLoginModalOpen(true);
+      toggleValueTooltip();
+      return;
+    }
+
+    // Capture the click position
+    const { clientX, clientY } = e;
+
+    // Save the coordinates to pass to the modal
+    setClickPosition({ x: clientX, y: clientY });
+
+    setIsVoteModalOpen(true);
+    toggleValueTooltip();
+  };
+
+  const handleVoteSuccess = async () => {
+    setIsVoted(true);
+    setVoteCount((prevVoteCount: number) => prevVoteCount + 1);
+    reward();
+    setIsVoteModalOpen(false);
   };
 
   return (
@@ -69,7 +77,8 @@ const VotingButton = ({
           comment={comment}
           isModal={true}
           onClose={() => setIsVoteModalOpen(false)}
-          onSuccess={handleVoteSuccess} 
+          onSuccess={handleVoteSuccess}
+          clickPosition={clickPosition}
         />
       )}
     </>
