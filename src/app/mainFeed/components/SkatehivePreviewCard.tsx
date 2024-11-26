@@ -1,10 +1,7 @@
-import { useEffect, useState } from 'react';
-import { fetchSkateHivePostMetadata } from '@/lib/utils';
-import { Box, Text, Image, Link, HStack, Spinner } from '@chakra-ui/react';
 import { extractImageUrls } from '@/app/upload/utils/extractImages';
-import Footer from '@/components/PostCard/Footer';
-import Vote from '@/components/PostCard/Vote';
-import { FaHeart } from 'react-icons/fa';
+import { fetchSkateHivePostMetadata } from '@/lib/utils';
+import { Box, Image, Link, Spinner, Text } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
 
 interface SkateHivePreviewProps {
     postId: string;
