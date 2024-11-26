@@ -1,12 +1,12 @@
-import { useSearchParams, useRouter } from "next/navigation";
 import { QueryProvider } from "@/contexts/QueryContext";
 import { HiveAccount } from "@/lib/models/user";
 import { Box, Tab, TabList, TabPanel, TabPanels, Tabs, useBreakpointValue } from "@chakra-ui/react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { memo } from "react";
+import Zine from "../Magazine/test/page";
 import ProfileBlog from "./ProfileBlog";
 import ProfileDashboard from "./profileDashboard";
 import VideoParts from "./profileVideos";
-import { memo } from "react";
-import Zine from "../Magazine/test/page";
 
 interface ProfilePageProps {
     user: HiveAccount;
@@ -19,13 +19,15 @@ export default memo(function ProfileTabs({ user }: ProfilePageProps) {
     const searchParams = useSearchParams();
     const router = useRouter();
 
-    const tab = searchParams.get('tab');
+    // Converting ReadonlyURLSearchParams to URLSearchParams
+    const params = new URLSearchParams(searchParams.toString());  // Here we convert to a string first
+
+    const tab = params.get('tab');
     const tabIndex = tabNames.indexOf(tab || "level");
 
     const handleTabChange = (index: number) => {
-        const params = new URLSearchParams(searchParams);
-        params.set('tab', tabNames[index]);
-        router.replace(`?${params.toString()}`);
+        params.set('tab', tabNames[index]);  // Modify the URLSearchParams instance
+        router.replace(`?${params.toString()}`);  // Update the URL without reloading the page
     };
 
     return (
