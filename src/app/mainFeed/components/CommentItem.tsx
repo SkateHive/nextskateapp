@@ -1,12 +1,10 @@
 "use client";
 import AuthorAvatar from "@/components/AuthorAvatar";
+import VotingButton from "@/components/ButtonVoteComponent/VotingButton";
 import TipButton from "@/components/PostCard/TipButton";
 import { useHiveUser } from "@/contexts/UserContext";
 import { useComments } from "@/hooks/comments";
-import {
-  formatDate,
-  getTotalPayout
-} from "@/lib/utils";
+import { formatDate, getTotalPayout } from "@/lib/utils";
 import {
   Box,
   Button,
@@ -14,13 +12,12 @@ import {
   HStack,
   Text,
   Tooltip,
-  VStack
+  VStack,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { FaRegComment } from "react-icons/fa";
 import { FaPencil } from "react-icons/fa6";
 import CarrouselRenderer from "../utils/CarrouselRenderer";
-import VotingButton from "./CommentItem/VotingButton";
 import { EditCommentModal } from "./EditCommentModal";
 import ReplyModal from "./replyModal";
 import ToggleComments from "./ToggleComments";
@@ -34,7 +31,13 @@ interface CommentItemProps {
   onClose?: () => void;
 }
 
-const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = () => { } }: CommentItemProps) => {
+const CommentItem = ({
+  comment,
+  username,
+  handleVote,
+  onNewComment,
+  onClose = () => {},
+}: CommentItemProps) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isReplyModalOpen, setIsReplyModalOpen] = useState(false);
   const [isValueTooltipOpen, setIsValueTooltipOpen] = useState(false);
@@ -47,6 +50,7 @@ const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = ()
   const [shouldShowAllComments, setShouldShowAllComments] = useState(false);
 
   const { comments } = useComments(comment.author, comment.permlink);
+  const { voteValue } = useHiveUser();
 
   const toggleValueTooltip = () => {
     setIsValueTooltipOpen(true);
@@ -66,7 +70,6 @@ const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = ()
     }
   }, [isCommentFormVisible]);
 
-
   const handleNewComment = (newComment: any) => {
     setCommentReplies((prevComments) => [newComment, ...prevComments]);
     setNumberOfComments((prevCount: number) => prevCount + 1);
@@ -77,15 +80,18 @@ const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = ()
       setEditedCommentBody(editedBody);
       setIsEditModalOpen(false);
     } catch (error) {
-      console.error("Erro ao salvar edição do comentário:", error);
+      console.error("Error saving comment edit:", error);
     }
   };
 
-  const { voteValue } = useHiveUser();
+  const CommentVisibility = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    window.open(`/post/test/@${comment.author}/${comment.permlink}`, "_self");
+  };
 
   const toggleCommentVisibility = () => {
     setIsCommentFormVisible((prev) => !prev);
-  };
+  }
 
   return (
     <Box key={comment.id} p={4} bg="black" color="white">
@@ -95,20 +101,12 @@ const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = ()
         onClose={() => setIsReplyModalOpen(false)}
         onNewComment={handleNewComment}
       />
+
       <Flex onClick={toggleCommentVisibility} cursor="pointer">
         <AuthorAvatar username={comment.author} />
         <VStack w={"80%"} ml={4} alignItems={"start"} marginRight={"16px"}>
           <HStack justify={"space-between"} width={"full"}>
-            <HStack
-              cursor="pointer"
-              // onClick={() =>
-              //   window.open(
-              //     `/post/test/@${comment.author}/${comment.permlink}`,
-              //     "_self"
-              //   )
-              // }
-              gap="2px"
-            >
+            <HStack cursor="pointer" gap="2px">
               <Text fontWeight="bold">{comment.author}</Text>
               <Text ml={2} color="gray.400" fontSize="14px">
                 · {formatDate(String(comment.created))}
@@ -120,6 +118,7 @@ const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = ()
           </HStack>
         </VStack>
       </Flex>
+
       <Flex m={4} justifyContent={"space-between"}>
         {comment.author === username ? (
           <Button
@@ -157,12 +156,12 @@ const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = ()
         >
           {numberOfComments}
         </Button>
-
         <VotingButton
           comment={comment}
           username={username}
           toggleValueTooltip={toggleValueTooltip}
         />
+        
         <Tooltip
           label={`+$${voteValue.toFixed(6)}`}
           placement="top"
@@ -172,13 +171,7 @@ const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = ()
           <Text
             fontWeight={"bold"}
             color={"green.400"}
-            onClick={(e) => {
-              e.stopPropagation();
-              window.open(
-                `/post/test/@${comment.author}/${comment.permlink}`,
-                "_self"
-              );
-            }}
+            onClick={CommentVisibility}
             cursor={"pointer"}
             mt={2}
           >
@@ -196,7 +189,6 @@ const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = ()
         username={username}
       />
 
-
       <ToggleComments
         isEyeClicked={isEyeClicked}
         commentReplies={commentReplies}
@@ -207,11 +199,8 @@ const CommentItem = ({ comment, username, handleVote, onNewComment, onClose = ()
         shouldShowAllComments={shouldShowAllComments}
         isCommentFormVisible={isCommentFormVisible}
       />
-
     </Box>
   );
 };
 
 export default CommentItem;
-
-
