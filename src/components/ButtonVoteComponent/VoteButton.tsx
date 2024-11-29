@@ -1,8 +1,8 @@
 import LoginModal from '@/components/Hive/Login/LoginModal';
 import { useHiveUser } from '@/contexts/UserContext';
-import { Box, Button, Center, Flex, Modal, ModalBody, ModalContent, ModalOverlay, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Text, useBreakpointValue, VStack } from '@chakra-ui/react';
+import { Box, Button, Center, Flex, Modal, ModalBody, ModalContent, ModalOverlay, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Text, VStack } from '@chakra-ui/react';
 import { debounce } from 'lodash';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaHeart } from 'react-icons/fa';
 import useHiveData from './HiveDataFetcher';
 
@@ -12,25 +12,24 @@ interface VoteButtonProps {
     comment: any;
     isModal?: boolean;
     onClose?: () => void;
-    onSuccess?: () => void;
-    clickPosition?: { x: number; y: number };
-
+    onSuccess?: (voteType: 'upvote' | 'downvote') => void;
+    currentVoteType?: 'upvote' | 'downvote' | 'none';
 }
 
-const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () => { }, onSuccess, clickPosition = { x: 0, y: 0 }, }: VoteButtonProps) => {
+const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () => { }, onSuccess, currentVoteType = 'none' }: VoteButtonProps) => {
     const user = useHiveUser();
     const [voteWeight, setVoteWeight] = useState(0);
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
-    const modalStyle = useBreakpointValue({
-        base: {},
-        md: {
-            position: 'absolute',
-            top: `${clickPosition.y}px`,
-            left: `${clickPosition.x}px`,
-            transform: 'translate(-50%, -100%)',
-        },
-    });
+    useEffect(() => {
+        if (currentVoteType === 'upvote') {
+            setVoteWeight(10000);
+        } else if (currentVoteType === 'downvote') {
+            setVoteWeight(-10000);
+        } else {
+            setVoteWeight(0);
+        }
+    }, [currentVoteType]);
 
     // Function to fetch data from Hive
     const { rshares, estimatedPayout, error } = useHiveData(voteWeight, user?.hiveUser?.name ?? '');
@@ -39,8 +38,7 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
         return <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />;
     }
 
-
-    // Function that handles the click on the vote button and uses the Hive Keychain
+    // Function to handle the click on the vote button and broadcast the vote using Hive Keychain
     const handleVoteClick = async () => {
         if (!user?.hiveUser?.name) {
             setIsLoginModalOpen(true);
@@ -48,6 +46,7 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
         }
 
         const weight = voteWeight;
+        const voteType = weight > 0 ? 'upvote' : 'downvote'; 
 
         if (window.hive_keychain) {
             window.hive_keychain.requestBroadcast(
@@ -62,7 +61,7 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
                             "weight": weight,
                             "__rshares": rshares,
                             "__config": {
-                                "title": "Confirm Downvote"
+                                title: voteType === 'upvote' ? 'Confirm Upvote' : 'Confirm Downvote',
                             }
                         }
                     ]
@@ -70,15 +69,17 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
                 'Posting',
                 (response: any) => {
                     if (response.success) {
-                        console.log("Voto realizado com sucesso:", response);
+                        console.log("Vote successfully cast:", response);
+
                         if (onSuccess) {
-                            onSuccess();
+                            onSuccess(voteType);
                         }
+
                         if (onClose) {
                             onClose();
                         }
                     } else {
-                        console.error("Erro ao realizar voto:", response);
+                        console.error("Error when voting:", response);
                     }
                 }
             );
@@ -87,7 +88,7 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
         }
     };
 
-    // Debounce for the slider, to avoid excessive calls
+    // Debounced slider value update
     const handleSliderChangeDebounced = debounce((value: number) => {
         setVoteWeight(value);
     }, 300);
@@ -114,10 +115,8 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
         : `Upvote (${(voteWeight / 10000 * 100).toFixed(0)}%)`;
 
     if (isModal) {
-
-
         return (
-            <Modal isOpen={isModal} onClose={onClose} isCentered closeOnOverlayClick={false} >
+            <Modal isOpen={isModal} onClose={onClose} isCentered closeOnOverlayClick={false}>
                 <ModalOverlay style={{ backdropFilter: "blur(5px)" }} />
                 <ModalContent
                     color="white"
@@ -126,13 +125,13 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
                     border="0.6px solid grey"
                     borderRadius="md"
                     mx={4}
-                    sx={modalStyle}
+                    sx={{ overflowY: 'auto', maxHeight: '90vh' }} // Ensure modal content doesn't overflow
                 >
-                    <ModalBody  >
+                    <ModalBody>
                         <Center width="100%">
                             <VStack width="100%" spacing={6}>
                                 <Box width="full">
-                                    <Box width="full" position="relative"  >
+                                    <Box width="full" position="relative">
                                         <Slider
                                             aria-label="vote weight"
                                             min={-10000}
@@ -146,7 +145,7 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
                                             boxShadow="sm"
                                         >
                                             <SliderTrack>
-                                                <SliderFilledTrack bg="green.500"/>
+                                                <SliderFilledTrack bg="green.500" />
                                             </SliderTrack>
                                             <SliderThumb boxSize={6} bg="green.500" borderRadius="full" />
                                         </Slider>
@@ -167,7 +166,7 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
                                                     position="absolute"
                                                     left={`${calculateSliderPosition(mark.value)}%`}
                                                     transform="translateX(-50%)"
-                                                    fontSize="-moz-initial"
+                                                    fontSize="sm"
                                                     color="white"
                                                     display="flex"
                                                     alignItems="center"
@@ -178,19 +177,15 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
                                             ))}
                                         </Box>
                                     </Box>
-                                    <Flex
-                                        justifyContent="space-between"
-                                        alignItems="center"
-                                       
-                                    >
+                                    <Flex justifyContent="space-between" alignItems="center" >
                                         <Button
                                             leftIcon={<FaHeart />}
                                             width="initial"
                                             bgGradient="linear(to-r, #1d6b2e, #07ca69)"
                                             color="white"
                                             onClick={handleVoteClick}
+                                            mt={4}
                                             _hover={{ bg: "#0caf35" }}
-                                            size="sm"
                                         >
                                             {voteLabel}
                                         </Button>
@@ -198,13 +193,12 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
                                             onClick={() => onClose && onClose()}
                                             variant="ghost"
                                             color="red.500"
-                                            
-                                            size="sm"
+                                            mt={4}
                                         >
-                                            Cancelar
+                                            Cancel
                                         </Button>
                                         <Box mt={4}>
-                                            <Text fontSize="sm" color="white">
+                                            <Text fontSize="lg" color="white">
                                                 ${estimatedPayout.toFixed(3)} USD
                                             </Text>
                                         </Box>
@@ -280,15 +274,8 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
                         >
                             {voteLabel}
                         </Button>
-                        <Button
-                            onClick={() => onClose && onClose()}
-                            variant="ghost"
-                            color="red.500"
-                            mt={4}
-                        >
-                            Cancel
-                        </Button>
-                        <Box mt={4}>
+
+                        <Box mt={5}>
                             <Text fontSize="lg" color="white">
                                 ${estimatedPayout.toFixed(3)} USD
                             </Text>
