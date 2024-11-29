@@ -1,11 +1,11 @@
+import { QueryProvider } from "@/contexts/QueryContext";
 import { HiveAccount } from "@/lib/useHiveAuth";
 import { Box, Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Zine from "../Magazine/test/page";
+import ProfileDashboard from "../Profile/profileDashboard";
 import ProfilePosts from "../Profile/ProfilePosts";
 import VideoParts from "../Profile/profileVideos";
-import { QueryProvider } from "@/contexts/QueryContext";
-import ProfileDashboard from "../Profile/profileDashboard";
-import { useSearchParams, useRouter } from "next/navigation";
 
 interface ProfilePageProps {
   user: HiveAccount;
@@ -17,12 +17,15 @@ export default function SkaterTabs({ user }: ProfilePageProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const tab = searchParams.get('tab');
+// Converting ReadonlyURLSearchParams to URLSearchParams
+  const params = new URLSearchParams(searchParams.toString());
+
+  const tab = params.get('tab');
   const tabIndex = tabNames.indexOf(tab || "card");
 
   const handleTabChange = (index: number) => {
-    const params = new URLSearchParams(searchParams);
     params.set('tab', tabNames[index]);
+ // Updating the URL without reloading the page
     router.replace(`?${params.toString()}`);
   };
 

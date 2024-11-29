@@ -1,9 +1,12 @@
 'use client'
 import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
+import VotingButton from "@/components/ButtonVoteComponent/VotingButton";
 import { usePostContext } from "@/contexts/PostContext";
+import { useHiveUser } from "@/contexts/UserContext";
 import { useComments } from "@/hooks/comments";
 import getTranslation from "@/lib/getTranslation";
 import HiveClient from "@/lib/hive/hiveclient";
+import { HiveAccount } from "@/lib/useHiveAuth";
 import { transform3SpeakContent, transformEcencyImages, transformIPFSContent, transformNormalYoutubeLinksinIframes, transformShortYoutubeLinksinIframes } from "@/lib/utils";
 import {
   Box,
@@ -17,6 +20,7 @@ import {
   ModalFooter, ModalHeader, ModalOverlay,
   Spinner,
   Text,
+  Tooltip,
   VStack
 } from "@chakra-ui/react";
 import debounce from 'lodash.debounce';
@@ -27,26 +31,34 @@ import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import Header from "../PostCard/Header";
 import TipButton from "../PostCard/TipButton";
-import Vote from "../PostCard/Vote";
 import CommandPrompt from "./commentPrompt";
 import CommentsSection from "./commentSection";
-
 interface PostModalInterface {
   isOpen: boolean;
   onClose(): void;
+  username?: string
 }
 
-export function PostModal({ isOpen, onClose }: PostModalInterface) {
+export function PostModal({ isOpen, onClose, username }: PostModalInterface) {
   const { post } = usePostContext();
   const { comments, addComment } = useComments(post.author, post.permlink, true);
   const postBody = transform3SpeakContent(post.body);
   const transformedPostBody = useMemo(() => transformEcencyImages(postBody), [postBody]);
+  const [isValueTooltipOpen, setIsValueTooltipOpen] = useState(false);
+  const { hiveUser, voteValue } = useHiveUser()
+
+  const usernameString = username
+    ? typeof username === "string"
+      ? username
+      : (username as HiveAccount)?.name || ""
+    : hiveUser?.name || "";
 
   const [isTranslated, setIsTranslated] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState("english");
   const [translatedPost, setTranslatedPost] = useState("");
   const [translationsCache, setTranslationsCache] = useState<{ [key: string]: string }>({});
   const [isLoadingTranslation, setIsLoadingTranslation] = useState(false);
+  const [postEarnings, setPostEarnings] = useState(Number(post.getEarnings().toFixed(2)))
 
   const translate = useCallback(
     debounce(async (language: string) => {
@@ -81,6 +93,13 @@ export function PostModal({ isOpen, onClose }: PostModalInterface) {
     translate(language);
   };
 
+  const toggleValueTooltip = () => {
+    setIsValueTooltipOpen(true);
+    setTimeout(() => {
+      setIsValueTooltipOpen(false);
+    }, 3000);
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} size={{ base: "lg", md: "2xl", lg: "6xl" }}>
       <ModalOverlay style={{ backdropFilter: "blur(5px)" }} />
@@ -88,7 +107,7 @@ export function PostModal({ isOpen, onClose }: PostModalInterface) {
         <ModalHeader><Header variant="open" /></ModalHeader>
         <ModalCloseButton mr={4} mt={2} color="red" />
         <ModalBody display="flex" flexDir={{ base: "column", lg: "row" }} minH="60vh" gap={6}>
-          <Box bg="black" flex={0} p={0} border="0px solid #A5D6A7" borderRadius={0} minW="50%">
+          <Box bg="black" flex={0} p={0} border="0px solid #A5D6A7" borderRadius={0} minW="50%" key={post.post_id}>
             <Menu>
               <MenuButton><FaGlobe /> </MenuButton>
               <MenuList bg={'black'}>
@@ -121,9 +140,34 @@ export function PostModal({ isOpen, onClose }: PostModalInterface) {
               <Box mr={5} mt={1} >
                 <TipButton author={post.author} permlink={post.permlink} />
               </Box>
-              <Vote />
+              <VotingButton comment={post} username={usernameString} toggleValueTooltip={toggleValueTooltip} />
+              <Tooltip
+                label={`+$${voteValue.toFixed(6)}`}
+                placement="top"
+                isOpen={isValueTooltipOpen}
+                hasArrow
+              >
+                <Text
+                  fontWeight={"bold"}
+                  color={"green.400"}
+                  cursor={"pointer"}
+                  mt={2}
+                >
+                  ${postEarnings.toFixed(2)}
+                </Text>
+              </Tooltip>
             </HStack>
-            <CommandPrompt post={post} addComment={addComment} />
+            <CommandPrompt
+              post={post}
+              addComment={addComment}
+              onClose={onClose}
+              author={post.author}
+              permlink={post.permlink}
+              onNewComment={(newComment) => {
+                addComment(newComment);
+              }}
+            />
+
             <Center><Text fontSize="2xl">Comments</Text></Center>
             <CommentsSection comments={comments} />
           </Box>

@@ -109,15 +109,18 @@ export default function PostComment({ comment }: PostCommentProps) {
           </Flex>
         </Flex>
         {commentsOpen ? (
-          <CommandPrompt
-            post={comment}
-            addComment={(comment: Comment) => {
-              setReplies((replies) =>
-                replies ? [...replies, comment] : replies
-              )
-              setCommentsOpen(false)
-            }}
-          />
+         <CommandPrompt
+         post={comment}
+         addComment={(comment: Comment) => {
+           setReplies((replies) => replies ? [...replies, comment] : replies)
+           setCommentsOpen(false)
+         }}
+         onNewComment={() => {}}
+         onClose={() => {}}
+         author={comment.author}
+         permlink={comment.permlink}
+       />
+       
         ) : null}
       </Flex>
       <CommentsSection comments={replies} isCommentReply={true} />
