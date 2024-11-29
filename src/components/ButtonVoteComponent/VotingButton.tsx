@@ -1,7 +1,7 @@
 import LoginModal from "@/components/Hive/Login/LoginModal";
 import { HStack, Text } from "@chakra-ui/react";
 import { useState } from "react";
-import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { FaHeart, FaHeartBroken, FaRegHeart } from "react-icons/fa";
 import { useReward } from "react-rewards";
 import VoteButton from "./VoteButton";
 
@@ -18,11 +18,25 @@ const VotingButton = ({
   const [isVoteModalOpen, setIsVoteModalOpen] = useState(false);
   const [clickPosition, setClickPosition] = useState<{ x: number; y: number } | undefined>(undefined);
 
-  const initialIsVoted = comment.active_votes?.some(
-    (vote: any) => vote.voter === username
+  // Checks the initial upvote and downvote state for the user
+  const initialUpvoted = comment.active_votes?.some(
+    (vote: any) => vote.voter === username && vote.percent > 0
   );
-  const [isVoted, setIsVoted] = useState(initialIsVoted);
-  const [voteCount, setVoteCount] = useState(comment.active_votes?.length);
+  const initialDownvoted = comment.active_votes?.some(
+    (vote: any) => vote.voter === username && vote.percent < 0
+  );
+
+  const [isUpvoted, setIsUpvoted] = useState(initialUpvoted);
+  const [isDownvoted, setIsDownvoted] = useState(initialDownvoted);
+  
+  // Separate counters for upvotes and downvotes
+  const upvoteCount = comment.active_votes?.filter(
+    (vote: any) => vote.percent > 0
+  ).length;
+  
+  const downvoteCount = comment.active_votes?.filter(
+    (vote: any) => vote.percent < 0
+  ).length;
 
   const rewardId = `reward-${comment.id}`;
   const { reward, isAnimating } = useReward(rewardId, "emoji", {
@@ -30,26 +44,32 @@ const VotingButton = ({
     spread: 60,
   });
 
-  const handleVoteClick = (e: React.MouseEvent) => {
+  const handleVoteClick = (e: React.MouseEvent, voteType: 'upvote' | 'downvote') => {
     if (!username) {
       setIsLoginModalOpen(true);
       toggleValueTooltip();
       return;
     }
 
-    // Capture the click position
+    // Captures the click position
     const { clientX, clientY } = e;
-
-    // Save the coordinates to pass to the modal
     setClickPosition({ x: clientX, y: clientY });
 
+    // Opens the modal for the user to choose the type of vote
     setIsVoteModalOpen(true);
     toggleValueTooltip();
   };
 
-  const handleVoteSuccess = async () => {
-    setIsVoted(true);
-    setVoteCount((prevVoteCount: number) => prevVoteCount + 1);
+  const handleVoteSuccess = async (voteType: 'upvote' | 'downvote') => {
+    // Updates the vote states for upvote or downvote
+    if (voteType === 'upvote') {
+      setIsUpvoted(true);
+      setIsDownvoted(false); // If voted upvote, remove downvote
+    } else {
+      setIsDownvoted(true);
+      setIsUpvoted(false); // If voted downvote, remove upvote
+    }
+
     reward();
     setIsVoteModalOpen(false);
   };
@@ -61,13 +81,28 @@ const VotingButton = ({
         onClose={() => setIsLoginModalOpen(false)}
       />
 
-      <HStack onClick={handleVoteClick} cursor="pointer" color="#A5D6A7">
-        <Text fontSize="15px" color="#A5D6A7">
-          {isVoted ? <FaHeart /> : <FaRegHeart />}
-        </Text>
-        <Text fontSize="12px" color="#A5D6A7">
-          {voteCount}
-        </Text>
+      <HStack spacing={4} cursor="pointer" color="#A5D6A7">
+        {/* Upvote Button */}
+        <HStack onClick={(e) => handleVoteClick(e, 'upvote')} spacing={1} cursor="pointer">
+          <Text fontSize="15px" color="#A5D6A7">
+            {isUpvoted ? <FaHeart /> : <FaRegHeart />}
+          </Text>
+          <Text fontSize="12px" color="#A5D6A7">
+            {upvoteCount || 0}
+          </Text>
+        </HStack>
+
+        {/* Downvote Button - Only appears when the user has already downvoted */}
+        {isDownvoted && ( // The downvote button only appears if the user has actually downvoted
+          <HStack onClick={(e) => handleVoteClick(e, 'downvote')} spacing={1} cursor="pointer">
+            <Text fontSize="15px" color="#A5D6A7">
+              <FaHeartBroken />
+            </Text>
+            <Text fontSize="12px" color="#A5D6A7">
+              {downvoteCount || 0}
+            </Text>
+          </HStack>
+        )}
       </HStack>
 
       {isVoteModalOpen && (
@@ -78,7 +113,7 @@ const VotingButton = ({
           isModal={true}
           onClose={() => setIsVoteModalOpen(false)}
           onSuccess={handleVoteSuccess}
-          clickPosition={clickPosition}
+          currentVoteType={isUpvoted ? 'upvote' : isDownvoted ? 'downvote' : 'none'} 
         />
       )}
     </>
