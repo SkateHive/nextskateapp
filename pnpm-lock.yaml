@@ -3629,8 +3629,8 @@ packages:
     resolution: {integrity: sha512-cgwlv/1iFQiFnU96XXgROh8xTeetsnJiDsTc7TYCLFd9+/WNkIqPTxiM/8pSd8VIrhXGTf1Ny1q1hquVqDJB5w==}
     engines: {node: '>= 4'}
 
-  dompurify@2.4.9:
-    resolution: {integrity: sha512-iHtnxYMotKgOTvxIqq677JsKHvCOkAFqj9x8Mek2zdeHW1XjuFKwjpmZeMaXQRQ8AbJZDbcRz/+r1QhwvFtmQg==}
+  dompurify@2.5.7:
+    resolution: {integrity: sha512-2q4bEI+coQM8f5ez7kt2xclg1XsecaV9ASJk/54vwlfRRNQfDqJz2pzQ8t0Ix/ToBpXlVjrRIx7pFC/o8itG2Q==}
 
   domutils@3.1.0:
     resolution: {integrity: sha512-H78uMmQtI2AhgDJjWeQmHwJJ2bLPD3GMmO7Zja/ZZh84wkm+4ut+IUnUdRa8uCGX88DiVx1j6FRe1XfxEgjEZA==}
@@ -9551,7 +9551,7 @@ snapshots:
   '@giphy/js-util@5.0.0':
     dependencies:
       '@giphy/js-types': 5.0.0
-      dompurify: 2.4.9
+      dompurify: 2.5.7
       uuid: 9.0.1
 
   '@giphy/react-components@9.3.0(react-dom@18.2.0(react@18.3.1))(react@18.3.1)(styled-components@6.1.8(react-dom@18.2.0(react@18.3.1))(react@18.3.1))':
@@ -12130,7 +12130,7 @@ snapshots:
     dependencies:
       domelementtype: 2.3.0
 
-  dompurify@2.4.9: {}
+  dompurify@2.5.7: {}
 
   domutils@3.1.0:
     dependencies:
