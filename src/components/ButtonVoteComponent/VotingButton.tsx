@@ -28,15 +28,15 @@ const VotingButton = ({
 
   const [isUpvoted, setIsUpvoted] = useState(initialUpvoted);
   const [isDownvoted, setIsDownvoted] = useState(initialDownvoted);
-  
+
   // Separate counters for upvotes and downvotes
-  const upvoteCount = comment.active_votes?.filter(
+  const [upvoteCount, setUpvoteCount] = useState(comment.active_votes?.filter(
     (vote: any) => vote.percent > 0
-  ).length;
-  
-  const downvoteCount = comment.active_votes?.filter(
+  ).length || 0);
+
+  const [downvoteCount, setDownvoteCount] = useState(comment.active_votes?.filter(
     (vote: any) => vote.percent < 0
-  ).length;
+  ).length || 0);
 
   const rewardId = `reward-${comment.id}`;
   const { reward, isAnimating } = useReward(rewardId, "emoji", {
@@ -65,9 +65,17 @@ const VotingButton = ({
     if (voteType === 'upvote') {
       setIsUpvoted(true);
       setIsDownvoted(false); // If voted upvote, remove downvote
+      setUpvoteCount((prevCount: number) => prevCount + 1); // Explicitly type prevCount as number
+      if (isDownvoted) {
+        setDownvoteCount((prevCount: number) => prevCount - 1); // Decrement downvote count if it was previously downvoted
+      }
     } else {
       setIsDownvoted(true);
       setIsUpvoted(false); // If voted downvote, remove upvote
+      setDownvoteCount((prevCount: number) => prevCount + 1); // Explicitly type prevCount as number
+      if (isUpvoted) {
+        setUpvoteCount((prevCount: number) => prevCount - 1); // Decrement upvote count if it was previously upvoted
+      }
     }
 
     reward();
@@ -113,7 +121,7 @@ const VotingButton = ({
           isModal={true}
           onClose={() => setIsVoteModalOpen(false)}
           onSuccess={handleVoteSuccess}
-          currentVoteType={isUpvoted ? 'upvote' : isDownvoted ? 'downvote' : 'none'} 
+          currentVoteType={isUpvoted ? 'upvote' : isDownvoted ? 'downvote' : 'none'}
         />
       )}
     </>
