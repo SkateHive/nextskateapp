@@ -1,7 +1,6 @@
 import LoginModal from '@/components/Hive/Login/LoginModal';
 import { useHiveUser } from '@/contexts/UserContext';
 import { Box, Button, Center, Flex, Modal, ModalBody, ModalContent, ModalOverlay, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Text, VStack } from '@chakra-ui/react';
-import { debounce } from 'lodash';
 import { useEffect, useState } from 'react';
 import { FaHeart } from 'react-icons/fa';
 import useHiveData from './HiveDataFetcher';
@@ -20,7 +19,12 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
     const user = useHiveUser();
     const [voteWeight, setVoteWeight] = useState(0);
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+    const [isUpvoted, setIsUpvoted] = useState<boolean>(false);
+    const [isDownvoted, setIsDownvoted] = useState<boolean>(false);
+    const [upvoteCount, setUpvoteCount] = useState<number>(0);
+    const [downvoteCount, setDownvoteCount] = useState<number>(0);
 
+    // Effect that adjusts the weight of the vote whenever the type of vote changes (upvote or downvote)
     useEffect(() => {
         if (currentVoteType === 'upvote') {
             setVoteWeight(10000);
@@ -38,7 +42,26 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
         return <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />;
     }
 
-    // Function to handle the click on the vote button and broadcast the vote using Hive Keychain
+    // Function that is called after the vote is successful
+    const handleVoteSuccess = async (voteType: 'upvote' | 'downvote') => {
+        if (voteType === 'upvote') {
+            setIsUpvoted(true);
+            setIsDownvoted(false);
+            setUpvoteCount(upvoteCount + 1);
+        } else {
+            setIsDownvoted(true);
+            setIsUpvoted(false);
+            setDownvoteCount(downvoteCount + 1);
+        }
+
+        if (onSuccess) {
+            onSuccess(voteType);
+        }
+
+        setIsLoginModalOpen(false);
+    };
+
+    // Function that is called when the vote button is clicked
     const handleVoteClick = async () => {
         if (!user?.hiveUser?.name) {
             setIsLoginModalOpen(true);
@@ -46,7 +69,7 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
         }
 
         const weight = voteWeight;
-        const voteType = weight > 0 ? 'upvote' : 'downvote'; 
+        const voteType = weight > 0 ? 'upvote' : 'downvote';
 
         if (window.hive_keychain) {
             window.hive_keychain.requestBroadcast(
@@ -70,32 +93,20 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
                 (response: any) => {
                     if (response.success) {
                         console.log("Vote successfully cast:", response);
-
-                        if (onSuccess) {
-                            onSuccess(voteType);
-                        }
-
-                        if (onClose) {
-                            onClose();
-                        }
+                        handleVoteSuccess(voteType);
                     } else {
                         console.error("Error when voting:", response);
                     }
                 }
             );
         } else {
-            alert("Hive Keychain não está disponível. Por favor, instale o Hive Keychain.");
+            alert("Hive Keychain is not available. Please install Hive Keychain.");
         }
     };
 
-    // Debounced slider value update
-    const handleSliderChangeDebounced = debounce((value: number) => {
-        setVoteWeight(value);
-    }, 300);
-
+    // Function to handle the change in slider value (where the user adjusts the weight of the vote)
     const handleSliderChange = (value: number) => {
         setVoteWeight(value);
-        handleSliderChangeDebounced(value);
     };
 
     const calculateSliderPosition = (value: number) => {
@@ -114,6 +125,11 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
         ? `Downvote (${(voteWeight / -10000 * 100).toFixed(0)}%)`
         : `Upvote (${(voteWeight / 10000 * 100).toFixed(0)}%)`;
 
+// Determine color scheme based on vote type (upvote is green, downvote is red)
+    const sliderColorScheme = voteWeight < 0 ? "red" : "green";
+    const buttonBgColor = voteWeight < 0 ? "red.500" : "green.500";
+    const buttonHoverColor = voteWeight < 0 ? "#e53e3e" : "#0caf35";
+
     if (isModal) {
         return (
             <Modal isOpen={isModal} onClose={onClose} isCentered closeOnOverlayClick={false}>
@@ -125,7 +141,7 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
                     border="0.6px solid grey"
                     borderRadius="md"
                     mx={4}
-                    sx={{ overflowY: 'auto', maxHeight: '90vh' }} // Ensure modal content doesn't overflow
+                    sx={{ overflowY: 'auto', maxHeight: '90vh' }}
                 >
                     <ModalBody>
                         <Center width="100%">
@@ -139,15 +155,15 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
                                             step={100}
                                             value={voteWeight}
                                             onChange={handleSliderChange}
-                                            colorScheme="green"
+                                            colorScheme={sliderColorScheme}  // Set the color scheme dynamically based on vote type
                                             height="50px"
                                             borderRadius="md"
                                             boxShadow="sm"
                                         >
                                             <SliderTrack>
-                                                <SliderFilledTrack bg="green.500" />
+                                                <SliderFilledTrack bg={sliderColorScheme === "green" ? "green.500" : "red.500"} />
                                             </SliderTrack>
-                                            <SliderThumb boxSize={6} bg="green.500" borderRadius="full" />
+                                            <SliderThumb boxSize={6} bg={sliderColorScheme === "green" ? "green.500" : "red.500"} borderRadius="full" />
                                         </Slider>
 
                                         <Box
@@ -181,11 +197,11 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
                                         <Button
                                             leftIcon={<FaHeart />}
                                             width="initial"
-                                            bgGradient="linear(to-r, #1d6b2e, #07ca69)"
+                                            bg={buttonBgColor}  
                                             color="white"
                                             onClick={handleVoteClick}
                                             mt={4}
-                                            _hover={{ bg: "#0caf35" }}
+                                            _hover={{ bg: buttonHoverColor }}  
                                         >
                                             {voteLabel}
                                         </Button>
@@ -216,23 +232,43 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
         <Center width="100%">
             <VStack width="100%" spacing={6}>
                 <Box width="full">
-                    <Box width="full" position="relative">
+                    <Flex justifyContent="space-between" alignItems="center" width="100%">
+                        <Button
+                            leftIcon={<FaHeart />}
+                            width="initial"
+                            bgGradient="linear(to-r, #1d6b2e, #07ca69)"
+                            color="white"
+                            onClick={handleVoteClick}
+                            bg={buttonBgColor}
+                            _hover={{ bg: buttonHoverColor }}
+                        >
+                            {voteLabel}
+                        </Button>
+
+                        <Box mt={4}>
+                            <Text fontSize="lg" color="white">
+                                ${estimatedPayout.toFixed(3)} USD
+                            </Text>
+                        </Box>
+                    </Flex>
+
+                    <Box width="full" position="relative" mt={4}>
                         <Slider
                             aria-label="vote weight"
                             min={-10000}
                             max={10000}
                             step={100}
                             value={voteWeight}
-                            onChange={handleSliderChange}
-                            colorScheme="green"
+                            onChange={setVoteWeight}
+                            colorScheme={sliderColorScheme}
                             height="50px"
                             borderRadius="md"
                             boxShadow="sm"
                         >
                             <SliderTrack>
-                                <SliderFilledTrack bg="green.500" />
+                                <SliderFilledTrack bg={sliderColorScheme === "green" ? "green.500" : "red.500"} />
                             </SliderTrack>
-                            <SliderThumb boxSize={6} bg="green.500" borderRadius="full" />
+                            <SliderThumb boxSize={6} bg={sliderColorScheme === "green" ? "green.500" : "red.500"} borderRadius="full" />
                         </Slider>
 
                         <Box
@@ -262,25 +298,6 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
                             ))}
                         </Box>
                     </Box>
-                    <Flex justifyContent="space-between" alignItems="center" width="100%">
-                        <Button
-                            leftIcon={<FaHeart />}
-                            width="initial"
-                            bgGradient="linear(to-r, #1d6b2e, #07ca69)"
-                            color="white"
-                            onClick={handleVoteClick}
-                            mt={4}
-                            _hover={{ bg: "#0caf35" }}
-                        >
-                            {voteLabel}
-                        </Button>
-
-                        <Box mt={5}>
-                            <Text fontSize="lg" color="white">
-                                ${estimatedPayout.toFixed(3)} USD
-                            </Text>
-                        </Box>
-                    </Flex>
                 </Box>
             </VStack>
         </Center>
