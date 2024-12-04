@@ -26,6 +26,7 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
 
     // Effect that adjusts the weight of the vote whenever the type of vote changes (upvote or downvote)
     useEffect(() => {
+        
         if (currentVoteType === 'upvote') {
             setVoteWeight(10000);
         } else if (currentVoteType === 'downvote') {
@@ -33,6 +34,7 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
         } else {
             setVoteWeight(0);
         }
+        
     }, [currentVoteType]);
 
     // Function to fetch data from Hive
@@ -70,7 +72,6 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
 
         const weight = voteWeight;
         const voteType = weight > 0 ? 'upvote' : 'downvote';
-
         if (window.hive_keychain) {
             window.hive_keychain.requestBroadcast(
                 user.hiveUser.name,
@@ -92,7 +93,6 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
                 'Posting',
                 (response: any) => {
                     if (response.success) {
-                        console.log("Vote successfully cast:", response);
                         handleVoteSuccess(voteType);
                     } else {
                         console.error("Error when voting:", response);
@@ -125,11 +125,10 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
         ? `Downvote (${(voteWeight / -10000 * 100).toFixed(0)}%)`
         : `Upvote (${(voteWeight / 10000 * 100).toFixed(0)}%)`;
 
-// Determine color scheme based on vote type (upvote is green, downvote is red)
+    // Determine color scheme based on vote type (upvote is green, downvote is red)
     const sliderColorScheme = voteWeight < 0 ? "red" : "green";
     const buttonBgColor = voteWeight < 0 ? "red.500" : "green.500";
     const buttonHoverColor = voteWeight < 0 ? "#e53e3e" : "#0caf35";
-
     if (isModal) {
         return (
             <Modal isOpen={isModal} onClose={onClose} isCentered closeOnOverlayClick={false}>
@@ -197,11 +196,11 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
                                         <Button
                                             leftIcon={<FaHeart />}
                                             width="initial"
-                                            bg={buttonBgColor}  
+                                            bg={buttonBgColor}
                                             color="white"
                                             onClick={handleVoteClick}
                                             mt={4}
-                                            _hover={{ bg: buttonHoverColor }}  
+                                            _hover={{ bg: buttonHoverColor }}
                                         >
                                             {voteLabel}
                                         </Button>
@@ -215,7 +214,7 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
                                         </Button>
                                         <Box mt={4}>
                                             <Text fontSize="lg" color="white">
-                                                ${estimatedPayout.toFixed(3)} USD
+                                                ${estimatedPayout !== null ? estimatedPayout.toFixed(3) : '0.000'} USD
                                             </Text>
                                         </Box>
                                     </Flex>
@@ -225,6 +224,7 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
                     </ModalBody>
                 </ModalContent>
             </Modal>
+            
         );
     }
 
@@ -247,7 +247,7 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
 
                         <Box mt={4}>
                             <Text fontSize="lg" color="white">
-                                ${estimatedPayout.toFixed(3)} USD
+                                ${estimatedPayout !== null ? estimatedPayout.toFixed(3) : '0.000'} USD
                             </Text>
                         </Box>
                     </Flex>
