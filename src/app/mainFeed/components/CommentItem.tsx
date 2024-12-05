@@ -159,7 +159,7 @@ const CommentItem = ({
         <VotingButton
           comment={comment}
           username={username}
-          toggleValueTooltip={toggleValueTooltip}
+          toggleValueTooltipButton={toggleValueTooltip}
         />
         
         <Tooltip

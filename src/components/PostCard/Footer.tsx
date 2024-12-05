@@ -31,7 +31,7 @@ export default function Footer({ username }: FooterProps) {
   return (
     <CardFooter pt={0} flexDirection={"column"} gap={2} key={hiveUser?.name}>
       <HStack justifyContent="space-between" width="100%">
-        <VotingButton comment={post} username={usernameString} toggleValueTooltip={toggleValueTooltip} />
+        <VotingButton comment={post} username={usernameString} toggleValueTooltipButton={toggleValueTooltip} />
 
         <Tooltip
           label={`+$${voteValue.toFixed(6)}`}

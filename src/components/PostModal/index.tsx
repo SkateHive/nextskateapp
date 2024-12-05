@@ -140,7 +140,7 @@ export function PostModal({ isOpen, onClose, username }: PostModalInterface) {
               <Box mr={5} mt={1} >
                 <TipButton author={post.author} permlink={post.permlink} />
               </Box>
-              <VotingButton comment={post} username={usernameString} toggleValueTooltip={toggleValueTooltip} />
+              <VotingButton comment={post} username={usernameString} toggleValueTooltipButton={toggleValueTooltip} />
               <Tooltip
                 label={`+$${voteValue.toFixed(6)}`}
                 placement="top"
