@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 
 const useHiveData = (voteWeight: number, hiveUserName: string) => {
-    const [rshares, setRshares] = useState(0);
-    const [estimatedPayout, setEstimatedPayout] = useState(0);
+    const [rshares, setRshares] = useState<number | null>(null);
+    const [estimatedPayout, setEstimatedPayout] = useState<number | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState<boolean>(false);
 
     // Cache data to avoid repeated calls
     const cacheKey = `${hiveUserName}_${voteWeight}`;
@@ -13,22 +13,23 @@ const useHiveData = (voteWeight: number, hiveUserName: string) => {
     useEffect(() => {
         const fetchHiveData = async () => {
             setLoading(true);
-
+            
             try {
-                // Check if a cache already exists and if it has not expired
+                // Check if there's valid cache
                 const cachedData = localStorage.getItem(cacheKey);
                 const cachedTimestamp = localStorage.getItem(cacheExpirationKey);
-                const cacheIsExpired = cachedTimestamp && Date.now() - parseInt(cachedTimestamp) > 3600000;
+                const cacheIsExpired = cachedTimestamp && Date.now() - parseInt(cachedTimestamp) > 3600000; // 1 hour expiration
 
+                // If the cache exists and is not expired, use the stored data
                 if (cachedData && !cacheIsExpired) {
                     const cache = JSON.parse(cachedData);
                     setRshares(cache.rshares);
                     setEstimatedPayout(cache.estimatedPayout);
                     setLoading(false);
-                    return;
+                    return; // Return without making a new request
                 }
 
-                // If it is not in the cache or the cache has expired, make a request to the API
+                // Otherwise, make the API request
                 const rewardFundResponse = await fetch('https://api.hive.blog', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -41,7 +42,7 @@ const useHiveData = (voteWeight: number, hiveUserName: string) => {
                 });
 
                 if (!rewardFundResponse.ok) {
-                    throw new Error('Erro ao obter os dados do fundo de recompensa');
+                    throw new Error('Error fetching reward fund data');
                 }
 
                 const rewardFundData = await rewardFundResponse.json();
@@ -60,7 +61,7 @@ const useHiveData = (voteWeight: number, hiveUserName: string) => {
                 });
 
                 if (!accountResponse.ok) {
-                    throw new Error('Erro ao obter os dados da conta');
+                    throw new Error('Error fetching account data');
                 }
 
                 const accountData = await accountResponse.json();
@@ -82,13 +83,13 @@ const useHiveData = (voteWeight: number, hiveUserName: string) => {
                 });
 
                 if (!priceResponse.ok) {
-                    throw new Error('Erro ao obter o preço HBD');
+                    throw new Error('Error fetching HBD price');
                 }
 
                 const priceData = await priceResponse.json();
                 const hbdMedianPrice = parseFloat(priceData.result.base.replace(' HBD', ''));
 
-                // Cálculos de rshares e estimatedPayout
+                // Calculate rshares and estimatedPayout
                 const totalVests = vestingShares + receivedVestingShares - delegatedVestingShares;
                 const finalVest = totalVests * 1e6;
 
@@ -96,27 +97,30 @@ const useHiveData = (voteWeight: number, hiveUserName: string) => {
                 const calculatedRshares = power * finalVest / 10000;
                 const estimate = (calculatedRshares / recentClaims) * rewardBalance * hbdMedianPrice;
 
-                // Salvar no cache e definir a data de expiração
+                // Save to cache and set the expiration time
                 const dataToCache = { rshares: calculatedRshares, estimatedPayout: estimate };
                 localStorage.setItem(cacheKey, JSON.stringify(dataToCache));
                 localStorage.setItem(cacheExpirationKey, Date.now().toString());
 
-                // Atualiza o estado
+                // Update state
                 setRshares(calculatedRshares);
                 setEstimatedPayout(estimate);
                 setLoading(false);
 
             } catch (err) {
-                console.error('Erro ao obter dados da API Hive:', err);
-                setError('Erro ao buscar dados da Hive');
+                console.error('Error fetching Hive API data:', err);
+                setError('Error fetching Hive data');
                 setLoading(false);
             }
         };
 
-        if (hiveUserName) {
-            fetchHiveData(); // Só faz a requisição se o hiveUserName estiver disponível
+        if (hiveUserName && voteWeight) {
+            fetchHiveData(); // Only fetch data if hiveUserName and voteWeight are available
+        } else {
+            setLoading(false); // If there's no username or vote weight, don't make the request
         }
-    }, [hiveUserName, voteWeight]); // Reexecuta apenas quando `hiveUserName` ou `voteWeight` mudam
+
+    }, [cacheExpirationKey, cacheKey, hiveUserName, voteWeight]); // Runs only when `hiveUserName` or `voteWeight` changes
 
     return { rshares, estimatedPayout, error, loading };
 };
