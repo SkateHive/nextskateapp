@@ -55,52 +55,59 @@ const VotingButton = ({
 
   const handleRightClick = (e: React.MouseEvent, voteType: 'upvote' | 'downvote') => {
     e.preventDefault();
-
+  
+// Block interaction during animation
+    if (isAnimating) {
+      console.log("Animation in progress, please wait.");
+      return;
+    }
+  
     if (!username) {
-
       setIsLoginModalOpen(true);
       return;
     }
-
-
+  
     const { clientX, clientY, button } = e;
     setClickPosition({ x: clientX, y: clientY });
-
-
-    if (button === 2) {  // Clique direito para downvote
-      setIsVoteModalOpen(true);  // Aqui é onde o modal é ativado
+  
+    if (button === 2) { // Right click to open vote modal
+      setIsVoteModalOpen(true);
     }
     toggleValueTooltip();
-
-
-    // Limpeza do touchTimer se necessário
+  
+    // Cleaning touchTimer if necessary
     if (touchTimer) {
       clearTimeout(touchTimer);
     }
   };
-
-
+  
   const handleLeftClick = (e: React.MouseEvent) => {
-
     try {
-      const { clientX, clientY, button } = e;
-      if (button === 0) {  // Clique esquerdo para upvote
+      const { button } = e;
+  
+     // Block interaction during animation
+      if (isAnimating) {
+        console.log("Animation in progress, please wait.");
+        return;
+      }
+  
+      if (button === 0) { // Left click to upvote
         handleVote(comment.author, comment.permlink, username ?? "", 10000).then(() => {
           setIsUpvoted(true);
           setIsDownvoted(false);
           setUpvoteCount(upvoteCount + 1);
           setDownvoteCount(downvoteCount - (isDownvoted ? 1 : 0));
-          reward();
+          reward(); // Activate reward animation
         });
         toggleValueTooltip();
       }
     } catch (error) {
-      console.error("Error handling vote:", Error);
+      console.error("Error handling vote:", error);
     }
+  };
+  
 
-  }
-
-  //funcao que registra voto no no mobile 
+// function that registers votes on mobile
   const handleTouchStart = (e: TouchEvent) => {
     e.preventDefault();
 
@@ -127,8 +134,8 @@ const VotingButton = ({
     if (voteButtonElement) {
 
       const handleTouchStartListener = (e: TouchEvent) => {
-        e.preventDefault(); // nao deixa comportamento padrao acontecer
-        handleTouchStart(e); // chama logica do inicio do toque
+        e.preventDefault(); // don't let default behavior happen
+        handleTouchStart(e); // call logic from the beginning of the ring
       };
 
       // const handleContextMenuListener = (e: MouseEvent) => {
@@ -153,14 +160,15 @@ const VotingButton = ({
       setIsDownvoted(false);
       setUpvoteCount(upvoteCount + 1);
       setDownvoteCount(downvoteCount - (isDownvoted ? 1 : 0));
+      reward();
     } else if (voteType === 'downvote') {
       setIsDownvoted(true);
       setIsUpvoted(false);
       setDownvoteCount(downvoteCount + 1);
       setUpvoteCount(upvoteCount - (isUpvoted ? 1 : 0));
     }
-    reward();
-    setIsVoteModalOpen(false); // Fechando o modal
+  
+    setIsVoteModalOpen(false); // Closing the modal
   };
 
 
@@ -184,10 +192,10 @@ const VotingButton = ({
           style={{ userSelect: 'none' }}
           onMouseLeave={toggleValueTooltip}
         >
-          <Text fontSize="18px" color="#A5D6A7">
+          <Text fontSize="18px" color="limegreen">
             {isUpvoted ? <FaHeart /> : <FaRegHeart />}
           </Text>
-          <Text fontSize="18px" color="#A5D6A7">
+          <Text fontSize="18px" color="#61ad64">
             {upvoteCount}
           </Text>
         </HStack>
@@ -202,10 +210,10 @@ const VotingButton = ({
             style={{ userSelect: 'none' }}
             onMouseLeave={toggleValueTooltip}
           >
-            <Text fontSize="18px" color="#A5D6A7">
+            <Text fontSize="18px" color="#ff0000">
               {isDownvoted ? <FaHeartBroken /> : ""}
             </Text>
-            <Text fontSize="18px" color="#A5D6A7">
+            <Text fontSize="18px" color="#ad4848">
               {downvoteCount}
             </Text>
           </HStack>
