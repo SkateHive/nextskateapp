@@ -126,7 +126,7 @@ const CommentItem = ({
               background: "transparent",
               color: "green.200",
             }}
-            colorScheme="green"
+            color="limegreen"
             variant="ghost"
             leftIcon={<FaPencil />}
             onClick={(e) => {
@@ -145,7 +145,7 @@ const CommentItem = ({
             background: "transparent",
             color: "green.200",
           }}
-          colorScheme="green"
+          color="limegreen"
           variant="ghost"
           leftIcon={<FaRegComment />}
           onClick={(e) => {
@@ -170,7 +170,7 @@ const CommentItem = ({
         >
           <Text
             fontWeight={"bold"}
-            color={"green.400"}
+             color="limegreen"
             onClick={CommentVisibility}
             cursor={"pointer"}
             mt={2}
