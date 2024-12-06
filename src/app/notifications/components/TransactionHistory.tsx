@@ -16,7 +16,7 @@ export interface Transaction {
 }
 
 
-const CLAIM_REWARDS_IMAGE = "https://cryptologos.cc/logos/hive-blockchain-hive-logo.png";
+const CLAIM_REWARDS_IMAGE = "/logos/hiveLogo.png";
 
 const ITEMS_PER_PAGE = 20;
 

@@ -86,7 +86,7 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
         HIVE: {
             address: '0xFUCKTHEGOVERMENT',
             abi: [],
-            tokenLogo: "https://cryptologos.cc/logos/hive-blockchain-hive-logo.png"
+            tokenLogo: "/logos/hiveLogo.png"
         },
         HBD: {
             address: '0xHBDFUCKTHEGOVERMENT',
@@ -355,7 +355,7 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                                         setIsCustomToken(false);
                                     }}
                                 >
-                                    <Image alt="hive-logo" mr={3} boxSize="20px" src="https://cryptologos.cc/logos/hive-blockchain-hive-logo.png" />
+                                    <Image alt="hive-logo" mr={3} boxSize="20px" src="/logos/hiveLogo.png" />
                                     $HIVE
                                 </MenuItem>
                                 <MenuItem
