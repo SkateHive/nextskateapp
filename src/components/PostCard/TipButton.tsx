@@ -117,7 +117,7 @@ export default function TipButton({ author, permlink }: TipButtonProps) {
                             _hover={{ bg: "red.500", color: "black" }}
                             onClick={handleHiveTipClick}
                         >
-                            <Image alt="hive-logo" mr={3} boxSize={"20px"} src="https://cryptologos.cc/logos/hive-blockchain-hive-logo.png" />
+                            <Image alt="hive-logo" mr={3} boxSize={"20px"} src="/logos/hiveLogo.png" />
                             $HIVE
                         </MenuItem>
                         {isUserEthWalletSet && (
