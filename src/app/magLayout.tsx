@@ -1,7 +1,7 @@
 "use client";
 
-import MagColumn from "@/components/MagColumn";
 import { Box } from "@chakra-ui/react";
+import MagColumn from "@/components/MagColumn";
 
 const MagLayout = () => {
   return (

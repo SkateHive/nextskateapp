@@ -105,34 +105,35 @@ const LoadingComponent = () => {
   });
 
   return (
-    <VStack
-      bg={"black"}
-      overflowY="auto"
-      css={{ "&::-webkit-scrollbar": { display: "none" } }}
-      maxW={"740px"}
-      width={"100%"}
-      height={"100vh"}
-      overflow={"auto"}
-      justify="center"
-      align="center"
-      position="relative"
-    >
-      {columns}
-      <Text
+    <div lang="en">
+      <VStack
+        bg={"black"}
+        overflowY="auto"
+        css={{ "&::-webkit-scrollbar": { display: "none" } }}
+        maxW={"740px"}
+        width={"100%"}
+        height={"100vh"}
+        overflow={"auto"}
+        justify="center"
+        align="center"
         position="relative"
-        zIndex={1}
-        color="#00FF00"
-        fontSize={fontSize}
-        textAlign="center"
-        fontFamily="Joystix"
-        p={4}
-        bg="rgba(0,0,0,0.5)"
-        borderRadius="md"
       >
-        {randomSentence}
-      </Text>
+        {columns}
+        <Text
+          position="relative"
+          zIndex={1}
+          color="#00FF00"
+          fontSize={fontSize}
+          textAlign="center"
+          fontFamily="Joystix"
+          p={4}
+          bg="rgba(0,0,0,0.5)"
+          borderRadius="md"
+        >
+          {randomSentence}
+        </Text>
 
-      <style jsx global>{`
+        <style jsx global>{`
         @keyframes matrixFall {
           0% {
             transform: translateY(0);
@@ -142,7 +143,8 @@ const LoadingComponent = () => {
           }
         }
       `}</style>
-    </VStack>
+      </VStack>
+    </div>
   );
 };
 

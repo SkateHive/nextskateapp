@@ -319,189 +319,195 @@ const SkateCast = () => {
       borderInline={"1px solid rgb(255,255,255,0.2)"}
       height={"101vh"}
       overflowX="hidden"
-      position="relative"
+      position="relative" // Allows absolutely positioned loading overlay
     >
-      {isLoading && <LoadingComponent />}
+      {/* 
+      Always show the main structure:
+      If comments are not ready, you could show skeletons or placeholders here.
+    */}
 
-      {!isLoading && (
+      <AvatarList sortedComments={sortedComments || []} />
+
+      {user.hiveUser && (
         <>
-          <AvatarList sortedComments={sortedComments} />
-
-          {user.hiveUser && (
-            <>
-              <Box p={4} width={"100%"} bg="black" color="white" {...getRootProps()}>
-                <div>
-                  <Flex>
-                    {/* @ts-ignore */}
-                    <UserAvatar hiveAccount={user.hiveUser || {}} boxSize={12} borderRadius={5} />
-                    <Flex flexDir="column" w="100%">
-                      <Textarea
-                        border="none"
-                        _focus={{
-                          border: "none",
-                          boxShadow: "none",
-                        }}
-                        overflow={"hidden"}
-                        resize={"vertical"}
-                        ref={postBodyRef}
-                        placeholder="Write your stuff..."
-                        onPaste={handlePaste}
-                      />
-                      <div ref={parentRef} style={{ opacity: isPickingEmoji ? 1 : 0, marginTop: 50, transition: '1s', zIndex: 10, position: 'absolute' }}>
-                        <EmojiPicker theme={"dark" as Theme} onEmojiClick={handleEmojiClick} />
-                      </div>
-
-                      <HStack>
-                        {imageList.map((item, index) => (
-                          <Box key={index} position="relative" maxW={100} maxH={100}>
-                            <IconButton
-                              aria-label="Remove image"
-                              icon={<FaTimes style={{ color: "black", strokeWidth: 1 }} />}
-                              size="base"
-                              color="white"
-                              bg="white"
-                              _hover={{ bg: "white", color: "black" }}
-                              _active={{ bg: "white", color: "black" }}
-                              position="absolute"
-                              top="0"
-                              right="0"
-                              onClick={() => handleRemoveImage(index)}
-                              zIndex="1"
-                              borderRadius="full"
-                            />
-                            {item.includes("![Image](") ? (
-                              <Image
-                                src={item.match(/!\[Image\]\((.*?)\)/)?.[1] || ""}
-                                alt="markdown-image"
-                                maxW="100%"
-                                maxH="100%"
-                                objectFit="contain"
-                              />
-                            ) : (
-                              <video
-                                src={item.match(/<iframe src="(.*?)" allowfullscreen><\/iframe>/)?.[1]}
-                                controls
-                                muted
-                                width="100%"
-                              />
-                            )}
-                          </Box>
-                        ))}
-                      </HStack>
-                    </Flex>
-                  </Flex>
-                  <HStack justifyContent="space-between" marginTop={2}>
-                    <Input
-                      id="md-image-upload"
-                      type="file"
-                      style={{ display: "none" }}
-                      {...getInputProps({ refKey: "ref" })}
-                      ref={inputRef}
-                    />
-                    <Button
-                      name="md-image-upload"
-                      variant="ghost"
-                      onClick={() => inputRef.current?.click()}
-                      _hover={{
-                        background: "none",
-                      }}
-                    >
-                      <FaImage
-                        style={{
-                          color: "#ABE4B8",
-                          cursor: "pointer",
-                          transition: "all 0.2s",
-                        }}
-                        onMouseOver={(e) => {
-                          e.currentTarget.style.color = "limegreen";
-                          e.currentTarget.style.textShadow = "0 0 10px 0 limegreen";
-                        }}
-                        onMouseOut={(e) => {
-                          e.currentTarget.style.color = "#ABE4B8";
-                          e.currentTarget.style.textShadow = "none";
-                        }}
-                      />
-                    </Button>
-                    <Button
-                      name="md-select-emoji"
-                      variant="ghost"
-                      onClick={() => { setIsPickingEmoji(is => !is) }}
-                      _hover={{
-                        background: "none",
-                      }}
-                    >
-                      <FaFaceSmile
-                        style={{
-                          color: "#ABE4B8",
-                          cursor: "pointer",
-                          transition: "all 0.2s",
-                        }}
-                        onMouseOver={(e) => {
-                          e.currentTarget.style.color = "limegreen";
-                          e.currentTarget.style.textShadow = "0 0 10px 0 limegreen";
-                        }}
-                        onMouseOut={(e) => {
-                          e.currentTarget.style.color = "#ABE4B8";
-                          e.currentTarget.style.textShadow = "none";
-                        }}
-                      />
-                    </Button>
-                    <Button
-                      color="#ABE4B8"
-                      variant="ghost"
-                      ml="auto"
-                      onClick={handlePostClick}
-                      isLoading={isUploading}
-                      _hover={{
-                        color: "limegreen",
-                        textShadow: "0 0 10px 0 limegreen",
-                        transition: "all 0.2s",
-                      }}
-                    >
-                      Post
-                    </Button>
-                  </HStack>
-                </div>
+          <Box p={4} width={"100%"} bg="black" color="white" {...getRootProps()}>
+            {isLoading && (
+              <Box
+                position="absolute"
+                top={0}
+                left={0}
+                width="100%"
+                height="100%"
+                bg="black"
+                zIndex={10}
+              >
+                <LoadingComponent />
               </Box>
-              <Divider />
-            </>
-          )}
+            )}
+            <div>
+              <Flex>
+                {/* show user avatar or a skeleton avatar placeholder */}
+                {/* @ts-ignore */}
+                <UserAvatar hiveAccount={user.hiveUser || {}} boxSize={12} borderRadius={5} />
+                <Flex flexDir="column" w="100%">
+                  <Textarea
+                    border="none"
+                    _focus={{ border: "none", boxShadow: "none" }}
+                    overflow={"hidden"}
+                    resize={"vertical"}
+                    ref={postBodyRef}
+                    placeholder="Write your stuff..."
+                    onPaste={handlePaste}
+                    // If isLoading, you could disable this or show a skeleton
+                    isDisabled={isLoading}
+                  />
 
-          <HStack width="full" justifyContent="flex-end" m={-2} mr={4}>
-            <Menu>
-              <MenuButton>
-                <IoFilter color="#9AE6B4" />
-              </MenuButton>
-              <MenuList color={'white'} bg={"black"} border={"1px solid #A5D6A7"}>
-                <MenuItem
-                  bg={"black"}
-                  onClick={() => handleSortChange("chronological")}
+                  <div ref={parentRef} style={{
+                    opacity: isPickingEmoji ? 1 : 0,
+                    marginTop: 50,
+                    transition: '1s',
+                    zIndex: 10,
+                    position: 'absolute'
+                  }}>
+                    <EmojiPicker theme={"dark" as Theme} onEmojiClick={handleEmojiClick} />
+                  </div>
+
+                  <HStack>
+                    {imageList.map((item, index) => (
+                      <Box key={index} position="relative" maxW={100} maxH={100}>
+                        <IconButton
+                          aria-label="Remove image"
+                          icon={<FaTimes style={{ color: "black", strokeWidth: 1 }} />}
+                          size="base"
+                          color="white"
+                          bg="white"
+                          _hover={{ bg: "white", color: "black" }}
+                          _active={{ bg: "white", color: "black" }}
+                          position="absolute"
+                          top="0"
+                          right="0"
+                          onClick={() => handleRemoveImage(index)}
+                          zIndex="1"
+                          borderRadius="full"
+                        />
+                        {item.includes("![Image](") ? (
+                          <Image
+                            src={item.match(/!\[Image\]\((.*?)\)/)?.[1] || ""}
+                            alt="markdown-image"
+                            maxW="100%"
+                            maxH="100%"
+                            objectFit="contain"
+                          />
+                        ) : (
+                          <video
+                            src={item.match(/<iframe src="(.*?)" allowfullscreen><\/iframe>/)?.[1]}
+                            controls
+                            muted
+                            width="100%"
+                          />
+                        )}
+                      </Box>
+                    ))}
+                  </HStack>
+                </Flex>
+              </Flex>
+              <HStack justifyContent="space-between" marginTop={2}>
+                <Input
+                  id="md-image-upload"
+                  type="file"
+                  style={{ display: "none" }}
+                  {...getInputProps({ refKey: "ref" })}
+                  ref={inputRef}
+                  disabled={isLoading}
+                />
+                <Button
+                  name="md-image-upload"
+                  variant="ghost"
+                  onClick={() => !isLoading && inputRef.current?.click()}
+                  _hover={{
+                    background: "none",
+                  }}
+                  isDisabled={isLoading}
                 >
-                  <FaHistory /> <Text ml={2}> Latest</Text>
-                </MenuItem>
-                <MenuItem bg={"black"} onClick={() => handleSortChange("payout")}>
-                  <FaMoneyBill /> <Text ml={2}>Payout</Text>
-                </MenuItem>
-                <MenuItem
-                  bg={"black"}
-                  onClick={() => handleSortChange("engagement")}
+                  <FaImage style={{ color: "#ABE4B8", cursor: "pointer", transition: "all 0.2s" }} />
+                </Button>
+                <Button
+                  name="md-select-emoji"
+                  variant="ghost"
+                  onClick={() => { !isLoading && setIsPickingEmoji(is => !is) }}
+                  _hover={{
+                    background: "none",
+                  }}
+                  isDisabled={isLoading}
                 >
-                  <FaArrowRightArrowLeft /> <Text ml={2}>Engagement</Text>
-                </MenuItem>
-              </MenuList>
-            </Menu>
-          </HStack>
-          <CommentList
-            comments={sortedComments}
-            visiblePosts={visiblePosts}
-            setVisiblePosts={setVisiblePosts}
-            username={username}
-            handleVote={handleVote}
-          />
+                  <FaFaceSmile style={{ color: "#ABE4B8", cursor: "pointer", transition: "all 0.2s" }} />
+                </Button>
+                <Button
+                  color="#ABE4B8"
+                  variant="ghost"
+                  ml="auto"
+                  onClick={handlePostClick}
+                  isLoading={isUploading}
+                  isDisabled={isLoading}
+                  _hover={{
+                    color: "limegreen",
+                    textShadow: "0 0 10px 0 limegreen",
+                    transition: "all 0.2s",
+                  }}
+                >
+                  Post
+                </Button>
+              </HStack>
+            </div>
+          </Box>
+          <Divider />
         </>
+      )}
+
+      <HStack width="full" justifyContent="flex-end" m={-2} mr={4}>
+        <Menu>
+          <MenuButton>
+            <IoFilter color="#9AE6B4" />
+          </MenuButton>
+          <MenuList color={'white'} bg={"black"} border={"1px solid #A5D6A7"}>
+            <MenuItem bg={"black"} onClick={() => handleSortChange("chronological")}>
+              <FaHistory /> <Text ml={2}> Latest</Text>
+            </MenuItem>
+            <MenuItem bg={"black"} onClick={() => handleSortChange("payout")}>
+              <FaMoneyBill /> <Text ml={2}>Payout</Text>
+            </MenuItem>
+            <MenuItem bg={"black"} onClick={() => handleSortChange("engagement")}>
+              <FaArrowRightArrowLeft /> <Text ml={2}>Engagement</Text>
+            </MenuItem>
+          </MenuList>
+        </Menu>
+      </HStack>
+
+      <CommentList
+        comments={sortedComments || []}
+        visiblePosts={visiblePosts}
+        setVisiblePosts={setVisiblePosts}
+        username={username}
+        handleVote={handleVote}
+      />
+
+      {/* If loading, show overlay */}
+      {isLoading && (
+        <Box
+          position="absolute"
+          top={0}
+          left={0}
+          width="100%"
+          height="100%"
+          bg="black"
+          zIndex={10}
+        >
+          <LoadingComponent />
+        </Box>
       )}
     </VStack>
   );
+
 };
 
 export default SkateCast;

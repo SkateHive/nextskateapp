@@ -3,7 +3,16 @@ import { useHiveUser } from "@/contexts/UserContext";
 import usePosts from "@/hooks/usePosts";
 import { blockedUsers } from "@/lib/constants";
 import PostModel from "@/lib/models/post";
-import { Box, Button, ButtonGroup, Flex, Grid, useMediaQuery, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Flex,
+  Grid,
+  Text,
+  VStack,
+  useMediaQuery
+} from "@chakra-ui/react";
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FaBook, FaBookOpen } from "react-icons/fa";
@@ -20,9 +29,10 @@ interface PostFeedProps {
   visiblePosts: number;
   setVisiblePosts: React.Dispatch<React.SetStateAction<number>>;
   query: string;
+  loading: boolean;
 }
 
-const PostFeed: React.FC<PostFeedProps> = ({ posts, visiblePosts, setVisiblePosts, query }) => {
+const PostFeed: React.FC<PostFeedProps> = ({ posts, visiblePosts, setVisiblePosts, query, loading }) => {
   const observerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -50,6 +60,16 @@ const PostFeed: React.FC<PostFeedProps> = ({ posts, visiblePosts, setVisiblePost
     };
   }, [setVisiblePosts]);
 
+  if (loading || !posts) {
+    return (
+      <Grid p={1} templateColumns="repeat(1, 1fr)" gap={0} width="100%">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <PostSkeleton key={i} />
+        ))}
+      </Grid>
+    );
+  }
+
   const filteredPosts = posts
     ? posts.filter(
       (post) =>
@@ -60,10 +80,9 @@ const PostFeed: React.FC<PostFeedProps> = ({ posts, visiblePosts, setVisiblePost
   return (
     <Box overflow={"auto"}>
       <Grid templateColumns="repeat(1, 1fr)" gap={0}>
-        {filteredPosts.length > 0 &&
-          filteredPosts.slice(0, visiblePosts).map((post, i) => (
-            <Post key={`${query}-${post.url}`} postData={PostModel.newFromDiscussion(post)} />
-          ))}
+        {filteredPosts.slice(0, visiblePosts).map((post) => (
+          <Post key={`${query}-${post.url}`} postData={PostModel.newFromDiscussion(post)} />
+        ))}
 
         {visiblePosts < filteredPosts.length && (
           <Flex justify="center" ref={observerRef} style={{ height: "50px" }}>
@@ -71,12 +90,6 @@ const PostFeed: React.FC<PostFeedProps> = ({ posts, visiblePosts, setVisiblePost
           </Flex>
         )}
       </Grid>
-
-      {visiblePosts === 0 && filteredPosts.length === 0 && (
-        <Flex justify="center">
-          <BeatLoader size={8} color="darkgrey" />
-        </Flex>
-      )}
     </Box>
   );
 };
@@ -87,7 +100,7 @@ interface NavigationButtonsProps {
   hiveUser: any;
 }
 
-const NavigationButtons: React.FC<NavigationButtonsProps> = ({
+export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
   updateFeed,
   feedConfig,
   hiveUser,
@@ -144,7 +157,13 @@ const NavigationButtons: React.FC<NavigationButtonsProps> = ({
             sx={createButtonStyle}
           >
             <Box marginRight={3}>
-              <Image src="/treboard.gif" alt="tre flip Skateboard icon" width={42} height={42} style={{ width: "auto", height: "auto" }} />
+              <Image
+                src="/treboard.gif"
+                alt="tre flip Skateboard icon"
+                width={42}
+                height={42}
+                style={{ width: "auto", height: "auto" }}
+              />
             </Box>
             + Add to Mag
           </Button>
@@ -217,43 +236,45 @@ export default function MagColumn() {
     [setQueryCategory, setDiscussionQuery]
   );
 
-  if (error) return <p>Error loading posts. Please try again later.</p>;
-  if (isLoading || !posts) {
-    return (
-      <>
-        <NavigationButtons updateFeed={updateFeed} feedConfig={feedConfig} hiveUser={hiveUser} />
-        <Box display="flex" justifyContent="center">
-          <Box width="300px">
-            <AuthorSearchBar
-              onSearch={(author) => updateFeed("blog", [{ tag: author, limit: 10 }])}
-            />
-          </Box>
-        </Box>
-        <Grid p={1} templateColumns="repeat(1, 1fr)" gap={0} minHeight="100vh" width="100%">
-          {Array.from({ length: visiblePosts }).map((_, i) => (
-            <PostSkeleton key={i} />
-          ))}
-        </Grid>
-      </>
-    );
-  }
-
   return (
-    <Box overflow="auto" sx={{ "&::-webkit-scrollbar": { display: "none" } }}>
+    <Box
+      overflow="auto"
+      sx={{ "&::-webkit-scrollbar": { display: "none" } }}
+      display={{ base: "none", md: "block" }}
+      width={{ md: "400px" }}
+      minHeight="100vh"
+    >
       <NavigationButtons updateFeed={updateFeed} feedConfig={feedConfig} hiveUser={hiveUser} />
-      <Box display="flex" justifyContent="center">
+      <Box display="flex" justifyContent="center" mb={4}>
         <Box width="300px">
-          <AuthorSearchBar
-            onSearch={(author) => updateFeed("blog", [{ tag: author, limit: 10 }])}
-          />
+          <AuthorSearchBar onSearch={(author) => updateFeed("blog", [{ tag: author, limit: 10 }])} />
         </Box>
       </Box>
+
+      {error && (
+        <Flex justify="center" mt={4}>
+          <Text>Error loading posts. Please try again later.</Text>
+        </Flex>
+      )}
+
+
+
+      {/* Instead of conditionally showing skeletons and posts separately, always render PostFeed */}
       <PostFeed
-        posts={posts}
+        posts={posts || []} // If posts isn't ready, pass an empty array
         visiblePosts={visiblePosts}
         setVisiblePosts={setVisiblePosts}
         query={feedConfig.query}
+        loading={isLoading} // Add a prop to indicate loading
       />
+
+
+      {!isLoading && posts && posts.length === 0 && (
+        <Flex justify="center" mt={4}>
+          <Text>No posts found. Try another filter or check back later.</Text>
+        </Flex>
+      )}
     </Box>
   );
+
 }
