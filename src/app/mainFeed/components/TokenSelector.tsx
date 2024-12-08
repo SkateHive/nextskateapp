@@ -272,7 +272,16 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
         <>
             <HStack>
                 <Text color="white">You are sponsoring with ${token}</Text>
-                <Image src={tokenDictionary[token]?.tokenLogo} alt={`${token} Logo`} width="40px" mx="auto" my={4} />
+                <Image
+                    src={tokenDictionary[token]?.tokenLogo}
+                    alt={`${token} Logo`}
+                    width="40px"
+                    height="40px"
+                    mx="auto"
+                    my={4}
+                    loading="lazy"
+                    objectFit="contain"
+                />
             </HStack>
             <InputGroup zIndex="modal">
                 <InputLeftAddon backgroundImage={'/pepenation.gif'} color={'white'} zIndex="dropdown">
@@ -280,10 +289,15 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                         <Menu>
                             <MenuButton _active={{ bg: 'transparent' }} _hover={{ bg: 'transparent' }} as={Button} variant="ghost" size="sm">
                                 <HStack ml={-5}>
-
-                                    <Image src={tokenDictionary[token]?.tokenLogo} alt={`${token} Logo`} width="30px" />
+                                    <Image
+                                        src={tokenDictionary[token]?.tokenLogo}
+                                        alt={`${token} Logo`}
+                                        width="30px"
+                                        height="30px"
+                                        objectFit="contain"
+                                        loading="lazy"
+                                    />
                                     <Text color="white">Select Token</Text>
-
                                 </HStack>
                             </MenuButton>
                             <MenuList ml='-16px' color={'white'} bg="black" zIndex="9999">
@@ -295,7 +309,15 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                                         setIsCustomToken(false);
                                     }}
                                 >
-                                    <Image alt="sendit" mr={3} boxSize="20px" src="https://cdn.zerion.io/8c5eea78-246d-4fe2-9ab6-5bcd75ef0fb7.png" />
+                                    <Image
+                                        alt="space"
+                                        mr={3}
+                                        src="https://cdn.zerion.io/8c5eea78-246d-4fe2-9ab6-5bcd75ef0fb7.png"
+                                        width="20px"
+                                        height="20px"
+                                        objectFit="contain"
+                                        loading="lazy"
+                                    />
                                     $SPACE
                                 </MenuItem>
                                 <MenuItem
@@ -306,7 +328,15 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                                         setIsCustomToken(false);
                                     }}
                                 >
-                                    <Image alt="sendit" mr={3} boxSize="20px" src="https://sendit.city/assets/images/image03.jpg?v=c141f3fc" />
+                                    <Image
+                                        alt="sendit"
+                                        mr={3}
+                                        src="https://sendit.city/assets/images/image03.jpg?v=c141f3fc"
+                                        width="20px"
+                                        height="20px"
+                                        objectFit="contain"
+                                        loading="lazy"
+                                    />
                                     $SENDIT
                                 </MenuItem>
                                 <MenuItem
@@ -317,7 +347,15 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                                         setIsCustomToken(false);
                                     }}
                                 >
-                                    <Image alt="nogs" mr={3} boxSize="20px" src="/logos/nog.png" />
+                                    <Image
+                                        alt="nogs"
+                                        mr={3}
+                                        src="/logos/nog.png"
+                                        width="20px"
+                                        height="20px"
+                                        objectFit="contain"
+                                        loading="lazy"
+                                    />
                                     $NOGS
                                 </MenuItem>
 
@@ -329,7 +367,15 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                                         setIsCustomToken(false);
                                     }}
                                 >
-                                    <Image alt="degen" mr={3} boxSize="20px" src={tokenDictionary['DEGEN'].tokenLogo} />
+                                    <Image
+                                        alt="degen"
+                                        mr={3}
+                                        src={tokenDictionary['DEGEN'].tokenLogo}
+                                        width="20px"
+                                        height="20px"
+                                        objectFit="contain"
+                                        loading="lazy"
+                                    />
                                     $DEGEN
                                 </MenuItem>
 
@@ -340,22 +386,35 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                                         setToken("USDC");
                                         setIsCustomToken(false);
                                     }}
-
                                 >
-                                    <Image alt="usdc" mr={3} boxSize="20px" src="https://cdn.zerion.io/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png" />
-
+                                    <Image
+                                        alt="usdc"
+                                        mr={3}
+                                        src="https://cdn.zerion.io/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png"
+                                        width="20px"
+                                        height="20px"
+                                        objectFit="contain"
+                                        loading="lazy"
+                                    />
                                     $USDC
                                 </MenuItem>
                                 <MenuItem
                                     bg="black"
                                     _hover={{ bg: "red.500", color: "black" }}
-                                    //    onClick={() => alert("We said SOON! bitch!")}
                                     onClick={() => {
                                         setToken("HIVE");
                                         setIsCustomToken(false);
                                     }}
                                 >
-                                    <Image alt="hive-logo" mr={3} boxSize="20px" src="/logos/hiveLogo.png" />
+                                    <Image
+                                        alt="hive-logo"
+                                        mr={3}
+                                        src="/logos/hiveLogo.png"
+                                        width="20px"
+                                        height="20px"
+                                        objectFit="contain"
+                                        loading="lazy"
+                                    />
                                     $HIVE
                                 </MenuItem>
                                 <MenuItem
@@ -366,10 +425,17 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
                                         setIsCustomToken(false);
                                     }}
                                 >
-                                    <Image alt="hive-dollar-logo" mr={3} boxSize="20px" src="/logos/hbd.svg" />
+                                    <Image
+                                        alt="hive-dollar-logo"
+                                        mr={3}
+                                        src="/logos/hbd.svg"
+                                        width="20px"
+                                        height="20px"
+                                        objectFit="contain"
+                                        loading="lazy"
+                                    />
                                     $HBD
                                 </MenuItem>
-
                             </MenuList>
                         </Menu>
                     </Box>
@@ -442,9 +508,9 @@ const TokenSelector = ({ addressDict, setShowConfetti }: TokenSelectorProps) => 
             <Text color="white" fontSize="sm">
                 {isConfirmed ? "Airdrop sent!" : isConfirming ? "Sending airdrop..." : ""}
             </Text>
-
         </>
-    )
+    );
+
 }
 
 export default TokenSelector;

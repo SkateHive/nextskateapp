@@ -10,7 +10,7 @@ const LandingPage = () => {
       <Box maxW="800px" w="80%" bg="#000000" p="20px" borderRadius="8px" boxShadow="0 2px 4px rgba(0, 0, 0, 0.1)">
         <Flex direction="column" alignItems="center" className="content">
           <Box className="left" textAlign="center" mb="20px">
-            <Image src="https://skatehive.app/SKATE_HIVE_VECTOR_FIN.svg" alt="Welcome Image" borderRadius="8px" maxW="100%" />
+            <Image src="https://skatehive.app/SKATE_HIVE_VECTOR_FIN.svg" alt="Welcome Image" borderRadius="8px" maxW="100%" w={'auto'} height={'auto'} />
             <Text mt="10px" fontSize="16px" color="#c7c6c6">Decentralized skateboarding community.</Text>
           </Box>
           <Box className="right" w="100%">

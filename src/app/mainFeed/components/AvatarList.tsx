@@ -96,7 +96,7 @@ const AvatarList = ({ sortedComments }: AvatarListProps) => {
         justifyContent={"center"}
         alignItems={"center"}
         mr={1}
-        onClick={() => router.push("/notifications")}
+        onClick={() => router.push("/Notification.gif")}
       >
         <Tooltip
           label={"Notifications"}
@@ -109,7 +109,7 @@ const AvatarList = ({ sortedComments }: AvatarListProps) => {
             name="Notifications"
             boxSize={12}
             bg="black"
-            src="https://cdn.dribbble.com/users/1209774/screenshots/6227735/notification.gif"
+            src="/loading.gif"
             loading="lazy"
             borderRadius={5}
             _hover={{ cursor: "pointer", border: '1px dashed red' }} />

@@ -96,6 +96,7 @@ const VideoRenderer = ({ src, ...props }: RendererProps) => {
           poster={poster}
           crossOrigin='anonymous'
           playsInline={true}
+          autoPlay={true}
           style={{ background: 'transparent', borderRadius: '10px', marginBottom: '20px', border: '0px grey solid', width: '100%', minHeight: '50%', maxHeight: '420px' }}
         />
       </picture>
@@ -111,10 +112,13 @@ export const MarkdownRenderers = {
         alt={alt}
         src={src}
         title={title}
+        width="600"         // Specify a known width
+        height="345"        // Specify a known height
+        loading="lazy"      // Lazily load images not in viewport
         style={{
           display: 'inline-block',
           maxWidth: '100%',
-          height: '100%',
+          height: 'auto',    // Use 'auto' so aspect ratio is maintained
           maxHeight: '345px',
           borderRadius: '10px',
           marginTop: '20px',
@@ -123,6 +127,7 @@ export const MarkdownRenderers = {
       />
     </span>
   ),
+
   p: ({ children, ...props }: RendererProps) => (
     <div {...props} style={{ color: 'white', fontSize: '18px', paddingBottom: '15px' }}>
       {children}

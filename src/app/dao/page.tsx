@@ -66,10 +66,11 @@ const DaoPage = () => {
       <Center w={'100%'} h={"100vh"}>
         <VStack>
           <Image
-            src="https://cdn.dribbble.com/users/921277/screenshots/13742833/media/98615054c34087c21144640c23c4d9fa.gif"
+            src="/loading_data.gif"
             objectFit="contain"
             alt="Loading data..."
             h={'100%'}
+            w={'auto'}
           />
           <Box w="100%" mt={4}>
             <Progress value={progressValue} size="lg" colorScheme="green" hasStripe isAnimated />

@@ -163,6 +163,7 @@ const ProposalDetailPanel = ({
                                     src="https://cdn.dribbble.com/users/921277/screenshots/13742833/media/98615054c34087c21144640c23c4d9fa.gif"
                                     objectFit={'fill'}
                                     h={'100%'}
+                                    w={'auto'}
                                     alt="Loading Proposal"
                                 />
                             </Center>
@@ -194,6 +195,7 @@ const ProposalDetailPanel = ({
                                     src="https://cdn.dribbble.com/users/921277/screenshots/13742833/media/87d7e9272d8234b3b5efeda7b213a292.gif"
                                     objectFit={'fill'}
                                     h={'100%'}
+                                    w={'auto'}
                                     alt="Loading Votes"
                                 />
                             </Center>
@@ -244,6 +246,7 @@ const ProposalDetailPanel = ({
                                     objectFit={'fill'}
                                     h={'100%'}
                                     alt="Loading Report"
+                                    w={'auto'}
                                 />
                             </Center>
                         ) : (

@@ -9,6 +9,8 @@ import { Providers } from "./providers";
 import SidebarWrapper from "./SidebarWrapper";
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import Head from 'next/head';
+
 const share_tech_mono = Share_Tech_Mono({ subsets: ["latin"], weight: "400" });
 
 const ColorModeScriptWrapper = dynamic(() => import('./ColorModeScriptWrapper'), { ssr: false });
@@ -40,7 +42,15 @@ export default function RootLayout({
 }: RootLayoutProps) {
   return (
     <html lang="en">
-      <head>
+      <Head>
+        {/* DNS Prefetch for domains */}
+        <link rel="dns-prefetch" href="//vercel-scripts.com" />
+        <link rel="dns-prefetch" href="//va.vercel-scripts.com" />
+
+        {/* Preconnect to speed up TLS and handshake */}
+        <link rel="preconnect" href="https://vercel-scripts.com" crossOrigin="" />
+        <link rel="preconnect" href="https://va.vercel-scripts.com" crossOrigin="" />
+
         <link rel="manifest" href="/manifest.json"></link>
         <meta name="theme-color" content="#000000" />
         <Favicon />
@@ -72,7 +82,8 @@ export default function RootLayout({
             }
           `}
         </style>
-      </head>
+      </Head>
+
       <body className={share_tech_mono.className}>
         <ColorModeScriptWrapper />
         <Providers>

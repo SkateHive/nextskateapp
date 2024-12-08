@@ -95,8 +95,7 @@ const LoadingComponent = () => {
         lineHeight="1.2"
         whiteSpace="pre"
         style={{
-          animation: `matrixFall ${duration}s linear infinite`,
-          animationDelay: `${delay}s`,
+          animation: `matrixFall ${duration}s linear ${delay}s infinite`,
         }}
       >
         {columnText}
