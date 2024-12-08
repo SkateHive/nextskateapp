@@ -2,7 +2,7 @@ import { Box, Text, VStack } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import "../../../styles/fonts.css";
 
-const matrixCharacters = "アイウエオカキクケコサシスセソタチツテトナニヌネノ";
+const matrixCharacters = "アイウエオカキクケコサ シスセソタ  チツテトナニFUCKヌ ネノ";
 const randomSentences = [
   "skate or don't",
   "F-u-c-k instagram!",
@@ -78,8 +78,8 @@ const LoadingComponent = () => {
   const columnsCount = 20;
   const columns = Array.from({ length: columnsCount }, (_, i) => {
     const columnText = generateColumnLines(50);
-    const delay = Math.random() * 5; // random delay to start the animation
-    const duration = 10 + Math.random() * 5; // random duration for variety
+    const delay = 0; // random delay to start the animation
+    const duration = 5 + Math.random() * 2; // decreased duration for faster animation
     const leftPosition = (100 / columnsCount) * i; // distribute columns evenly
 
     return (
