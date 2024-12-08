@@ -51,6 +51,7 @@ const MagColumnSkeleton = () => {
       <PostSkeleton />
       <PostSkeleton />
       <PostSkeleton />
+      <PostSkeleton />
     </Box>
   );
 };

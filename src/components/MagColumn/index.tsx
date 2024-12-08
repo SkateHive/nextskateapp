@@ -13,7 +13,6 @@ import {
   VStack,
   useMediaQuery
 } from "@chakra-ui/react";
-import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FaBook, FaBookOpen } from "react-icons/fa";
 import { BeatLoader } from "react-spinners";
@@ -21,6 +20,7 @@ import "../../styles/fonts.css";
 import LoginModal from "../Hive/Login/LoginModal";
 import Post from "../PostCard";
 import PostSkeleton from "../PostCard/Skeleton";
+import { Image } from "@chakra-ui/react";
 
 const SKATEHIVE_TAG = [{ tag: "hive-173115", limit: 30 }];
 
