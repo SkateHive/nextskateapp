@@ -33,13 +33,13 @@ const PostFeed: React.FC<PostFeedProps> = ({ posts, visiblePosts, setVisiblePost
       (entries) => {
         const target = entries[0];
         if (target.isIntersecting) {
-          setVisiblePosts((prev) => prev + 5); 
+          setVisiblePosts((prev) => prev + 5);
         }
       },
       {
         root: null,
         rootMargin: "0px",
-        threshold: 0.1, 
+        threshold: 0.1,
       }
     );
 
@@ -144,7 +144,7 @@ const NavigationButtons: React.FC<NavigationButtonsProps> = ({
             sx={createButtonStyle}
           >
             <Box marginRight={3}>
-              <Image src="/treboard.gif" alt="tre flip Skateboard icon" width={42} height={42} />
+              <Image src="/treboard.gif" alt="tre flip Skateboard icon" width={42} height={42} style={{ width: "auto", height: "auto" }} />
             </Box>
             + Add to Mag
           </Button>

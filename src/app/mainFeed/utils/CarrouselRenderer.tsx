@@ -47,7 +47,6 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
     const mediaItems = useMemo(() => extractMediaItems(editedCommentBody), [editedCommentBody]);
 
     const markdownWithoutMedia = useMemo(() => {
-        console.log(editedCommentBody);
         return editedCommentBody
             .replace(/!\[.*?\]\((.*?)\)/g, "")
             .replace(/<iframe[^>]*>/g, "")

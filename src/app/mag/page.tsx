@@ -146,7 +146,7 @@ export default function Mag() {
           sx={createButtonStyle}
         >
           <Box marginRight={3} >
-            <Image src="/treboard.gif" alt="Skateboard" width={42} height={42} />
+            <Image src="/treboard.gif" alt="tre flip Skateboard icon" width={42} height={42} style={{ width: "auto", height: "auto" }} />
           </Box>
           + Create
         </Button>
