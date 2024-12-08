@@ -306,6 +306,18 @@ const SkateCast = () => {
     setSortMethod(method);
   };
 
+  useEffect(() => {
+    const scrollDiv = document.getElementById('scrollableDiv');
+    const handleScroll = () => {
+      if (scrollDiv && (scrollDiv.scrollTop + scrollDiv.clientHeight >= scrollDiv.scrollHeight - 100)) {
+        setVisiblePosts((prev) => prev + 6);
+      }
+    };
+    scrollDiv?.addEventListener('scroll', handleScroll);
+    return () => scrollDiv?.removeEventListener('scroll', handleScroll);
+  }, []);
+
+
   return (
     <VStack
       id="scrollableDiv"
