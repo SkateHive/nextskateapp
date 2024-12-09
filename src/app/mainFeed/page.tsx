@@ -374,14 +374,22 @@ const SkateCast = () => {
                     isDisabled={isLoading}
                   />
 
-                  <div ref={parentRef} style={{
-                    opacity: isPickingEmoji ? 1 : 0,
-                    marginTop: 50,
-                    transition: '1s',
-                    zIndex: 10,
-                    position: 'absolute'
-                  }}>
-                    <EmojiPicker theme={"dark" as Theme} onEmojiClick={handleEmojiClick} />
+                  <div
+                    ref={parentRef}
+                    style={{
+                      opacity: isPickingEmoji ? 1 : 0, // here is the visual control
+                      pointerEvents: isPickingEmoji ? 'auto' : 'none', // Here you avoid clicks when you are not seen
+                      marginTop: 50,
+                      transition: 'opacity 1s ease', 
+                      zIndex: 10,
+                      position: 'absolute',
+                    }}
+                  >
+                    <EmojiPicker
+                      theme={"dark" as Theme}
+                      onEmojiClick={handleEmojiClick}
+                      open={isPickingEmoji} 
+                    />
                   </div>
 
                   <HStack>
