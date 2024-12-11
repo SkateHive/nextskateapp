@@ -1,14 +1,13 @@
-import { vote } from "@/lib/hive/client-functions"
-import { voteWithPrivateKey } from "@/lib/hive/server-functions"
-import { VoteOperation } from "@hiveio/dhive"
-// Modify handleVote function to accept weight parameter
-// Modify handleVote function to accept weight parameter
+import { vote } from "@/lib/hive/client-functions";
+import { voteWithPrivateKey } from "@/lib/hive/server-functions";
+import { VoteOperation } from "@hiveio/dhive";
+
 export const handleVote = async (
   author: string,
   permlink: string,
   username: string,
-  weight?: number // Make weight optional
-) => {
+  weight: number = 10000 
+): Promise<void> => {
   const loginMethod = localStorage.getItem("LoginMethod");
   if (!username) {
     console.error("Username is missing");
@@ -16,7 +15,7 @@ export const handleVote = async (
   }
 
   // Use 1000 as default weight if not specified
-  const normalizedWeight = Math.min(Math.max(weight || 1000, 0), 10000); // Ensure it's between 0 and 10000
+  const normalizedWeight = Math.min(Math.max(weight, 0), 10000);
 
   if (loginMethod === "keychain") {
     await vote({

@@ -5,8 +5,7 @@ import * as dhive from "@hiveio/dhive"
 import { PrivateKey } from '@hiveio/dhive'
 import { Buffer } from 'buffer'
 import CryptoJS from "crypto-js"
-import { VideoPart } from "../models/user"
-import { HiveAccount } from "../useHiveAuth"
+import { HiveAccount, VideoPart } from "../models/user"
 import HiveClient from "./hiveclient"
 const communityTag = process.env.NEXT_PUBLIC_HIVE_COMMUNITY_TAG;
 
@@ -17,30 +16,39 @@ interface ServerLoginResponse {
 }
 
 async function getAccountByPassword(username: string, password: string) {
-  let hivePrivateKey = dhive.PrivateKey.fromLogin(username, password, "active")
-  let hivePublicKey = hivePrivateKey.createPublic()
-  let val = await HiveClient.keys.getKeyReferences([hivePublicKey.toString()])
-  let accountName = val.accounts[0][0]
-  return {
-    accountName,
-    hivePrivateKey,
-  }
+  const hivePrivateKey = dhive.PrivateKey.fromLogin(username, password, "active");
+  const hivePublicKey = hivePrivateKey.createPublic();
+  const val = await HiveClient.keys.getKeyReferences([hivePublicKey.toString()]);
+  const accountName = val.accounts[0][0];
+
+  return { accountName, hivePrivateKey };
 }
 
-function decryptPrivateKey(encryptedPrivateKey: string) {
-  const secret = process.env.NEXT_PUBLIC_CRYPTO_SECRET || ""
-  const bytes = CryptoJS.AES.decrypt(encryptedPrivateKey, secret) || ""
-  const privateKey = bytes.toString(CryptoJS.enc.Utf8)
-  return privateKey
+function decryptPrivateKey(encryptedPrivateKey: string): string {
+  const secret = process.env.NEXT_PUBLIC_CRYPTO_SECRET || "";
+
+  if (!secret) {
+    throw new Error("NEXT_PUBLIC_CRYPTO_SECRET is not set in the environment");
+  }
+
+  const bytes = CryptoJS.AES.decrypt(encryptedPrivateKey, secret);
+  const privateKey = bytes.toString(CryptoJS.enc.Utf8);
+
+  if (!privateKey) {
+    throw new Error("Failed to decrypt the private key. Check the secret or the data.");
+  }
+
+  return privateKey;
 }
 
 function encryptPrivateKey(privateKey: dhive.PrivateKey) {
-  let cryptoKey = process.env.NEXT_PUBLIC_CRYPTO_SECRET as string
-  let encryptedKey = CryptoJS.AES.encrypt(
-    privateKey.toString(),
-    cryptoKey
-  ).toString()
-  return encryptedKey
+  const secret = process.env.NEXT_PUBLIC_CRYPTO_SECRET as string;
+
+  if (!secret) {
+    throw new Error("NEXT_PUBLIC_CRYPTO_SECRET is not set in the environment");
+  }
+
+  return CryptoJS.AES.encrypt(privateKey.toString(), secret).toString();
 }
 
 export async function hiveServerLoginWithPassword(
