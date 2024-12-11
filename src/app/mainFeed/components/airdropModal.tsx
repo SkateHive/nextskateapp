@@ -28,6 +28,7 @@ import { useEffect, useState } from "react";
 import Confetti from 'react-confetti';
 import { BeatLoader } from "react-spinners";
 import TokenSelector from "./TokenSelector";
+import { FormattedAddress } from "@/components/NNSAddress";
 
 interface AirdropModalProps {
     sortedComments: any[];
@@ -82,7 +83,7 @@ const AirdropModal = ({ sortedComments, isOpen, onClose }: AirdropModalProps) =>
             {showConfetti && <Confetti />}
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay style={{ backdropFilter: "blur(5px)" }} />
-                <ModalContent color="white" w={{ base: "100%", md: "75%" }} bg="black" border="0.6px solid grey" borderRadius="md" mx={4}>
+                <ModalContent color="white" w={{ base: "100%", md: "800px" }} bg="black" border="0.6px solid grey" borderRadius="md" mx={4}>
                     <ModalHeader><Center>Create an Airdrop</Center></ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
@@ -135,7 +136,8 @@ const AirdropModal = ({ sortedComments, isOpen, onClose }: AirdropModalProps) =>
                                                                         </Text>
                                                                     </Center>
                                                                 </Td>
-                                                                <Td>{formatETHaddress(ethAddress)}</Td>
+                                                                <Td> <FormattedAddress address={ethAddress} /></Td>
+
                                                             </Tr>
                                                         ))}
                                                     </Tbody>

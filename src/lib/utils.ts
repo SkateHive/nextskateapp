@@ -2,6 +2,7 @@ import { Comment } from "@/app/mainFeed/page"
 import { PINATA_URL } from "@/utils/config"
 import { isNaN } from "lodash"
 import HiveClient from "./hive/hiveclient"
+
 export function getWebsiteURL() {
   return process.env.NEXT_PUBLIC_WEBSITE_URL || ""
 }
@@ -76,7 +77,6 @@ export function transform3SpeakContent(content: string): string {
 export function formatETHaddress(address: string) {
   return `${address.slice(0, 4)}...${address.slice(-4)}`
 }
-
 export function transformIPFSContent(content: string): string {
   const regex = /<iframe src="https:\/\/ipfs\.skatehive\.app\/ipfs\/([a-zA-Z0-9-?=&]+)"(?:(?!<\/iframe>).)*\sallowfullscreen><\/iframe>/g;
 
@@ -87,7 +87,6 @@ export function transformIPFSContent(content: string): string {
             </video>`;
   });
 }
-
 export function transformEcencyImages(content: string): string {
   const regex = /https:\/\/images\.ecency\.com\/p\/([\w-?=&.]+)/g;
 
@@ -107,10 +106,9 @@ export function transformNormalYoutubeLinksinIframes(content: string) {
     return `<iframe src="https://www.youtube.com/embed/${videoID}" allowfullscreen></iframe>`;
   });
 }
-
 export function autoEmbedZoraLink(content: string) {
   const regex = /https:\/\/zora\.co\/collect\/([^\/\s?]+)(?:\/([^\/\s?]+))?(?:\?referrer=([^\/\s]+))?/g;
-  
+
   return content.replace(regex, (fullMatch, tokenId, extraPath, referrer) => {
     // Construct embed URL dynamically
     const embedUrl = `https://zora.co/collect/${tokenId}${extraPath ? `/${extraPath}` : ''}/embed${referrer ? `?referrer=${referrer}` : ''
@@ -142,14 +140,12 @@ export function formatDate(date: string) {
     return isNaN(days) ? "Just now" : `${days}d` // @todo remove after CommentItem any prop refactor
   }
 }
-
 export const getTotalPayout = (comment: Comment): number => {
   const payout = parseFloat(comment.total_payout_value?.split(" ")[0] || "0");
   const pendingPayout = parseFloat(comment.pending_payout_value?.split(" ")[0] || "0");
   const curatorPayout = parseFloat(comment.curator_payout_value?.split(" ")[0] || "0");
   return payout + pendingPayout + curatorPayout;
 };
-
 export async function fetchSkateHivePostMetadata(postId: string, username: string) {
   try {
     const post = await HiveClient.database.call('get_content', [
