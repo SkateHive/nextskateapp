@@ -1,10 +1,10 @@
 'use client';
+import { Operation, PrivateKey } from "@hiveio/dhive";
+import crypto from 'crypto';
 import { Broadcast, Custom, KeychainKeyTypes, KeychainRequestResponse, KeychainSDK, Login, Post, Transfer, Vote, WitnessVote } from "keychain-sdk";
 import { VideoPart } from "../models/user";
 import HiveClient from "./hiveclient";
-import crypto from 'crypto';
 import { signImageHash } from "./server-functions";
-import { Operation, PrivateKey } from "@hiveio/dhive";
 
 interface HiveKeychainResponse {
   success: boolean
@@ -398,46 +398,80 @@ export function getFileSignature(file: File): Promise<string> {
   });
 }
 
-export async function uploadImage(file: File, signature: string, index?: number, setUploadProgress?: React.Dispatch<React.SetStateAction<number[]>>): Promise<string> {
 
-  const signatureUser = process.env.NEXT_PUBLIC_HIVE_USER
+type UploadStatus = "pending" | "in-progress" | "completed" | "error";
+
+const uploadStates = new Map<string, UploadStatus>();
+
+export async function uploadImage(
+  file: File,
+  signature: string,
+  index?: number,
+  setUploadProgress?: React.Dispatch<React.SetStateAction<number[]>>
+): Promise<string> {
+  const signatureUser = process.env.NEXT_PUBLIC_HIVE_USER;
+  const uploadUrl = `https://images.hive.blog/${signatureUser}/${signature}`;
+  const fileKey = `${file.name}-${signature}`;
+
+  // Avoid duplication
+  if (uploadStates.get(fileKey) === "in-progress") {
+    console.log(`Upload for ${file.name} is already in progress.`);
+    return Promise.reject(new Error("Upload already in progress"));
+  }
+  if (uploadStates.get(fileKey) === "completed") {
+    console.log(`Upload for ${file.name} is already completed.`);
+    return Promise.reject(new Error("Upload already completed"));
+  }
+
+  // Mark as in progress
+  uploadStates.set(fileKey, "in-progress");
 
   const formData = new FormData();
   formData.append("file", file, file.name);
 
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'https://images.hive.blog/' + signatureUser + '/' + signature, true);
+    xhr.open("POST", uploadUrl, true);
 
-    if (index && setUploadProgress) {
+    if (index !== undefined && setUploadProgress) {
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable) {
-          const progress = (event.loaded / event.total) * 100;
+          const progress = Math.round((event.loaded / event.total) * 100);
           setUploadProgress((prevProgress: number[]) => {
             const updatedProgress = [...prevProgress];
             updatedProgress[index] = progress;
             return updatedProgress;
           });
         }
-      }
+      };
     }
 
     xhr.onload = () => {
       if (xhr.status === 200) {
-        const response = JSON.parse(xhr.responseText);
-        resolve(response.url);
+        try {
+          const response = JSON.parse(xhr.responseText);
+          uploadStates.set(fileKey, "completed"); // Update state
+          resolve(response.url);
+        } catch (error) {
+          uploadStates.set(fileKey, "error"); /// Update state
+          reject(new Error("Failed to parse response from server."));
+        }
       } else {
-        reject(new Error('Failed to upload image'));
+        uploadStates.set(fileKey, "error"); // Update state
+        reject(new Error(`Upload failed with status ${xhr.status}: ${xhr.statusText}`));
       }
     };
 
     xhr.onerror = () => {
-      reject(new Error('Failed to upload image'));
+      uploadStates.set(fileKey, "error"); // Update state
+      reject(new Error("Upload failed due to network error."));
     };
 
     xhr.send(formData);
   });
 }
+
+
 
 export async function getSkateHiveTotalPayout(): Promise<number | null> {
   try {
