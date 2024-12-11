@@ -23,21 +23,40 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
     const [authors, setAuthors] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isListVisible, setIsListVisible] = useState(false);
+    const cacheRef = useRef<{ [key: string]: string[] }>({}); // Cache to store queries
 
-    const client = new Client(["https://api.hive.blog"]);
-    const containerRef = useRef<HTMLDivElement>(null);
+    const client = useRef(new Client(["https://api.hive.blog"]))
 
+    // Function to search for authors
     const fetchAuthors = async (query: string) => {
         if (!query) return;
+
+        // Use cache if available
+        if (cacheRef.current[query]) {
+            setAuthors(cacheRef.current[query]);
+            return;
+        }
+
         setIsLoading(true);
         try {
             const sanitizedQuery = query.startsWith("@") ? query.slice(1) : query;
-            const result = await client.database.call("lookup_accounts", [sanitizedQuery, 5]);
-            setAuthors(result);
+            const result = await client.current.database.call("lookup_accounts", [
+                sanitizedQuery,
+                5,
+            ]);
+
+            // Saves to cache and updates authors
+            cacheRef.current[query] = result;
+
+            // Update only if results are different
+            setAuthors((prevAuthors) =>
+                JSON.stringify(prevAuthors) !== JSON.stringify(result) ? result : prevAuthors
+            );
         } catch (error) {
-            console.error(error);
+            console.error("Erro ao buscar autores:", error);
+        } finally {
+            setIsLoading(false);
         }
-        setIsLoading(false);
     };
 
     const debouncedFetchAuthors = useCallback(
@@ -66,6 +85,7 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
             setIsListVisible(false);
         }
     };
+    const containerRef = useRef<HTMLDivElement>(null); // Ref to detect clicks outside the component
 
     useEffect(() => {
         document.addEventListener("mousedown", hideList);
@@ -92,7 +112,7 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
                     onChange={(e) => {
                         const value = e.target.value.replace(/^@/, "");
                         setUsername(value);
-                        setIsListVisible(value.trim() !== "");
+                        setIsListVisible(value.trim() !== ""); // Display list only if there is text
                     }}
                     borderColor="green.600"
                     color="#A5D6A7"
