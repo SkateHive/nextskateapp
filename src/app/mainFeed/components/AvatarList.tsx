@@ -96,7 +96,7 @@ const AvatarList = ({ sortedComments }: AvatarListProps) => {
         justifyContent={"center"}
         alignItems={"center"}
         mr={1}
-        onClick={() => router.push("/Notification.gif")}
+        onClick={() => router.push("/notifications")}
       >
         <Tooltip
           label={"Notifications"}
