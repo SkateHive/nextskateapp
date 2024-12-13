@@ -27,6 +27,7 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
     const [isFullScreen, setIsFullScreen] = useState(false);
     const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
     const videoRefs = useRef<Array<HTMLVideoElement | null>>([]);
+    const [loadedMedia, setLoadedMedia] = useState<boolean[]>([]);
 
     const extractMediaItems = (markdown: string): MediaItem[] => {
         const imageRegex = /!\[.*?\]\((.*?)\)/g;
@@ -69,7 +70,7 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
         }
 
         if (media.type === 'video' && videoRefs.current[index]) {
-            videoRefs.current[index]?.pause();
+            videoRefs.current[index]?.play();
         }
     };
 
@@ -77,6 +78,7 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
         if (selectedMedia?.type === 'video') {
             const index = mediaItems.findIndex((item) => item.url === selectedMedia.url);
             if (index !== -1 && videoRefs.current[index]) {
+                videoRefs.current[index]!.pause();
                 videoRefs.current[index]!.currentTime = 0;
             }
         }
@@ -98,6 +100,37 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
         },
     };
 
+    // Lazy load handler to load images and videos when they're in the viewport or clicked
+    const loadMediaOnVisibility = (index: number) => {
+        const videoElement = videoRefs.current[index];
+        const imgElement = document.getElementById(`image-${index}`) as HTMLImageElement; // Assert that it's an image element
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        if (videoElement && !videoElement.src) {
+                            videoElement.src = videoElement.getAttribute("data-src") || ''; // Load video only when in view
+                        }
+                        if (imgElement && !imgElement.src) {
+                            imgElement.src = imgElement.getAttribute("data-src") || ''; // Load image only when in view
+                        }
+                        setLoadedMedia(prevState => {
+                            const newState = [...prevState];
+                            newState[index] = true;
+                            return newState;
+                        });
+                    }
+                });
+            },
+            { threshold: 0.5 } // Trigger when 50% of the video is visible
+        );
+
+        if (videoElement) observer.observe(videoElement);
+        if (imgElement) observer.observe(imgElement);
+    };
+
+
     const renderMediaItem = (media: MediaItem, index: number) => (
         <Box
             key={index}
@@ -113,18 +146,29 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
                 <video
                     ref={(el) => {
                         videoRefs.current[index] = el;
+                        loadMediaOnVisibility(index); // Start observing when the video is in view
                     }}
-                    src={media.url.replace("ipfs.skatehive.app", PINATA_URL)}
+                    src={media.url.replace("ipfs.skatehive.app", PINATA_URL)} // Store the URL to be loaded
                     controls
-                    style={{ width: "100%", height: "100%", borderRadius: "8px", maxHeight: '445px', aspectRatio: "16/9" }}
+                    preload="none" // Video will load only when it's visible
+                    style={{
+                        width: "100%",
+                        height: "100%",
+                        borderRadius: "8px",
+                        maxHeight: '445px',
+                        aspectRatio: "16/9",
+                        display: loadedMedia[index] ? 'block' : 'none', // Hide until loaded
+                    }}
                 />
             ) : (
                 <Image
+                    id={`image-${index}`}
                     src={media.url}
                     alt="Post media"
                     borderRadius="8px"
                     objectFit="cover"
                     maxHeight="445px"
+                    loading="lazy" // Lazy load image
                     style={{ cursor: 'pointer' }}
                 />
             )}
