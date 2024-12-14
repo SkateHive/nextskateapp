@@ -45,16 +45,15 @@ export function FormattedAddress({
     asLink?: boolean;
     clds?: string[]; // Optional: Specify CLDs to filter by
 }) {
-    if (!address) return null;
 
     const { data: nnsName, isLoading, isError } = useNNSName(address, clds);
 
     const AddressContent = () => (
         <Code size="sm" variant="surface" colorScheme={nnsName ? '' : 'gray'}>
-            {isLoading
-                ? 'Resolving...'
+            {isLoading && address
+                ? address
                 : isError || !nnsName
-                    ? formatETHaddress(address)
+                    ? formatETHaddress(String(address))
                     : nnsName}
         </Code>
     );
