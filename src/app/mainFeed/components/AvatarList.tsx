@@ -89,6 +89,46 @@ const AvatarList = ({ sortedComments }: AvatarListProps) => {
   }
 
   const NotificationsAvatar = () => {
+    // Checks if the code is running on the client side
+    if (typeof window === "undefined") {
+      return null;
+    }
+
+    const loginMethod = localStorage.getItem("LoginMethod");
+
+    if (!loginMethod) {
+      return (
+        <Box
+          w={"40px"}
+          h={"40px"}
+          borderRadius={"50%"}
+          bg={"gray.200"}
+          display={"flex"}
+          justifyContent={"center"}
+          alignItems={"center"}
+          mr={1}
+        >
+          <Tooltip
+            label={"Please log in to see notifications"}
+            bg={"black"}
+            color={"gray.500"}
+            border={"1px dashed gray"}
+          >
+            <Avatar
+              border={"1px dashed yellow"}
+              name="Notifications"
+              boxSize={12}
+              bg="black"
+              src="/loading.gif"
+              loading="lazy"
+              borderRadius={5}
+              _hover={{ cursor: "not-allowed" }}
+            />
+          </Tooltip>
+        </Box>
+      );
+    }
+
     return (
       <Box
         w={"40px"}
@@ -118,8 +158,8 @@ const AvatarList = ({ sortedComments }: AvatarListProps) => {
             _hover={{ cursor: "pointer", border: '1px dashed red' }} />
         </Tooltip>
       </Box>
-    )
-  }
+    );
+  };
 
   return (
     <HStack

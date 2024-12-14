@@ -261,7 +261,7 @@ const CommandPrompt = ({ post, onClose, author, permlink, onNewComment }: Comman
           colorScheme="teal"
           size="lg"
           onClick={() => submitComment(value)}
-          isDisabled={!value.trim()}
+          isDisabled={!value.trim() || !localStorage.getItem("LoginMethod")}
         >
           Post Comment
         </Button>

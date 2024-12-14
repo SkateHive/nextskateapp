@@ -37,6 +37,12 @@ const ReplyModal = ({ isOpen, onClose, comment, onNewComment }: ReplyModalProps)
 
     const handleReply = async () => {
         const loginMethod = localStorage.getItem("LoginMethod");
+        const username = user.hiveUser?.name;
+
+        if (!loginMethod || !username) {
+            setError("You must be logged in to respond.");
+            return;
+        }
         const newPermLink = `${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`;
 
         try {
@@ -135,6 +141,7 @@ const ReplyModal = ({ isOpen, onClose, comment, onNewComment }: ReplyModalProps)
             setError(error.message);
         }
     };
+    const loginMethod = localStorage.getItem("LoginMethod");
     return (
         <Modal isOpen={isOpen} onClose={onClose} size="lg" isCentered>
             <ModalOverlay style={{ backdropFilter: "blur(5px)" }} />
@@ -143,44 +150,58 @@ const ReplyModal = ({ isOpen, onClose, comment, onNewComment }: ReplyModalProps)
                     <ModalCloseButton />
                 </ModalHeader>
                 <ModalBody>
-                    <VStack align="start" spacing={4} position="relative">
-                        <Flex align="start" w="100%">
-                            <AuthorAvatar username={comment.author} borderRadius={100} />
-                            <HStack justify={"space-between"} width={"full"}>
-                                <CarrouselRenderer editedCommentBody={editedCommentBody} />
-                            </HStack>
-                        </Flex>
-                        <Box position="absolute" left="24px" top="60px" bottom="120px" width="2px" bg="gray.600" />
-                        <Flex align="start" w="full" direction={{ base: "column", md: "row" }}>
-                            {user.hiveUser && <UserAvatar hiveAccount={user.hiveUser} borderRadius={100} boxSize={12} />}
-                            <VStack align="start" w="full">
-                                <Text ml={5} color="gray.400">
-                                    replying to @{comment.author}
-                                </Text>
-                                <Textarea
-                                    value={replyBody}
-                                    onChange={(e) => setReplyBody(e.target.value)}
-                                    placeholder="Write your reply here"
-                                    bg="transparent"
-                                    _focus={{ border: "#A5D6A7", boxShadow: "none" }}
-                                    resize="none"
-                                    minHeight="100px"
-                                    borderRadius="xl"
-                                    border="1px solid grey"
-                                />
-                                {error && (
-                                    <Text color="red.500" mt={2}>
-                                        {error}
-                                    </Text>
-                                )}
-                            </VStack>
-                        </Flex>
-                    </VStack>
+                    {loginMethod ? (
+                        <VStack align="start" spacing={4} position="relative">
+                            <Flex align="start" w="100%">
+                                <AuthorAvatar username={comment.author} borderRadius={100} />
+                                <HStack justify={"space-between"} width={"full"}>
+                                    <CarrouselRenderer editedCommentBody={editedCommentBody} />
+                                </HStack>
+                            </Flex>
+                            <Box position="absolute" left="24px" top="60px" bottom="120px" width="2px" bg="gray.600" />
+                            <Flex align="start" w="full" direction={{ base: "column", md: "row" }}>
+                                {user.hiveUser && <UserAvatar hiveAccount={user.hiveUser} borderRadius={100} boxSize={12} />}
+                                <VStack align="start" w="full">
+                                    <>
+                                        <Text ml={5} color="gray.400">
+                                            replying to @{comment.author}
+                                        </Text>
+                                        <Textarea
+                                            value={replyBody}
+                                            onChange={(e) => setReplyBody(e.target.value)}
+                                            placeholder="Write your reply here"
+                                            bg="transparent"
+                                            _focus={{ border: "#A5D6A7", boxShadow: "none" }}
+                                            resize="none"
+                                            minHeight="100px"
+                                            borderRadius="xl"
+                                            border="1px solid grey"
+                                        />
+                                        {error && (
+                                            <Text color="red.500" mt={2}>
+                                                {error}
+                                            </Text>
+                                        )}
+                                    </>
+                                </VStack>
+                            </Flex>
+                        </VStack>
+                    ) : (
+                        <Text fontFamily="Creepster" fontSize="42px" color={"#A5D6A7"} textAlign="center">
+                            Please login to your Hive account!
+                        </Text>
+                    )}
                 </ModalBody>
                 <ModalFooter borderTop="1px solid" borderColor="gray.700">
-                    <Button onClick={handleReply} variant="outline" colorScheme="green">
-                        Reply
-                    </Button>
+                    {loginMethod ? (
+                        <Button onClick={handleReply} variant="outline" colorScheme="green">
+                            Reply
+                        </Button>
+                    ) : (
+                        <Text fontSize="18px" color="gray.500" textAlign="center" width="full">
+                            Please login to enable replying to comments.
+                        </Text>
+                    )}
                 </ModalFooter>
             </ModalContent>
         </Modal>

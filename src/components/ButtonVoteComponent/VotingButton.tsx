@@ -55,44 +55,41 @@ const VotingButton = ({
 
   const handleRightClick = (e: React.MouseEvent, voteType: 'upvote' | 'downvote') => {
     e.preventDefault();
-  
 // Block interaction during animation
     if (isAnimating) {
       console.log("Animation in progress, please wait.");
       return;
     }
-  
     if (!username) {
       setIsLoginModalOpen(true);
       return;
     }
-  
     const { clientX, clientY, button } = e;
     setClickPosition({ x: clientX, y: clientY });
-  
     if (button === 2) { // Right click to open vote modal
       setIsVoteModalOpen(true);
     }
     toggleValueTooltip();
-  
     // Cleaning touchTimer if necessary
     if (touchTimer) {
       clearTimeout(touchTimer);
     }
   };
-  
   const handleLeftClick = (e: React.MouseEvent) => {
     try {
       const { button } = e;
-  
      // Block interaction during animation
       if (isAnimating) {
         console.log("Animation in progress, please wait.");
         return;
       }
-  
+      if (!username) {
+        console.error("Error: The user is not logged in.");
+        setIsLoginModalOpen(true); // Abre o modal de login
+        return;
+      }
       if (button === 0) { // Left click to upvote
-        handleVote(comment.author, comment.permlink, username ?? "", 10000).then(() => {
+        handleVote(comment.author, comment.permlink, username, 10000).then(() => {
           setIsUpvoted(true);
           setIsDownvoted(false);
           setUpvoteCount(upvoteCount + 1);
@@ -105,7 +102,6 @@ const VotingButton = ({
       console.error("Error handling vote:", error);
     }
   };
-  
 
 // function that registers votes on mobile
   const handleTouchStart = (e: TouchEvent) => {
@@ -167,7 +163,6 @@ const VotingButton = ({
       setDownvoteCount(downvoteCount + 1);
       setUpvoteCount(upvoteCount - (isUpvoted ? 1 : 0));
     }
-  
     setIsVoteModalOpen(false); // Closing the modal
   };
 
