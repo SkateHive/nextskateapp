@@ -3,7 +3,6 @@
 import NotificationsPage from "@/app/notifications/page"
 import AuthorSearchBar from "@/app/upload/components/searchBar"
 import { useHiveUser } from "@/contexts/UserContext"
-import { formatEthereumAddress } from "@/lib/web3"
 import { Link } from "@chakra-ui/next-js"
 import {
   Box,
@@ -39,6 +38,7 @@ import CommunityTotalPayout from "../communityTotalPayout"
 import AvatarLogin from "./AvatarLogin"
 import checkRewards from "./utils/checkReward"
 import { claimRewards } from "./utils/claimRewards"
+import { formatETHaddress } from "@/lib/utils"
 
 const blink = keyframes`
   0% { opacity: 1; }
@@ -199,7 +199,7 @@ export default function Navbar() {
                 }
               >
                 {ethAccount.address ? (
-                  formatEthereumAddress(ethAccount.address)
+                  formatETHaddress(ethAccount.address)
                 ) : (
                   <span>Connect</span>
                 )}

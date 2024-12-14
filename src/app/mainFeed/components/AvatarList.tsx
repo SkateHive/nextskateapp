@@ -53,35 +53,38 @@ const AvatarList = ({ sortedComments }: AvatarListProps) => {
 
   const AirdropAvatar = () => {
     return (
-      <Box
-        mr={1}
-        w={"40px"}
-        h={"40px"}
-        borderRadius={"50%"}
-        bg={"gray.200"}
-        display={"flex"}
-        justifyContent={"center"}
-        alignItems={"center"}
-      >
+      <>
         {isOpen && <AirdropModal sortedComments={sortedComments} isOpen={isOpen} onClose={handleCloseModal} />}
-        <Tooltip
-          label={"Create Community Airdrop"}
-          bg={"black"}
-          color={"gold"}
-          border={"1px dashed gold"}
+
+        <Box
+          mr={1}
+          w={"40px"}
+          h={"40px"}
+          borderRadius={"50%"}
+          bg={"gray.200"}
+          display={"flex"}
+          justifyContent={"center"}
+          alignItems={"center"}
         >
-          <Avatar
-            onClick={() => setIsOpen(true)}
-            border={"1px solid red"}
-            name="community airdrop"
-            boxSize={12}
-            bg="black"
-            src="https://i.ibb.co/cgykmcc/image.png"
-            loading="lazy"
-            borderRadius={5}
-            _hover={{ border: "1px solid gold", cursor: "pointer" }} />
-        </Tooltip>
-      </Box>
+          <Tooltip
+            label={"Create Community Airdrop"}
+            bg={"black"}
+            color={"gold"}
+            border={"1px dashed gold"}
+          >
+            <Avatar
+              onClick={() => setIsOpen(true)}
+              border={"1px solid red"}
+              name="community airdrop"
+              boxSize={12}
+              bg="black"
+              src="https://i.ibb.co/cgykmcc/image.png"
+              loading="lazy"
+              borderRadius={5}
+              _hover={{ border: "1px solid gold", cursor: "pointer" }} />
+          </Tooltip>
+        </Box>
+      </>
     )
   }
 
@@ -149,7 +152,7 @@ const AvatarList = ({ sortedComments }: AvatarListProps) => {
             name="Notifications"
             boxSize={12}
             bg="black"
-            src="/loading.gif"
+            src="/Notification.gif"
             loading="lazy"
             borderRadius={5}
             _hover={{ cursor: "pointer", border: '1px dashed red' }} />
