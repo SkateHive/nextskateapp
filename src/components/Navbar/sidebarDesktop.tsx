@@ -12,6 +12,7 @@ import {
   Icon,
   Image,
   Text,
+  VStack,
   keyframes,
   useDisclosure,
   useToast
@@ -37,6 +38,7 @@ import CommunityTotalPayout from "../communityTotalPayout";
 import { claimRewards } from "./utils/claimRewards";
 import Confetti from 'react-confetti';
 import getDynamicGlobalProperties from "@/lib/hive/hiveclient";
+import { FormattedAddress } from "../NNSAddress";
 
 const blink = keyframes`
   0% { color: gold; opacity: 1; }
@@ -318,7 +320,7 @@ const SidebarDesktop = () => {
             {notifications ? <NotificationsPage /> : null} */}
           </>
         ) : null}
-        <HStack mt="auto">
+        <VStack mt="auto">
           <Button
             justifyContent={"center"}
             fontSize={"14px"}
@@ -333,7 +335,7 @@ const SidebarDesktop = () => {
             }
             onClick={() => onLoginOpen()}
           >
-            {hiveUser ? <p>{hiveUser.name}</p> : <span>Login</span>}
+            {hiveUser ? <p>{hiveUser.name}</p> : <span>Login with Hive</span>}
           </Button>
           <Button
             justifyContent={"center"}
@@ -358,12 +360,12 @@ const SidebarDesktop = () => {
             }
           >
             {ethAccount.address ? (
-              formatETHaddress(ethAccount.address)
+              <FormattedAddress address={ethAccount.address} />
             ) : (
-              <span>Connect</span>
+              <span>Connect with Ethereum</span>
             )}
           </Button>
-        </HStack>
+        </VStack>
       </Box>
     </>
   );

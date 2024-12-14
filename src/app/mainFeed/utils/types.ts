@@ -22,3 +22,9 @@ export interface Cast {
 export interface SkateCastProps {
     casts?: Cast[];
 }
+
+export interface TokenInfo {
+    address: `0x${string}`;
+    abi: any[];
+    tokenLogo?: string;
+}

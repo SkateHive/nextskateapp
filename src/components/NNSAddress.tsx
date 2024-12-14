@@ -51,7 +51,7 @@ export function FormattedAddress({
     const AddressContent = () => (
         <Code size="sm" variant="surface" colorScheme={nnsName ? '' : 'gray'}>
             {isLoading && address
-                ? address
+                ? formatETHaddress(address)
                 : isError || !nnsName
                     ? formatETHaddress(String(address))
                     : nnsName}

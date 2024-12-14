@@ -9,6 +9,8 @@ import React from "react";
 import { parseUnits } from "viem";
 import { useAccount, useWriteContract } from "wagmi";
 import { SenditABI } from "../../lib/abi/senditABI";
+import { TokenInfo } from "@/app/mainFeed/utils/types";
+import { tokenDictionary } from "@/app/mainFeed/utils/tokenDictionary";
 
 interface TipModalProps {
     isOpen: boolean;
@@ -18,12 +20,6 @@ interface TipModalProps {
     authorETHwallet: string;
 }
 
-export interface TokenInfo {
-    address: `0x${string}`;
-    abi: any[];
-    tokenLogo?: string;
-}
-
 const TipModal: React.FC<TipModalProps> = ({ isOpen, onClose, token, author, authorETHwallet }) => {
     const account = useAccount();
     const { data: hash, writeContract } = useWriteContract();
@@ -31,28 +27,10 @@ const TipModal: React.FC<TipModalProps> = ({ isOpen, onClose, token, author, aut
 
     const handleAmountOnBlur = (event: React.ChangeEvent<HTMLInputElement>) => {
         var currentValue = event.target.value;
-        if (currentValue=="") currentValue="0";
+        if (currentValue == "") currentValue = "0";
         // event.target.value = currentValue.toFixed(18);
         setAmount(event.target.value);
     }
-
-    const tokenDictionary: { [key: string]: TokenInfo } = {
-        SENDIT: {
-            address: '0xBa5B9B2D2d06a9021EB3190ea5Fb0e02160839A4',
-            abi: SenditABI as unknown as any[],
-            tokenLogo: "https://sendit.city/assets/images/image03.jpg?v=c141f3fc"
-        },
-        NOGS: {
-            address: '0x13741C5dF9aB03E7Aa9Fb3Bf1f714551dD5A5F8a',
-            abi: nogsABI as unknown as any[],
-            tokenLogo: "/logos/nog.png"
-        },
-        MEMBER: {
-            address: '0x7d89e05c0b93b24b5cb23a073e60d008fed1acf9',
-            abi: memberABI as unknown as any[],
-            tokenLogo: "https://member.clinic/images/01-1.jpg"
-        }
-    };
 
     const sendToken = async (amount: string, tokenKey: string) => {
         if (tokenKey in tokenDictionary) {

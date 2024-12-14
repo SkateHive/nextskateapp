@@ -28,6 +28,7 @@ import LoginModal from "../Hive/Login/LoginModal";
 import CommunityTotalPayout from "../communityTotalPayout";
 import checkRewards from "./utils/checkReward";
 import { claimRewards } from "./utils/claimRewards";
+import { FormattedAddress } from "../NNSAddress";
 const blink = keyframes`
   0% { color: gold; opacity: 1; }
   50% { opacity: 0.1; }
@@ -228,7 +229,7 @@ const SideBarMobile = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
                                 }
                             >
                                 {ethAccount.address ? (
-                                    formatETHaddress(ethAccount.address)
+                                    <FormattedAddress address={ethAccount.address} />
                                 ) : (
                                     <span>Connect</span>
                                 )}
