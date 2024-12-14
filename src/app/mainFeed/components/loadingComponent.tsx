@@ -1,8 +1,10 @@
+
+'use client'
 import { Box, Text, VStack } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import "../../../styles/fonts.css";
 
-const matrixCharacters = "アイウエオカキクケコサ シスセソタ  チツテトナニFUCKヌ ネノ";
+const matrixCharacters = "FUCKアイウエオカキクケコサ シスセソタ  チツテトナニFUCKヌ ネノ";
 const randomSentences = [
   "skate or don't",
   "F-u-c-k instagram!",
