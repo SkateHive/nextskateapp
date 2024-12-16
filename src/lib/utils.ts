@@ -117,7 +117,7 @@ export function autoEmbedZoraLink(content: string) {
     console.log("Constructed Embed URL:", embedUrl);
 
     // Return iframe embed code
-    return `<iframe src="${embedUrl}" style="border:0;background-color:transparent;position:absolute;inset:0" width="100%" height="100%" allowtransparency="true" allowfullscreen="true" sandbox="allow-pointer-lock allow-same-origin allow-scripts allow-popups"></iframe>`;
+    return `<iframe src="${embedUrl}" style="border:0;background-color:black;position:relative;inset:0" width="100%" height="300px" allowtransparency="true" allowfullscreen="true" sandbox="allow-pointer-lock allow-same-origin allow-scripts allow-popups"></iframe>`;
   });
 }
 export function formatDate(date: string) {

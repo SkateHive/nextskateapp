@@ -4,7 +4,7 @@ import VotingButton from "@/components/ButtonVoteComponent/VotingButton";
 import TipButton from "@/components/PostCard/TipButton";
 import { useHiveUser } from "@/contexts/UserContext";
 import { useComments } from "@/hooks/comments";
-import { autoEmbedZoraLink, formatDate, getTotalPayout, transformIPFSContent, transformNormalYoutubeLinksinIframes, transformShortYoutubeLinksinIframes } from "@/lib/utils";
+import { formatDate, getTotalPayout } from "@/lib/utils";
 import {
   Box,
   Button,
@@ -14,17 +14,14 @@ import {
   Tooltip,
   VStack,
 } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FaRegComment } from "react-icons/fa";
 import { FaPencil } from "react-icons/fa6";
 import CarrouselRenderer from "../utils/CarrouselRenderer";
 import { EditCommentModal } from "./EditCommentModal";
 import ReplyModal from "./replyModal";
 import ToggleComments from "./ToggleComments";
-import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
-import rehypeRaw from "rehype-raw";
-import remarkGfm from "remark-gfm";
-import ReactMarkdown from "react-markdown";
+
 interface CommentItemProps {
   comment: any;
   username: string;
@@ -116,22 +113,9 @@ const CommentItem = ({
               </Text>
             </HStack>
           </HStack>
-          {/* <HStack justify={"space-between"} width={"full"}> */}
-          <ReactMarkdown
-            components={MarkdownRenderers}
-            rehypePlugins={[rehypeRaw]}
-            remarkPlugins={[remarkGfm]}
-          >
-            {autoEmbedZoraLink(
-              transformNormalYoutubeLinksinIframes(
-                transformIPFSContent(
-                  transformShortYoutubeLinksinIframes(comment.body)
-                )
-              )
-            )}
-          </ReactMarkdown>
-          {/* <CarrouselRenderer editedCommentBody={editedCommentBody} /> */}
-          {/* </HStack> */}
+          <HStack justify={"space-between"} width={"full"}>
+            <CarrouselRenderer editedCommentBody={editedCommentBody} />
+          </HStack>
         </VStack>
       </Flex>
 
