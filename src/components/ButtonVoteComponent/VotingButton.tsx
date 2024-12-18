@@ -20,6 +20,7 @@ const VotingButton = ({
   const [clickPosition, setClickPosition] = useState<{ x: number; y: number } | undefined>(undefined);
   const [touchTimer, setTouchTimer] = useState<NodeJS.Timeout | null>(null);
   const [isTooltipVisible, setIsTooltipVisible] = useState(false);
+  const [isVoting, setIsVoting] = useState(false); 
 
   const toggleValueTooltip = () => {
     setIsTooltipVisible(prev => !prev);
@@ -60,7 +61,7 @@ const VotingButton = ({
 
   const handleRightClick = (e: React.MouseEvent, voteType: 'upvote' | 'downvote') => {
     e.preventDefault();
-// Block interaction during animation
+    // Block interaction during animation
     if (isAnimating) {
       console.log("Animation in progress, please wait.");
       return;
@@ -83,7 +84,13 @@ const VotingButton = ({
   const handleLeftClick = (e: React.MouseEvent) => {
     try {
       const { button } = e;
-     // Block interaction during animation
+
+      if (isVoting) {
+        console.log("Voting, please wait...");
+        return;
+      }
+
+      // Block interaction during animation
       if (isAnimating) {
         console.log("Animation in progress, please wait.");
         return;
@@ -94,7 +101,8 @@ const VotingButton = ({
         return;
       }
       if (button === 0) { // Left click to upvote
-        handleVote(comment.author, comment.permlink, username, 10000, updateVotes)
+        setIsVoting(true);
+        handleVote(comment.author, comment.permlink, username, 10000, updateVotes, setIsVoting)
           .then(() => {
             setIsUpvoted(true);
             setIsDownvoted(false);
@@ -111,7 +119,7 @@ const VotingButton = ({
     }
   };
 
-// function that registers votes on mobile
+  // function that registers votes on mobile
   const handleTouchStart = (e: TouchEvent) => {
     e.preventDefault();
 
@@ -188,20 +196,22 @@ const VotingButton = ({
         <HStack
           id={rewardId}
           ref={voteButtonRef}
-          onClick={(e) => handleLeftClick(e,)}
-          onContextMenu={(e) => handleRightClick(e, "downvote")}
+          onClick={(e) => handleLeftClick(e)} 
+          onContextMenu={(e) => handleRightClick(e, "downvote")} 
           spacing={1}
-          cursor="pointer"
-          style={{ userSelect: 'none' }}
+          cursor={isVoting ? "not-allowed" : "pointer"} 
+          style={{ userSelect: 'none', pointerEvents: isVoting ? "none" : "auto" }} 
           onMouseLeave={toggleValueTooltip}
         >
-          <Text fontSize="18px" color="limegreen">
-            {isUpvoted ? <FaHeart /> : <FaRegHeart />}
+          <Text fontSize="18px" color={isVoting ? "gray" : "limegreen"}>
+            {isVoting ? "Voting..." : isUpvoted ? <FaHeart /> : <FaRegHeart />}
           </Text>
-          <Text fontSize="18px" color="#61ad64">
-            {upvoteCount}
+          <Text fontSize="18px" color={isVoting ? "gray" : "#61ad64"}>
+            {isVoting ? "..." : upvoteCount}
           </Text>
         </HStack>
+
+
 
         {isDownvoted && (
           <HStack
