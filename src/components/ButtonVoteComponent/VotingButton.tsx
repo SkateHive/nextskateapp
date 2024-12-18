@@ -1,6 +1,6 @@
 import { handleVote } from "@/app/mainFeed/utils/handleFeedVote";
 import LoginModal from "@/components/Hive/Login/LoginModal";
-import { HStack, Text } from "@chakra-ui/react";
+import { Flex, HStack, Text } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { FaHeart, FaHeartBroken, FaRegHeart } from "react-icons/fa";
 import { useReward } from "react-rewards";
@@ -20,7 +20,7 @@ const VotingButton = ({
   const [clickPosition, setClickPosition] = useState<{ x: number; y: number } | undefined>(undefined);
   const [touchTimer, setTouchTimer] = useState<NodeJS.Timeout | null>(null);
   const [isTooltipVisible, setIsTooltipVisible] = useState(false);
-  const [isVoting, setIsVoting] = useState(false); 
+  const [isVoting, setIsVoting] = useState(false);
 
   const toggleValueTooltip = () => {
     setIsTooltipVisible(prev => !prev);
@@ -196,19 +196,29 @@ const VotingButton = ({
         <HStack
           id={rewardId}
           ref={voteButtonRef}
-          onClick={(e) => handleLeftClick(e)} 
-          onContextMenu={(e) => handleRightClick(e, "downvote")} 
+          onClick={(e) => handleLeftClick(e)}
+          onContextMenu={(e) => handleRightClick(e, "downvote")}
           spacing={1}
-          cursor={isVoting ? "not-allowed" : "pointer"} 
-          style={{ userSelect: 'none', pointerEvents: isVoting ? "none" : "auto" }} 
+          cursor={isVoting ? "not-allowed" : "pointer"}
+          style={{ userSelect: 'none', pointerEvents: isVoting ? "none" : "auto" }}
           onMouseLeave={toggleValueTooltip}
         >
-          <Text fontSize="18px" color={isVoting ? "gray" : "limegreen"}>
-            {isVoting ? "Voting..." : isUpvoted ? <FaHeart /> : <FaRegHeart />}
-          </Text>
-          <Text fontSize="18px" color={isVoting ? "gray" : "#61ad64"}>
-            {isVoting ? "..." : upvoteCount}
-          </Text>
+          <Flex alignItems="center" gap={2}>
+            <Text fontSize="18px" color={isVoting ? "gray" : isUpvoted ? "limegreen" : "#61ad64"}>
+              {isVoting ? (
+                "Voting..."
+              ) : (
+                isUpvoted ? <FaHeart /> : <FaRegHeart />
+              )}
+            </Text>
+            {!isVoting && (
+              <Text fontSize="18px" color={isVoting ? "gray" : "#61ad64"}>
+                {upvoteCount}
+              </Text>
+            )}
+          </Flex>
+
+
         </HStack>
 
 
