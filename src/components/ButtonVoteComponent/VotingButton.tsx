@@ -53,6 +53,11 @@ const VotingButton = ({
     spread: 60,
   });
 
+  const updateVotes = () => {
+    setUpvoteCount((prev: number) => prev + 1);
+    setDownvoteCount((prev: number) => prev - (isDownvoted ? 1 : 0));
+  };
+
   const handleRightClick = (e: React.MouseEvent, voteType: 'upvote' | 'downvote') => {
     e.preventDefault();
 // Block interaction during animation
@@ -89,13 +94,16 @@ const VotingButton = ({
         return;
       }
       if (button === 0) { // Left click to upvote
-        handleVote(comment.author, comment.permlink, username, 10000).then(() => {
-          setIsUpvoted(true);
-          setIsDownvoted(false);
-          setUpvoteCount(upvoteCount + 1);
-          setDownvoteCount(downvoteCount - (isDownvoted ? 1 : 0));
-          reward(); // Activate reward animation
-        });
+        handleVote(comment.author, comment.permlink, username, 10000, updateVotes)
+          .then(() => {
+            setIsUpvoted(true);
+            setIsDownvoted(false);
+            setUpvoteCount(upvoteCount + 1);
+            setDownvoteCount(downvoteCount - (isDownvoted ? 1 : 0));
+            reward();
+          })
+          .catch(error => console.error("Error during voting:", error));
+
         toggleValueTooltip();
       }
     } catch (error) {
