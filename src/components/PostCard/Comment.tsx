@@ -39,21 +39,33 @@ export default function PostComment({ comment }: PostCommentProps) {
   const [commentsOpen, setCommentsOpen] = useState(false)
 
   const handleVoteClick = async () => {
-
     try {
-      console.log(user.hiveUser?.name, comment.permlink, comment.author)
+      if (!user.hiveUser?.name) {
+        console.error("User is not logged in");
+        return;
+      }
+  
+      const updateVotes = () => {
+        setHasVoted(true);
+      };
+  
+      console.log(user.hiveUser?.name, comment.permlink, comment.author);
       await handleVote(
         comment.author,
         comment.permlink,
         String(user.hiveUser?.name),
-      )
+        10000,  
+        updateVotes  
+      );
       setHasVoted(true)
-      const newPayout = await voting_value(user)
-      setNewTotalPayout(calculateTotalPayout(comment) + newPayout)
+      const newPayout = await voting_value(user);
+      setNewTotalPayout(calculateTotalPayout(comment) + newPayout);
+  
     } catch (error) {
-      console.error(error)
+      console.error("Error registering vote:", error);
     }
-  }
+  };
+  
   useEffect(() => {
     setHasVoted(
       comment?.active_votes?.some(
