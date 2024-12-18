@@ -25,6 +25,7 @@ export default function PostComment({ comment }: PostCommentProps) {
   const user = useHiveUser()
   const [hasVoted, setHasVoted] = useState(false)
   const [replies, setReplies] = useState<Comment[] | undefined>(comment.replies)
+  const [isVoting, setIsVoting] = useState(false)
 
   const calculateTotalPayout = (comment: Comment) => {
     return (
@@ -44,28 +45,32 @@ export default function PostComment({ comment }: PostCommentProps) {
         console.error("User is not logged in");
         return;
       }
-  
+
       const updateVotes = () => {
         setHasVoted(true);
       };
-  
+
+      setIsVoting(true);
+
       console.log(user.hiveUser?.name, comment.permlink, comment.author);
       await handleVote(
         comment.author,
         comment.permlink,
         String(user.hiveUser?.name),
-        10000,  
-        updateVotes  
+        10000,
+        updateVotes,
+        setIsVoting
       );
-      setHasVoted(true)
+
       const newPayout = await voting_value(user);
       setNewTotalPayout(calculateTotalPayout(comment) + newPayout);
-  
+      setIsVoting(false);
     } catch (error) {
       console.error("Error registering vote:", error);
+      setIsVoting(false);
     }
   };
-  
+
   useEffect(() => {
     setHasVoted(
       comment?.active_votes?.some(
@@ -121,18 +126,18 @@ export default function PostComment({ comment }: PostCommentProps) {
           </Flex>
         </Flex>
         {commentsOpen ? (
-         <CommandPrompt
-         post={comment}
-         addComment={(comment: Comment) => {
-           setReplies((replies) => replies ? [...replies, comment] : replies)
-           setCommentsOpen(false)
-         }}
-         onNewComment={() => {}}
-         onClose={() => {}}
-         author={comment.author}
-         permlink={comment.permlink}
-       />
-       
+          <CommandPrompt
+            post={comment}
+            addComment={(comment: Comment) => {
+              setReplies((replies) => replies ? [...replies, comment] : replies)
+              setCommentsOpen(false)
+            }}
+            onNewComment={() => { }}
+            onClose={() => { }}
+            author={comment.author}
+            permlink={comment.permlink}
+          />
+
         ) : null}
       </Flex>
       <CommentsSection comments={replies} isCommentReply={true} />
