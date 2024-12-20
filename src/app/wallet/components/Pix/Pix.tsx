@@ -6,7 +6,7 @@ import {
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { fetchPixBeeData, formatCNPJ, formatCPF, formatRandomKey, formatTelephone } from "../../utils/fetchPixBeeData";
-import { LimitsTable } from "../LimitesTable";
+import { LimitsTable } from "./LimitesTable";
 import PixHbd from "./Pix_Hbd";
 import SendHBDModal from "./sendHBDModal";
 import TransactionHistory from "./transationHistory";
