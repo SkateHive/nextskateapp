@@ -122,7 +122,7 @@ const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
                     </Avatar>
                 </SkeletonCircle>
                 <SkeletonText isLoaded={!isLoading} noOfLines={1}>
-                    <Text
+                    <Box
                         fontSize={14}
                         maxWidth="200px"
                         whiteSpace="nowrap"
@@ -131,7 +131,7 @@ const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
                         textAlign="center"
                     >
                         <FormattedAddress address={account.address} />
-                    </Text>
+                    </Box>
                 </SkeletonText>
                 <FaEye size={30} color="white" />
             </HStack>
