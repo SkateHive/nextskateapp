@@ -225,7 +225,7 @@ export const FullMagazineRenderers = {
                     {...props}
                     muted={true}
                     loop={true}
-                    src={src && typeof src === 'string' ? src.replace("ipfs.skatehive.app", PINATA_URL) : ""}
+                    src={src}
                     crossOrigin='anonymous'
                     playsInline={false}
                     style={{ background: 'transparent', borderRadius: '10px', marginBottom: '20px', border: '0px grey solid', width: '100%', minHeight: '50%', maxHeight: '420px' }}
