@@ -115,6 +115,8 @@ export const FullMagazineRenderers = {
                     borderRadius: '10px',
                     marginTop: '20px',
                     marginBottom: '20px',
+                    minHeight: '425px',
+                    maxHeight: '625px',
                 }}
             />
         </span>
@@ -228,7 +230,7 @@ export const FullMagazineRenderers = {
                     src={src}
                     crossOrigin='anonymous'
                     playsInline={false}
-                    style={{ background: 'transparent', borderRadius: '10px', marginBottom: '20px', border: '0px grey solid', width: '100%', minHeight: '50%', maxHeight: '420px' }}
+                    style={{ background: 'transparent', borderRadius: '10px', marginBottom: '20px', border: '0px grey solid', width: '100%', minHeight: '50%', maxHeight: '540px' }}
                 />
             </picture>
         </div>
