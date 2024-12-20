@@ -61,8 +61,7 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
             .replace(/!\[.*?\]\((.*?)\)/g, '')
             .replace(/<iframe[^>]*>/g, '')
             .replace(/allowFullScreen>/g, '')
-            .replace(/allowFullScreen={true}>/g, '')
-            .replace(/ipfs\.skatehive\.app/g, PINATA_URL);
+            .replace(/allowFullScreen={true}>/g, '');
     }, [editedCommentBody]);
 
     const handleMediaClick = (media: MediaItem) => {
@@ -89,13 +88,13 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
                     ref={(el) => {
                         videoRefs.current[index] = el;
                     }}
-                    src={media.url.replace('ipfs.skatehive.app', PINATA_URL)}
+                    src={media.url}
                     controls
                     style={{ width: '100%', borderRadius: '8px', maxHeight: '545px' }}
                 />
             ) : (
                 <Image
-                    src={media.url.replace('ipfs.skatehive.app', PINATA_URL)}
+                    src={media.url}
                     alt="Post media"
                     borderRadius="8px"
                     objectFit="cover"

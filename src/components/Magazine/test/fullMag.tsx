@@ -185,7 +185,7 @@ export default function FullMag({ tag, query }: TestPageProps) {
                 <VStack p={1} borderRadius={5} width={"20%"} >
                   <AuthorAvatar username={post.author} boxSize={30} borderRadius={100} />
                   <Text color={"white"} mt={0} fontSize={10}>
-                  {post.author.replace("ipfs.skatehive.app", PINATA_URL)}
+                    {post.author.replace("ipfs.skatehive.app", PINATA_URL)}
                   </Text>
                 </VStack>
                 <Text
