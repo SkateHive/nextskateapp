@@ -3,7 +3,6 @@
 import NotificationsPage from "@/app/notifications/page"
 import AuthorSearchBar from "@/app/upload/components/searchBar"
 import { useHiveUser } from "@/contexts/UserContext"
-import { Link } from "@chakra-ui/next-js"
 import {
   Box,
   Button,
@@ -39,6 +38,8 @@ import AvatarLogin from "./AvatarLogin"
 import checkRewards from "./utils/checkReward"
 import { claimRewards } from "./utils/claimRewards"
 import { formatETHaddress } from "@/lib/utils"
+import { useIsClient } from "@/hooks/useIsClient"; // Add this import
+import NextLink from "next/link" // Add this import
 
 const blink = keyframes`
   0% { opacity: 1; }
@@ -47,6 +48,7 @@ const blink = keyframes`
 `
 
 export default function Navbar() {
+  const isClient = useIsClient(); // Add this line
   const pathname = usePathname()
   const { hiveUser } = useHiveUser()
   const [hasRewards, setHasRewards] = useState(false)
@@ -87,6 +89,8 @@ export default function Navbar() {
     setNotifications(!notifications)
   }
 
+  if (!isClient) return null; // Add this line
+
   return (
     <Box>
       <Drawer
@@ -124,29 +128,29 @@ export default function Navbar() {
             )}
             <HStack padding={0} gap={3} fontSize={"22px"}>
               <FaHome size={"22px"} />
-              <Link href={"/"}>Home</Link>
+              <NextLink href={"/"}>Home</NextLink>
             </HStack>
             <HStack padding={0} gap={3} fontSize={"22px"}>
               <FaSpeakap size={"22px"} />
-              <Link href={"/plaza"}>Plaza</Link>
+              <NextLink href={"/plaza"}>Plaza</NextLink>
             </HStack>
             <HStack padding={0} gap={3} fontSize={"22px"}>
               <FaEthereum size={"22px"} />
-              <Link href={"/dao"}>Dao</Link>
+              <NextLink href={"/dao"}>Dao</NextLink>
             </HStack>
             <HStack padding={0} gap={3} fontSize={"22px"}>
               <FaEthereum size={"22px"} />
-              <Link href={"/landingPage"}>landing</Link>
+              <NextLink href={"/landingPage"}>landing</NextLink>
             </HStack>
             {hiveUser ? (
               <>
                 <HStack padding={0} gap={3} fontSize={"22px"}>
                   <FaUser size={"22px"} />
-                  <Link href={`/profile/${hiveUser.name}`}>Profile</Link>
+                  <NextLink href={`/profile/${hiveUser.name}`}>Profile</NextLink>
                 </HStack>
                 <HStack padding={0} gap={3} fontSize={"22px"}>
                   <FaWallet size={"22px"} />
-                  <Link href={`/wallet`}>Wallet</Link>
+                  <NextLink href={`/wallet`}>Wallet</NextLink>
                 </HStack>
                 <HStack cursor={"pointer"} onClick={handleNotifications} padding={0} gap={3} fontSize={"22px"}>
                   <FaBell size={"22px"} />
@@ -223,7 +227,7 @@ export default function Navbar() {
             />
             {pathname === "/" ? null : (
               <Tooltip label="Return Home">
-                <Link href="/" scroll={false}>
+                <NextLink href="/" scroll={false}>
                   <IconButton
                     aria-label="Home"
                     icon={<Home color="#A5D6A7" />}
@@ -231,7 +235,7 @@ export default function Navbar() {
                     color={"white"}
                     bg={"transparent"}
                   />
-                </Link>
+                </NextLink>
               </Tooltip>
             )}
           </HStack>

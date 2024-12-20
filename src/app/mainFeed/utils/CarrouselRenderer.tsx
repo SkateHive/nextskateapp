@@ -60,7 +60,8 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
         return editedCommentBody
             .replace(/!\[.*?\]\((.*?)\)/g, '')
             .replace(/<iframe[^>]*>/g, '')
-            .replace(/allowfullscreen>/g, '')
+            .replace(/allowFullScreen>/g, '')
+            .replace(/allowFullScreen={true}>/g, '')
             .replace(/ipfs\.skatehive\.app/g, PINATA_URL);
     }, [editedCommentBody]);
 

@@ -3,6 +3,7 @@ import HiveClient from "@/lib/hive/hiveclient";
 import { Avatar, SystemStyleObject } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
+import { useIsClient } from "@/hooks/useIsClient"; // Add this import
 
 type Quality = 'small' | 'medium' | 'large';
 
@@ -26,6 +27,7 @@ function checkImageExists(url: string): Promise<boolean> {
 export default function AuthorAvatar({ username, borderRadius, hover, boxSize, quality }: AuthorAvatarProps) {
     const [profileImage, setProfileImage] = useState("/loading.gif");
     const [isLoading, setIsLoading] = useState(true);
+    const isClient = useIsClient(); // Add this line
 
     const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
 

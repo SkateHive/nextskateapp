@@ -1,17 +1,26 @@
 "use client"
 import AuthorAvatar from "@/components/AuthorAvatar"
-import { Avatar, Box, Divider, HStack, Link, Tooltip } from "@chakra-ui/react"
+import { Avatar, Box, Divider, HStack, Tooltip } from "@chakra-ui/react"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useAccount } from "wagmi"
 import AirdropModal from "./airdropModal"
+import NextLink from "next/link" // Add this import
+
 interface AvatarListProps {
   sortedComments: any[]
 }
 const AvatarList = ({ sortedComments }: AvatarListProps) => {
   const [isOpen, setIsOpen] = useState(false)
+  const [loginMethod, setLoginMethod] = useState<string | null>(null)
   const eth_user = useAccount()
   const router = useRouter()
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setLoginMethod(localStorage.getItem("LoginMethod"))
+    }
+  }, [])
 
   const handleCloseModal = () => {
     setIsOpen(false)
@@ -20,6 +29,7 @@ const AvatarList = ({ sortedComments }: AvatarListProps) => {
   const InviteAvatar = () => {
     return (
       <Box
+        suppressHydrationWarning
         w={"40px"}
         h={"40px"}
         borderRadius={"50%"}
@@ -27,26 +37,26 @@ const AvatarList = ({ sortedComments }: AvatarListProps) => {
         display={"flex"}
         justifyContent={"center"}
         alignItems={"center"}
+        onClick={() => router.push("/invite")}
       >
-        <Link href={"/invite"}>
-          <Tooltip
-            label={"Invite someone cool enough"}
-            bg={"black"}
-            color={"#A5D6A7"}
-            border={"1px dashed #A5D6A7"}
-          >
-
-            <Avatar
-              border={"1px dashed limegreen"}
-              name="+"
-              boxSize={12}
-              bg="black"
-              src="/loading.gif"
-              loading="lazy"
-              borderRadius={5}
-              cursor="pointer" />
-          </Tooltip>
-        </Link>
+        <Tooltip
+          suppressHydrationWarning
+          label={"Invite someone cool enough"}
+          bg={"black"}
+          color={"#A5D6A7"}
+          border={"1px dashed #A5D6A7"}
+        >
+          <Avatar
+            suppressHydrationWarning
+            border={"1px dashed limegreen"}
+            name="+"
+            boxSize={12}
+            bg="black"
+            src="/loading.gif"
+            borderRadius={5}
+            cursor="pointer"
+          />
+        </Tooltip>
       </Box>
     )
   }
@@ -89,44 +99,8 @@ const AvatarList = ({ sortedComments }: AvatarListProps) => {
   }
 
   const NotificationsAvatar = () => {
-    // Checks if the code is running on the client side
-    if (typeof window === "undefined") {
-      return null;
-    }
-
-    const loginMethod = localStorage.getItem("LoginMethod");
-
     if (!loginMethod) {
-      return (
-        <Box
-          w={"40px"}
-          h={"40px"}
-          borderRadius={"50%"}
-          bg={"gray.200"}
-          display={"flex"}
-          justifyContent={"center"}
-          alignItems={"center"}
-          mr={1}
-        >
-          <Tooltip
-            label={"Please log in to see notifications"}
-            bg={"black"}
-            color={"gray.500"}
-            border={"1px dashed gray"}
-          >
-            <Avatar
-              border={"1px dashed yellow"}
-              name="Notifications"
-              boxSize={12}
-              bg="black"
-              src="/loading.gif"
-              loading="lazy"
-              borderRadius={5}
-              _hover={{ cursor: "not-allowed" }}
-            />
-          </Tooltip>
-        </Box>
-      );
+      return null;
     }
 
     return (

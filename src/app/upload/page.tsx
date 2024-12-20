@@ -90,7 +90,7 @@ export default function Upload() {
                 const ipfsData = await uploadFileToIPFS(file);
                 if (ipfsData !== undefined) {
                     const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}`;
-                    const markdownLink = file.type.startsWith("video/") ? `<iframe src="${ipfsUrl}" allowfullscreen></iframe>` : `![Image](${ipfsUrl})`;
+                    const markdownLink = file.type.startsWith("video/") ? `<iframe src="${ipfsUrl}" allowFullScreen={true}></iframe>` : `![Image](${ipfsUrl})`;
                     setValue(prevMarkdown => `${prevMarkdown}\n${markdownLink}\n`);
                     setThumbnailUrl(acceptedFiles[0].type.startsWith("video/") ? "https://ipfs.skatehive.app/ipfs/QmWgkeX38hgWNh7cj2mTvk8ckgGK3HSB5VeNn2yn9BEnt7" : `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}`);
                 }

@@ -39,6 +39,7 @@ import { claimRewards } from "./utils/claimRewards";
 import Confetti from 'react-confetti';
 import getDynamicGlobalProperties from "@/lib/hive/hiveclient";
 import { FormattedAddress } from "../NNSAddress";
+import { useIsClient } from "@/hooks/useIsClient";
 
 const blink = keyframes`
   0% { color: gold; opacity: 1; }
@@ -50,8 +51,8 @@ interface Asset {
   toString(): string;
 }
 
-
 const SidebarDesktop = () => {
+  const isClient = useIsClient();
   const user = useHiveUser();
   const hiveUser = user.hiveUser;
   const ethAccount = useAccount();
@@ -172,9 +173,7 @@ const SidebarDesktop = () => {
     }
   };
 
-
-
-
+  if (!isClient) return null;
 
   return (
     <>

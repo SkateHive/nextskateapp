@@ -21,6 +21,7 @@ import LoginModal from "../Hive/Login/LoginModal";
 import Post from "../PostCard";
 import PostSkeleton from "../PostCard/Skeleton";
 import { Image } from "@chakra-ui/react";
+import { useIsClient } from "@/hooks/useIsClient"; // Add this import
 
 const SKATEHIVE_TAG = [{ tag: "hive-173115", limit: 30 }];
 
@@ -106,6 +107,7 @@ export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
   hiveUser,
 }) => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const isClient = useIsClient(); // Add this line
 
   const handleCreateClick = () => {
     if (!hiveUser.hiveUser) {
@@ -140,6 +142,8 @@ export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
 
   const [openBook, setOpenBook] = useState(false);
   const isMobile = useMediaQuery("(max-width: 768px)")[0];
+
+  if (!isClient) return null; // Add this line
 
   return (
     <>
@@ -257,17 +261,13 @@ export default function MagColumn() {
         </Flex>
       )}
 
-
-
-      {/* Instead of conditionally showing skeletons and posts separately, always render PostFeed */}
       <PostFeed
-        posts={posts || []} // If posts isn't ready, pass an empty array
+        posts={posts || []}
         visiblePosts={visiblePosts}
         setVisiblePosts={setVisiblePosts}
         query={feedConfig.query}
-        loading={isLoading} // Add a prop to indicate loading
+        loading={isLoading}
       />
-
 
       {!isLoading && posts && posts.length === 0 && (
         <Flex justify="center" mt={4}>
@@ -276,5 +276,4 @@ export default function MagColumn() {
       )}
     </Box>
   );
-
 }
