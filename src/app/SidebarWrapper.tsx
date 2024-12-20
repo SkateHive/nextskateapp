@@ -21,7 +21,7 @@ const SidebarWrapper = () => {
 
     if (!shouldRender) return null;
 
-    if (hideSidebarRoutes.includes(pathname)) {
+    if (hideSidebarRoutes.includes(String(pathname))) {
         return null;
     }
 
