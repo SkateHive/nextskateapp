@@ -1,24 +1,39 @@
 'use client'
 import { Box, Center, Flex, Image, Text, VStack } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import "../../../styles/fonts.css";
 import EthBox from './ethWallet';
 import HiveBox from './hiveWallet';
+import { useAccount } from 'wagmi';
+import { useHiveUser } from '@/contexts/UserContext';
 
 const TotalValueBox: React.FC = () => {
     const [ethNetWorth, setEthNetWorth] = useState<number>(0);
     const [hiveNetWorth, setHiveNetWorth] = useState<number>(0);
-
+    const [totalValue, setTotalValue] = useState<string>("Loading...");
+    const account = useAccount();
+    const hiveUser = useHiveUser();
     const handleEthNetWorth = (value: number) => {
-        setEthNetWorth(value);
+        if (!isNaN(value)) {
+            setEthNetWorth(value);
+        }
     };
 
     const handleHiveNetWorth = (value: number) => {
-        setHiveNetWorth(value);
+        if (!isNaN(value)) {
+            setHiveNetWorth(value);
+        }
     };
 
-    const totalValue = ethNetWorth + hiveNetWorth;
+    const calculateTotalValue = () => {
+        const total = ethNetWorth + hiveNetWorth;
+        setTotalValue("$" + total.toFixed(2).toString());
+    };
+    useEffect(() => {
+        calculateTotalValue();
+    }
+        , [ethNetWorth, hiveNetWorth]);
 
     return (
         <VStack
@@ -28,8 +43,9 @@ const TotalValueBox: React.FC = () => {
             flex="1"
             p={4}
             borderRadius="10px"
-            h={{ base: "100%", md: "100%" }}
+            h={{ base: "100vh", md: "100vh" }}
             fontFamily="Joystix"
+
         >
             <Box w={"full"} textAlign="center">
                 <Text color={"black"} align="center" borderRadius={"md"} fontSize={{ base: 20, md: 20 }} mb={4} backgroundColor="white">
@@ -57,14 +73,22 @@ const TotalValueBox: React.FC = () => {
                         color="white"
                         textShadow="0 0 10px black, 0 0 20px black, 0 0 30px rgba(255, 255, 255, 0.4)"
                     >
-                        ${totalValue.toFixed(2)}
+                        {totalValue}
                     </Text>
                 </Box>
             </Box>
 
             <Flex direction={{ base: 'column', md: 'row' }} w="100%">
-                <HiveBox onNetWorthChange={handleHiveNetWorth} />
-                <EthBox onNetWorthChange={handleEthNetWorth} />
+                {hiveUser.hiveUser && (
+                    <Box flex="1" minHeight="0">
+                        <HiveBox onNetWorthChange={handleHiveNetWorth} />
+                    </Box>
+                )}
+                {account.address && (
+                    <Box flex="1" minHeight="0">
+                        <EthBox onNetWorthChange={handleEthNetWorth} />
+                    </Box>
+                )}
             </Flex>
         </VStack>
     );

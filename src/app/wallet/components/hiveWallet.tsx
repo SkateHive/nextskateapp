@@ -24,11 +24,9 @@ import { Asset } from "@hiveio/dhive";
 import { SendIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { BsArrowDownCircle, BsArrowUpCircle } from "react-icons/bs";
-
 import { FaEye, FaHive } from "react-icons/fa";
 import { GiPiggyBank, GiReceiveMoney } from "react-icons/gi";
 import HiveModals from "./HiveModals";
-
 
 const HIVE_LOGO_URL = "/logos/hiveLogo.png";
 const HBD_LOGO_URL = "https://i.ibb.co/C6TPhs3/HBD.png";
@@ -43,26 +41,57 @@ interface HiveBoxProps {
 function formatToOneDecimal(value: string | number | Asset | undefined): string {
     if (typeof value === "string") {
         const num = parseFloat(value);
-        return isNaN(num) ? "0.0" : num.toFixed(1); 
+        return isNaN(num) ? "0.0" : num.toFixed(1);
     }
     if (typeof value === "number") {
-        return value.toFixed(1); 
+        return value.toFixed(1);
     }
-    return "0.0"; 
+    return "0.0";
 }
+
+interface WalletItemProps {
+    icon: string;
+    label: string;
+    value: string;
+    usdValue: string;
+    onClick: () => void;
+    tooltip: string;
+}
+
+const WalletItem: React.FC<WalletItemProps> = ({ icon, label, value, usdValue, onClick, tooltip }) => (
+    <Tooltip display="none" label={tooltip}>
+        <MenuButton
+            p={8}
+            border="1px solid red"
+            width="100%" // Ensure full width
+            as={Button}
+            leftIcon={<Avatar boxSize="30px" src={icon} />}
+            variant="outline"
+            color={'white'}
+            _hover={{ bg: 'black', border: '1px solid yellow' }}
+            _active={{ bg: 'black', border: '1px solid yellow' }}
+            _focus={{ bg: 'black', border: '1px solid yellow' }}
+            fontSize={{ base: "sm", md: "md", lg: "lg" }}
+            onClick={onClick}
+        >
+            <HStack justifyContent={"space-between"}>
+                <Text ml={'10px'} fontSize={{ base: 20, md: 22 }} textShadow="0 0 10px black, 0 0 20px black, 0 0 10px red">
+                    {value}
+                </Text>
+                <Text>{label}</Text>
+                <Badge colorScheme="green" color={"green"} variant="subtle">
+                    <Text fontSize={{ base: 18, md: 20 }}> (~${usdValue})</Text>
+                </Badge>
+            </HStack>
+        </MenuButton>
+    </Tooltip>
+);
 
 
 const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
     const { hiveUser } = useHiveUser();
-
-
-    const balanceHive = hiveUser?.balance;
-    const balanceHBD = hiveUser?.hbd_balance
-    const balanceHivePower = hiveUser?.savings_balance;
-    const DepositUSDvalue = hiveUser?.savings_hbd_balance;
-    const WithdrawHbdValue = hiveUser?.vesting_withdraw_rate
-    const HpDelegate = hiveUser?.delegated_vesting_shares
-
+    const [isLoading, setIsLoading] = useState(true);
+    const [isModalOpened, setIsOpened] = useState(false);
     const [isHiveModalOpened, setIsHiveModalOpened] = useState(false);
     const [isHbdModalOpened, setIsHbdModalOpened] = useState(false);
     const [isHivePowerModalOpened, setIsHivePowerModalOpened] = useState(false);
@@ -71,23 +100,10 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
     const [isHPPowerModalOpened, setIsHPPowerModalOpened] = useState(false);
     const [isHpDelegatesModalOpened, setIsHpDelegatesModalOpened] = useState(false);
 
-    const [formattedAmountHive, setFormattedAmountHive] = useState("0.00");
-    const [formattedAmountHivePower, setFormattedAmountHivePower] = useState("0.00");
-    const [formattedAmountHbd, setFormattedAmountHbd] = useState("0.00");
-    const [formattedDepositHbd, setFormattedDepositHbd] = useState("0.00");
-    const [formattedWithdrawHbd, setFormattedWithdrawHbd] = useState("0.00");
-    const [formattedHpDelegates, setFormattedHpDelegates] = useState('0.00')
-
-    const [isLoading, setIsLoading] = useState(true);
-    const [isModalOpened, setIsOpened] = useState(false);
-
     const {
         hiveUsdValue,
         hivePower,
-        HPthatUserDelegated,
-        totalHP,
         HPUsdValue,
-        delegatedHPUsdValue,
         HBDUsdValue,
         savingsUSDvalue,
         totalValue,
@@ -97,42 +113,6 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
         onNetWorthChange(totalValue);
         setTimeout(() => setIsLoading(false), 1000);
     }, [totalValue, onNetWorthChange]);
-
-    useEffect(() => {
-        if (balanceHive) {
-            setFormattedAmountHive(formatToOneDecimal(balanceHive));
-        }
-    }, [balanceHive]);
-
-    useEffect(() => {
-        if (balanceHBD) {
-            setFormattedAmountHbd(formatToOneDecimal(balanceHBD));
-        }
-    }, [balanceHBD]);
-
-    useEffect(() => {
-        if (balanceHivePower) {
-            setFormattedAmountHivePower(formatToOneDecimal(balanceHivePower));
-        }
-    }, [balanceHivePower]);
-
-    useEffect(() => {
-        if (DepositUSDvalue) {
-            setFormattedDepositHbd(formatToOneDecimal(DepositUSDvalue));
-        }
-    }, [DepositUSDvalue])
-
-    useEffect(() => {
-        if (WithdrawHbdValue) {
-            setFormattedWithdrawHbd(formatToOneDecimal(WithdrawHbdValue));
-        }
-    }, [WithdrawHbdValue]);
-
-    useEffect(() => {
-        if (HpDelegate) {
-            setFormattedHpDelegates(formatToOneDecimal(HpDelegate));
-        }
-    }, [HpDelegate])
 
     return (
         <VStack
@@ -145,6 +125,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
             bg="#201d21"
             m={2}
             color={"white"}
+            fontSize={{ base: "sm", md: "md", lg: "lg" }}
         >
             <HStack
                 w="100%"
@@ -156,6 +137,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                 bg="red.900"
                 cursor="pointer"
                 onClick={() => setIsOpened(!isModalOpened)}
+                fontSize={{ base: "sm", md: "md", lg: "lg" }}
             >
                 <SkeletonCircle fitContent size="48px" isLoaded={!isLoading}>
                     <Avatar
@@ -185,13 +167,13 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                 <FaEye size={30} color="white" />
             </HStack>
 
-
             <Skeleton startColor='white' endColor='red.500' fitContent isLoaded={!isLoading} minWidth="100%">
                 <Box
                     border="1px solid white"
                     bg="red.700"
                     onClick={() => setIsOpened(!isModalOpened)}
                     cursor="pointer"
+                    fontSize={{ base: "sm", md: "md", lg: "lg" }}
                 >
                     <Center>
                         <VStack m={5}>
@@ -215,86 +197,46 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
             </Skeleton>
             {isModalOpened && (
                 <Skeleton fitContent isLoaded={!isLoading} width="100%">
-                    <Box>
+                    <Box fontSize={{ base: "sm", md: "md", lg: "lg" }}>
                         <Center>
-                            <VStack>
-                                <Menu>
-                                    <Tooltip display="none" label="Exchanging Hive for Hive Power is called 'Powering Up' or 'Staking'. Stake/Power up your HIVE tokens to have special abilities on the Skatehive: Larger voting power, increased curation rewards, and more resource credits to do transactions on Hive Blockchain. Hive Power increases at an APR of approximately 3.28%">
-                                        <MenuButton
-                                            p={8}
-                                            border="1px solid red"
-                                            width="full"
-                                            as={Button}
-                                            leftIcon={<Avatar boxSize="30px" src={HIVE_POWER_LOGO_URL} />}
-                                            variant="outline"
-                                            color={'white'}
-                                            _hover={{ bg: 'black', border: '1px solid yellow' }}
-                                            _active={{ bg: 'black', border: '1px solid yellow' }}
-                                            _focus={{ bg: 'black', border: '1px solid yellow' }}
-                                        >
-                                            <HStack justifyContent={"space-between"}>
-                                                <Text ml={'10px'} fontSize={{ base: 12, md: 14 }}
-                                                    textShadow="0 0 10px black, 0 0 20px black, 0 0 10px red"
-                                                >
-                                                    {formatToOneDecimal(hivePower)}</Text>
-                                                <Text>
-                                                    HP
-                                                </Text>
-                                                <Badge
-                                                    colorScheme="green"
-                                                    color={"green"}
-                                                    variant="subtle">
-                                                    <Text fontSize={{ base: 10, md: 12 }}>
-                                                        (~${formatToOneDecimal(HPUsdValue)})</Text>
-                                                </Badge>
-                                            </HStack>
-                                        </MenuButton>
-                                    </Tooltip>
+                            <VStack
+                                w="100%" // Parent container defines width
+                                gap={6}
+                                flex="1"
+                                p={4}
+                                border="1px solid red"
+                                borderRadius="10px"
+                                bg="#201d21"
+                                m={2}
+                                color="white"
+                                fontSize={{ base: "sm", md: "md", lg: "lg" }}
+                            >                                <Menu>
+                                    <WalletItem
+                                        icon={HIVE_POWER_LOGO_URL}
+                                        label="HP"
+                                        value={formatToOneDecimal(hivePower)}
+                                        usdValue={formatToOneDecimal(HPUsdValue)}
+                                        onClick={() => setIsHivePowerModalOpened(true)}
+                                        tooltip="Exchanging Hive for Hive Power is called 'Powering Up' or 'Staking'. Stake/Power up your HIVE tokens to have special abilities on the Skatehive: Larger voting power, increased curation rewards, and more resource credits to do transactions on Hive Blockchain. Hive Power increases at an APR of approximately 3.28%"
+                                    />
                                     <MenuList bg="black">
-                                        <Tooltip display="none" label="Delegate HP (Hive Power) to another account. Use your HP to power another account. When updating an existing delegation the specified amount will replace the previous amount. If reducing a delegation to an account, it will take 5 days until the HP is available again in your account.">
-                                            <MenuItem bg="black" icon={<SendIcon />} _hover={{ bg: "red" }} onClick={() => setIsHpDelegatesModalOpened(true)}>
-                                                Delegate
-                                            </MenuItem>
-                                        </Tooltip>
-                                        <Tooltip display="none" label="Un-stake your HIVE by Powering-down in 13 week chunks. i. e. if you power down 1300 HP, you will get 100 HIVE back per week, for 13 weeks.">
-                                            <MenuItem bg="black" icon={<BsArrowDownCircle size="28px" />} _hover={{ bg: "red" }} onClick={() => setIsHPPowerModalOpened(true)}>
-                                                Power Down
-                                            </MenuItem>
-                                        </Tooltip>
+                                        <MenuItem bg="black" icon={<SendIcon />} _hover={{ bg: "red" }} onClick={() => setIsHpDelegatesModalOpened(true)}>
+                                            Delegate
+                                        </MenuItem>
+                                        <MenuItem bg="black" icon={<BsArrowDownCircle size="28px" />} _hover={{ bg: "red" }} onClick={() => setIsHPPowerModalOpened(true)}>
+                                            Power Down
+                                        </MenuItem>
                                     </MenuList>
                                 </Menu>
                                 <Menu>
-                                    <Tooltip display="none" label="The primary token of the Hive Blockchain. HIVE are tradeable tokens that may be transferred at anytime. HIVE can be converted to Hive Power in a process called powering up.">
-                                        <MenuButton
-                                            width="full"
-                                            p={8}
-                                            border="1px solid red"
-                                            as={Button}
-                                            leftIcon={<Avatar boxSize="30px" src={HIVE_LOGO_URL} />}
-                                            variant="outline"
-                                            color={'white'}
-                                            _hover={{ color: 'yellow', bg: 'black', border: '1px solid yellow' }}
-                                            _active={{ color: 'yellow', bg: 'black', border: '1px solid yellow' }}
-                                            _focus={{ color: 'yellow', bg: 'black', border: '1px solid yellow' }}
-                                        >
-                                            <HStack justifyContent={"space-between"}>
-                                                <Text ml={'10px'} fontSize={{ base: 12, md: 14 }}
-                                                    textShadow="0 0 10px black, 0 0 20px black, 0 0 10px red"
-                                                >
-                                                    {formatToOneDecimal(hiveUser?.balance)}
-                                                </Text>
-                                                <Text>
-                                                    HIVE
-                                                </Text>
-                                                <Badge
-                                                    colorScheme="green"
-                                                    color={"green"}
-                                                    variant="subtle">
-                                                    <Text fontSize={{ base: 10, md: 12 }}> (${formatToOneDecimal(hiveUsdValue)})</Text>
-                                                </Badge>
-                                            </HStack>
-                                        </MenuButton>
-                                    </Tooltip>
+                                    <WalletItem
+                                        icon={HIVE_LOGO_URL}
+                                        label="HIVE"
+                                        value={formatToOneDecimal(hiveUser?.balance)}
+                                        usdValue={formatToOneDecimal(hiveUsdValue)}
+                                        onClick={() => setIsHiveModalOpened(true)}
+                                        tooltip="The primary token of the Hive Blockchain. HIVE are tradeable tokens that may be transferred at anytime. HIVE can be converted to Hive Power in a process called powering up."
+                                    />
                                     <MenuList bg="black">
                                         <MenuItem bg="black" icon={<SendIcon />} _hover={{ bg: "red" }} onClick={() => setIsHiveModalOpened(true)}>
                                             Send HIVE
@@ -303,40 +245,16 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                             Power Up
                                         </MenuItem>
                                     </MenuList>
-
                                 </Menu>
                                 <Menu>
-                                    <Tooltip display="none" label="Another Hive token rewarded on posts. 1 HBD is worth ~$1 worth of Hive, regardless of the price of Hive. Moving HBD to your Savings will generate a 15.00% APR as defined by the witnesses">
-                                        <MenuButton
-                                            p={8}
-                                            border="1px solid red"
-                                            width="full"
-                                            as={Button}
-                                            leftIcon={<Avatar borderRadius="none" boxSize="30px" src={HBD_LOGO_URL} />}
-                                            variant="outline"
-                                            color={'white'}
-                                            _hover={{ color: 'yellow', bg: 'black', border: '1px solid yellow' }}
-                                            _active={{ color: 'yellow', bg: 'black', border: '1px solid yellow' }}
-                                            _focus={{ color: 'yellow', bg: 'black', border: '1px solid yellow' }}
-                                        >
-                                            <HStack justifyContent={"space-between"}>
-                                                <Text ml={'10px'} fontSize={{ base: 12, md: 14 }}
-                                                    textShadow="0 0 10px black, 0 0 20px black, 0 0 10px red"
-                                                >
-                                                    {formatToOneDecimal(hiveUser?.hbd_balance)}
-                                                </Text>
-                                                <Text>
-                                                    HBD
-                                                </Text>
-                                                <Badge
-                                                    colorScheme="green"
-                                                    color={"green"}
-                                                    variant="subtle">
-                                                    <Text fontSize={{ base: 10, md: 12 }}> (${formatToOneDecimal(HBDUsdValue)})</Text>
-                                                </Badge>
-                                            </HStack>
-                                        </MenuButton>
-                                    </Tooltip>
+                                    <WalletItem
+                                        icon={HBD_LOGO_URL}
+                                        label="HBD"
+                                        value={formatToOneDecimal(hiveUser?.hbd_balance)}
+                                        usdValue={formatToOneDecimal(HBDUsdValue)}
+                                        onClick={() => setIsHbdModalOpened(true)}
+                                        tooltip="Another Hive token rewarded on posts. 1 HBD is worth ~$1 worth of Hive, regardless of the price of Hive. Moving HBD to your Savings will generate a 15.00% APR as defined by the witnesses"
+                                    />
                                     <MenuList bg="black">
                                         <MenuItem bg="black" icon={<SendIcon />} _hover={{ bg: "red" }} onClick={() => setIsHbdModalOpened(true)}>
                                             Send HBD
@@ -344,40 +262,14 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                     </MenuList>
                                 </Menu>
                                 <Menu>
-                                    <Tooltip display="none" label="Balance is subject to 3 days withdraw waiting period. HBD in savings increases at 15.00% APR as defined by the witnesses">
-                                        <MenuButton
-                                            p={8}
-                                            border="1px solid red"
-                                            width="full"
-                                            as={Button}
-                                            leftIcon={<Avatar borderRadius="none" boxSize="30px" src={SAVINGS_LOGO_URL} />}
-                                            // leftIcon={<Box as="span" fontSize="24px">🐷</Box>}
-                                            variant="outline"
-                                            color={'white'}
-                                            _hover={{ color: 'yellow', bg: 'black', border: '1px solid yellow' }}
-                                            _active={{ color: 'yellow', bg: 'black', border: '1px solid yellow' }}
-                                            _focus={{ color: 'yellow', bg: 'black', border: '1px solid yellow' }}
-                                        >
-                                            <HStack justifyContent={"space-between"}>
-                                                <Text ml={'10px'} fontSize={{ base: 12, md: 14 }}
-                                                    textShadow="0 0 10px black, 0 0 20px black, 0 0 10px red"
-                                                >
-                                                    {formatToOneDecimal(hiveUser?.savings_hbd_balance)}</Text>
-                                                <Text>
-                                                    Sav
-                                                </Text>
-                                                <Badge
-                                                    colorScheme="green"
-                                                    variant="subtle"
-                                                    color={"green"}
-                                                >
-
-                                                    <Text fontSize={{ base: 10, md: 12 }}>
-                                                        (~${formatToOneDecimal(savingsUSDvalue)})</Text>
-                                                </Badge>
-                                            </HStack>
-                                        </MenuButton>
-                                    </Tooltip>
+                                    <WalletItem
+                                        icon={SAVINGS_LOGO_URL}
+                                        label="Sav"
+                                        value={formatToOneDecimal(hiveUser?.savings_hbd_balance)}
+                                        usdValue={formatToOneDecimal(savingsUSDvalue)}
+                                        onClick={() => setIsDepositHbdSavingsModalOpened(true)}
+                                        tooltip="Balance is subject to 3 days withdraw waiting period. HBD in savings increases at 15.00% APR as defined by the witnesses"
+                                    />
                                     <MenuList bg="black">
                                         <MenuItem bg="black" icon={<GiPiggyBank size="32px" />} _hover={{ bg: "red" }} onClick={() => setIsDepositHbdSavingsModalOpened(true)}>
                                             Deposit HBD
@@ -394,13 +286,11 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                                     colorScheme="black"
                                     onClick={() => setIsHivePowerModalOpened(true)}
                                     mt={'20px'}
-                                    // border="1px solid black"
                                     border='1px solid yellow'
-
                                     _hover={{ color: 'yellow', bg: 'red', border: '1px solid black' }}
                                     _active={{ color: 'yellow', bg: 'red', border: '1px solid black' }}
                                     _focus={{ color: 'yellow', bg: 'red', border: '1px solid black' }}
-
+                                    fontSize={{ base: "sm", md: "md", lg: "lg" }}
                                 >
                                     <Text fontSize={{ base: 26, md: 40 }} >POWER UP !</Text>
                                 </Button>
