@@ -97,7 +97,7 @@ const VideoRenderer = ({ src, ...props }: RendererProps) => {
           crossOrigin='anonymous'
           playsInline={true}
           autoPlay={true}
-          style={{ background: 'transparent', borderRadius: '10px', marginBottom: '20px', border: '0px grey solid', width: '100%', minHeight: '50%', maxHeight: '420px' }}
+          style={{ background: 'transparent', borderRadius: '10px', marginBottom: '20px', border: '0px grey solid', width: '100%', maxWidth: '100%', minHeight: '50%', maxHeight: '420px' }}
         />
       </picture>
     </div>
@@ -118,11 +118,12 @@ export const MarkdownRenderers = {
         style={{
           display: 'inline-block',
           maxWidth: '100%',
-          height: 'auto',    // Use 'auto' so aspect ratio is maintained
-          maxHeight: '345px',
+          height: '100%',
           borderRadius: '10px',
           marginTop: '20px',
           marginBottom: '20px',
+          minHeight: '425px',
+          maxHeight: '625px',
         }}
       />
     </span>

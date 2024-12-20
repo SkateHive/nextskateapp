@@ -15,6 +15,7 @@ import { PINATA_URL } from '@/utils/config';
 import CarouselContainer from '../components/CommentItem/CarouselContainer';
 import CustomLeftArrow from '../components/CommentItem/CustomLeftArrow';
 import CustomRightArrow from '../components/CommentItem/CustomRightArrow';
+import { MarkdownRenderers } from '@/app/upload/utils/MarkdownRenderers';
 
 interface ContentRendererProps {
     editedCommentBody: string;
@@ -108,7 +109,7 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
     return (
         <>
             <Box w="100%" color="white">
-                <ReactMarkdown components={{}} rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
+                <ReactMarkdown components={MarkdownRenderers} rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
                     {autoEmbedZoraLink(
                         transformNormalYoutubeLinksinIframes(
                             transformIPFSContent(transformShortYoutubeLinksinIframes(markdownWithoutMedia))
@@ -116,23 +117,21 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
                     )}
                 </ReactMarkdown>
                 {mediaItems.length > 0 && (
-                    <Box w="100%">
-                        <CarouselContainer>
-                            <Carousel
-                                ref={carouselRef}
-                                responsive={responsive}
-                                arrows
-                                customLeftArrow={<CustomLeftArrow onClick={() => carouselRef.current.previous()} />}
-                                customRightArrow={<CustomRightArrow onClick={() => carouselRef.current.next()} />}
-                            >
-                                {mediaItems.map(renderMediaItem)}
-                            </Carousel>
-                        </CarouselContainer>
-                    </Box>
+                    <CarouselContainer>
+                        <Carousel
+                            ref={carouselRef}
+                            responsive={responsive}
+                            arrows
+                            customLeftArrow={<CustomLeftArrow onClick={() => carouselRef.current.previous()} />}
+                            customRightArrow={<CustomRightArrow onClick={() => carouselRef.current.next()} />}
+                        >
+                            {mediaItems.map(renderMediaItem)}
+                        </Carousel>
+                    </CarouselContainer>
                 )}
             </Box>
 
-            {selectedMedia && (
+            {selectedMedia && selectedMedia.type === 'image' && (
                 <Modal isOpen={isFullScreen} onClose={closeModal} size="full">
                     <ModalOverlay bg="rgba(0, 0, 0, 0.8)" />
                     <ModalContent
@@ -143,22 +142,25 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
                         justifyContent="center"
                         maxWidth="80vw"
                         maxHeight="80vh"
+                        position="relative"
                     >
-                        {selectedMedia.type === 'video' ? (
-                            <video
-                                src={selectedMedia.url.replace('ipfs.skatehive.app', PINATA_URL)}
-                                controls
-                                style={{ width: '100%', borderRadius: '8px', maxHeight: '80vh' }}
-                            />
-                        ) : (
-                            <Image
-                                src={selectedMedia.url}
-                                alt="Full screen media"
-                                borderRadius="8px"
-                                objectFit="contain"
-                                maxHeight="80vh"
-                            />
-                        )}
+                        <Box
+                            position="absolute"
+                            top="10px"
+                            right="10px"
+                            cursor="pointer"
+                            fontSize="24px"
+                            onClick={closeModal}
+                        >
+                            &times;
+                        </Box>
+                        <Image
+                            src={selectedMedia.url}
+                            alt="Full screen media"
+                            borderRadius="8px"
+                            objectFit="contain"
+                            maxHeight="80vh"
+                        />
                     </ModalContent>
                 </Modal>
             )}

@@ -104,7 +104,7 @@ const CommentItem = ({
 
       <Flex onClick={toggleCommentVisibility} cursor="pointer">
         <AuthorAvatar username={comment.author} />
-        <VStack w={"80%"} ml={4} alignItems={"start"} marginRight={"16px"}>
+        <VStack w={"100%"} ml={4} alignItems={"start"} marginRight={"16px"}>
           <HStack justify={"space-between"} width={"full"}>
             <HStack cursor="pointer" gap="2px">
               <Text fontWeight="bold">{comment.author}</Text>
