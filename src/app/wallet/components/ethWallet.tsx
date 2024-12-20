@@ -1,7 +1,5 @@
 'use client'
-import { getENSavatar } from "@/app/dao/utils/getENSavatar";
-import { getENSnamefromAddress } from "@/app/dao/utils/getENSfromAddress";
-import { CustomConnectWallet } from "@/components/customConnectWallet";
+
 import {
     Accordion,
     AccordionButton,
@@ -31,10 +29,10 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { FaEthereum, FaEye } from "react-icons/fa";
+import { FaEye } from "react-icons/fa";
 import { useAccount } from "wagmi";
 import * as Types from "../types";
-
+import { FormattedAddress } from "@/components/NNSAddress";
 interface EthBoxProps {
     onNetWorthChange: (value: number) => void;
 }
@@ -42,8 +40,6 @@ interface EthBoxProps {
 const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
     const account = useAccount();
     const [portfolio, setPortfolio] = useState<Types.PortfolioData>();
-    const [userENSavatar, SetUserENSAvatar] = useState<string | null>(null);
-    const [userENSname, SetUserENSName] = useState<string | null>(null);
     const [groupedTokens, setGroupedTokens] = useState<{ [key: string]: Types.TokenDetail[] }>({});
     const [isLoading, setIsLoading] = useState(true);
     const [isOpened, setIsOpened] = useState(false);
@@ -75,26 +71,6 @@ const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
         }
     }, [portfolio?.tokens]);
 
-    useEffect(() => {
-        const getUserENSAvatar = async () => {
-            const avatar = await getENSavatar(String(account.address));
-            SetUserENSAvatar(avatar);
-        };
-
-        const getUserENSname = async () => {
-            const name = await getENSnamefromAddress(String(account.address));
-            SetUserENSName(name);
-        };
-
-        if (account.address) {
-            getUserENSAvatar();
-            getUserENSname();
-        }
-    }, [account.address]);
-
-    const formatEthWallet = (address: string) => {
-        return `${address.slice(0, 6)}...${address.slice(-4)}`;
-    };
 
     const calculateBlockchainTotal = (network: string) => {
         if (!portfolio?.tokens) {
@@ -136,21 +112,13 @@ const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
                 cursor="pointer"
                 onClick={() => setIsOpened(!isOpened)}
             >
+
                 <SkeletonCircle isLoaded={!isLoading} size="48px">
                     <Avatar
                         boxSize="48px"
-                        src={String(userENSavatar)}
+                        src={'logos/ethereum_logo.png'}
                         bg="transparent"
                     >
-                        <AvatarBadge boxSize="1.25em" bg="transparent" border="none">
-                            <Skeleton isLoaded={!isLoading}>
-                                <Image
-                                    src={Types.blockchainDictionary[account.chain?.name.toLowerCase() ?? '']?.logo || 'logos/ethereum_logo.png'}
-                                    boxSize="24px"
-                                    alt={`${account.chain?.name} logo`}
-                                />
-                            </Skeleton>
-                        </AvatarBadge>
                     </Avatar>
                 </SkeletonCircle>
                 <SkeletonText isLoaded={!isLoading} noOfLines={1}>
@@ -162,7 +130,7 @@ const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
                         textOverflow="ellipsis"
                         textAlign="center"
                     >
-                        {userENSname || formatEthWallet(String(account.address))}
+                        <FormattedAddress address={account.address} />
                     </Text>
                 </SkeletonText>
                 <FaEye size={30} color="white" />
