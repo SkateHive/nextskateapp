@@ -9,6 +9,7 @@ import {
     Avatar,
     Badge,
     Box,
+    Button,
     Center,
     Flex,
     HStack,
@@ -26,13 +27,13 @@ import {
     Tr,
     VStack
 } from "@chakra-ui/react";
-import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { FaEye, FaSync } from "react-icons/fa";
 import { useAccount } from "wagmi";
 import * as Types from "../types";
 import { FormattedAddress } from "@/components/NNSAddress";
 import { fetchPortfolio } from "../utils/fetchPortfolio";
+import CollapsibleBox from "./CollapsibleBox";
 
 interface EthBoxProps {
     onNetWorthChange: (value: number) => void;
@@ -43,26 +44,29 @@ const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
     const [portfolio, setPortfolio] = useState<Types.PortfolioData>();
     const [groupedTokens, setGroupedTokens] = useState<{ [key: string]: Types.TokenDetail[] }>({});
     const [isLoading, setIsLoading] = useState(true);
-    const [isOpened, setIsOpened] = useState(false);
+    const [lastFetchTime, setLastFetchTime] = useState<number>(0);
 
-    const fetchAndSetPortfolio = async () => {
-        if (!address) return; // Ensure address is defined
+    const fetchAndSetPortfolio = useCallback(async () => {
+        const now = Date.now();
+        if (now - lastFetchTime < 60000) return; // Prevent fetching more than once per minute
+        setLastFetchTime(now);
+
+        if (!address) return;
         setIsLoading(true);
         try {
             const data = await fetchPortfolio(address);
             setPortfolio(data);
-
             onNetWorthChange(data.totalNetWorth);
         } catch (error) {
             console.error("Failed to fetch portfolio", error);
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [address, lastFetchTime, onNetWorthChange]);
 
     useEffect(() => {
         if (address) fetchAndSetPortfolio();
-    }, [address, onNetWorthChange]);
+    }, [address, fetchAndSetPortfolio]);
 
     useEffect(() => {
         if (portfolio?.tokens) {
@@ -89,36 +93,26 @@ const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
     const sortedNetworks = Object.keys(groupedTokens).sort((a, b) => calculateBlockchainTotal(b) - calculateBlockchainTotal(a));
 
     return (
-        <VStack w="100%" gap={6} align="normal" flex="1" p={4} border="1px solid #0fb9fc" borderRadius="10px" bg="#201d21" m={2} color="white">
-            <HStack w="100%" border="1px solid white" p={5} borderTopRadius={10} mb={-6} justifyContent="space-between" bg="blue.900" cursor="pointer" onClick={() => setIsOpened(!isOpened)}>
-                <SkeletonCircle isLoaded={!isLoading} size="48px">
-                    <Avatar boxSize="48px" src="logos/ethereum_logo.png" bg="transparent" />
-                </SkeletonCircle>
-                <SkeletonText isLoaded={!isLoading} noOfLines={1}>
-                    <Box fontSize={14} maxWidth="200px" whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" textAlign="center">
-                        <FormattedAddress address={address} />
-                    </Box>
-                </SkeletonText>
-                <FaEye size={30} color="white" />
-            </HStack>
-            <Skeleton startColor="white" endColor="blue.200" isLoaded={!isLoading} fitContent minWidth="100%">
-                <Box border="1px solid white" bg="blue.700" onClick={() => setIsOpened(!isOpened)} cursor="pointer">
-                    <Center>
-                        <HStack m={5} padding="4px 8px" justifyContent="space-between">
-                            <SkeletonText isLoaded={!isLoading} noOfLines={1}>
-                                <Text color="white" fontWeight="bold" fontSize={{ base: 24, md: 34 }} textShadow="0 0 10px black, 0 0 20px black, 0 0 30px rgba(255, 255, 255, 0.4)" textAlign="center" flex="1">
-                                    ${portfolio?.totalNetWorth?.toFixed(2) || 0}
-                                </Text>
-                            </SkeletonText>
-                            {!portfolio && <FaSync size={30} color="white" onClick={fetchAndSetPortfolio} cursor="pointer" />}
-                        </HStack>
-                    </Center>
-                </Box>
-            </Skeleton>
-            {isOpened && (
-                <Accordion allowMultiple w="100%" bg="blue.900" borderRadius={10}>
+        <CollapsibleBox
+            title="Ethereum Wallet"
+            isLoading={isLoading}
+            netWorth={portfolio?.totalNetWorth || 0}
+            iconSrc="logos/ethereum_logo.png"
+            address={address}
+            color="blue"
+            maxHeight="666px" // Set consistent maxHeight
+        >
+            {isLoading && (
+                <Center>
+                    <Button onClick={fetchAndSetPortfolio} leftIcon={<FaSync />} colorScheme="blue" variant="solid">
+                        Reload
+                    </Button>
+                </Center>
+            )}
+            {!isLoading && (
+                <Accordion allowMultiple w="95%" bg="blue.900" borderRadius={10} mx="auto">
                     {sortedNetworks.map((network) => (
-                        <AccordionItem key={network}>
+                        <AccordionItem key={network} w="100%">
                             <AccordionButton>
                                 <Flex justifyContent="space-between" w="100%">
                                     <Box>
@@ -145,7 +139,7 @@ const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
                                 </Flex>
                                 <AccordionIcon />
                             </AccordionButton>
-                            <AccordionPanel color="white" pb={4}>
+                            <AccordionPanel color="white" pb={4} w="100%">
                                 <TableContainer>
                                     <Table variant="simple" size="sm">
                                         <Thead>
@@ -171,7 +165,7 @@ const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
                     ))}
                 </Accordion>
             )}
-        </VStack>
+        </CollapsibleBox>
     );
 }
 

@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import { Box, Center, Flex, Image, Text, VStack } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 
@@ -31,31 +31,35 @@ const TotalValueBox: React.FC = () => {
         const total = ethNetWorth + hiveNetWorth;
         setTotalValue("$" + total.toFixed(2).toString());
     };
+
     useEffect(() => {
         calculateTotalValue();
-    }
-        , [ethNetWorth, hiveNetWorth]);
+    }, [ethNetWorth, hiveNetWorth]);
 
     return (
         <VStack
             w="100%"
-            gap={2}
+            spacing={4}
             alignItems="center"
-            flex="1"
             p={4}
             borderRadius="10px"
-            h={{ base: "100vh", md: "100vh" }}
+            h="100vh"
             fontFamily="Joystix"
-
         >
-            <Box w={"full"} textAlign="center">
-                <Text color={"black"} align="center" borderRadius={"md"} fontSize={{ base: 20, md: 20 }} mb={4} backgroundColor="white">
+            <Box w="100%" textAlign="center">
+                <Text
+                    color="white"
+                    align="center"
+                    borderRadius="md"
+                    fontSize={{ base: 20, md: 20 }}
+                    backgroundColor="#2b2626"
+                    p={2}                >
                     Net Worth
                 </Text>
-                <Center>
+                <Center backgroundColor="#2b2626">
                     <Image
-                        src="https://i.ibb.co/2ML12vx/image.png"
-                        boxSize={"130px"}
+                        src="/nounishpepe.png"
+                        boxSize="130px"
                         objectFit="cover"
                         alt="Image Alt Text"
                     />
@@ -66,7 +70,7 @@ const TotalValueBox: React.FC = () => {
                     mb={4}
                     textAlign="center"
                     backgroundColor="limegreen"
-                    border={'1px solid white'}
+                    border="1px solid white"
                 >
                     <Text
                         fontWeight="bold"
@@ -79,22 +83,24 @@ const TotalValueBox: React.FC = () => {
                 </Box>
             </Box>
 
-            <Flex direction={{ base: 'column', md: 'row' }} w="100%">
+            <Flex
+                direction={{ base: 'column', md: 'row' }}
+                w="100%"
+                gap={4}
+                justifyContent="center"
+            >
                 {hiveUser.hiveUser && (
-                    <Box flex="1" minHeight="0">
+                    <Box flex="1" minWidth="0">
                         <HiveBox onNetWorthChange={handleHiveNetWorth} />
                     </Box>
                 )}
                 {account.address && (
-                    <Box flex="1" minHeight="0">
+                    <Box flex="1" minWidth="0">
                         <EthBox onNetWorthChange={handleEthNetWorth} />
                     </Box>
                 )}
             </Flex>
-            {account.address && (
-
-                <NFTDisplay />
-            )}
+            {account.address && <NFTDisplay />}
         </VStack>
     );
 };
