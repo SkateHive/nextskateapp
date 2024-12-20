@@ -32,6 +32,7 @@ import { FaEye, FaSync } from "react-icons/fa";
 import { useAccount } from "wagmi";
 import * as Types from "../types";
 import { FormattedAddress } from "@/components/NNSAddress";
+import { fetchPortfolio } from "../utils/fetchPortfolio";
 
 interface EthBoxProps {
     onNetWorthChange: (value: number) => void;
@@ -44,11 +45,13 @@ const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [isOpened, setIsOpened] = useState(false);
 
-    const fetchPortfolio = async () => {
+    const fetchAndSetPortfolio = async () => {
+        if (!address) return; // Ensure address is defined
         setIsLoading(true);
         try {
-            const { data } = await axios.get(`https://pioneers.dev/api/v1/portfolio/${address}`);
+            const data = await fetchPortfolio(address);
             setPortfolio(data);
+
             onNetWorthChange(data.totalNetWorth);
         } catch (error) {
             console.error("Failed to fetch portfolio", error);
@@ -58,7 +61,7 @@ const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
     };
 
     useEffect(() => {
-        if (address) fetchPortfolio();
+        if (address) fetchAndSetPortfolio();
     }, [address, onNetWorthChange]);
 
     useEffect(() => {
@@ -79,7 +82,7 @@ const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
 
     const calculateBlockchainTotal = (network: string) => {
         return portfolio?.tokens
-            .filter((token) => token.network === network)
+            ?.filter((token) => token.network === network)
             .reduce((acc, token) => acc + token.token.balanceUSD, 0) || 0;
     };
 
@@ -97,7 +100,6 @@ const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
                     </Box>
                 </SkeletonText>
                 <FaEye size={30} color="white" />
-                {!portfolio && <FaSync size={30} color="white" onClick={fetchPortfolio} cursor="pointer" />}
             </HStack>
             <Skeleton startColor="white" endColor="blue.200" isLoaded={!isLoading} fitContent minWidth="100%">
                 <Box border="1px solid white" bg="blue.700" onClick={() => setIsOpened(!isOpened)} cursor="pointer">
@@ -108,7 +110,7 @@ const EthBox: React.FC<EthBoxProps> = ({ onNetWorthChange }) => {
                                     ${portfolio?.totalNetWorth?.toFixed(2) || 0}
                                 </Text>
                             </SkeletonText>
-                            {!portfolio && <FaSync size={30} color="white" onClick={fetchPortfolio} cursor="pointer" />}
+                            {!portfolio && <FaSync size={30} color="white" onClick={fetchAndSetPortfolio} cursor="pointer" />}
                         </HStack>
                     </Center>
                 </Box>

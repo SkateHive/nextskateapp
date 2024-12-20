@@ -42,6 +42,8 @@ export interface PortfolioData {
     totalNetWorth: number;
 }
 export type NFT = {
+    lastSaleEth: string;
+    rarityRank: number;
     token: {
         estimatedValueEth: string;
         lastSale: {

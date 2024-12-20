@@ -7,6 +7,7 @@ import EthBox from './ethWallet';
 import HiveBox from './hiveWallet';
 import { useAccount } from 'wagmi';
 import { useHiveUser } from '@/contexts/UserContext';
+import NFTDisplay from './NFTDisplay';
 
 const TotalValueBox: React.FC = () => {
     const [ethNetWorth, setEthNetWorth] = useState<number>(0);
@@ -90,6 +91,10 @@ const TotalValueBox: React.FC = () => {
                     </Box>
                 )}
             </Flex>
+            {account.address && (
+
+                <NFTDisplay />
+            )}
         </VStack>
     );
 };
