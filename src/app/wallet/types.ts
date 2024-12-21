@@ -1,4 +1,3 @@
-import { celo } from "viem/chains";
 
 export interface Token {
     address: string;
@@ -43,6 +42,8 @@ export interface PortfolioData {
     totalNetWorth: number;
 }
 export type NFT = {
+    lastSaleEth: string;
+    rarityRank: number;
     token: {
         estimatedValueEth: string;
         lastSale: {
@@ -111,5 +112,13 @@ export const blockchainDictionary: Record<string, BlockchainInfo> = {
     celo: {
         color: "yellow.200",
         logo: "/logos/celo_logo.png",
+    },
+    zora: {
+        color: "white",
+        logo: "/logos/Zorb.png",
+    },
+    zero: {
+        color: "white",
+        logo: "/skatehive_logo.png",
     },
 };

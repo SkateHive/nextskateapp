@@ -151,7 +151,7 @@ const CommandPrompt = ({ post, onClose, author, permlink, onNewComment }: Comman
         if (ipfsData) {
           const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}`;
           const markdownLink = file.type.startsWith("video/")
-            ? `<iframe src="${ipfsUrl}" allowFullScreen autoplay={false}></iframe>`
+            ? `<iframe src="${ipfsUrl}" allowFullScreen={true} autoplay={false}></iframe>`
             : `![Image](${ipfsUrl})`;
 
           setValue((prevMarkdown) => `${prevMarkdown}\n${markdownLink}\n`);

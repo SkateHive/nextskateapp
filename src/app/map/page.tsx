@@ -181,7 +181,7 @@ const EmbeddedMap: React.FC = () => {
                 margin: "auto",
                 boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)",
               }}
-              allowFullScreen
+              allowFullScreen={true}
             ></iframe>
           </Box>
           <Flex flexDirection={{ base: "column", md: "row" }} align="center">

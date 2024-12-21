@@ -118,7 +118,7 @@ export default function UploadForm() {
         if (ipfsData !== undefined) {
           const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}`;
           const markdownLink = file.type.startsWith("video/")
-            ? `<iframe src="${ipfsUrl}" allowfullscreen></iframe>`
+            ? `<iframe src="${ipfsUrl}" allowFullScreen={true}></iframe>`
             : `![Image](${ipfsUrl})`;
           newImageList.push(markdownLink);
         }
@@ -377,7 +377,7 @@ export default function UploadForm() {
                       />
                     ) : (
                       <video
-                        src={item.match(/<iframe src="(.*?)" allowfullscreen><\/iframe>/)?.[1]}
+                        src={item.match(/<iframe src="(.*?)" allowFullScreen={true}><\/iframe>/)?.[1]}
                         controls
                         muted
                         width="100%"

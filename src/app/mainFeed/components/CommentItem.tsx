@@ -36,7 +36,7 @@ const CommentItem = ({
   username,
   handleVote,
   onNewComment,
-  onClose = () => {},
+  onClose = () => { },
 }: CommentItemProps) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isReplyModalOpen, setIsReplyModalOpen] = useState(false);
@@ -104,7 +104,7 @@ const CommentItem = ({
 
       <Flex onClick={toggleCommentVisibility} cursor="pointer">
         <AuthorAvatar username={comment.author} />
-        <VStack w={"80%"} ml={4} alignItems={"start"} marginRight={"16px"}>
+        <VStack w={"100%"} ml={4} alignItems={"start"} marginRight={"16px"}>
           <HStack justify={"space-between"} width={"full"}>
             <HStack cursor="pointer" gap="2px">
               <Text fontWeight="bold">{comment.author}</Text>
@@ -161,7 +161,7 @@ const CommentItem = ({
           username={username}
           toggleValueTooltipButton={toggleValueTooltip}
         />
-        
+
         <Tooltip
           label={`+$${voteValue.toFixed(6)}`}
           placement="top"
@@ -170,7 +170,7 @@ const CommentItem = ({
         >
           <Text
             fontWeight={"bold"}
-             color="limegreen"
+            color="limegreen"
             onClick={CommentVisibility}
             cursor={"pointer"}
             mt={2}

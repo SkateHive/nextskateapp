@@ -8,8 +8,8 @@ export interface LinkWithDomain {
 export function extractLinksFromMarkdown(
   markdownContent: string
 ): LinkWithDomain[] {
-  const linkRegex = /!\[.*?\]\((.*?)\)/g 
-  const links = markdownContent.match(linkRegex) || [] 
+  const linkRegex = /!\[.*?\]\((.*?)\)/g
+  const links = markdownContent.match(linkRegex) || []
 
   const linksWithDomains: LinkWithDomain[] = links.map((link) => {
     const urlMatch = link.match(/\[.*?\]\((.*?)\)/)
@@ -23,7 +23,7 @@ export function extractLinksFromMarkdown(
 }
 
 export function extractIFrameLinks(htmlContent: string): LinkWithDomain[] {
-  const iframeRegex = /<iframe.*?src=["']([^"']*)["']/gi 
+  const iframeRegex = /<iframe.*?src=["']([^"']*)["']/gi
   const iframes = htmlContent.match(iframeRegex) || []
 
   const iframeWithDomains: LinkWithDomain[] = iframes.map((iframe) => {
@@ -66,7 +66,7 @@ export function transform3SpeakContent(content: string): string {
 
   if (match) {
     const videoID = match[3]
-    const iframe = `<iframe src="https://3speak.tv/embed?v=${videoID}" ></iframe>`
+    const iframe = `<iframe src="https://3speak.tv/embed?v=${videoID}" allowtransparency="true" allowFullScreen="true"></iframe>`
     content = content.replace(regex, iframe)
   }
   return content

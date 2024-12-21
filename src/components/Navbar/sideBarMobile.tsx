@@ -29,6 +29,7 @@ import CommunityTotalPayout from "../communityTotalPayout";
 import checkRewards from "./utils/checkReward";
 import { claimRewards } from "./utils/claimRewards";
 import { FormattedAddress } from "../NNSAddress";
+import { useIsClient } from "@/hooks/useIsClient";
 const blink = keyframes`
   0% { color: gold; opacity: 1; }
   50% { opacity: 0.1; }
@@ -37,6 +38,7 @@ const blink = keyframes`
 
 
 const SideBarMobile = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) => {
+    const isClient = useIsClient();
     const user = useHiveUser();
     const hiveUser = user.hiveUser;
     const client = HiveClient;
@@ -88,6 +90,8 @@ const SideBarMobile = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
     const handleNotifications = () => {
         setNotifications(!notifications)
     }
+
+    if (!isClient) return null;
 
     return (
         <>

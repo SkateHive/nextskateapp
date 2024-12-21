@@ -20,7 +20,7 @@ export default memo(function ProfileTabs({ user }: ProfilePageProps) {
     const router = useRouter();
 
     // Converting ReadonlyURLSearchParams to URLSearchParams
-    const params = new URLSearchParams(searchParams.toString());  // Here we convert to a string first
+    const params = new URLSearchParams(searchParams?.toString() || "");  // Here we convert to a string first
 
     const tab = params.get('tab');
     const tabIndex = tabNames.indexOf(tab || "level");

@@ -17,15 +17,15 @@ export default function SkaterTabs({ user }: ProfilePageProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-// Converting ReadonlyURLSearchParams to URLSearchParams
-  const params = new URLSearchParams(searchParams.toString());
+  // Converting ReadonlyURLSearchParams to URLSearchParams
+  const params = new URLSearchParams(searchParams?.toString() || "");
 
   const tab = params.get('tab');
   const tabIndex = tabNames.indexOf(tab || "card");
 
   const handleTabChange = (index: number) => {
     params.set('tab', tabNames[index]);
- // Updating the URL without reloading the page
+    // Updating the URL without reloading the page
     router.replace(`?${params.toString()}`);
   };
 

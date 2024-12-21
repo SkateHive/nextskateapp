@@ -89,11 +89,12 @@ const VideoRenderer = ({ src, ...props }: RendererProps) => {
                     muted={true}
                     loop={false}
                     ref={videoRef}
-                    src={src && typeof src === 'string' ? src.replace("ipfs.skatehive.app", PINATA_URL) : ""}
+                    src={src}
                     poster={poster}
                     crossOrigin='anonymous'
                     playsInline={true}
-                    style={{ background: 'transparent', borderRadius: '10px', marginBottom: '20px', border: '0px grey solid', width: '100%', maxHeight: '520px' }}
+                    autoPlay={true}
+                    style={{ background: 'transparent', borderRadius: '10px', marginBottom: '20px', border: '0px grey solid', width: '100%', minHeight: '50%', maxHeight: '420px' }}
                 />
             </picture>
         </div>
@@ -207,13 +208,26 @@ export const MagazineRenderers = {
         <center>
             <iframe
                 {...props}
-                src={src && typeof src === 'string' ? src.replace("ipfs.skatehive.app", PINATA_URL) : ""}
+                src={src}
                 style={{ borderRadius: '10px', marginBottom: '10px', maxWidth: '100%', minWidth: '100%', aspectRatio: '16/9', height: '100%', border: '2px grey solid' }}
             />
         </center>
     ),
-    video: VideoRenderer, // Use the new VideoRenderer component
-    table: ({ children, ...props }: RendererProps) => (
+    video: ({ src, ...props }: RendererProps) => (
+        <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', paddingTop: '10px', minWidth: '100%', minHeight: 'auto' }}>
+            <picture>
+                <video
+                    {...props}
+                    muted={true}
+                    loop={true}
+                    src={src}
+                    crossOrigin='anonymous'
+                    playsInline={false}
+                    style={{ background: 'transparent', borderRadius: '10px', marginBottom: '20px', border: '0px grey solid', width: '100%', minHeight: '50%', maxHeight: '420px' }}
+                />
+            </picture>
+        </div>
+    ), table: ({ children, ...props }: RendererProps) => (
         <div style={{
             display: 'flex', justifyContent: 'center',
             border: '1px solid none',

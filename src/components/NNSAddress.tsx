@@ -2,7 +2,6 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { Code, HStack } from '@chakra-ui/react';
-import NextLink from 'next/link';
 import { formatETHaddress } from '@/lib/utils';
 
 async function fetchNNSName(address: string, clds?: string[]) {
@@ -62,9 +61,8 @@ export function FormattedAddress({
         <HStack >
             {textBefore && <span>{textBefore}</span>}
             {asLink ? (
-                <NextLink href={`https://nouns.build/profile/${address}`}>
-                    <AddressContent />
-                </NextLink>
+                <AddressContent />
+
             ) : (
                 <AddressContent />
             )}

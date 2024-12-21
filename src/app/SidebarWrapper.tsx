@@ -4,12 +4,24 @@
 
 import { usePathname } from 'next/navigation';
 import SidebarDesktop from "@/components/Navbar/sidebarDesktop";
+import { useIsClient } from '@/hooks/useIsClient';
+import { useEffect, useState } from 'react';
 
 const SidebarWrapper = () => {
+    const isClient = useIsClient();
     const pathname = usePathname();
     const hideSidebarRoutes = ["/communityMag"];
+    const [shouldRender, setShouldRender] = useState(false);
 
-    if (hideSidebarRoutes.includes(pathname)) {
+    useEffect(() => {
+        if (isClient) {
+            setShouldRender(true);
+        }
+    }, [isClient]);
+
+    if (!shouldRender) return null;
+
+    if (hideSidebarRoutes.includes(String(pathname))) {
         return null;
     }
 

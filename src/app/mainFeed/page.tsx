@@ -32,7 +32,9 @@ import { IoFilter } from "react-icons/io5";
 import { uploadFileToIPFS } from "../upload/utils/uploadToIPFS";
 import AvatarList from "./components/AvatarList";
 import CommentList from "./components/CommentsList";
-import LoadingComponent from "./components/loadingComponent";
+import dynamic from "next/dynamic";
+
+const LoadingComponent = dynamic(() => import("./components/loadingComponent"), { ssr: false });
 
 const parent_author = process.env.NEXT_PUBLIC_MAINFEED_AUTHOR || "skatehacker";
 const parent_permlink = process.env.NEXT_PUBLIC_MAINFEED_PERMLINK || "test-advance-mode-post";
@@ -94,7 +96,7 @@ const SkateCast = () => {
           const ipfsData: IPFSData | undefined = await uploadFileToIPFS(file);
           if (ipfsData !== undefined) {
             const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}`;
-            const markdownLink = `<iframe src="${ipfsUrl}" allowfullscreen></iframe>`;
+            const markdownLink = `<iframe src="${ipfsUrl}" allowFullScreen={true}></iframe>`;
             newImageList.push(markdownLink);
           }
         } else {
@@ -380,7 +382,7 @@ const SkateCast = () => {
                       opacity: isPickingEmoji ? 1 : 0, // here is the visual control
                       pointerEvents: isPickingEmoji ? 'auto' : 'none', // Here you avoid clicks when you are not seen
                       marginTop: 50,
-                      transition: 'opacity 1s ease', 
+                      transition: 'opacity 1s ease',
                       zIndex: 10,
                       position: 'absolute',
                     }}
@@ -388,7 +390,7 @@ const SkateCast = () => {
                     <EmojiPicker
                       theme={"dark" as Theme}
                       onEmojiClick={handleEmojiClick}
-                      open={isPickingEmoji} 
+                      open={isPickingEmoji}
                     />
                   </div>
 
@@ -420,7 +422,7 @@ const SkateCast = () => {
                           />
                         ) : (
                           <video
-                            src={item.match(/<iframe src="(.*?)" allowfullscreen><\/iframe>/)?.[1]}
+                            src={item.match(/<iframe src="(.*?)" allowFullScreen={true}><\/iframe>/)?.[1]}
                             controls
                             muted
                             width="100%"

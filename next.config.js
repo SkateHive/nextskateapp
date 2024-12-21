@@ -11,7 +11,7 @@ module.exports = {
                     },
                     {
                         key: 'Content-Security-Policy',
-                        value: "frame-ancestors 'self' https://www.nounspace.com;",
+                        value: "frame-ancestors 'self' https://www.nounspace.com https://*.preview.ourzora.com https://*.preview.zora.co https://bridge.zora.energy https://testnet.zora.co https://zora.co https://privy.zora.co;",
                     },
                 ],
             },

@@ -33,10 +33,11 @@ import "../../styles/fonts.css";
 import LoginModal from "../Hive/Login/LoginModal";
 import CommunityTotalPayout from "../communityTotalPayout";
 // import checkRewards from "./utils/checkReward";
+import { useIsClient } from "@/hooks/useIsClient";
 import Confetti from 'react-confetti';
-import { ImProfile } from "react-icons/im";
 import { FormattedAddress } from "../NNSAddress";
 import { claimRewards } from "./utils/claimRewards";
+import { ImProfile } from "react-icons/im";
 
 const blink = keyframes`
   0% { color: gold; opacity: 1; }
@@ -48,8 +49,8 @@ interface Asset {
   toString(): string;
 }
 
-
 const SidebarDesktop = () => {
+  const isClient = useIsClient();
   const user = useHiveUser();
   const hiveUser = user.hiveUser;
   const ethAccount = useAccount();
@@ -170,9 +171,7 @@ const SidebarDesktop = () => {
     }
   };
 
-
-
-
+  if (!isClient) return null;
 
   return (
     <>
