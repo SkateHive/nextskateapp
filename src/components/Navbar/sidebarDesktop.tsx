@@ -2,7 +2,6 @@
 import { useHiveUser } from "@/contexts/UserContext";
 import HiveClient from "@/lib/hive/hiveclient";
 import { HiveAccount } from "@/lib/models/user";
-import { formatETHaddress } from "@/lib/utils";
 import {
   Box,
   Button,
@@ -20,7 +19,6 @@ import {
 import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
 import { useEffect, useState } from "react";
 import {
-  FaBell,
   FaBook,
   FaDiscord,
   FaEthereum,
@@ -28,17 +26,17 @@ import {
   FaMapMarkerAlt,
   FaSpeakap,
   FaUser,
-  FaWallet,
+  FaWallet
 } from "react-icons/fa";
 import { useAccount } from "wagmi";
 import "../../styles/fonts.css";
 import LoginModal from "../Hive/Login/LoginModal";
 import CommunityTotalPayout from "../communityTotalPayout";
 // import checkRewards from "./utils/checkReward";
-import { claimRewards } from "./utils/claimRewards";
 import Confetti from 'react-confetti';
-import getDynamicGlobalProperties from "@/lib/hive/hiveclient";
+import { ImProfile } from "react-icons/im";
 import { FormattedAddress } from "../NNSAddress";
+import { claimRewards } from "./utils/claimRewards";
 
 const blink = keyframes`
   0% { color: gold; opacity: 1; }
@@ -224,6 +222,12 @@ const SidebarDesktop = () => {
           <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime' }} onClick={() => {
             window.location.href = "/";
           }}>Feed</Text>
+        </HStack>
+        <HStack gap={3}>
+          <ImProfile color="white" size={"22px"} />
+          <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime' }} onClick={() => {
+            window.location.href = "/ProfileUserHive";
+          }}>ProfileHive</Text>
         </HStack>
         <HStack padding={0} gap={3} >
           <FaMapMarkerAlt color="white" size={"22px"} />
