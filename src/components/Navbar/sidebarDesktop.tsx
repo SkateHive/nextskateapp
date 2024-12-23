@@ -222,12 +222,12 @@ const SidebarDesktop = () => {
             window.location.href = "/";
           }}>Feed</Text>
         </HStack>
-        <HStack gap={3}>
+        {/* <HStack gap={3}>
           <ImProfile color="white" size={"22px"} />
           <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime' }} onClick={() => {
             window.location.href = "/ProfileUserHive";
           }}>ProfileHive</Text>
-        </HStack>
+        </HStack> */}
         <HStack padding={0} gap={3} >
           <FaMapMarkerAlt color="white" size={"22px"} />
           <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime' }} onClick={() => {
