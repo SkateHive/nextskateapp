@@ -22,7 +22,7 @@ interface Delegation {
   vestingShares: number;
 }
 
-const UserProfileHive: React.FC = () => {
+const Leaderboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -327,4 +327,4 @@ const UserProfileHive: React.FC = () => {
   );
 };
 
-export default UserProfileHive;
+export default Leaderboard;
