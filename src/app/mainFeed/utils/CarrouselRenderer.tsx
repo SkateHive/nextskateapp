@@ -1,21 +1,21 @@
-import React, { useMemo, useRef, useState, useEffect } from 'react';
-import { Box, Image, Modal, ModalContent, ModalOverlay } from '@chakra-ui/react';
-import ReactMarkdown from 'react-markdown';
-import Carousel from 'react-multi-carousel';
-import 'react-multi-carousel/lib/styles.css';
-import rehypeRaw from 'rehype-raw';
-import remarkGfm from 'remark-gfm';
+import { MarkdownRenderers } from '@/app/upload/utils/MarkdownRenderers';
 import {
     autoEmbedZoraLink,
     transformIPFSContent,
     transformNormalYoutubeLinksinIframes,
     transformShortYoutubeLinksinIframes
 } from '@/lib/utils';
-import { PINATA_URL } from '@/utils/config';
+import { Box, Image, Modal, ModalContent, ModalOverlay } from '@chakra-ui/react';
+import React, { useMemo, useRef, useState } from 'react';
+import { IoClose } from 'react-icons/io5';
+import ReactMarkdown from 'react-markdown';
+import Carousel from 'react-multi-carousel';
+import 'react-multi-carousel/lib/styles.css';
+import rehypeRaw from 'rehype-raw';
+import remarkGfm from 'remark-gfm';
 import CarouselContainer from '../components/CommentItem/CarouselContainer';
 import CustomLeftArrow from '../components/CommentItem/CustomLeftArrow';
 import CustomRightArrow from '../components/CommentItem/CustomRightArrow';
-import { MarkdownRenderers } from '@/app/upload/utils/MarkdownRenderers';
 
 interface ContentRendererProps {
     editedCommentBody: string;
@@ -133,37 +133,59 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
 
             {selectedMedia && selectedMedia.type === 'image' && (
                 <Modal isOpen={isFullScreen} onClose={closeModal} size="full">
-                    <ModalOverlay bg="rgba(0, 0, 0, 0.8)" />
+                    <ModalOverlay bg="rgba(10, 10, 10, 0.911)" />
                     <ModalContent
                         bg="transparent"
                         color="white"
                         display="flex"
                         alignItems="center"
                         justifyContent="center"
-                        maxWidth="80vw"
-                        maxHeight="80vh"
+                        width="100vw"
+                        height="100vh"
                         position="relative"
                     >
-                        <Box
-                            position="absolute"
-                            top="10px"
-                            right="10px"
-                            cursor="pointer"
-                            fontSize="24px"
-                            onClick={closeModal}
-                        >
-                            &times;
+                        <Box position="relative" display="inline-block">
+                            <Image
+                                src={selectedMedia.url}
+                                alt="Full screen media"
+                                borderRadius="8px"
+                                objectFit="contain"
+                                maxHeight="95vh"
+                                maxWidth="95vw"
+                            />
+
+                            <Box
+                                position="absolute"
+                                top="10px"
+                                right="10px"
+                                cursor="pointer"
+                                fontSize="24px"
+                                fontWeight="bold"
+                                color="white"
+                                zIndex="1000"
+                                bg="rgba(0, 0, 0, 0.7)"
+                                borderRadius="50%"
+                                width="40px"
+                                height="40px"
+                                display="flex"
+                                alignItems="center"
+                                justifyContent="center"
+                                boxShadow="0 2px 5px rgba(0, 0, 0, 0.5)"
+                                transition="transform 0.2s, background-color 0.2s"
+                                _hover={{
+                                    transform: 'scale(1.1)',
+                                    backgroundColor: 'rgba(255, 0, 0, 0.8)',
+                                }}
+                                onClick={closeModal}
+                            >
+                                <IoClose size={24} color="white" />
+                            </Box>
                         </Box>
-                        <Image
-                            src={selectedMedia.url}
-                            alt="Full screen media"
-                            borderRadius="8px"
-                            objectFit="contain"
-                            maxHeight="80vh"
-                        />
                     </ModalContent>
                 </Modal>
             )}
+
+
         </>
     );
 };
