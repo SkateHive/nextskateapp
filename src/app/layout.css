@@ -1,0 +1,21 @@
+
+.desktop-layout {
+    display: none;
+  }
+  
+  @media (min-width: 700px) {
+    .desktop-layout {
+      display: block;
+    }
+  }
+  
+  .mobile-layout {
+    display: block; 
+  }
+  
+  @media (min-width: 700px) {
+    .mobile-layout {
+      display: none;
+    }
+  }
+  

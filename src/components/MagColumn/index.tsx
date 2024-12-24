@@ -3,16 +3,8 @@ import { useHiveUser } from "@/contexts/UserContext";
 import usePosts from "@/hooks/usePosts";
 import { blockedUsers } from "@/lib/constants";
 import PostModel from "@/lib/models/post";
-import {
-  Box,
-  Button,
-  ButtonGroup,
-  Flex,
-  Grid,
-  Text,
-  VStack,
-  useMediaQuery
-} from "@chakra-ui/react";
+import { Box, Button, ButtonGroup, Flex, Grid, Image, Text, useMediaQuery, VStack } from "@chakra-ui/react";
+
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FaBook, FaBookOpen } from "react-icons/fa";
 import { BeatLoader } from "react-spinners";
@@ -20,8 +12,6 @@ import "../../styles/fonts.css";
 import LoginModal from "../Hive/Login/LoginModal";
 import Post from "../PostCard";
 import PostSkeleton from "../PostCard/Skeleton";
-import { Image } from "@chakra-ui/react";
-import { useIsClient } from "@/hooks/useIsClient"; // Add this import
 
 const SKATEHIVE_TAG = [{ tag: "hive-173115", limit: 30 }];
 
@@ -60,7 +50,6 @@ const PostFeed: React.FC<PostFeedProps> = ({ posts, visiblePosts, setVisiblePost
       if (currentRef) observer.unobserve(currentRef);
     };
   }, [setVisiblePosts]);
-
   if (loading || !posts) {
     return (
       <Grid p={1} templateColumns="repeat(1, 1fr)" gap={0} width="100%">
@@ -81,9 +70,10 @@ const PostFeed: React.FC<PostFeedProps> = ({ posts, visiblePosts, setVisiblePost
   return (
     <Box overflow={"auto"}>
       <Grid templateColumns="repeat(1, 1fr)" gap={0}>
-        {filteredPosts.slice(0, visiblePosts).map((post) => (
-          <Post key={`${query}-${post.url}`} postData={PostModel.newFromDiscussion(post)} />
-        ))}
+        {filteredPosts.length > 0 &&
+          filteredPosts.slice(0, visiblePosts).map((post, i) => (
+            <Post key={`${query}-${post.url}`} postData={PostModel.newFromDiscussion(post)} />
+          ))}
 
         {visiblePosts < filteredPosts.length && (
           <Flex justify="center" ref={observerRef} style={{ height: "50px" }}>
@@ -91,6 +81,12 @@ const PostFeed: React.FC<PostFeedProps> = ({ posts, visiblePosts, setVisiblePost
           </Flex>
         )}
       </Grid>
+
+      {visiblePosts === 0 && filteredPosts.length === 0 && (
+        <Flex justify="center">
+          <BeatLoader size={8} color="darkgrey" />
+        </Flex>
+      )}
     </Box>
   );
 };
@@ -101,13 +97,12 @@ interface NavigationButtonsProps {
   hiveUser: any;
 }
 
-export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
+const NavigationButtons: React.FC<NavigationButtonsProps> = ({
   updateFeed,
   feedConfig,
   hiveUser,
 }) => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const isClient = useIsClient(); // Add this line
 
   const handleCreateClick = () => {
     if (!hiveUser.hiveUser) {
@@ -143,7 +138,7 @@ export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
   const [openBook, setOpenBook] = useState(false);
   const isMobile = useMediaQuery("(max-width: 768px)")[0];
 
-  if (!isClient) return null; // Add this line
+
 
   return (
     <>
@@ -240,35 +235,49 @@ export default function MagColumn() {
     [setQueryCategory, setDiscussionQuery]
   );
 
+  if (error) return <p>Error loading posts. Please try again later.</p>;
+  if (isLoading || !posts) {
+    return (
+      <>
+        <NavigationButtons updateFeed={updateFeed} feedConfig={feedConfig} hiveUser={hiveUser} />
+        <Box display="flex" justifyContent="center">
+          <Box width="300px">
+            <AuthorSearchBar
+              onSearch={(author) => updateFeed("blog", [{ tag: author, limit: 10 }])}
+            />
+          </Box>
+        </Box>
+        <Grid p={1} templateColumns="repeat(1, 1fr)" gap={0} minHeight="100vh" width="100%">
+          {Array.from({ length: visiblePosts }).map((_, i) => (
+            <PostSkeleton key={i} />
+          ))}
+        </Grid>
+      </>
+    );
+  }
+
   return (
-    <Box
-      overflow="auto"
-      sx={{ "&::-webkit-scrollbar": { display: "none" } }}
-      display={{ base: "none", md: "block" }}
-      width={{ md: "400px" }}
-      minHeight="100vh"
-    >
+    <Box overflow="auto" sx={{ "&::-webkit-scrollbar": { display: "none" } }}>
       <NavigationButtons updateFeed={updateFeed} feedConfig={feedConfig} hiveUser={hiveUser} />
-      <Box display="flex" justifyContent="center" mb={4}>
+      <Box display="flex" justifyContent="center">
         <Box width="300px">
-          <AuthorSearchBar onSearch={(author) => updateFeed("blog", [{ tag: author, limit: 10 }])} />
+          <AuthorSearchBar
+            onSearch={(author) => updateFeed("blog", [{ tag: author, limit: 10 }])}
+          />
         </Box>
       </Box>
-
       {error && (
         <Flex justify="center" mt={4}>
           <Text>Error loading posts. Please try again later.</Text>
         </Flex>
       )}
-
       <PostFeed
-        posts={posts || []}
+        posts={posts}
         visiblePosts={visiblePosts}
         setVisiblePosts={setVisiblePosts}
         query={feedConfig.query}
         loading={isLoading}
       />
-
       {!isLoading && posts && posts.length === 0 && (
         <Flex justify="center" mt={4}>
           <Text>No posts found. Try another filter or check back later.</Text>
