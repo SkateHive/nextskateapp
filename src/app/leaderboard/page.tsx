@@ -1,10 +1,12 @@
 "use client";
 
 import AuthorAvatar from "@/components/AuthorAvatar";
-import { Box, Button, Center, Input, Table, Tbody, Td, Text, Th, Thead, Tr, Spinner } from "@chakra-ui/react";
+import { Box, Button, Center, Input, Table, Tbody, Td, Text, Th, Thead, Tr, Spinner, useToast } from "@chakra-ui/react";
 import { useLeaderboardData } from "@/hooks/useLeaderboardData";
+import { formatETHaddress } from "@/lib/utils";
 
 const Leaderboard: React.FC = () => {
+  const toast = useToast();
   const {
     isLoading,
     currentPage,
@@ -18,6 +20,17 @@ const Leaderboard: React.FC = () => {
     fetchSubscribers,
     lastFollower,
   } = useLeaderboardData();
+
+  const handleCopy = (address: string) => {
+    navigator.clipboard.writeText(address);
+    toast({
+      title: "Copied to clipboard",
+      description: "ETH address has been copied to clipboard.",
+      status: "success",
+      duration: 2000,
+      isClosable: true,
+    });
+  };
 
   return (
     <Box color={"white"}>
@@ -71,7 +84,11 @@ const Leaderboard: React.FC = () => {
                   {isLoading ? <Spinner size="sm" /> : <Text>{balance.HBDUsdValue || 0} HBD</Text>}
                 </Td>
                 <Td>
-                  {isLoading ? <Spinner size="sm" /> : <Text>{balance.eth_address || "No address"}</Text>}
+                  {isLoading ? <Spinner size="sm" /> : (
+                    <Text onClick={() => balance.eth_address && handleCopy(balance.eth_address)} cursor={balance.eth_address ? "pointer" : "default"}>
+                      {balance.eth_address ? formatETHaddress(balance.eth_address) : "No address"}
+                    </Text>
+                  )}
                 </Td>
               </Tr>
             );

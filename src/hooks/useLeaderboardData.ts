@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { convertVestingSharesToHivePower } from "@/app/wallet/utils/calculateHP";
 import { useHivePrice } from "@/hooks/useHivePrice";
 import HiveClient from "@/lib/hive/hiveclient";
@@ -31,9 +31,9 @@ export const useLeaderboardData = () => {
     const cache = useMemo(() => new Map<number, PropsUser[]>(), []);
     const hivePrice = useHivePrice();
 
-    const fetchHiveBalances = async (users: PropsUser[]) => {
+    const fetchHiveBalances = useCallback(async (users: PropsUser[]) => {
         const balances: Record<string, any> = {};
-        for (const user of users) {
+        const promises = users.map(async (user) => {
             const userData = await HiveClient.database.getAccounts([user.author]);
             const hiveAccount = userData[0];
             if (hiveAccount) {
@@ -56,46 +56,44 @@ export const useLeaderboardData = () => {
                     const savingsUSDvalue = 1 * Number(String(hiveAccount.savings_hbd_balance).split(" ")[0]);
                     const totalValue = hiveUsdValue + delegatedHPUsdValue + HBDUsdValue + savingsUSDvalue;
 
-                    const calculateHP = async () => {
-                        try {
-                            const res = await convertVestingSharesToHivePower(
-                                String(vestingShares),
-                                String(delegatedVestingShares),
-                                String(receivedVestingShares)
-                            );
-                            const hivePower = Number(res.hivePower);
-                            const HPthatUserDelegated = Number(res.DelegatedToSomeoneHivePower);
-                            const totalHP = hivePower + HPthatUserDelegated;
-                            const HPUsdValue = hivePrice * totalHP;
-                            const delegatedToUserInUSD = res.delegatedToUserInUSD;
+                    try {
+                        const res = await convertVestingSharesToHivePower(
+                            String(vestingShares),
+                            String(delegatedVestingShares),
+                            String(receivedVestingShares)
+                        );
+                        const hivePower = Number(res.hivePower);
+                        const HPthatUserDelegated = Number(res.DelegatedToSomeoneHivePower);
+                        const totalHP = hivePower + HPthatUserDelegated;
+                        const HPUsdValue = hivePrice * totalHP;
+                        const delegatedToUserInUSD = res.delegatedToUserInUSD;
 
-                            balances[user.author] = {
-                                hiveUsdValue,
-                                hivePower,
-                                delegatedToUserInUSD,
-                                HPthatUserDelegated,
-                                totalHP,
-                                HPUsdValue,
-                                delegatedHPUsdValue,
-                                HBDUsdValue,
-                                savingsUSDvalue,
-                                totalValue,
-                                hiveAccount,
-                                eth_address,
-                            };
-                        } catch (error) {
-                            console.error("Failed to calculate Hive Power:", error);
-                        }
-                    };
-
-                    await calculateHP();
+                        balances[user.author] = {
+                            hiveUsdValue,
+                            hivePower,
+                            delegatedToUserInUSD,
+                            HPthatUserDelegated,
+                            totalHP,
+                            HPUsdValue,
+                            delegatedHPUsdValue,
+                            HBDUsdValue,
+                            savingsUSDvalue,
+                            totalValue,
+                            hiveAccount,
+                            eth_address,
+                        };
+                    } catch (error) {
+                        console.error("Failed to calculate Hive Power:", error);
+                    }
                 }
             }
-        }
-        setHiveBalances(balances);
-    };
+        });
 
-    const fetchSubscribers = async (page: number, lastFollower: string | null = null) => {
+        await Promise.all(promises);
+        setHiveBalances(balances);
+    }, [hivePrice]);
+
+    const fetchSubscribers = useCallback(async (page: number, lastFollower: string | null = null) => {
         if (cache.has(page)) {
             setUsers(cache.get(page) || []);
             return;
@@ -122,7 +120,7 @@ export const useLeaderboardData = () => {
                 .map((subscriber: any): PropsUser | null => {
                     try {
                         const metadata = subscriber.json_metadata ? JSON.parse(subscriber.json_metadata) : {};
-                        const ethAddress = metadata.extensions?.eth_address || undefined;
+                        const ethAddress = metadata?.extensions?.eth_address || "0x0000000";
                         return {
                             author: subscriber.author,
                             contributions: subscriber.contributions,
@@ -146,9 +144,9 @@ export const useLeaderboardData = () => {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [cache]);
 
-    const fetchDelegations = async () => {
+    const fetchDelegations = useCallback(async () => {
         try {
             const response = await fetch("/api/hive-delegations", {
                 method: "POST",
@@ -175,9 +173,9 @@ export const useLeaderboardData = () => {
         } catch (error) {
             console.error("Error fetching delegations:", error);
         }
-    };
+    }, []);
 
-    const handleSearch = async () => {
+    const handleSearch = useCallback(async () => {
         setIsLoading(true);
         try {
             let allUsers: PropsUser[] = [];
@@ -236,18 +234,18 @@ export const useLeaderboardData = () => {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [cache, searchQuery, lastFollower]);
 
     useEffect(() => {
         fetchSubscribers(currentPage);
         fetchDelegations();
-    }, [currentPage]);
+    }, [currentPage, fetchSubscribers, fetchDelegations]);
 
     useEffect(() => {
         if (users.length > 0) {
             fetchHiveBalances(users);
         }
-    }, [users]);
+    }, [users, fetchHiveBalances]);
 
     return {
         isLoading,

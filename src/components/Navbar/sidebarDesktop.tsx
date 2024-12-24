@@ -112,7 +112,7 @@ const SidebarDesktop = () => {
     onClose: onLoginClose,
   } = useDisclosure();
 
-  const [notifications, setNotifications] = useState(false);
+
   const [hasRewards, setHasRewards] = useState(false);
 
   const handleClaimRewards = async () => {
@@ -225,7 +225,7 @@ const SidebarDesktop = () => {
         {/* <HStack gap={3}>
           <ImProfile color="white" size={"22px"} />
           <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime' }} onClick={() => {
-            window.location.href = "/ProfileUserHive";
+            window.location.href = "/leaderboard";
           }}>ProfileHive</Text>
         </HStack> */}
         <HStack padding={0} gap={3} >
