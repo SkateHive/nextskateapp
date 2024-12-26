@@ -16,6 +16,7 @@ import remarkGfm from 'remark-gfm';
 import CarouselContainer from '../components/CommentItem/CarouselContainer';
 import CustomLeftArrow from '../components/CommentItem/CustomLeftArrow';
 import CustomRightArrow from '../components/CommentItem/CustomRightArrow';
+import VideoRenderer from '@/app/upload/utils/VideoRenderer';
 
 interface ContentRendererProps {
     editedCommentBody: string;
@@ -85,14 +86,7 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
             cursor="pointer"
         >
             {media.type === 'video' ? (
-                <video
-                    ref={(el) => {
-                        videoRefs.current[index] = el;
-                    }}
-                    src={media.url}
-                    controls
-                    style={{ width: '100%', borderRadius: '8px', maxHeight: '545px' }}
-                />
+                <VideoRenderer src={media.url} />
             ) : (
                 <Image
                     src={media.url}
