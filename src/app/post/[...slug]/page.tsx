@@ -1,7 +1,7 @@
 "use client"
 import CommentsComponent from "@/app/dao/components/comments";
 import AuthorAvatar from "@/components/AuthorAvatar";
-import VoteButton from "@/components/ButtonVoteComponent/VoteButton";
+import VoteButton from "@/components/ButtonVoteComponent/VoteButtonModal";
 import HiveClient from "@/lib/hive/hiveclient";
 import { transform3SpeakContent, transformIPFSContent } from "@/lib/utils";
 import {

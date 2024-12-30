@@ -4,7 +4,8 @@ import { Flex, HStack, Text } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { FaHeart, FaHeartBroken, FaRegHeart } from "react-icons/fa";
 import { useReward } from "react-rewards";
-import VoteButton from "./VoteButton";
+
+import VoteButtonModal from "./VoteButtonModal";
 
 const VotingButton = ({
   comment,
@@ -163,61 +164,39 @@ const VotingButton = ({
 
   // function that registers votes on mobile
   const handleTouchStart = (e: TouchEvent) => {
-    e.preventDefault();
-
-    const startTouchTime = Date.now();
-
-    const handleTouchEnd = () => {
-      const duration = Date.now() - startTouchTime;
-      if (duration > TOUCH_TIMEOUT) {
+    setTouchTimer(
+      setTimeout(() => {
         setIsVoteModalOpen(true);
-      }
-    };
-
-    const touchEndListener = () => {
-      handleTouchEnd();
-      voteButtonRef.current?.removeEventListener('touchend', touchEndListener);
-    };
-
-    voteButtonRef.current?.addEventListener('touchend', touchEndListener, { once: true });
+      }, TOUCH_TIMEOUT)
+    );
   };
 
-  useEffect(() => {
-    const voteButtonElement = voteButtonRef.current;
-
-    if (voteButtonElement) {
-
-      const handleTouchStartListener = (e: TouchEvent) => {
-        e.preventDefault(); // don't let default behavior happen
-        handleTouchStart(e); // call logic from the beginning of the ring
-      };
-
-      // const handleContextMenuListener = (e: MouseEvent) => {
-      //   e.preventDefault();
-      // };
-
-      voteButtonElement.addEventListener("touchstart", handleTouchStartListener, { passive: false });
-
-
-      return () => {
-        voteButtonElement.removeEventListener("touchstart", handleTouchStartListener);
-        // voteButtonElement.removeEventListener("contextmenu", handleContextMenuListener);
-      };
+  const handleTouchEnd = (e: TouchEvent) => {
+    if (touchTimer) {
+      clearTimeout(touchTimer);
+      setTouchTimer(null);
     }
-  }, []);
+    if (!isVoteModalOpen) {
+      handleLeftClick(e as unknown as React.MouseEvent);
+    }
+  };
 
   const onVoteSuccess = (voteType: 'upvote' | 'downvote') => {
     if (voteType === 'upvote') {
       setIsUpvoted(true);
       setIsDownvoted(false);
-      initialUpvoteCount(initialUpvoteCount + 1);
-      setDownvoteCount(downvoteCount - (isDownvoted ? 1 : 0));
+      setUpvoteCount((prevUpvoteCount: number) => prevUpvoteCount + 1);
+      setDownvoteCount((prevDownvoteCount: number) =>
+        isDownvoted ? prevDownvoteCount - 1 : prevDownvoteCount
+      );
       reward();
     } else if (voteType === 'downvote') {
       setIsDownvoted(true);
       setIsUpvoted(false);
-      setDownvoteCount(downvoteCount + 1);
-      initialUpvoteCount(initialUpvoteCount - (isUpvoted ? 1 : 0));
+      setDownvoteCount((prevDownvoteCount: number) => prevDownvoteCount + 1);
+      setUpvoteCount((prevUpvoteCount: number) =>
+        isUpvoted ? prevUpvoteCount - 1 : prevUpvoteCount
+      );
     }
     setIsVoteModalOpen(false);
   };
@@ -238,29 +217,27 @@ const VotingButton = ({
 
   return (
     <>
-      <LoginModal
-        isOpen={isLoginModalOpen}
-        onClose={() => setIsLoginModalOpen(false)}
-      />
-
+      {isLoginModalOpen && <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />}
       <HStack spacing={4} cursor="pointer" color="#A5D6A7">
         <HStack
           id={rewardId}
           ref={voteButtonRef}
-          onClick={(e) => !isUpvoted && handleLeftClick(e)} // Block if you have already voted
           spacing={1}
           cursor={isUpvoted ? "not-allowed" : "pointer"} // Cursor disabled for repeated votes
           style={{
             userSelect: 'none',
             pointerEvents: isUpvoted ? "none" : "auto", // Block clicks
           }}
+          onClick={(e) => !isUpvoted && handleLeftClick(e)} // Block if you have already voted
+          onTouchStart={(e) => handleTouchStart(e as unknown as TouchEvent)}
+          onTouchEnd={(e) => handleTouchEnd(e as unknown as TouchEvent)}
+          alignItems="center"
+          gap={2}
         >
-          <Flex alignItems="center" gap={2}>
-            <Text fontSize="18px" color={isUpvoted ? "limegreen" : "#61ad64"}>
-              {renderUpvoteIcon()}
-            </Text>
-            <Text fontSize="18px">{initialUpvoteCount}</Text>
-          </Flex>
+          <Text fontSize="18px" color={isUpvoted ? "limegreen" : "#61ad64"}>
+            {renderUpvoteIcon()}
+          </Text>
+          <Text fontSize="18px">{initialUpvoteCount}</Text>
         </HStack>
         {isDownvoted && (
           <HStack
@@ -284,7 +261,7 @@ const VotingButton = ({
 
       {isVoteModalOpen && (
 
-        <VoteButton
+        <VoteButtonModal
           author={comment.author}
           permlink={comment.permlink}
           comment={comment}

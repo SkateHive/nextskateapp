@@ -4,6 +4,9 @@ import { Box, Button, Center, Flex, Modal, ModalBody, ModalContent, ModalOverlay
 import { useEffect, useState } from 'react';
 import { FaHeart } from 'react-icons/fa';
 import useHiveData from './HiveDataFetcher';
+import { voteWithPrivateKey } from '@/lib/hive/server-functions';
+import { KeychainRequestResponse } from 'keychain-sdk';
+import { VoteOperation } from '@hiveio/dhive';
 
 interface VoteButtonProps {
     author: string;
@@ -15,9 +18,9 @@ interface VoteButtonProps {
     currentVoteType?: 'upvote' | 'downvote' | 'none';
 }
 
-const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () => { }, onSuccess, currentVoteType = 'none' }: VoteButtonProps) => {
+const VoteButtonModal = ({ author, permlink, comment, isModal = true, onClose = () => { }, onSuccess, currentVoteType = 'none' }: VoteButtonProps) => {
     const user = useHiveUser();
-    const [voteWeight, setVoteWeight] = useState(0);
+    const [voteWeight, setVoteWeight] = useState(5000);
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const [isUpvoted, setIsUpvoted] = useState<boolean>(false);
     const [isDownvoted, setIsDownvoted] = useState<boolean>(false);
@@ -26,7 +29,7 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
 
     // Effect that adjusts the weight of the vote whenever the type of vote changes (upvote or downvote)
     useEffect(() => {
-        
+
         if (currentVoteType === 'upvote') {
             setVoteWeight(10000);
         } else if (currentVoteType === 'downvote') {
@@ -34,7 +37,7 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
         } else {
             setVoteWeight(0);
         }
-        
+
     }, [currentVoteType]);
 
     // Function to fetch data from Hive
@@ -65,6 +68,9 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
 
     // Function that is called when the vote button is clicked
     const handleVoteClick = async () => {
+        const loginMethod = localStorage.getItem("LoginMethod");
+
+
         if (!user?.hiveUser?.name) {
             setIsLoginModalOpen(true);
             return;
@@ -72,35 +78,60 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
 
         const weight = voteWeight;
         const voteType = weight > 0 ? 'upvote' : 'downvote';
-        if (window.hive_keychain) {
-            window.hive_keychain.requestBroadcast(
-                user.hiveUser.name,
-                [
+        if (loginMethod === "keychain") {
+            if (window.hive_keychain) {
+                window.hive_keychain.requestBroadcast(
+                    user.hiveUser.name,
                     [
-                        "vote",
-                        {
-                            "voter": user.hiveUser.name,
-                            "author": author,
-                            "permlink": permlink,
-                            "weight": weight,
-                            "__rshares": rshares,
-                            "__config": {
-                                title: voteType === 'upvote' ? 'Confirm Upvote' : 'Confirm Downvote',
+                        [
+                            "vote",
+                            {
+                                "voter": user.hiveUser.name,
+                                "author": author,
+                                "permlink": permlink,
+                                "weight": weight,
+                                "__rshares": rshares,
+                                "__config": {
+                                    title: voteType === 'upvote' ? 'Confirm Upvote' : 'Confirm Downvote',
+                                }
                             }
+                        ]
+                    ],
+                    'Posting',
+                    (response: KeychainRequestResponse) => {
+                        if (response.success) {
+                            handleVoteSuccess(voteType);
+                        } else {
+                            console.error("Error when voting:", response);
                         }
-                    ]
-                ],
-                'Posting',
-                (response: any) => {
-                    if (response.success) {
-                        handleVoteSuccess(voteType);
-                    } else {
-                        console.error("Error when voting:", response);
                     }
-                }
-            );
-        } else {
-            alert("Hive Keychain is not available. Please install Hive Keychain.");
+                );
+            }
+        } else if (loginMethod === "privateKey") {
+            const encryptedPrivateKey = localStorage.getItem("EncPrivateKey");
+            const vote: VoteOperation = [
+                "vote",
+                {
+                    author,
+                    permlink,
+                    voter: user.hiveUser.name,
+                    weight,
+                },
+            ];
+            if (!encryptedPrivateKey) {
+                console.error("Private key not found in localStorage");
+                return;
+            }
+            voteWithPrivateKey(encryptedPrivateKey, vote)
+                .then(() => {
+                    handleVoteSuccess(voteType);
+                })
+                .catch(error => {
+                    console.error("Error when voting:", error);
+                });
+        }
+        else {
+            console.error("Login method not recognized.");
         }
     };
 
@@ -224,7 +255,7 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
                     </ModalBody>
                 </ModalContent>
             </Modal>
-            
+
         );
     }
 
@@ -304,4 +335,4 @@ const VoteButton = ({ author, permlink, comment, isModal = true, onClose = () =>
     );
 };
 
-export default VoteButton;
+export default VoteButtonModal;
