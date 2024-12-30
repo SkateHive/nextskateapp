@@ -2,7 +2,7 @@
 
 import { Validation } from "@/types"
 import * as dhive from "@hiveio/dhive"
-import { PrivateKey } from '@hiveio/dhive'
+import { Client, PrivateKey, VoteOperation } from '@hiveio/dhive'
 import { Buffer } from 'buffer'
 import CryptoJS from "crypto-js"
 import { HiveAccount, VideoPart } from "../models/user"
@@ -123,23 +123,25 @@ export async function hiveServerLoginWithPassword(
   }
 }
 
+const client = new Client("https://api.hive.blog");
+
 export async function voteWithPrivateKey(
-  encryptedPrivateKey: string | null,
-  vote: dhive.VoteOperation
-) {
-  if (encryptedPrivateKey === null) throw new Error("Private key not found")
-  const privateKey = decryptPrivateKey(encryptedPrivateKey)
-  sendHiveOperation(encryptedPrivateKey, [vote])
-  // HiveClient.broadcast
-  //   .vote(vote[1], dhive.PrivateKey.from(privateKey))
-  //   .then((result) => {
-  //     console.log(result)
-  //   })
-  //   .catch((error) => {
-  //     console.error(error)
-  //   })
-  console.log("trying to vote")
-  console.log(vote)
+  encryptedPrivateKey: string,
+  vote: VoteOperation
+): Promise<void> {
+  try {
+    const privateKey = decryptPrivateKey(encryptedPrivateKey);
+    if (!privateKey) {
+      throw new Error("Failed to decrypt the private key.");
+    }
+
+    console.log("Broadcasting vote operation:", vote);
+    await client.broadcast.sendOperations([vote], PrivateKey.fromString(privateKey));
+    console.log("Vote operation successfully broadcasted");
+  } catch (error) {
+    console.error("Error broadcasting vote operation:", error);
+    throw error;
+  }
 }
 
 export async function commentWithPrivateKey(

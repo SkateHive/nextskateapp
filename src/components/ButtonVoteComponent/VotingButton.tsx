@@ -21,6 +21,7 @@ const VotingButton = ({
   const [touchTimer, setTouchTimer] = useState<NodeJS.Timeout | null>(null);
   const [isTooltipVisible, setIsTooltipVisible] = useState(false);
   const [isVoting, setIsVoting] = useState(false);
+  const [isVoteCancelled, setIsVoteCancelled] = useState(false);
 
   const toggleValueTooltip = () => {
     setIsTooltipVisible(prev => !prev);
@@ -29,7 +30,6 @@ const VotingButton = ({
   const TOUCH_TIMEOUT = 1000;
 
   const voteButtonRef = useRef<HTMLDivElement | null>(null);
-
   const initialUpvoted = comment.active_votes?.some(
     (vote: any) => vote.voter === username && vote.percent > 0
   );
@@ -37,16 +37,19 @@ const VotingButton = ({
     (vote: any) => vote.voter === username && vote.percent < 0
   );
 
+  const initialUpvoteCount = comment.active_votes?.filter(
+    (vote: any) => vote.percent > 0
+  ).length || 0;
+  const initialDownvoteCount = comment.active_votes?.filter(
+    (vote: any) => vote.percent < 0
+  ).length || 0;
+
   const [isUpvoted, setIsUpvoted] = useState(initialUpvoted);
   const [isDownvoted, setIsDownvoted] = useState(initialDownvoted);
 
-  const [upvoteCount, setUpvoteCount] = useState(comment.active_votes?.filter(
-    (vote: any) => vote.percent > 0
-  ).length || 0);
+  const [upvoteCount, setUpvoteCount] = useState(initialUpvoteCount);
+  const [downvoteCount, setDownvoteCount] = useState(initialDownvoteCount);
 
-  const [downvoteCount, setDownvoteCount] = useState(comment.active_votes?.filter(
-    (vote: any) => vote.percent < 0
-  ).length || 0);
 
   const rewardId = `reward-${comment.id}`;
   const { reward, isAnimating } = useReward(rewardId, "emoji", {
@@ -54,9 +57,28 @@ const VotingButton = ({
     spread: 60,
   });
 
-  const updateVotes = () => {
-    setUpvoteCount((prev: number) => prev + 1);
-    setDownvoteCount((prev: number) => prev - (isDownvoted ? 1 : 0));
+  const updateVotes = (action: "upvote" | "downvote" | "cancel") => {
+    if (action === "upvote") {
+      setIsUpvoted(true);
+      setIsDownvoted(false);
+      setUpvoteCount((prev: number) => prev + 1);
+      if (isDownvoted) {
+        setDownvoteCount((prev: number) => prev - 1);
+      }
+    } else if (action === "downvote") {
+      setIsDownvoted(true);
+      setIsUpvoted(false);
+      setDownvoteCount((prev: number) => prev + 1);
+      if (isUpvoted) {
+        setUpvoteCount((prev: number) => prev - 1);
+      }
+    } else if (action === "cancel") {
+      // Correctly reset voting states when canceling
+      setIsUpvoted(false);
+
+      setUpvoteCount((prev: number) => prev - 0);
+      setDownvoteCount((prev: number) => prev - 0);
+    }
   };
 
   const handleRightClick = (e: React.MouseEvent, voteType: 'upvote' | 'downvote') => {
@@ -97,25 +119,45 @@ const VotingButton = ({
       }
       if (!username) {
         console.error("Error: The user is not logged in.");
-        setIsLoginModalOpen(true); // Abre o modal de login
+        setIsLoginModalOpen(true);
         return;
       }
-      if (button === 0) { // Left click to upvote
-        setIsVoting(true);
-        handleVote(comment.author, comment.permlink, username, 10000, updateVotes, setIsVoting)
-          .then(() => {
-            setIsUpvoted(true);
-            setIsDownvoted(false);
-            setUpvoteCount(upvoteCount + 1);
-            setDownvoteCount(downvoteCount - (isDownvoted ? 1 : 0));
-            reward();
-          })
-          .catch(error => console.error("Error during voting:", error));
+      if (button === 0) {
+        if (isUpvoted) {
+          // Cancel vote
+          updateVotes("cancel");
+          handleVote(comment.author, comment.permlink, username, 0, updateVotes, setIsVoting)
+            .then(() => {
+              console.log("Vote successfully cancelled.");
+              setIsVoteCancelled(true);
+              setIsUpvoted(false);
+            })
+            .catch(error => {
+              console.error("Error canceling vote:", error.message);
+              setIsVoteCancelled(false);
+              setIsUpvoted(true);
+            })
+            .finally(() => setIsVoting(false));
+        }
+        else {
+          // Vote positively
+          handleVote(comment.author, comment.permlink, username, 10000, updateVotes, setIsVoting)
+            .then(() => {
+              setIsUpvoted(true);
+              setIsVoteCancelled(false);
+              setUpvoteCount((prev: number) => prev + 1);
+              reward();
+            })
+            .catch(error => {
+              console.error("Error when voting:", error);
+            })
+            .finally(() => setIsVoting(false));
+        }
 
         toggleValueTooltip();
       }
     } catch (error) {
-      console.error("Error handling vote:", error);
+      console.error("Error when manipulating the vote:", error);
     }
   };
 
@@ -164,22 +206,31 @@ const VotingButton = ({
     }
   }, []);
 
-
-  // Função chamada quando o voto é confirmado no modal
   const onVoteSuccess = (voteType: 'upvote' | 'downvote') => {
     if (voteType === 'upvote') {
       setIsUpvoted(true);
       setIsDownvoted(false);
-      setUpvoteCount(upvoteCount + 1);
+      initialUpvoteCount(initialUpvoteCount + 1);
       setDownvoteCount(downvoteCount - (isDownvoted ? 1 : 0));
       reward();
     } else if (voteType === 'downvote') {
       setIsDownvoted(true);
       setIsUpvoted(false);
       setDownvoteCount(downvoteCount + 1);
-      setUpvoteCount(upvoteCount - (isUpvoted ? 1 : 0));
+      initialUpvoteCount(initialUpvoteCount - (isUpvoted ? 1 : 0));
     }
-    setIsVoteModalOpen(false); // Closing the modal
+    setIsVoteModalOpen(false);
+  };
+
+  // Icon control
+  const renderUpvoteIcon = () => {
+    if (isVoteCancelled) {
+      return <FaRegHeart />;
+    }
+    if (isUpvoted) {
+      return <FaHeart />;
+    }
+    return <FaRegHeart />;
   };
 
 
@@ -196,33 +247,21 @@ const VotingButton = ({
         <HStack
           id={rewardId}
           ref={voteButtonRef}
-          onClick={(e) => handleLeftClick(e)}
-          onContextMenu={(e) => handleRightClick(e, "downvote")}
+          onClick={(e) => !isUpvoted && handleLeftClick(e)} // Block if you have already voted
           spacing={1}
-          cursor={isVoting ? "not-allowed" : "pointer"}
-          style={{ userSelect: 'none', pointerEvents: isVoting ? "none" : "auto" }}
-          onMouseLeave={toggleValueTooltip}
+          cursor={isUpvoted ? "not-allowed" : "pointer"} // Cursor disabled for repeated votes
+          style={{
+            userSelect: 'none',
+            pointerEvents: isUpvoted ? "none" : "auto", // Block clicks
+          }}
         >
           <Flex alignItems="center" gap={2}>
-            <Text fontSize="18px" color={isVoting ? "gray" : isUpvoted ? "limegreen" : "#61ad64"}>
-              {isVoting ? (
-                "Voting..."
-              ) : (
-                isUpvoted ? <FaHeart /> : <FaRegHeart />
-              )}
+            <Text fontSize="18px" color={isUpvoted ? "limegreen" : "#61ad64"}>
+              {renderUpvoteIcon()}
             </Text>
-            {!isVoting && (
-              <Text fontSize="18px" color={isVoting ? "gray" : "#61ad64"}>
-                {upvoteCount}
-              </Text>
-            )}
+            <Text fontSize="18px">{initialUpvoteCount}</Text>
           </Flex>
-
-
         </HStack>
-
-
-
         {isDownvoted && (
           <HStack
             id={rewardId}

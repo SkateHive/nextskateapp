@@ -7,56 +7,69 @@ export const handleVote = async (
   permlink: string,
   username: string,
   weight: number = 10000,
-  updateVotes: Function, // Function to update vote count on the front end
+  updateVotes: Function,
   setIsVoting: React.Dispatch<React.SetStateAction<boolean>>
 ): Promise<void> => {
+
+  if (weight === 0) {
+    console.log("Canceling vote, not allowing the vote to be registered.");
+    updateVotes("cancel");
+    return;
+  }
+
+  // Check if we are on the client side (browser)
+  if (typeof window === "undefined") {
+    console.error("localStorage is not available on the server.");
+    return;
+  }
+
   const loginMethod = localStorage.getItem("LoginMethod");
+
   if (!username) {
     console.error("Username is missing");
     return;
   }
 
-   // Use 1000 as default weight if not specified
-  const normalizedWeight = Math.min(Math.max(weight, 0), 10000);
-
   try {
     setIsVoting(true);
-    console.log("Starting the vote...");
     if (loginMethod === "keychain") {
       await vote({
-        username: username,
-        permlink: permlink,
-        author: author,
-        weight: normalizedWeight,
+        username,
+        permlink,
+        author,
+        weight,
       });
-
-      // Update the interface with the new vote count
       updateVotes();
-      console.log("Vote successfully registered with Keychain");
+      console.log("Vote registered with Keychain");
     } else if (loginMethod === "privateKey") {
-      console.log("Trying to vote with private key");
       const vote: VoteOperation = [
         "vote",
         {
+          author,
+          permlink,
           voter: username,
-          permlink: permlink,
-          author: author,
-          weight: normalizedWeight,
+          weight,
         },
       ];
 
       const encryptedPrivateKey = localStorage.getItem("EncPrivateKey");
-      if (encryptedPrivateKey) {
-        await voteWithPrivateKey(encryptedPrivateKey, vote);
-       // Update the interface with the new vote count
-        updateVotes();
-        console.log("Vote successfully registered with private key");
-      } else {
-        console.error("Private key not found");
+      if (!encryptedPrivateKey) {
+        console.error("Private key not found in localStorage");
+        return;
       }
+
+      await voteWithPrivateKey(encryptedPrivateKey, vote);
+      updateVotes();
+      console.log("Vote registered with private key");
+    } else {
+      console.error("Login method not recognized.");
     }
   } catch (error) {
     console.error("Error during voting:", error);
+    if ((error as Error)?.message?.includes("user_cancel")) {
+      console.log("Vote was canceled by the user, updating state to reflect cancellation.");
+      updateVotes("cancel");
+    }
   } finally {
     setIsVoting(false);
   }
