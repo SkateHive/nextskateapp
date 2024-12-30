@@ -31,6 +31,7 @@ const VotingButton = ({
   const TOUCH_TIMEOUT = 1000;
 
   const voteButtonRef = useRef<HTMLDivElement>(null);
+  const heartIconRef = useRef<HTMLSpanElement>(null);
   const initialUpvoted = comment.active_votes?.some(
     (vote: any) => vote.voter === username && vote.percent > 0
   );
@@ -51,7 +52,7 @@ const VotingButton = ({
   const [upvoteCount, setUpvoteCount] = useState(initialUpvoteCount);
   const [downvoteCount, setDownvoteCount] = useState(initialDownvoteCount);
 
-  const { reward, isAnimating } = useReward("voteButtonReward", "emoji", {
+  const { reward, isAnimating } = useReward("heartIconReward", "emoji", {
     emoji: ["$", "*", "#"],
     spread: 60,
   });
@@ -201,12 +202,12 @@ const VotingButton = ({
   // Icon control
   const renderUpvoteIcon = () => {
     if (isVoteCancelled) {
-      return <FaRegHeart />;
+      return <span id="heartIconReward"><FaRegHeart /></span>;
     }
     if (isUpvoted) {
-      return <FaHeart />;
+      return <span id="heartIconReward"><FaHeart /></span>;
     }
-    return <FaRegHeart />;
+    return <span id="heartIconReward"><FaRegHeart /></span>;
   };
 
   return (
@@ -229,7 +230,7 @@ const VotingButton = ({
           gap={2}
         >
           <Text fontSize="18px" color={isUpvoted ? "limegreen" : "#61ad64"}>
-            <span id="voteButtonReward">{renderUpvoteIcon()}</span>
+            {renderUpvoteIcon()}
           </Text>
           <Text fontSize="18px">{upvoteCount}</Text>
         </HStack>
