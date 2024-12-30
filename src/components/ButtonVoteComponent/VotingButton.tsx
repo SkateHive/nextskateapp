@@ -30,7 +30,7 @@ const VotingButton = ({
 
   const TOUCH_TIMEOUT = 1000;
 
-  const voteButtonRef = useRef<HTMLDivElement | null>(null);
+  const voteButtonRef = useRef<HTMLDivElement>(null);
   const initialUpvoted = comment.active_votes?.some(
     (vote: any) => vote.voter === username && vote.percent > 0
   );
@@ -51,9 +51,7 @@ const VotingButton = ({
   const [upvoteCount, setUpvoteCount] = useState(initialUpvoteCount);
   const [downvoteCount, setDownvoteCount] = useState(initialDownvoteCount);
 
-
-  const rewardId = `reward-${comment.id}`;
-  const { reward, isAnimating } = useReward(rewardId, "emoji", {
+  const { reward, isAnimating } = useReward("voteButtonReward", "emoji", {
     emoji: ["$", "*", "#"],
     spread: 60,
   });
@@ -104,26 +102,23 @@ const VotingButton = ({
       clearTimeout(touchTimer);
     }
   };
+
   const handleLeftClick = (e: React.MouseEvent) => {
     try {
       const { button } = e;
 
-      if (isVoting) {
-        console.log("Voting, please wait...");
+      if (isVoting || isAnimating) {
+        console.log("Voting or animation in progress, please wait...");
         return;
       }
 
-      // Block interaction during animation
-      if (isAnimating) {
-        console.log("Animation in progress, please wait.");
-        return;
-      }
       if (!username) {
         console.error("Error: The user is not logged in.");
         setIsLoginModalOpen(true);
         return;
       }
       if (button === 0) {
+        setIsVoting(true);
         if (isUpvoted) {
           // Cancel vote
           updateVotes("cancel");
@@ -139,18 +134,19 @@ const VotingButton = ({
               setIsUpvoted(true);
             })
             .finally(() => setIsVoting(false));
-        }
-        else {
+        } else {
           // Vote positively
+          updateVotes("upvote");
+          reward();
           handleVote(comment.author, comment.permlink, username, 10000, updateVotes, setIsVoting)
             .then(() => {
               setIsUpvoted(true);
               setIsVoteCancelled(false);
-              setUpvoteCount((prev: number) => prev + 1);
-              reward();
             })
             .catch(error => {
               console.error("Error when voting:", error);
+              setIsUpvoted(false);
+              setUpvoteCount((prev: number) => prev - 1); // Revert optimistic update
             })
             .finally(() => setIsVoting(false));
         }
@@ -164,6 +160,7 @@ const VotingButton = ({
 
   // function that registers votes on mobile
   const handleTouchStart = (e: TouchEvent) => {
+    e.preventDefault(); // Prevent text selection
     setTouchTimer(
       setTimeout(() => {
         setIsVoteModalOpen(true);
@@ -212,16 +209,12 @@ const VotingButton = ({
     return <FaRegHeart />;
   };
 
-
-
-
   return (
     <>
       {isLoginModalOpen && <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />}
       <HStack spacing={4} cursor="pointer" color="#A5D6A7">
         <HStack
-          id={rewardId}
-          ref={voteButtonRef}
+          id="voteButtonReward"
           spacing={1}
           cursor={isUpvoted ? "not-allowed" : "pointer"} // Cursor disabled for repeated votes
           style={{
@@ -229,19 +222,20 @@ const VotingButton = ({
             pointerEvents: isUpvoted ? "none" : "auto", // Block clicks
           }}
           onClick={(e) => !isUpvoted && handleLeftClick(e)} // Block if you have already voted
-          onTouchStart={(e) => handleTouchStart(e as unknown as TouchEvent)}
+          onContextMenu={(e) => handleRightClick(e, "upvote")} // Open modal on right-click
+          onTouchStart={(e) => handleTouchStart(e as unknown as TouchEvent)} // Open modal on long press
           onTouchEnd={(e) => handleTouchEnd(e as unknown as TouchEvent)}
           alignItems="center"
           gap={2}
         >
           <Text fontSize="18px" color={isUpvoted ? "limegreen" : "#61ad64"}>
-            {renderUpvoteIcon()}
+            <span id="voteButtonReward">{renderUpvoteIcon()}</span>
           </Text>
-          <Text fontSize="18px">{initialUpvoteCount}</Text>
+          <Text fontSize="18px">{upvoteCount}</Text>
         </HStack>
         {isDownvoted && (
           <HStack
-            id={rewardId}
+            ref={voteButtonRef}
             onClick={(e) => handleRightClick(e, "downvote")}
             onContextMenu={(e) => handleRightClick(e, "downvote")}
             spacing={1}
