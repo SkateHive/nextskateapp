@@ -35,7 +35,7 @@ function Wallet() {
           </TabPanel>
           <TabPanel>
             <Flex direction={{ base: "column", md: "row" }}>
-              <Box w={'100%'} h={'80%'}>
+              <Box w={'100%'} h={'80%'} backgroundColor={'black'} borderRadius={10} p={4}>
                 <iframe
                   id="swapWidgetkeychain"
                   title="Swap Tokens with Keychain"
@@ -45,12 +45,13 @@ function Wallet() {
                   height="500px"
                 />
               </Box>
-              <Box mb={10} w={'100%'}>
+              <Box w={'100%'} h={'80%'} backgroundColor={'black'} borderRadius={10} p={4}>
                 <iframe
                   id="simpleswap-frame"
                   name="SimpleSwap Widget"
                   width="100%"
                   height="500px"
+                  style={{ border: "none", borderRadius: "50px" }}
                   src="https://simpleswap.io/widget/df29d743-6c03-4c7e-a745-4a0bfd19c656" ></iframe>
               </Box>
             </Flex>
