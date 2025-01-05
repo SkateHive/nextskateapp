@@ -1,11 +1,11 @@
 "use client"
 import AuthorAvatar from "@/components/AuthorAvatar"
-import { Avatar, Box, Divider, HStack, Tooltip } from "@chakra-ui/react"
+import { useLastAuction } from "@/hooks/auction"
+import { Avatar, Box, Link as ChakraLink, Divider, HStack, Tooltip, useDisclosure } from "@chakra-ui/react"
 import { useRouter } from "next/navigation"
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useAccount } from "wagmi"
 import AirdropModal from "./airdropModal"
-import NextLink from "next/link" // Add this import
 
 interface AvatarListProps {
   sortedComments: any[]
@@ -15,6 +15,8 @@ const AvatarList = ({ sortedComments }: AvatarListProps) => {
   const [loginMethod, setLoginMethod] = useState<string | null>(null)
   const eth_user = useAccount()
   const router = useRouter()
+  const { data: activeAuction } = useLastAuction();
+  const { isOpen: isAuctionModalOpen, onOpen: onAuctionModalOpen, onClose: onAuctionModalClose } = useDisclosure();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -25,6 +27,49 @@ const AvatarList = ({ sortedComments }: AvatarListProps) => {
   const handleCloseModal = () => {
     setIsOpen(false)
   }
+
+  const AuctionAvatar = () => {
+    return (
+      <>
+        <Box
+          w={"40px"}
+          h={"40px"}
+          borderRadius={"50%"}
+          bg={"gray.200"}
+          display={"flex"}
+          justifyContent={"center"}
+          alignItems={"center"}
+          mr={1}
+          onClick={onAuctionModalOpen}
+        >
+          <Tooltip
+            label={activeAuction?.token?.name}
+            bg={"black"}
+            color={"purple"}
+            border={"1px dashed purple"}
+          >
+           <ChakraLink
+            href={`https://nouns.build/dao/base/${activeAuction?.token?.tokenContract}`}
+            isExternal
+          >
+            <Avatar
+              border={"1px dashed purple"}
+              name={activeAuction?.token?.name }
+              boxSize={12}
+              bg="black"
+              src={activeAuction?.token?.image || "/auction.gif"}
+              loading="lazy"
+              borderRadius={5}
+              _hover={{ cursor: "pointer", border: '1px solid purple' }}
+            />
+          </ChakraLink>
+          </Tooltip>
+        </Box>
+
+        {/* <AuctionCard isOpen={isAuctionModalOpen} onClose={onAuctionModalClose} /> */}
+      </>
+    );
+  };
 
   const InviteAvatar = () => {
     return (
@@ -144,6 +189,7 @@ const AvatarList = ({ sortedComments }: AvatarListProps) => {
       minHeight={"60px"}
       px={4}
     >
+      <AuctionAvatar />
       <NotificationsAvatar />
       <AirdropAvatar />
       <InviteAvatar />

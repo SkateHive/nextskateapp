@@ -1,9 +1,8 @@
 import NotificationsPage from "@/app/notifications/page";
 import { useHiveUser } from "@/contexts/UserContext";
+import { useIsClient } from "@/hooks/useIsClient";
 import HiveClient from "@/lib/hive/hiveclient";
 import { HiveAccount } from "@/lib/models/user";
-import { formatETHaddress } from "@/lib/utils";
-import { Link } from "@chakra-ui/next-js";
 import {
     Button,
     Divider,
@@ -20,16 +19,16 @@ import {
     useDisclosure
 } from "@chakra-ui/react";
 import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
+import Link from 'next/link';
 import { useEffect, useState } from "react";
 import { FaBell, FaBook, FaEthereum, FaHive, FaMapMarkerAlt, FaSpeakap, FaUser, FaWallet } from "react-icons/fa";
 import { useAccount } from "wagmi";
 import "../../styles/fonts.css";
 import LoginModal from "../Hive/Login/LoginModal";
+import { FormattedAddress } from "../NNSAddress";
 import CommunityTotalPayout from "../communityTotalPayout";
 import checkRewards from "./utils/checkReward";
 import { claimRewards } from "./utils/claimRewards";
-import { FormattedAddress } from "../NNSAddress";
-import { useIsClient } from "@/hooks/useIsClient";
 const blink = keyframes`
   0% { color: gold; opacity: 1; }
   50% { opacity: 0.1; }
@@ -124,21 +123,29 @@ const SideBarMobile = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
 
                         <HStack onClick={() => { setNotifications(false); onClose(); }} padding={0} mt={8} gap={3} fontSize={"22px"}>
                             <FaSpeakap size={"22px"} />
-                            <Link fontFamily="Joystix" href={"/"}>Feed</Link>
+                            <Text fontFamily="Joystix">
+                                <Link href={"/"}>Feed</Link>
+                            </Text>
                         </HStack>
                         <HStack onClick={() => { setNotifications(false); onClose(); }} padding={0} gap={3} fontSize={"22px"}>
                             <FaMapMarkerAlt size={"22px"} />
-                            <Link fontFamily="Joystix" href={"/map"}>Map</Link>
+                            <Text fontFamily="Joystix">
+                                <Link href={"/map"}>Map</Link>
+                            </Text>
                         </HStack>
                         <HStack onClick={() => { setNotifications(false); onClose(); }} padding={0} gap={3} fontSize={"22px"}>
                             <FaBook size={"22px"} />
-                            <Link fontFamily="Joystix" href={"/mag"}>Magazine</Link>
+                            <Text fontFamily="Joystix">
+                                <Link href={"/mag"}>Magazine</Link>
+                            </Text>
                         </HStack>
                         {ethAccount.address && (
 
                             <HStack onClick={() => { setNotifications(false); onClose(); }} padding={0} gap={3} fontSize={"22px"}>
                                 <FaEthereum size={"22px"} />
-                                <Link fontFamily="Joystix" href={"/dao"}>Dao</Link>
+                                <Text fontFamily="Joystix">
+                                    <Link href={"/dao"}>Dao</Link>
+                                </Text>
                             </HStack>
                         )}
                         {hiveUser ? (
