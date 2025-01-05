@@ -2,7 +2,8 @@
 
 import { PostsProvider } from "@/contexts/PostsContext"
 import { UserProvider } from "@/contexts/UserContext"
-import { ChakraProvider, extendTheme } from "@chakra-ui/react"
+import theme from "@/theme"
+import { ChakraProvider, } from "@chakra-ui/react"
 import {
   RainbowKitProvider,
   darkTheme,
@@ -14,15 +15,6 @@ import { http } from "viem"
 import { WagmiProvider } from "wagmi"
 import { base, mainnet } from "wagmi/chains"
 
-const chakraTheme = extendTheme({
-  styles: {
-    global: {
-      body: {
-        bg: "black",
-      },
-    },
-  },
-})
 
 export const wagmiConfig = getDefaultConfig({
   appName: "SkateHive",
@@ -47,7 +39,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
             borderRadius: "small",
           })}
         >
-          <ChakraProvider theme={chakraTheme}>
+          <ChakraProvider theme={theme}>
             <UserProvider>
               <PostsProvider>{children}</PostsProvider>
             </UserProvider>
