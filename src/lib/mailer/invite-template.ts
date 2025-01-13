@@ -105,7 +105,7 @@ export default function getMailTemplate_Invite(
     <div style="padding:10px; border-radius: 0 0 8px 8px;text-align:center;">
       <p>
         <a href="https://www.youtube.com/watch?v=MtBMbdq4JFU">
-          <img src="/public/images/how-to-log-skatehive.jpg" alt="How To Log In Skate Hive" style="max-width:400px; vertical-align: middle;"></a>
+          <img src="https://skatehive.app/public/images/how-to-log-skatehive.jpg" alt="How To Log In Skate Hive" style="max-width:400px; vertical-align: middle;"></a>
       </p>
     </div>
 
