@@ -56,8 +56,8 @@ function AccountCreation() {
         setBMessage("");
 
         // for debug
-        // console.log("handlecheck");
-        // sendTestEmail('', '', []);
+        console.log("handlecheck");
+        sendTestEmail('', '', []);
         // debug
 
         if(desiredEmail==""){
