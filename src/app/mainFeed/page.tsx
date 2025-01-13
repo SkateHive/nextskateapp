@@ -20,10 +20,12 @@ import {
   MenuList,
   Text,
   Textarea,
+  useToast,
   VStack,
 } from "@chakra-ui/react";
 import { CommentOperation, CommentOptionsOperation } from "@hiveio/dhive";
 import EmojiPicker, { Theme } from 'emoji-picker-react';
+import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { FaHistory, FaImage, FaMoneyBill, FaTimes } from "react-icons/fa";
@@ -32,7 +34,6 @@ import { IoFilter } from "react-icons/io5";
 import { uploadFileToIPFS } from "../upload/utils/uploadToIPFS";
 import AvatarList from "./components/AvatarList";
 import CommentList from "./components/CommentsList";
-import dynamic from "next/dynamic";
 
 const LoadingComponent = dynamic(() => import("./components/loadingComponent"), { ssr: false });
 
@@ -63,7 +64,7 @@ const SkateCast = () => {
   const [imageList, setImageList] = useState<string[]>([]);
   const [isPickingEmoji, setIsPickingEmoji] = useState<boolean>(false);
   const parentRef = useRef<HTMLDivElement>(null);
-
+  const toast = useToast();
   const handleOutsideClick = (e: any) => {
     if (parentRef.current && !parentRef.current.contains(e.target)) {
       setIsPickingEmoji(false);
@@ -169,6 +170,8 @@ const SkateCast = () => {
     }
   };
 
+  const ONE_MINUTE = 1 * 60 * 1000;
+
   const handlePost = async (markdownString: string) => {
     const permlink = new Date().toISOString().replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
     const loginMethod = localStorage.getItem("LoginMethod");
@@ -177,6 +180,26 @@ const SkateCast = () => {
       console.error("Username is missing");
       return;
     }
+
+  const lastPostTime = localStorage.getItem("lastPostTime");
+  const now = new Date().getTime();
+
+  // Check if 1 minute have passed since the last post
+  if (lastPostTime && now - parseInt(lastPostTime) < ONE_MINUTE) {
+    console.error("You can only post again after 15 minutes.");
+    toast({
+      title: "Wait 1 minute",
+      description: "You can only post again after 1 minute.",
+      status: "error",
+      duration: 5000,
+      isClosable: true,
+    });
+    return;
+   
+  }
+
+  // Updates the timestamp of the last post in localStorage
+  localStorage.setItem("lastPostTime", now.toString());
 
     const postData = {
       parent_author: parent_author,
