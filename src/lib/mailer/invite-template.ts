@@ -102,6 +102,13 @@ export default function getMailTemplate_Invite(
       </div>
     </div>
 
+    <div style="padding:10px; border-radius: 0 0 8px 8px;text-align:center;">
+      <p>
+        <a href="https://www.youtube.com/watch?v=MtBMbdq4JFU">
+          <img src="https://skatehive.app/public/images/how-to-log-skatehive.jpg" alt="How To Log In Skate Hive" style="max-width:400px; vertical-align: middle;"></a>
+      </p>
+    </div>
+
     <div style="background-color: ${MAIL_BACKGROUND_COLOR2}; color:${MAIL_FOREGROUND_COLOR2};padding:10px; border-radius: 0 0 8px 8px;text-align:center;">
       <p style="margin: 0;">We recommends using the Hive Keychain on ALL Hive sites and applications.</p>
       <p style="margin: 0;"></p>
