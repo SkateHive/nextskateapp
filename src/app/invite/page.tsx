@@ -55,10 +55,10 @@ function AccountCreation() {
         setBroadcastResult(false);
         setBMessage("");
 
-        // for debug
+        // debugging email. just fill up form and click on check button
         // console.log("handlecheck");
-        // sendTestEmail('', '', []);
-        // debug
+        // invites.sendTestEmail("", "", "", "", []);
+        // debugging
 
         if(desiredEmail==""){
             setBroadcastResult(true);

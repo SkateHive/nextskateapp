@@ -32,7 +32,7 @@ import { FaHistory, FaImage, FaMoneyBill, FaTimes } from "react-icons/fa";
 import { FaArrowRightArrowLeft, FaFaceSmile } from "react-icons/fa6";
 import { IoFilter } from "react-icons/io5";
 import { uploadFileToIPFS } from "../upload/utils/uploadToIPFS";
-import AvatarList from "./components/AvatarList";
+import TopMenu from "./components/AvatarList";
 import CommentList from "./components/CommentsList";
 
 const LoadingComponent = dynamic(() => import("./components/loadingComponent"), { ssr: false });
@@ -363,7 +363,7 @@ const SkateCast = () => {
       If comments are not ready, you could show skeletons or placeholders here.
     */}
 
-      <AvatarList sortedComments={sortedComments || []} />
+      <TopMenu sortedComments={sortedComments || []} />
 
       {user.hiveUser && (
         <>

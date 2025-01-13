@@ -1,20 +1,35 @@
 "use client"
-import AuthorAvatar from "@/components/AuthorAvatar"
 import { useLastAuction } from "@/hooks/auction"
-import { Avatar, Box, Link as ChakraLink, Divider, HStack, Tooltip, useDisclosure } from "@chakra-ui/react"
-import { useRouter } from "next/navigation"
+import { Avatar, Box, Link as ChakraLink, Divider, HStack, Text, useDisclosure } from "@chakra-ui/react"
+import Link from "next/link";
 import { useEffect, useState } from "react"
 import { useAccount } from "wagmi"
 import AirdropModal from "./airdropModal"
 
-interface AvatarListProps {
+interface TopMenuProps {
   sortedComments: any[]
 }
-const AvatarList = ({ sortedComments }: AvatarListProps) => {
+
+interface AvatarButtonProps {
+  onClick: () => void;
+  tooltipLabel: string | undefined;
+  tooltipColor: string;
+  tooltipBorder: string;
+  avatarProps: {
+    border: string;
+    name: string | undefined;
+    boxSize: number;
+    bg: string;
+    src: string;
+    borderHover: string;
+  };
+  text: string;
+}
+
+const TopMenu = ({ sortedComments }: TopMenuProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const [loginMethod, setLoginMethod] = useState<string | null>(null)
   const eth_user = useAccount()
-  const router = useRouter()
   const { data: activeAuction } = useLastAuction();
   const { isOpen: isAuctionModalOpen, onOpen: onAuctionModalOpen, onClose: onAuctionModalClose } = useDisclosure();
 
@@ -28,195 +43,122 @@ const AvatarList = ({ sortedComments }: AvatarListProps) => {
     setIsOpen(false)
   }
 
-  const AuctionAvatar = () => {
-    return (
-      <>
-        <Box
-          w={"40px"}
-          h={"40px"}
-          borderRadius={"50%"}
-          bg={"gray.200"}
-          display={"flex"}
-          justifyContent={"center"}
-          alignItems={"center"}
-          mr={1}
-          onClick={onAuctionModalOpen}
-        >
-          <Tooltip
-            label={activeAuction?.token?.name}
-            bg={"black"}
-            color={"purple"}
-            border={"1px dashed purple"}
-          >
-           <ChakraLink
-            href={`https://nouns.build/dao/base/${activeAuction?.token?.tokenContract}`}
-            isExternal
-          >
-            <Avatar
-              border={"1px dashed purple"}
-              name={activeAuction?.token?.name }
-              boxSize={12}
-              bg="black"
-              src={activeAuction?.token?.image || "/auction.gif"}
-              loading="lazy"
-              borderRadius={5}
-              _hover={{ cursor: "pointer", border: '1px solid purple' }}
-            />
-          </ChakraLink>
-          </Tooltip>
-        </Box>
-
-        {/* <AuctionCard isOpen={isAuctionModalOpen} onClose={onAuctionModalClose} /> */}
-      </>
-    );
-  };
-
-  const InviteAvatar = () => {
-    return (
-      <Box
-        suppressHydrationWarning
-        w={"40px"}
-        h={"40px"}
-        borderRadius={"50%"}
-        bg={"gray.200"}
-        display={"flex"}
-        justifyContent={"center"}
-        alignItems={"center"}
-        onClick={() => router.push("/invite")}
+  const AvatarButton = ({ onClick, tooltipLabel, tooltipColor, tooltipBorder, avatarProps, text }: AvatarButtonProps) => (
+    <Box
+      w={{ base: "40px", md: "150px" }}
+      h={"40px"}
+      borderRadius={"10px"}
+      display={"flex"}
+      justifyContent={"center"}
+      alignItems={"center"}
+      onClick={onClick}
+      p={2}
+      cursor="pointer"
+    >
+      <Avatar
+        {...avatarProps}
+        loading="lazy"
+        borderRadius={5}
+        mr={{ base: 0, md: 2 }}
+        _hover={{ cursor: "pointer", border: avatarProps.borderHover }}
+      />
+      <Text
+        display={{ base: "none", md: "block" }}
+        isTruncated
+        fontSize={{ base: "xs", md: "sm" }}
+        fontWeight="bold"
       >
-        <Tooltip
-          suppressHydrationWarning
-          label={"Invite someone cool enough"}
-          bg={"black"}
-          color={"#A5D6A7"}
-          border={"1px dashed #A5D6A7"}
-        >
-          <Avatar
-            suppressHydrationWarning
-            border={"1px dashed limegreen"}
-            name="+"
-            boxSize={12}
-            bg="black"
-            src="/loading.gif"
-            borderRadius={5}
-            cursor="pointer"
-          />
-        </Tooltip>
-      </Box>
-    )
-  }
-
-  const AirdropAvatar = () => {
-    return (
-      <>
-        {isOpen && <AirdropModal sortedComments={sortedComments} isOpen={isOpen} onClose={handleCloseModal} />}
-
-        <Box
-          mr={1}
-          w={"40px"}
-          h={"40px"}
-          borderRadius={"50%"}
-          bg={"gray.200"}
-          display={"flex"}
-          justifyContent={"center"}
-          alignItems={"center"}
-        >
-          <Tooltip
-            label={"Create Community Airdrop"}
-            bg={"black"}
-            color={"gold"}
-            border={"1px dashed gold"}
-          >
-            <Avatar
-              onClick={() => setIsOpen(true)}
-              border={"1px solid red"}
-              name="community airdrop"
-              boxSize={12}
-              bg="black"
-              src="https://i.ibb.co/cgykmcc/image.png"
-              loading="lazy"
-              borderRadius={5}
-              _hover={{ border: "1px solid gold", cursor: "pointer" }} />
-          </Tooltip>
-        </Box>
-      </>
-    )
-  }
-
-  const NotificationsAvatar = () => {
-    if (!loginMethod) {
-      return null;
-    }
-
-    return (
-      <Box
-        w={"40px"}
-        h={"40px"}
-        borderRadius={"50%"}
-        bg={"gray.200"}
-        display={"flex"}
-        justifyContent={"center"}
-        alignItems={"center"}
-        mr={1}
-        onClick={() => router.push("/notifications")}
-      >
-        <Tooltip
-          label={"Notifications"}
-          bg={"black"}
-          color={"yellow"}
-          border={"1px dashed yellow"}
-        >
-          <Avatar
-            border={"1px dashed yellow"}
-            name="Notifications"
-            boxSize={12}
-            bg="black"
-            src="/Notification.gif"
-            loading="lazy"
-            borderRadius={5}
-            _hover={{ cursor: "pointer", border: '1px dashed red' }} />
-        </Tooltip>
-      </Box>
-    );
-  };
+        {text}
+      </Text>
+    </Box>
+  );
 
   return (
-    <HStack
-      flexWrap={"nowrap"}
-      w={"100%"}
-      css={{ "&::-webkit-scrollbar": { display: "none" } }}
-      overflowX="auto"
-      minHeight={"60px"}
-      px={4}
-    >
-      <AuctionAvatar />
-      <NotificationsAvatar />
-      <AirdropAvatar />
-      <InviteAvatar />
-      {sortedComments?.map((comment, index, commentsArray) => {
-        const isDuplicate =
-          commentsArray.findIndex((c) => c.author === comment.author) !==
-          index
-        if (isDuplicate) {
-          return null
-        }
-        return (
-          <AuthorAvatar
-            username={comment.author}
-            key={comment.author}
-            hover={{
-              zIndex: 1,
-              transform: "scale(1.05)",
-              border: "1px solid #A5D6A7",
+    <>
+      <HStack
+        flexWrap={"nowrap"}
+        w={"100%"}
+        css={{ "&::-webkit-scrollbar": { display: "none" } }}
+        overflowX="auto"
+        minHeight={"60px"}
+        px={4}
+        spacing={{ base: 2, md: 4 }} // Adjust spacing for mobile and desktop
+        mt={1}
+        justifyContent={{ base: "space-between", md: "flex-start" }} // Add this line to space icons in mobile mode
+      >
+        <Link href={`https://nouns.build/dao/base/${activeAuction?.token?.tokenContract}`} passHref>
+          <AvatarButton
+            onClick={onAuctionModalOpen}
+            tooltipLabel={activeAuction?.token?.name}
+            tooltipColor={"purple"}
+            tooltipBorder={"1px dashed purple"}
+            avatarProps={{
+              border: "1px dashed purple",
+              name: activeAuction?.token?.name,
+              boxSize: 12,
+              bg: "black",
+              src: activeAuction?.token?.image || "/auction.gif",
+              borderHover: "1px solid purple"
             }}
-            borderRadius={100}
-            quality="small"
+            text="ART"
           />
-        )
-      })}
+        </Link>
+        {loginMethod && (
+          <Link href="/notifications" passHref>
+            <AvatarButton
+              onClick={() => { }}
+              tooltipLabel={"Notific"}
+              tooltipColor={"yellow"}
+              tooltipBorder={"1px dashed yellow"}
+              avatarProps={{
+                border: "1px dashed yellow",
+                name: "Notifications",
+                boxSize: 12,
+                bg: "black",
+                src: "/Notification.gif",
+                borderHover: "1px dashed red"
+              }}
+              text="NOTIFIC"
+            />
+          </Link>
+        )}
+        <AvatarButton
+          onClick={() => setIsOpen(true)}
+          tooltipLabel={"Create Community Airdrop"}
+          tooltipColor={"gold"}
+          tooltipBorder={"1px dashed gold"}
+          avatarProps={{
+            border: "1px solid red",
+            name: "airdrop",
+            boxSize: 12,
+            bg: "black",
+            src: "https://i.ibb.co/cgykmcc/image.png",
+            borderHover: "1px solid gold"
+          }}
+          text="AIRDROP"
+        />
+        {isOpen && <AirdropModal sortedComments={sortedComments} isOpen={isOpen} onClose={handleCloseModal} />}
+        <Link href="/invite" passHref>
+          <AvatarButton
+            onClick={() => { }}
+            tooltipLabel={"Invite someone cool enough"}
+            tooltipColor={"#A5D6A7"}
+            tooltipBorder={"1px dashed #A5D6A7"}
+            avatarProps={{
+              border: "1px dashed limegreen",
+              name: "+",
+              boxSize: 12,
+              bg: "black",
+              src: "/loading.gif",
+              borderHover: "1px dashed limegreen"
+            }}
+            text="INVITE"
+          />
+        </Link>
+      </HStack>
       <Divider />
-    </HStack>
+    </>
   )
 }
 
-export default AvatarList
+export default TopMenu
