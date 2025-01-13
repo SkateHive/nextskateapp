@@ -86,21 +86,23 @@ const TopMenu = ({ sortedComments }: TopMenuProps) => {
         mt={1}
         justifyContent={{ base: "space-between", md: "flex-start" }} // Add this line to space icons in mobile mode
       >
-        <AvatarButton
-          onClick={onAuctionModalOpen}
-          tooltipLabel={activeAuction?.token?.name}
-          tooltipColor={"purple"}
-          tooltipBorder={"1px dashed purple"}
-          avatarProps={{
-            border: "1px dashed purple",
-            name: activeAuction?.token?.name,
-            boxSize: 12,
-            bg: "black",
-            src: activeAuction?.token?.image || "/auction.gif",
-            borderHover: "1px solid purple"
-          }}
-          text="ART"
-        />
+        <Link href={`https://nouns.build/dao/base/${activeAuction?.token?.tokenContract}`} passHref>
+          <AvatarButton
+            onClick={onAuctionModalOpen}
+            tooltipLabel={activeAuction?.token?.name}
+            tooltipColor={"purple"}
+            tooltipBorder={"1px dashed purple"}
+            avatarProps={{
+              border: "1px dashed purple",
+              name: activeAuction?.token?.name,
+              boxSize: 12,
+              bg: "black",
+              src: activeAuction?.token?.image || "/auction.gif",
+              borderHover: "1px solid purple"
+            }}
+            text="ART"
+          />
+        </Link>
         {loginMethod && (
           <Link href="/notifications" passHref>
             <AvatarButton
