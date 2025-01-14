@@ -1,30 +1,32 @@
-import React, { useState, useEffect, useMemo } from "react"
-import { calculateTimeAgo } from "@/lib/utils"
+import ReplyModal from "@/app/mainFeed/components/replyModal";
+import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
+import { changeFollow, checkFollow } from "@/lib/hive/client-functions";
+import { calculateTimeAgo } from "@/lib/utils";
 import {
   Avatar,
+  Box,
+  Button,
   Flex,
   HStack,
   IconButton,
+  Image,
   Link,
   Stack,
   Text,
   Tooltip,
-  Button,
-  Image,
-  Box,
-} from "@chakra-ui/react"
-import { ExternalLink } from "lucide-react"
-import { Notification } from "../page"
-import { getPostDetails } from "../lib/getPostDetails"
-import { checkFollow, changeFollow } from "@/lib/hive/client-functions"
-import { Comment } from "@hiveio/dhive"
-import ReactMarkdown from "react-markdown"
-import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers"
-import ReplyModal from "@/app/mainFeed/components/replyModal"
+  useColorModeValue,
+} from "@chakra-ui/react";
+import { Comment } from "@hiveio/dhive";
+import { ExternalLink } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
+import { getPostDetails } from "../lib/getPostDetails";
+import { Notification } from "../page";
 
 interface NotificationContentProps {
-  notification: Notification
-  username: string
+  notification: Notification;
+  username: string;
 }
 
 interface JsonMetadata {
@@ -32,104 +34,99 @@ interface JsonMetadata {
   [key: string]: any;
 }
 
-// Create an in-memory cache
-const postCache: Record<string, Comment | null> = {}
-// Helper function to extract permlink from notification URL
-const extractPermlink = (url: string) => {
-  const segments = url.split("/")
-  return segments[segments.length - 1] // Get the last part of the URL
-}
+// Cache posts in memory
+const postCache: Record<string, Comment | null> = {};
+
+const extractPermlink = (url: string) => url.split("/").pop(); // Extract the permlink from the URL
+
 export function NotificationContent({
   notification,
   username,
 }: NotificationContentProps) {
   const [post, setPost] = useState<Comment | null>(null);
-  const [parentPost, setParentPost] = useState<Comment | null>(null); // Store parent post details
+  const [parentPost, setParentPost] = useState<Comment | null>(null);
   const [isFollowing, setIsFollowing] = useState<boolean | null>(null);
   const [loadingFollow, setLoadingFollow] = useState(false);
   const [isReplyModalOpen, setIsReplyModalOpen] = useState(false);
 
-  // Memoized function to get post from cache or fetch from API
+  // Function to get post details from cache or API
   const getCachedPostDetails = async (author: string, permlink: string) => {
     const cacheKey = `${author}/${permlink}`;
     if (postCache[cacheKey]) {
       return postCache[cacheKey];
-    } else {
-      const postDetails = await getPostDetails(author, permlink);
-      postCache[cacheKey] = postDetails;
-      return postDetails;
     }
-  }
+    const postDetails = await getPostDetails(author, permlink);
+    postCache[cacheKey] = postDetails;
+    return postDetails;
+  };
 
-  // Load post details automatically for reply and reply_comment types
+  // Load post details for reply notifications
   useEffect(() => {
-    const fetchPostDetails = async () => {
-      if (notification.type === "reply" || notification.type === "reply_comment") {
-        const permlink = extractPermlink(notification.url)
+    if (notification.type === "reply" || notification.type === "reply_comment") {
+      const fetchPostDetails = async () => {
+        const permlink = extractPermlink(notification.url) || "";
         try {
-          const postDetails = await getCachedPostDetails(String(notification.user), permlink)
-          setPost(postDetails)
+          const postDetails = await getCachedPostDetails(
+            String(notification.user),
+            permlink
+          );
+          setPost(postDetails);
 
-          // Fetch the parent post and cache it
-          const parentPostDetails = await getCachedPostDetails(postDetails.parent_author, postDetails.parent_permlink)
-          setParentPost(parentPostDetails) // Set the parent post
+          const parentPostDetails = await getCachedPostDetails(
+            postDetails.parent_author,
+            postDetails.parent_permlink
+          );
+          setParentPost(parentPostDetails);
         } catch (error) {
-          console.error("Error fetching post details", error)
+          console.error("Error fetching post details", error);
         }
-      } else {
-        setPost(null); // Clear post when switching tabs to non-reply types
-        setParentPost(null); // Clear parent post
-      }
+      };
+      fetchPostDetails();
     }
-    fetchPostDetails()
-  }, [notification.type, notification.url, notification.user])
+  }, [notification.type, notification.url, notification.user]);
 
-  // Check follow status if the notification is a follow type
+  // Check follow status for "follow" notifications
   useEffect(() => {
     if (notification.type === "follow") {
       const fetchFollowStatus = async () => {
-        const status = await checkFollow(username, String(notification.user))
-        setIsFollowing(status)
-      }
-      fetchFollowStatus()
+        const status = await checkFollow(username, String(notification.user));
+        setIsFollowing(status);
+      };
+      fetchFollowStatus();
     }
-  }, [notification.type, notification.user])
+  }, [notification.type, notification.user, username]);
 
-  // Handle follow/unfollow action
   const handleFollowToggle = async () => {
-    setLoadingFollow(true)
-    await changeFollow(username, String(notification.user))
-    const updatedStatus = await checkFollow(username, String(notification.user))
-    setIsFollowing(updatedStatus)
-    setLoadingFollow(false)
-  }
+    setLoadingFollow(true);
+    await changeFollow(username, String(notification.user));
+    const updatedStatus = await checkFollow(username, String(notification.user));
+    setIsFollowing(updatedStatus);
+    setLoadingFollow(false);
+  };
 
-  // Safely parse the JSON metadata of the parent post
   const parentMetadata: JsonMetadata | null = useMemo(() => {
-    if (!parentPost?.json_metadata) {
+    if (!parentPost?.json_metadata) return null;
+    try {
+      return JSON.parse(parentPost.json_metadata as string) as JsonMetadata;
+    } catch (error) {
+      console.error("Error parsing json_metadata", error);
       return null;
     }
-
-    if (typeof parentPost.json_metadata === "string") {
-      try {
-        return JSON.parse(parentPost.json_metadata) as JsonMetadata;
-      } catch (error) {
-        console.error("Error parsing parent post json_metadata", error);
-        return null;
-      }
-    }
-
-    return parentPost.json_metadata as JsonMetadata;
   }, [parentPost?.json_metadata]);
+
+  const bgColor = useColorModeValue("gray.100", "gray.800");
+  const textColor = useColorModeValue("gray.700", "gray.300");
 
   return (
     <Flex
-      align={"center"}
+      align="center"
       px={4}
       py={3}
-      _hover={{ border: "1px solid", borderColor: "gray.600" }}
+      bg={bgColor}
+      borderRadius="md"
+      boxShadow="sm"
+      _hover={{ boxShadow: "lg" }}
       gap={4}
-      color={"white"}
     >
       {isReplyModalOpen && (
         <ReplyModal
@@ -139,79 +136,92 @@ export function NotificationContent({
           onNewComment={() => { }}
         />
       )}
-      <Stack flexGrow={1} gap={1}>
-        <HStack align={"center"} justify={"space-between"} w={"full"}>
-          <Flex align={"center"} gap={2}>
-            <Link href={`/skater/${notification.user}`}>
-              <Avatar
-                boxSize={"45px"}
-                name={notification.user}
-                src={`https://images.ecency.com/webp/u/${notification.user}/avatar/small` || '/pepenation.gif'}
-                borderRadius={"full"}
-              />
-            </Link>
-            <Box>
-              <Text fontSize={"18px"} fontWeight={"bold"}>
-                <Link color={"yellow.400"} href={`/skater/${notification.user}`}>
-                  @{notification.user}
-                </Link>{" "}
-                {notification.msg}
-              </Text>
-              <Text fontSize="14px" color="gray.500" fontWeight="400">
-                {calculateTimeAgo(notification.date)} ago
-              </Text>
-            </Box>
-          </Flex>
-          {/* Render the small thumbnail image */}
+
+
+      <Avatar
+        boxSize="50px"
+        name={notification.user}
+        src={`https://images.ecency.com/webp/u/${notification.user}/avatar/small`}
+        borderRadius="full"
+      />
+
+      <Stack flex={1} spacing={2}>
+        <HStack justify="space-between">
+          <Box>
+            <Text fontWeight="bold" fontSize="lg" color="yellow.500">
+              <Link href={`/skater/${notification.user}`}>
+                @{notification.user}
+              </Link>
+            </Text>
+            <Text fontSize="sm" color={textColor}>
+              {notification.msg}
+            </Text>
+            <Text fontSize="xs" color="gray.500">
+              {calculateTimeAgo(notification.date)} ago
+            </Text>
+          </Box>
           {parentMetadata?.image && (
             <Box w={"50px"} h={"50px"}>
               <Image
                 src={parentMetadata.image[0]}
-                alt={parentPost?.title || "Post thumbnail"}
-                borderRadius={"10px"}
-                objectFit={"cover"}
-                w={"full"}
-                h={"full"}
+                alt="Thumbnail"
+                boxSize="50px"
+                borderRadius="md"
+                objectFit="cover"
               />
             </Box>
           )}
         </HStack>
 
-        {/* Only show post content for reply and reply_comment */}
-        {post !== null && (notification.type === "reply" || notification.type === "reply_comment") && (
-          <Box mt={2}>
-            <ReactMarkdown components={MarkdownRenderers}>{post.body}</ReactMarkdown>
+        {post && (notification.type === "reply" || notification.type === "reply_comment") && (
+          <Box
+            mt={2}
+            border="1px solid"
+            borderColor="gray.600"
+            borderRadius="md"
+            p={4}
+            maxW="container.md"
+            maxH="400px"
+            overflowY="auto"
 
-            <Flex justifyContent={"flex-start"} mt={2}>
-              <Button
-                size="sm"
-                colorScheme="green"
-                onClick={() => setIsReplyModalOpen(true)}
-                variant={"ghost"}
-              >
-                Reply
-              </Button>
-            </Flex>
+            boxShadow="md"
+          >
+            <ReactMarkdown
+              components={MarkdownRenderers}
+              rehypePlugins={[rehypeRaw]} // Render HTML in Markdown
+            >
+              {post.body}
+            </ReactMarkdown>
+
+            <Button
+              size="sm"
+              mt={4}
+              colorScheme="teal"
+              onClick={() => setIsReplyModalOpen(true)}
+            >
+              Reply
+            </Button>
           </Box>
         )}
+
+
       </Stack>
 
       {notification.type === "follow" ? (
         <Button
           size="sm"
-          colorScheme={isFollowing ? "red" : "green"}
+          colorScheme={isFollowing ? "red" : "blue"}
           onClick={handleFollowToggle}
           isLoading={loadingFollow}
         >
-          {isFollowing ? "Unfollow" : "Follow Back"}
+          {isFollowing ? "Unfollow" : "Follow back"}
         </Button>
       ) : (
         <Tooltip label="View post">
           <IconButton
-            size={"md"}
+            size="sm"
             aria-label="View post"
-            icon={<ExternalLink color={"gray"} />}
-            variant={"ghost"}
+            icon={<ExternalLink />}
             as={Link}
             href={notification.url}
             target="_blank"
@@ -220,5 +230,5 @@ export function NotificationContent({
         </Tooltip>
       )}
     </Flex>
-  )
+  );
 }

@@ -1,9 +1,24 @@
 import AuthorAvatar from "@/components/AuthorAvatar";
 import { useHiveUser } from "@/contexts/UserContext";
 import { getAccountHistory } from "@/lib/hive/client-functions";
-import { Button, Container, Flex, HStack, Image, Spinner, Stack, StackDivider, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from "@chakra-ui/react";
+import {
+    Button,
+    Container,
+    Flex,
+    HStack,
+    Image,
+    Spinner,
+    Stack,
+    Tab,
+    TabList,
+    TabPanel,
+    TabPanels,
+    Tabs,
+    Text,
+    useColorModeValue
+} from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { FaHive } from "react-icons/fa";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 
 export interface Transaction {
     block: number;
@@ -15,9 +30,7 @@ export interface Transaction {
     virtual_op: boolean;
 }
 
-
 const CLAIM_REWARDS_IMAGE = "/logos/hiveLogo.png";
-
 const ITEMS_PER_PAGE = 20;
 
 const TransactionHistory = () => {
@@ -25,8 +38,13 @@ const TransactionHistory = () => {
     const username = user?.hiveUser?.name;
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [currentPage, setCurrentPage] = useState(0); // Start at page 0
-    const [batchSize, setBatchSize] = useState(ITEMS_PER_PAGE);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [batchSize] = useState(ITEMS_PER_PAGE);
+
+    // Dynamic styles for light/dark themes
+    const cardBg = useColorModeValue("white", "gray.800");
+    const cardBorderColor = useColorModeValue("gray.200", "gray.700");
+    const textColor = useColorModeValue("gray.800", "gray.200");
 
     // Fetch transactions
     useEffect(() => {
@@ -35,7 +53,7 @@ const TransactionHistory = () => {
 
             setIsLoading(true);
             try {
-                const data = await getAccountHistory(String(username), batchSize * (currentPage + 1)); // Fetch in batches
+                const data = await getAccountHistory(String(username), batchSize * (currentPage + 1));
                 if (Array.isArray(data)) {
                     const mappedData = data.map(([block, op]: [number, any]) => ({
                         block,
@@ -46,9 +64,9 @@ const TransactionHistory = () => {
                         trx_in_block: op.trx_in_block,
                         virtual_op: op.virtual_op,
                     }));
-                    setTransactions(mappedData.reverse()); // Reverse the array to get newest first
+                    setTransactions(mappedData.reverse());
                 } else {
-                    console.error("Failed to fetch transactions, data is not an array:", data);
+                    console.error("Error fetching transactions: Invalid data", data);
                 }
             } catch (error) {
                 console.error("Error fetching transactions:", error);
@@ -60,171 +78,156 @@ const TransactionHistory = () => {
         fetchTransactions();
     }, [username, currentPage, batchSize]);
 
-    // Define different card designs based on the transaction type
+    // Render the transaction cards
     const renderTransactionCard = (type: string, details: any, index: number) => {
+        const commonCardStyles = {
+            p: 4,
+            borderRadius: "md",
+            border: `1px solid ${cardBorderColor}`,
+            bg: cardBg,
+            mb: 4,
+            shadow: "lg",
+            align: "center",
+        };
+
         switch (type) {
             case "claim_reward_balance":
                 return (
-                    <HStack key={index} p={4} borderBottom="1px solid gray">
-                        <Image src={CLAIM_REWARDS_IMAGE} boxSize={10} />
-                        <Text fontSize="lg">
-                            Claim Reward: {details.reward_hbd} and {details.reward_vests}
+                    <HStack key={index} {...commonCardStyles}>
+                        <Image src={CLAIM_REWARDS_IMAGE} boxSize={12} alt="Claim Rewards" />
+                        <Text fontSize="lg" color={textColor}>
+                            Claimed: <b>{details.reward_hbd}</b> and <b>{details.reward_vests}</b>
                         </Text>
                     </HStack>
                 );
             case "transfer":
                 return (
-                    <HStack key={index} p={4} borderBottom="1px solid gray">
-                        <AuthorAvatar username={details.from} boxSize={10} />
-
-
-                        <Text fontSize="lg">
-                            <HStack>
-                                <Text fontSize="lg">
-
-                                    Transfer from {details.from} to {details.to}: {details.amount}
+                    <HStack key={index} {...commonCardStyles}>
+                        <AuthorAvatar username={details.from} boxSize={12} />
+                        <Flex direction="column">
+                            <Text fontSize="lg" color={textColor}>
+                                Transfer from <b>{details.from}</b> to <b>{details.to}</b>: {details.amount}
+                            </Text>
+                            {details.memo && (
+                                <Text fontSize="sm" color="gray.500">
+                                    <i>Memo:</i> {details.memo}
                                 </Text>
-                                <FaHive color="red" size={16} />
-                            </HStack>
-                            {details.memo && <Text><strong>Memo:</strong> {details.memo}</Text>}
-
-                        </Text>
+                            )}
+                        </Flex>
                     </HStack>
                 );
             case "effective_comment_vote":
                 return (
-                    <HStack key={index} p={4} borderBottom="1px solid gray">
-                        <AuthorAvatar username={details.author} boxSize={10} />
-                        <Text fontSize="lg">
-                            Vote on {details.author} s
-                            <a href={`https://skatehive.app/post/@${details.author}/${details.permlink}`} target="_blank" rel="noopener noreferrer">
+                    <HStack key={index} {...commonCardStyles}>
+                        <AuthorAvatar username={details.author} boxSize={12} />
+                        <Text fontSize="lg" color={textColor}>
+                            Voted on {details.author}&apos;s{" "}
+                            <a
+                                href={`https://skatehive.app/post/@${details.author}/${details.permlink}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{ color: "limegreen" }}
+                            >
                                 comment
-                            </a>
-                            : Payout: {details.pending_payout}
+                            </a>: Payout: {details.pending_payout}
                         </Text>
-
                     </HStack>
                 );
             case "curation_reward":
                 return (
-                    <HStack key={index} p={4} borderBottom="1px solid gray">
-                        <AuthorAvatar username={details.comment_author} boxSize={10} />
-                        <Text fontSize="lg">
-                            Curation Reward: {details.reward} VESTS for voting on {details.comment_author}s post
+                    <HStack key={index} {...commonCardStyles}>
+                        <AuthorAvatar username={details.comment_author} boxSize={12} />
+                        <Text fontSize="lg" color={textColor}>
+                            Curation Reward: {details.reward} VESTS for voting on {details.comment_author}&apos;s post
                         </Text>
                     </HStack>
                 );
             case "comment":
                 return (
-                    <HStack key={index} p={4} borderBottom="1px solid gray">
-                        <AuthorAvatar username={details.author} boxSize={10} />
-                        <Text fontSize="lg">
-                            Comment by {details.author}: {details.body}
+                    <HStack key={index} {...commonCardStyles}>
+                        <AuthorAvatar username={details.author} boxSize={12} />
+                        <Text fontSize="lg" color={textColor}>
+                            Comment by <b>{details.author}</b>: {details.body}
                         </Text>
                     </HStack>
                 );
             case "vote":
-                return (
-                    <HStack key={index} p={4} borderBottom="1px solid gray">
-                        <AuthorAvatar username={details.voter} boxSize={10} />
-                        <Text fontSize="lg">
-                            Vote by {details.voter} on {details.author}s
-
-                            <a href={`https://skatehive.app/post/@${details.author}/${details.permlink}`} target="_blank" rel="noopener noreferrer" >
-                                post
-                            </a>
-
-                            Weight: {(details.weight / 100).toFixed(2)}%
-                        </Text>
-                    </HStack>
-                );
-            case "comment_benefactor_reward":
-                return (
-                    <HStack key={index} p={4} borderBottom="1px solid gray">
-                        <AuthorAvatar username={details.benefactor} boxSize={10} />
-                        <Text fontSize="lg">
-                            Benefactor Reward for {details.benefactor} on
-                            <a href={`https://skatehive.app/post/@${details.author}/${details.permlink}`} target="_blank" rel="noopener noreferrer">
-                                {details.author}&apos;s comment
-                            </a>
-                            : {details.hbd_payout} HBD, {details.hive_payout} HIVE, {details.vesting_payout} VESTS
-                        </Text>
-                    </HStack>
-                );
-
+                // return (
+                //     <HStack key={index} {...commonCardStyles}>
+                //         <AuthorAvatar username={details.voter} boxSize={12} />
+                //         <Text fontSize="lg" color={textColor}>
+                //             <b>{details.voter}</b> voted on <b>{details.author}&apos;s</b> post{" "}
+                //             <a
+                //                 href={`https://skatehive.app/post/@${details.author}/${details.permlink}`}
+                //                 target="_blank"
+                //                 rel="noopener noreferrer"
+                //                 style={{ color: "limegreen" }}
+                //             >
+                //                 View Post
+                //             </a>{" "}
+                //             (Weight: {(details.weight / 100).toFixed(2)}%)
+                //         </Text>
+                //     </HStack>
+                // );
+                break
             default:
                 return (
-                    <Flex key={index} p={4} borderBottom="1px solid gray">
-                        <Text fontSize="lg">
+                    <HStack key={index} {...commonCardStyles}>
+                        <Text fontSize="lg" color={textColor}>
                             {type}: {JSON.stringify(details)}
                         </Text>
-                    </Flex>
+                    </HStack>
                 );
         }
     };
 
-    // Handle pagination
-    const nextPage = () => {
-        setCurrentPage(prev => prev + 1);
-    };
-
-    const prevPage = () => {
-        if (currentPage > 0) {
-            setCurrentPage(prev => prev - 1);
-        }
-    };
+    // Pagination control
+    const nextPage = () => setCurrentPage((prev) => prev + 1);
+    const prevPage = () => setCurrentPage((prev) => Math.max(0, prev - 1));
 
     return (
-        <Container maxW="container.lg" p={0}>
-            <Stack
-                w={"100%"}
-                h={"100vh"}
-                overflow={"auto"}
-                sx={{
-                    "::-webkit-scrollbar": {
-                        display: "none"
-                    }
-                }}
-                gap={0}
-                divider={<StackDivider style={{ margin: 0 }} />}
-            >
-                <Tabs isLazy variant="enclosed" color="white">
-                    <TabList justifyContent="center" mt={5} color={"limegreen"}>
-                        <Tab _selected={{ bg: "limegreen", color: "black" }}>All Transactions</Tab>
+        <Container maxW="container.lg" p={4}>
+            <Stack spacing={6}>
+                <Tabs variant="solid-rounded" colorScheme="green">
+                    <TabList>
+                        <Tab>All Transactions</Tab>
                     </TabList>
-
                     <TabPanels>
                         <TabPanel>
                             {isLoading ? (
-                                <Flex w={"100%"} justify={"center"} pt={4}>
-                                    <Spinner size={"lg"} />
+                                <Flex justify="center" py={6}>
+                                    <Spinner size="xl" />
                                 </Flex>
                             ) : transactions.length === 0 ? (
-                                <Flex w={"100%"} justify={"center"} pt={4}>
-                                    <Text fontSize={"48px"} color={"white"}>
+                                <Flex justify="center" py={6}>
+                                    <Text fontSize="2xl" color={textColor}>
                                         No transactions found
                                     </Text>
                                 </Flex>
                             ) : (
-                                transactions.map((transaction: Transaction, index: number) => {
-                                    const nestedOp = transaction.op.op; // Access the nested 'op' field
-                                    const type = nestedOp[0]; // First element of the array is the type
-                                    const details = nestedOp[1]; // Second element is the details object
-
-                                    // Render the transaction card based on the type
+                                transactions.map((transaction, index) => {
+                                    const nestedOp = transaction.op.op;
+                                    const type = nestedOp[0];
+                                    const details = nestedOp[1];
                                     return renderTransactionCard(type, details, index);
                                 })
                             )}
                         </TabPanel>
                     </TabPanels>
                 </Tabs>
-
-                {/* Pagination Controls */}
-                <Flex justify="space-between" p={4}>
-                    <Button onClick={prevPage} disabled={currentPage === 0}>
+                <Flex justify="space-between">
+                    <Button
+                        leftIcon={<FaArrowLeft />}
+                        onClick={prevPage}
+                        disabled={currentPage === 0}
+                    >
                         Previous
                     </Button>
-                    <Button onClick={nextPage} disabled={transactions.length < batchSize * (currentPage + 1)}>
+                    <Button
+                        rightIcon={<FaArrowRight />}
+                        onClick={nextPage}
+                        disabled={transactions.length < batchSize * (currentPage + 1)}
+                    >
                         Next
                     </Button>
                 </Flex>
