@@ -20,10 +20,12 @@ import {
   MenuList,
   Text,
   Textarea,
+  useToast,
   VStack,
 } from "@chakra-ui/react";
 import { CommentOperation, CommentOptionsOperation } from "@hiveio/dhive";
 import EmojiPicker, { Theme } from 'emoji-picker-react';
+import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { FaHistory, FaImage, FaMoneyBill, FaTimes } from "react-icons/fa";
@@ -32,7 +34,6 @@ import { IoFilter } from "react-icons/io5";
 import { uploadFileToIPFS } from "../upload/utils/uploadToIPFS";
 import TopMenu from "./components/AvatarList";
 import CommentList from "./components/CommentsList";
-import dynamic from "next/dynamic";
 
 const LoadingComponent = dynamic(() => import("./components/loadingComponent"), { ssr: false });
 
@@ -63,7 +64,9 @@ const SkateCast = () => {
   const [imageList, setImageList] = useState<string[]>([]);
   const [isPickingEmoji, setIsPickingEmoji] = useState<boolean>(false);
   const parentRef = useRef<HTMLDivElement>(null);
-
+  const [isProcessing, setIsProcessing] = useState(false);
+  const toast = useToast();
+  
   const handleOutsideClick = (e: any) => {
     if (parentRef.current && !parentRef.current.contains(e.target)) {
       setIsPickingEmoji(false);
@@ -159,8 +162,6 @@ const SkateCast = () => {
   const handlePostClick = () => {
     const markdownString = (postBodyRef.current?.value + "\n" + imageList.join("\n")).trim();
     if (markdownString === "") {
-      alert("Please write something before posting");
-      return;
     } else if (markdownString.length > 2000) {
       alert("Post is too long. To make longform content use our /mag section");
       return;
@@ -172,12 +173,10 @@ const SkateCast = () => {
   const handlePost = async (markdownString: string) => {
     const permlink = new Date().toISOString().replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
     const loginMethod = localStorage.getItem("LoginMethod");
-
     if (!username) {
       console.error("Username is missing");
       return;
     }
-
     const postData = {
       parent_author: parent_author,
       parent_permlink: parent_permlink,
@@ -190,12 +189,26 @@ const SkateCast = () => {
         app: "skatehive",
       }),
     };
-
     const operations = [["comment", postData]];
 
-    if (loginMethod === "keychain") {
-      if (typeof window !== "undefined") {
-        try {
+    setIsProcessing(true);
+
+    // Display the persistent toast
+    const toastId = "processing-toast";
+    if (!toast.isActive(toastId)) {
+      toast({
+        id: toastId,
+        title: "Processing",
+        description: "Your post is being submitted...",
+        status: "info",
+        duration: null,
+        isClosable: false,
+      });
+    }
+
+    try {
+      if (loginMethod === "keychain") {
+        if (typeof window !== "undefined") {
           const response = await new Promise<{
             success: boolean;
             message?: string;
@@ -221,55 +234,59 @@ const SkateCast = () => {
             }
             addComment(postData);
             setImageList([]);
+            toast.close(toastId); // Close the processing toast
+            toast({
+              title: "Success",
+              description: "Your post has been published!",
+              status: "success",
+              duration: 3000,
+              isClosable: true,
+            });
           }
-        } catch (error) {
-          console.error("Error posting comment:", (error as Error).message);
         }
-      }
-    } else if (loginMethod === "privateKey") {
-      const commentOptions: CommentOptionsOperation = [
-        "comment_options",
-        {
-          author: String(username),
-          permlink: permlink,
-          max_accepted_payout: "10000.000 HBD",
-          percent_hbd: 10000,
-          allow_votes: true,
-          allow_curation_rewards: true,
-          extensions: [
-            [
-              0,
-              {
-                beneficiaries: [
-                  {
-                    account: "skatehacker",
-                    weight: 1000,
-                  },
-                ],
-              },
+      } else if (loginMethod === "privateKey") {
+        const commentOptions: CommentOptionsOperation = [
+          "comment_options",
+          {
+            author: String(username),
+            permlink: permlink,
+            max_accepted_payout: "10000.000 HBD",
+            percent_hbd: 10000,
+            allow_votes: true,
+            allow_curation_rewards: true,
+            extensions: [
+              [
+                0,
+                {
+                  beneficiaries: [
+                    {
+                      account: "skatehacker",
+                      weight: 1000,
+                    },
+                  ],
+                },
+              ],
             ],
-          ],
-        },
-      ];
+          },
+        ];
 
-      const postOperation: CommentOperation = [
-        "comment",
-        {
-          parent_author: parent_author,
-          parent_permlink: parent_permlink,
-          author: String(username),
-          permlink: permlink,
-          title: "Cast",
-          body: markdownString,
-          json_metadata: JSON.stringify({
-            tags: ["skateboard"],
-            app: "Skatehive App",
-            image: "/SKATE_HIVE_VECTOR_FIN.svg",
-          }),
-        },
-      ];
+        const postOperation: CommentOperation = [
+          "comment",
+          {
+            parent_author: parent_author,
+            parent_permlink: parent_permlink,
+            author: String(username),
+            permlink: permlink,
+            title: "Cast",
+            body: markdownString,
+            json_metadata: JSON.stringify({
+              tags: ["skateboard"],
+              app: "Skatehive App",
+              image: "/SKATE_HIVE_VECTOR_FIN.svg",
+            }),
+          },
+        ];
 
-      try {
         await commentWithPrivateKey(
           localStorage.getItem("EncPrivateKey")!,
           postOperation,
@@ -281,9 +298,27 @@ const SkateCast = () => {
         addComment(postData);
         setHasPosted(true);
         setImageList([]);
-      } catch (error) {
-        console.error("Error posting comment:", (error as Error).message);
+        toast.close(toastId); // Close the processing toast
+        toast({
+          title: "Success",
+          description: "Your post has been published!",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
       }
+    } catch (error) {
+      console.error("Error posting comment:", (error as Error).message);
+      toast.close(toastId); // Close the processing toast
+      toast({
+        title: "Error",
+        description: `Failed to post: ${(error as Error).message}`,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -469,7 +504,7 @@ const SkateCast = () => {
                   variant="ghost"
                   ml="auto"
                   onClick={handlePostClick}
-                  isLoading={isUploading}
+                  isLoading={isProcessing}
                   isDisabled={isLoading}
                   _hover={{
                     color: "limegreen",
