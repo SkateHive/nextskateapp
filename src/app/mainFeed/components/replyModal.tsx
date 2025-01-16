@@ -21,39 +21,20 @@ import {
 import * as dhive from "@hiveio/dhive";
 import { useState } from "react";
 import CarrouselRenderer from "../utils/CarrouselRenderer";
+import { extractMediaItems } from "@/lib/utils";
 
 interface ReplyModalProps {
     isOpen: boolean;
     onClose: () => void;
     comment: any;
     onNewComment: (comment: any) => void;
+    content: string;
 }
 
-type MediaItem = {
-    type: 'image' | 'video';
-    url: string;
-};
-
-const extractMediaItems = (markdown: string): MediaItem[] => {
-    const imageRegex = /!\[.*?\]\((.*?)\)/g;
-    const iframeRegex = /<iframe[^>]+src="([^"]+)"[^>]*>/g;
-    const mediaItems: MediaItem[] = [];
-
-    let match;
-    while ((match = imageRegex.exec(markdown))) {
-        mediaItems.push({ type: 'image', url: match[1] });
-    }
-    while ((match = iframeRegex.exec(markdown))) {
-        mediaItems.push({ type: 'video', url: match[1] });
-    }
-    return mediaItems;
-};
-
-const ReplyModal = ({ isOpen, onClose, comment, onNewComment }: ReplyModalProps) => {
+const ReplyModal = ({ isOpen, onClose, comment, onNewComment, content }: ReplyModalProps) => {
     const user = useHiveUser();
     const [replyBody, setReplyBody] = useState("");
     const [error, setError] = useState<string | null>(null);
-    const [editedCommentBody, setEditedCommentBody] = useState(comment.body);
 
     const handleReply = async () => {
         const loginMethod = localStorage.getItem("LoginMethod");
@@ -175,7 +156,7 @@ const ReplyModal = ({ isOpen, onClose, comment, onNewComment }: ReplyModalProps)
                             <Flex align="start" w="100%">
                                 <AuthorAvatar username={comment.author} borderRadius={100} />
                                 <HStack justify={"space-between"} width={"full"}>
-                                    <CarrouselRenderer mediaItems={extractMediaItems(comment.body)} />
+                                    <CarrouselRenderer mediaItems={extractMediaItems(content)} />
                                 </HStack>
                             </Flex>
                             <Box position="absolute" left="24px" top="60px" bottom="120px" width="2px" bg="gray.600" />

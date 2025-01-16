@@ -158,3 +158,27 @@ export async function fetchSkateHivePostMetadata(postId: string, username: strin
     return null;
   }
 }
+
+export type MediaItem = {
+  type: 'image' | 'video';
+  url: string;
+};
+
+export const extractMediaItems = (markdown: string): MediaItem[] => {
+  const imageMarkdownRegex = /!\[.*?\]\((.*?)\)/g;
+  const imageHtmlRegex = /<img[^>]+src="([^"]+)"[^>]*>/g;
+  const iframeRegex = /<iframe[^>]+src="([^"]+)"[^>]*>/g;
+  const mediaItems: MediaItem[] = [];
+
+  let match;
+  while ((match = imageMarkdownRegex.exec(markdown))) {
+    mediaItems.push({ type: 'image', url: match[1] });
+  }
+  while ((match = imageHtmlRegex.exec(markdown))) {
+    mediaItems.push({ type: 'image', url: match[1] });
+  }
+  while ((match = iframeRegex.exec(markdown))) {
+    mediaItems.push({ type: 'video', url: match[1] });
+  }
+  return mediaItems;
+};

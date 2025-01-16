@@ -221,7 +221,6 @@ const VotingButton = ({
           style={{
             userSelect: 'none',
             pointerEvents: isUpvoted ? "none" : "auto", // Block clicks
-            zIndex: 9999, // Ensure the reward animation is above other elements
           }}
           onClick={(e) => !isUpvoted && handleLeftClick(e)} // Block if you have already voted
           onContextMenu={(e) => handleRightClick(e, "upvote")} // Open modal on right-click
@@ -229,7 +228,6 @@ const VotingButton = ({
           onTouchEnd={(e) => handleTouchEnd(e as unknown as TouchEvent)}
           alignItems="center"
           gap={2}
-          zIndex={9999}
         >
           <Text fontSize="18px" color={isUpvoted ? "limegreen" : "#61ad64"}>
             {renderUpvoteIcon()}

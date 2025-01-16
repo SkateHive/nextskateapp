@@ -4,7 +4,7 @@ import VotingButton from "@/components/ButtonVoteComponent/VotingButton";
 import TipButton from "@/components/PostCard/TipButton";
 import { useHiveUser } from "@/contexts/UserContext";
 import { useComments } from "@/hooks/comments";
-import { formatDate, getTotalPayout } from "@/lib/utils";
+import { formatDate, getTotalPayout, extractMediaItems } from "@/lib/utils";
 import {
   Box,
   Button,
@@ -108,21 +108,6 @@ const CommentItem = ({
     setIsCommentFormVisible((prev) => !prev);
   }
 
-  const extractMediaItems = (markdown: string): MediaItem[] => {
-    const imageRegex = /!\[.*?\]\((.*?)\)/g;
-    const iframeRegex = /<iframe[^>]+src="([^"]+)"[^>]*>/g;
-    const mediaItems: MediaItem[] = [];
-
-    let match;
-    while ((match = imageRegex.exec(markdown))) {
-      mediaItems.push({ type: 'image', url: match[1] });
-    }
-    while ((match = iframeRegex.exec(markdown))) {
-      mediaItems.push({ type: 'video', url: match[1] });
-    }
-    return mediaItems;
-  };
-
   const mediaItems = useMemo(() => extractMediaItems(editedCommentBody), [editedCommentBody]);
 
   const markdownWithoutMedia = useMemo(() => {
@@ -141,15 +126,16 @@ const CommentItem = ({
           isOpen={isReplyModalOpen}
           onClose={() => setIsReplyModalOpen(false)}
           onNewComment={handleNewComment}
+          content={editedCommentBody}
         />
       )}
       <Flex onClick={toggleCommentVisibility} cursor="pointer">
-        <Box p={4}>
+        <Box p={2} pl={4}>
           <AuthorAvatar username={comment.author} />
         </Box>
         <VStack w={"100%"} ml={4} alignItems={"start"} marginRight={"16px"}>
           <HStack justify={"space-between"} width={"full"} cursor="pointer" gap="2px" >
-            <Text fontWeight="bold">{comment.author}</Text>
+            <Text fontWeight="bold" mt={2}>{comment.author}</Text>
             <Text ml={2} color="gray.400" fontSize="14px">
               {formatDate(String(comment.created))}
             </Text>
@@ -167,7 +153,11 @@ const CommentItem = ({
       </Flex>
 
       <Box w="100%" mt={4}>
-        <CarrouselRenderer mediaItems={mediaItems} />
+        <CarrouselRenderer
+          mediaItems={mediaItems}
+          onImageClick={toggleCommentVisibility}
+          onCommentIconClick={toggleCommentVisibility}
+        />
       </Box>
 
       <Flex m={4} justifyContent={"space-between"}>
@@ -177,7 +167,7 @@ const CommentItem = ({
               background: "transparent",
               color: "green.200",
             }}
-            color="limegreen"
+            color="#A5D6A7"
             variant="ghost"
             leftIcon={<FaPencil />}
             onClick={(e) => {
@@ -191,22 +181,46 @@ const CommentItem = ({
         ) : (
           <TipButton author={comment.author} permlink={comment.permlink} />
         )}
-        <Button
-          _hover={{
-            background: "transparent",
-            color: "green.200",
-          }}
-          color="limegreen"
-          variant="ghost"
-          leftIcon={<FaRegComment />}
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsReplyModalOpen(true);
-          }}
-          aria-label="Comments"
-        >
-          {numberOfComments}
-        </Button>
+        <HStack spacing={4} cursor="pointer" color="#A5D6A7">
+          <Box
+            as="button"
+            onClick={(e: any) => {
+              e.stopPropagation();
+              console.log("Opening ReplyModal with content:", editedCommentBody);
+              setIsReplyModalOpen(true);
+            }}
+            _hover={{
+              background: "transparent",
+              color: "green.200",
+            }}
+            color="limegreen"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <FaRegComment color="#A5D6A7" />
+          </Box>
+          <Box
+            as="button"
+            onClick={(e: any) => {
+              e.stopPropagation();
+              toggleCommentVisibility();
+            }}
+            _hover={{
+              background: "transparent",
+              color: "green.200",
+            }}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            ml={-2}
+            color="#A5D6A7"
+            fontSize={"18px"}
+          >
+            {numberOfComments}
+          </Box>
+        </HStack>
+
         <VotingButton
           comment={comment}
           username={username}
@@ -221,10 +235,11 @@ const CommentItem = ({
         >
           <Text
             fontWeight={"bold"}
-            color="limegreen"
             onClick={CommentVisibility}
             cursor={"pointer"}
             mt={2}
+            color="#A5D6A7"
+
           >
             ${getTotalPayout(comment)}
           </Text>
