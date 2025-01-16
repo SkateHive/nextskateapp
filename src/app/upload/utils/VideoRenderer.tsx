@@ -9,6 +9,7 @@ const VideoRenderer = ({ src, ...props }: RendererProps) => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const [poster, setPoster] = useState<string>('/home_animation_body.gif');
     const [isPlaying, setIsPlaying] = useState(false);
+    const [isHorizontal, setIsHorizontal] = useState(false);
 
     useEffect(() => {
         const video = videoRef.current;
@@ -23,6 +24,7 @@ const VideoRenderer = ({ src, ...props }: RendererProps) => {
                     video.addEventListener('seeked', function capture() {
                         context.drawImage(video, 0, 0, canvas.width, canvas.height);
                         setPoster(canvas.toDataURL('image/jpeg'));
+                        setIsHorizontal(video.videoWidth > video.videoHeight);
                         video.removeEventListener('seeked', capture);
                     });
                 }
@@ -83,7 +85,16 @@ const VideoRenderer = ({ src, ...props }: RendererProps) => {
                     crossOrigin='anonymous'
                     playsInline={true}
                     autoPlay={true}
-                    style={{ background: 'transparent', borderRadius: '10px', marginBottom: '20px', border: '0px grey solid', width: '100%', maxWidth: '100%', minHeight: '50%', maxHeight: '420px' }}
+                    style={{
+                        background: 'transparent',
+                        borderRadius: '10px',
+                        marginBottom: '20px',
+                        border: '0px grey solid',
+                        width: '100%',
+                        maxWidth: isHorizontal ? '100%' : 'auto',
+                        minHeight: '50%',
+                        maxHeight: '420px'
+                    }}
                 />
             </picture>
         </div>

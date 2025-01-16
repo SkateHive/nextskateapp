@@ -26,18 +26,16 @@ export const MarkdownRenderers = {
         alt={alt}
         src={src}
         title={title}
-        width="600"         // Specify a known width
-        height="345"        // Specify a known height
+        width="100%"         // Adjust width to 100%
+        height="auto"        // Adjust height to auto
         loading="lazy"      // Lazily load images not in viewport
         style={{
           display: 'inline-block',
           maxWidth: '100%',
-          height: '100%',
+          height: 'auto',
           borderRadius: '10px',
           marginTop: '20px',
           marginBottom: '20px',
-          minHeight: '425px',
-          maxHeight: '625px',
         }}
       />
     </span>

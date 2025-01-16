@@ -84,6 +84,7 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
             alignItems="center"
             onClick={() => handleMediaClick(media)}
             cursor="pointer"
+            width="100%" // Ensure full width
         >
             {media.type === 'video' ? (
                 <VideoRenderer src={media.url} />
@@ -95,6 +96,7 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
                     objectFit="cover"
                     maxHeight="445px"
                     loading="lazy"
+                    width="100%" // Ensure full width
                 />
             )}
         </Box>

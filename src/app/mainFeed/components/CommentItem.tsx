@@ -95,13 +95,14 @@ const CommentItem = ({
 
   return (
     <Box key={comment.id} p={4} bg="black" color="white">
-      <ReplyModal
-        comment={comment}
-        isOpen={isReplyModalOpen}
-        onClose={() => setIsReplyModalOpen(false)}
-        onNewComment={handleNewComment}
-      />
-
+      {isReplyModalOpen && (
+        <ReplyModal
+          comment={comment}
+          isOpen={isReplyModalOpen}
+          onClose={() => setIsReplyModalOpen(false)}
+          onNewComment={handleNewComment}
+        />
+      )}
       <Flex onClick={toggleCommentVisibility} cursor="pointer">
         <AuthorAvatar username={comment.author} />
         <VStack w={"100%"} ml={4} alignItems={"start"} marginRight={"16px"}>
