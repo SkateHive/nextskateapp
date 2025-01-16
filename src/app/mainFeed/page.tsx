@@ -66,7 +66,7 @@ const SkateCast = () => {
   const parentRef = useRef<HTMLDivElement>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const toast = useToast();
-  
+
   const handleOutsideClick = (e: any) => {
     if (parentRef.current && !parentRef.current.contains(e.target)) {
       setIsPickingEmoji(false);
@@ -363,7 +363,7 @@ const SkateCast = () => {
         "&::-webkit-scrollbar": { display: "none" },
         scrollbarWidth: "none",
       }}
-      maxW={"740px"}
+      maxW={"540px"}
       width={"100%"}
       borderInline={"1px solid rgb(255,255,255,0.2)"}
       height={"101vh"}

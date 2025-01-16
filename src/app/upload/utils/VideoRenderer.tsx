@@ -87,13 +87,8 @@ const VideoRenderer = ({ src, ...props }: RendererProps) => {
                     autoPlay={true}
                     style={{
                         background: 'transparent',
-                        borderRadius: '10px',
                         marginBottom: '20px',
-                        border: '0px grey solid',
                         width: '100%',
-                        maxWidth: isHorizontal ? '100%' : 'auto',
-                        minHeight: '50%',
-                        maxHeight: '420px'
                     }}
                 />
             </picture>

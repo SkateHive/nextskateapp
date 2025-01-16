@@ -26,14 +26,12 @@ export const MarkdownRenderers = {
         alt={alt}
         src={src}
         title={title}
-        width="100%"         // Adjust width to 100%
-        height="auto"        // Adjust height to auto
-        loading="lazy"      // Lazily load images not in viewport
+        width="100%"
+        height="auto"
+        loading="lazy"
         style={{
           display: 'inline-block',
           maxWidth: '100%',
-          height: 'auto',
-          borderRadius: '10px',
           marginTop: '20px',
           marginBottom: '20px',
         }}
@@ -50,7 +48,6 @@ export const MarkdownRenderers = {
     const skateHivePostRegex = /https:\/\/www\.skatehive\.app\/post\/([^/]+)\/@([^/]+)\/([^/]+)/;
     const match = skateHivePostRegex.exec(href);
 
-    // Profile link example: skatehive.app/skater/barracaoshop or skatehive.app/profile/barracaoshop
     const skatehiveProfileRegex = /https:\/\/(www\.)?(skatehive\.app|beta\.skatehive\.app)\/(profile|skater)\/([^/]+)/;
     const profileMatch = skatehiveProfileRegex.exec(href);
 
@@ -69,7 +66,7 @@ export const MarkdownRenderers = {
 
     return (
       <a
-        style={{ color: 'yellow', textWrap: 'wrap', wordBreak: 'break-all' }}
+        style={{ color: 'yellow', wordBreak: 'break-all' }}
         href={href}
         target="_blank"
         rel="noopener noreferrer"
@@ -80,16 +77,16 @@ export const MarkdownRenderers = {
     );
   },
   h1: ({ children, ...props }: RendererProps) => (
-    <h1 {...props} style={{ fontWeight: 'bold', color: '#A5D6A7', fontSize: '28px', paddingBottom: '10px', paddingTop: "10px", paddingLeft: '8px' }}>{children}</h1>
+    <h1 {...props} style={{ fontWeight: 'bold', color: '#A5D6A7', fontSize: '28px', padding: '10px 0 10px 8px' }}>{children}</h1>
   ),
   h3: ({ children, ...props }: RendererProps) => (
-    <h3 {...props} style={{ fontWeight: 'bold', color: '#A5D6A7', fontSize: '24px', paddingBottom: '6px', paddingTop: "12px", paddingLeft: '8px' }}>{children}</h3>
+    <h3 {...props} style={{ fontWeight: 'bold', color: '#A5D6A7', fontSize: '24px', padding: '12px 0 6px 8px' }}>{children}</h3>
   ),
   h2: ({ children, ...props }: RendererProps) => (
-    <h2 {...props} style={{ fontWeight: 'bold', color: '#A5D6A7', fontSize: '26px', paddingBottom: '8px', paddingTop: "10px", paddingLeft: '8px' }}>{children}</h2>
+    <h2 {...props} style={{ fontWeight: 'bold', color: '#A5D6A7', fontSize: '26px', padding: '10px 0 8px 8px' }}>{children}</h2>
   ),
   h4: ({ children, ...props }: RendererProps) => (
-    <h4 {...props} style={{ fontWeight: 'bold', color: '#A5D6A7', fontSize: '22px', paddingBottom: '6px', paddingTop: "12px", paddingLeft: '8px' }}>{children}</h4>
+    <h4 {...props} style={{ fontWeight: 'bold', color: '#A5D6A7', fontSize: '22px', padding: '12px 0 6px 8px' }}>{children}</h4>
   ),
   em: ({ children, ...props }: RendererProps) => (
     <em {...props} style={{ color: '#A5D6A7' }}>{children}</em>
@@ -112,14 +109,12 @@ export const MarkdownRenderers = {
       {children}
     </div>
   ),
-  ol: ({ ordered, children, ...props }: RendererProps) => {
-    const listType = ordered ? "1" : "decimal";
-    return <ol {...props} style={{ listStyleType: listType, paddingLeft: '10%' }}>{children}</ol>;
-  },
-  ul: ({ ordered, children, ...props }: RendererProps) => {
-    const listType = ordered ? "1" : "decimal";
-    return <ul {...props} data-ordered={listType} style={{ padding: '5%', paddingLeft: '10%', color: 'white' }}>{children}</ul>;
-  },
+  ol: ({ ordered, children, ...props }: RendererProps) => (
+    <ol {...props} style={{ listStyleType: ordered ? "1" : "decimal", paddingLeft: '10%' }}>{children}</ol>
+  ),
+  ul: ({ ordered, children, ...props }: RendererProps) => (
+    <ul {...props} data-ordered={ordered ? "1" : "decimal"} style={{ padding: '5%', paddingLeft: '10%', color: 'white' }}>{children}</ul>
+  ),
   sub: ({ children, ...props }: RendererProps) => (
     <sub {...props} style={{ color: 'gray' }}>{children}</sub>
   ),
@@ -159,7 +154,7 @@ export const MarkdownRenderers = {
       <iframe
         {...props}
         src={src}
-        style={{ borderRadius: '10px', marginBottom: '10px', maxWidth: '100%', minWidth: '100%', aspectRatio: '16/9', height: '100%', border: '2px grey solid' }}
+        style={{ marginBottom: '10px', maxWidth: '100%', minWidth: '100%', aspectRatio: '16/9', height: '100%', border: '2px grey solid' }}
       />
     </center>
   ),
@@ -167,7 +162,6 @@ export const MarkdownRenderers = {
   table: ({ children, ...props }: RendererProps) => (
     <div style={{
       display: 'flex', justifyContent: 'center',
-      border: '1px solid none',
       borderRadius: '10px',
       padding: '10px',
       overflowX: 'auto',
@@ -175,7 +169,6 @@ export const MarkdownRenderers = {
       <table
         {...props}
         style={{
-          border: '1px solid transparent',
           borderCollapse: 'collapse',
           margin: '0 auto',
           width: '100%',

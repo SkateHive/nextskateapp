@@ -18,8 +18,8 @@ import CustomLeftArrow from '../components/CommentItem/CustomLeftArrow';
 import CustomRightArrow from '../components/CommentItem/CustomRightArrow';
 import VideoRenderer from '@/app/upload/utils/VideoRenderer';
 
-interface ContentRendererProps {
-    editedCommentBody: string;
+interface CarrouselRendererProps {
+    mediaItems: MediaItem[];
 }
 
 type MediaItem = {
@@ -27,12 +27,10 @@ type MediaItem = {
     url: string;
 };
 
-const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }) => {
+const CarrouselRenderer: React.FC<CarrouselRendererProps> = ({ mediaItems }) => {
     const carouselRef = useRef<any>(null);
     const [isFullScreen, setIsFullScreen] = useState(false);
     const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
-    const videoRefs = useRef<Array<HTMLVideoElement | null>>([]);
-    const [loadedMedia, setLoadedMedia] = useState<boolean[]>([]);
 
     const responsive = {
         mobile: {
@@ -40,31 +38,6 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
             items: 1,
         },
     };
-
-    const extractMediaItems = (markdown: string): MediaItem[] => {
-        const imageRegex = /!\[.*?\]\((.*?)\)/g;
-        const iframeRegex = /<iframe[^>]+src="([^"]+)"[^>]*>/g;
-        const mediaItems: MediaItem[] = [];
-
-        let match;
-        while ((match = imageRegex.exec(markdown))) {
-            mediaItems.push({ type: 'image', url: match[1] });
-        }
-        while ((match = iframeRegex.exec(markdown))) {
-            mediaItems.push({ type: 'video', url: match[1] });
-        }
-        return mediaItems;
-    };
-
-    const mediaItems = useMemo(() => extractMediaItems(editedCommentBody), [editedCommentBody]);
-
-    const markdownWithoutMedia = useMemo(() => {
-        return editedCommentBody
-            .replace(/!\[.*?\]\((.*?)\)/g, '')
-            .replace(/<iframe[^>]*>/g, '')
-            .replace(/allowFullScreen>/g, '')
-            .replace(/allowFullScreen={true}>/g, '');
-    }, [editedCommentBody]);
 
     const handleMediaClick = (media: MediaItem) => {
         setSelectedMedia(media);
@@ -80,11 +53,9 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
         <Box
             key={index}
             display="flex"
-            justifyContent="center"
-            alignItems="center"
             onClick={() => handleMediaClick(media)}
             cursor="pointer"
-            width="100%" // Ensure full width
+            width="100%"
         >
             {media.type === 'video' ? (
                 <VideoRenderer src={media.url} />
@@ -92,11 +63,9 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
                 <Image
                     src={media.url}
                     alt="Post media"
-                    borderRadius="8px"
                     objectFit="cover"
-                    maxHeight="445px"
                     loading="lazy"
-                    width="100%" // Ensure full width
+                    width="100%"
                 />
             )}
         </Box>
@@ -104,15 +73,8 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
 
     return (
         <>
-            <Box w="100%" color="white">
-                <ReactMarkdown components={MarkdownRenderers} rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
-                    {autoEmbedZoraLink(
-                        transformNormalYoutubeLinksinIframes(
-                            transformIPFSContent(transformShortYoutubeLinksinIframes(markdownWithoutMedia))
-                        )
-                    )}
-                </ReactMarkdown>
-                {mediaItems.length > 0 && (
+            {mediaItems.length > 0 && (
+                <Box mt={4}>
                     <CarouselContainer>
                         <Carousel
                             ref={carouselRef}
@@ -124,8 +86,8 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
                             {mediaItems.map(renderMediaItem)}
                         </Carousel>
                     </CarouselContainer>
-                )}
-            </Box>
+                </Box>
+            )}
 
             {selectedMedia && selectedMedia.type === 'image' && (
                 <Modal isOpen={isFullScreen} onClose={closeModal} size="full">
@@ -144,10 +106,7 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
                             <Image
                                 src={selectedMedia.url}
                                 alt="Full screen media"
-                                borderRadius="8px"
                                 objectFit="contain"
-                                maxHeight="95vh"
-                                maxWidth="95vw"
                             />
 
                             <Box
@@ -180,8 +139,6 @@ const CarrouselRenderer: React.FC<ContentRendererProps> = ({ editedCommentBody }
                     </ModalContent>
                 </Modal>
             )}
-
-
         </>
     );
 };

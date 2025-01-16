@@ -14,13 +14,23 @@ import {
   Tooltip,
   VStack,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { FaRegComment } from "react-icons/fa";
 import { FaPencil } from "react-icons/fa6";
 import CarrouselRenderer from "../utils/CarrouselRenderer";
 import { EditCommentModal } from "./EditCommentModal";
 import ReplyModal from "./replyModal";
 import ToggleComments from "./ToggleComments";
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+import remarkGfm from 'remark-gfm';
+import { MarkdownRenderers } from '@/app/upload/utils/MarkdownRenderers';
+import {
+  autoEmbedZoraLink,
+  transformIPFSContent,
+  transformNormalYoutubeLinksinIframes,
+  transformShortYoutubeLinksinIframes
+} from '@/lib/utils';
 
 interface CommentItemProps {
   comment: any;
@@ -29,6 +39,11 @@ interface CommentItemProps {
   onClick?: () => void;
   onNewComment?: (comment: any) => void;
   onClose?: () => void;
+}
+
+interface MediaItem {
+  type: 'image' | 'video';
+  url: string;
 }
 
 const CommentItem = ({
@@ -93,8 +108,33 @@ const CommentItem = ({
     setIsCommentFormVisible((prev) => !prev);
   }
 
+  const extractMediaItems = (markdown: string): MediaItem[] => {
+    const imageRegex = /!\[.*?\]\((.*?)\)/g;
+    const iframeRegex = /<iframe[^>]+src="([^"]+)"[^>]*>/g;
+    const mediaItems: MediaItem[] = [];
+
+    let match;
+    while ((match = imageRegex.exec(markdown))) {
+      mediaItems.push({ type: 'image', url: match[1] });
+    }
+    while ((match = iframeRegex.exec(markdown))) {
+      mediaItems.push({ type: 'video', url: match[1] });
+    }
+    return mediaItems;
+  };
+
+  const mediaItems = useMemo(() => extractMediaItems(editedCommentBody), [editedCommentBody]);
+
+  const markdownWithoutMedia = useMemo(() => {
+    return editedCommentBody
+      .replace(/!\[.*?\]\((.*?)\)/g, '')
+      .replace(/<iframe[^>]*>/g, '')
+      .replace(/allowFullScreen>/g, '')
+      .replace(/allowFullScreen={true}>/g, '');
+  }, [editedCommentBody]);
+
   return (
-    <Box key={comment.id} p={4} bg="black" color="white">
+    <Box key={comment.id} bg="black" color="white">
       {isReplyModalOpen && (
         <ReplyModal
           comment={comment}
@@ -104,21 +144,31 @@ const CommentItem = ({
         />
       )}
       <Flex onClick={toggleCommentVisibility} cursor="pointer">
-        <AuthorAvatar username={comment.author} />
+        <Box p={4}>
+          <AuthorAvatar username={comment.author} />
+        </Box>
         <VStack w={"100%"} ml={4} alignItems={"start"} marginRight={"16px"}>
-          <HStack justify={"space-between"} width={"full"}>
-            <HStack cursor="pointer" gap="2px">
-              <Text fontWeight="bold">{comment.author}</Text>
-              <Text ml={2} color="gray.400" fontSize="14px">
-                · {formatDate(String(comment.created))}
-              </Text>
-            </HStack>
+          <HStack justify={"space-between"} width={"full"} cursor="pointer" gap="2px" >
+            <Text fontWeight="bold">{comment.author}</Text>
+            <Text ml={2} color="gray.400" fontSize="14px">
+              {formatDate(String(comment.created))}
+            </Text>
           </HStack>
-          <HStack justify={"space-between"} width={"full"}>
-            <CarrouselRenderer editedCommentBody={editedCommentBody} />
-          </HStack>
+          <Box w="100%">
+            <ReactMarkdown components={MarkdownRenderers} rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
+              {autoEmbedZoraLink(
+                transformNormalYoutubeLinksinIframes(
+                  transformIPFSContent(transformShortYoutubeLinksinIframes(markdownWithoutMedia))
+                )
+              )}
+            </ReactMarkdown>
+          </Box>
         </VStack>
       </Flex>
+
+      <Box w="100%" mt={4}>
+        <CarrouselRenderer mediaItems={mediaItems} />
+      </Box>
 
       <Flex m={4} justifyContent={"space-between"}>
         {comment.author === username ? (

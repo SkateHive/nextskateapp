@@ -28,12 +28,9 @@ const CarouselContainer = ({ children }: CarouselContainerProps) => {
 
     return (
         <Box
-            m={4}
-            maxW={'80%'}
             ref={containerRef}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            borderRadius={'10px'}
         >
             {children}
         </Box>
