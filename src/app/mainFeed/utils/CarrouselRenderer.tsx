@@ -107,6 +107,8 @@ const CarrouselRenderer: React.FC<CarrouselRendererProps> = ({ mediaItems }) => 
                                 src={selectedMedia.url}
                                 alt="Full screen media"
                                 objectFit="contain"
+                                loading="lazy"
+                                maxH={'90vh'}
                             />
 
                             <Box
