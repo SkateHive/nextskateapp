@@ -276,10 +276,12 @@ const VideoRenderer = ({ src, ...props }: RendererProps) => {
                                 border-radius: 0%;
                                 cursor: pointer;
                                 margin-top: -16px;
+                                box-shadow: none; /* Remove shadow */
                             }
                             input[type='range']::-webkit-slider-thumb:active {
                                 background: url('/skateboardloader.webp') no-repeat center;
                                 background-size: contain;
+                                box-shadow: none; /* Remove shadow */
                             }
                         `}</style>
 
