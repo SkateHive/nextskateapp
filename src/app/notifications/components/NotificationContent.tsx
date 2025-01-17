@@ -137,6 +137,7 @@ export function NotificationContent({
           onClose={() => setIsReplyModalOpen(false)}
           comment={post}
           onNewComment={() => { }}
+          content={post?.body || ""}
         />
       )}
       <Stack flexGrow={1} gap={1}>
