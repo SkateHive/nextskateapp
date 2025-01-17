@@ -2,7 +2,8 @@
 import UserAvatar from "@/components/UserAvatar";
 import { useHiveUser } from "@/contexts/UserContext";
 import { useComments } from "@/hooks/comments";
-import { getFileSignature, uploadImage, vote } from "@/lib/hive/client-functions";
+import useHiveBalance from "@/hooks/useHiveBalance";
+import { vote } from "@/lib/hive/client-functions";
 import { commentWithPrivateKey } from "@/lib/hive/server-functions";
 import { getTotalPayout } from "@/lib/utils";
 import {
@@ -57,6 +58,7 @@ const SkateCast = () => {
   const postBodyRef = useRef<HTMLTextAreaElement>(null);
   const user = useHiveUser();
   const username = user?.hiveUser?.name;
+  const { hiveUser } = useHiveUser();
   const [hasPosted, setHasPosted] = useState<boolean>(false);
   const [sortMethod, setSortMethod] = useState<string>("chronological");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -65,8 +67,14 @@ const SkateCast = () => {
   const [isPickingEmoji, setIsPickingEmoji] = useState<boolean>(false);
   const parentRef = useRef<HTMLDivElement>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [totalUploadedBytes, setTotalUploadedBytes] = useState(0);
+  const [fileSizes, setFileSizes] = useState<number[]>([]); // Stores the size of the files
+
+  const {
+    hivePower,
+  } = useHiveBalance(hiveUser);
   const toast = useToast();
-  
+
   const handleOutsideClick = (e: any) => {
     if (parentRef.current && !parentRef.current.contains(e.target)) {
       setIsPickingEmoji(false);
@@ -88,28 +96,50 @@ const SkateCast = () => {
     IpfsHash: string;
   }
 
+  // Calculate the maximum size limit based on the user's HP
+  const userHivePower = Number(hivePower) || 0;
+  const maxUploadSizeMB = Math.max(Math.floor(userHivePower / 10), 1); // 1 MB minimum
+  const maxUploadSizeBytes = maxUploadSizeMB * 1024 * 1024;
+
   const { getRootProps, getInputProps } = useDropzone({
     noClick: true,
     noKeyboard: true,
     onDrop: async (acceptedFiles: File[]) => {
       setIsUploading(true);
       const newImageList: string[] = [];
+      const newFileSizes: number[] = [];
+      let newTotalSize = totalUploadedBytes;
+
+      // Calculate the new total bytes
       for (const file of acceptedFiles) {
-        if (file.type.startsWith("video/")) {
-          const ipfsData: IPFSData | undefined = await uploadFileToIPFS(file);
-          if (ipfsData !== undefined) {
-            const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}`;
-            const markdownLink = `<iframe src="${ipfsUrl}" allowFullScreen={true}></iframe>`;
-            newImageList.push(markdownLink);
-          }
-        } else {
-          const signature = await getFileSignature(file);
-          const uploadUrl = await uploadImage(file, signature);
-          const markdownLink = `![Image](${uploadUrl})`;
+        newTotalSize += file.size;
+
+        // Check if the total size exceeds the limit
+        if (newTotalSize > maxUploadSizeBytes) {
+          toast({
+            title: "Upload Limit Reached",
+            description: `You have exceeded your upload limit of ${maxUploadSizeMB}MB.`,
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+          });
+          setIsUploading(false);
+          return; // Cancels the upload, not allowing additional files to be accepted
+        }
+        newFileSizes.push(file.size);
+        // Simulate file upload and store the link (replace with your actual upload process)
+        const ipfsData = await uploadFileToIPFS(file);
+        if (ipfsData) {
+          const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}`;
+          const markdownLink = `<iframe src="${ipfsUrl}" allowFullScreen={true}></iframe>`;
           newImageList.push(markdownLink);
         }
       }
+
+      // Update states **only after bound check**
+      setTotalUploadedBytes(newTotalSize);// Update the total bytes
       setImageList((prevList) => [...prevList, ...newImageList]);
+      setFileSizes((prevSizes) => [...prevSizes, ...newFileSizes]); // Update file sizes
       setIsUploading(false);
     },
     accept: {
@@ -118,6 +148,20 @@ const SkateCast = () => {
     },
     multiple: true,
   });
+
+  // useEffect to recalculate and adjust the upload limit
+  useEffect(() => {
+    const remainingSize = maxUploadSizeBytes - totalUploadedBytes;
+    if (remainingSize < 0) {
+      setTotalUploadedBytes(0); /// If the total is negative, we reset to 0
+    }
+    console.log(`Remaining upload size: ${(remainingSize / (1024 * 1024)).toFixed(2)} MB`);
+  }, [totalUploadedBytes]);
+
+  useEffect(() => {
+    console.log(`Total uploaded: ${(totalUploadedBytes / (1024 * 1024)).toFixed(2)} MB`);
+  }, [totalUploadedBytes]);
+
 
   const handlePaste = async (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
     const clipboardItems = event.clipboardData.items;
@@ -322,8 +366,16 @@ const SkateCast = () => {
     }
   };
 
+
+  // Function to remove an image or video
   const handleRemoveImage = (index: number) => {
-    setImageList((prevList) => prevList.filter((_, i) => i !== index));
+    const fileSize = fileSizes[index]; // Get the size of the removed file
+
+    setImageList((prevList) => prevList.filter((_, i) => i !== index)); // Remove the item from the list
+    setFileSizes((prevSizes) => prevSizes.filter((_, i) => i !== index)); // Remove the size of the removed file
+
+    // Update the total bytes after removing the file
+    setTotalUploadedBytes((prevSize) => Math.max(prevSize - fileSize, 0)); // Ensures that the total will never be negative
   };
 
   const handleVote = async (author: string, permlink: string) => {
@@ -475,37 +527,34 @@ const SkateCast = () => {
                   style={{ display: "none" }}
                   {...getInputProps({ refKey: "ref" })}
                   ref={inputRef}
-                  disabled={isLoading}
+                  disabled={isLoading || isUploading}
                 />
+
                 <Button
-                  name="md-image-upload"
                   variant="ghost"
-                  onClick={() => !isLoading && inputRef.current?.click()}
-                  _hover={{
-                    background: "none",
-                  }}
-                  isDisabled={isLoading}
+                  onClick={() => !isLoading && !isUploading && inputRef.current?.click()}
+                  _hover={{ background: "none" }}
+                  isDisabled={isLoading || isUploading}
                 >
                   <FaImage style={{ color: "#ABE4B8", cursor: "pointer", transition: "all 0.2s" }} />
                 </Button>
+
                 <Button
-                  name="md-select-emoji"
                   variant="ghost"
-                  onClick={() => { !isLoading && setIsPickingEmoji(is => !is) }}
-                  _hover={{
-                    background: "none",
-                  }}
-                  isDisabled={isLoading}
+                  onClick={() => !isLoading && setIsPickingEmoji((prev) => !prev)}
+                  _hover={{ background: "none" }}
+                  isDisabled={isLoading || isUploading}
                 >
                   <FaFaceSmile style={{ color: "#ABE4B8", cursor: "pointer", transition: "all 0.2s" }} />
                 </Button>
+
                 <Button
                   color="#ABE4B8"
                   variant="ghost"
                   ml="auto"
                   onClick={handlePostClick}
                   isLoading={isProcessing}
-                  isDisabled={isLoading}
+                  isDisabled={isLoading || isUploading || isProcessing || totalUploadedBytes === 0}
                   _hover={{
                     color: "limegreen",
                     textShadow: "0 0 10px 0 limegreen",
