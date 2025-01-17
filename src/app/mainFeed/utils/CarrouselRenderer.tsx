@@ -39,7 +39,7 @@ const CarrouselRenderer: React.FC<CarrouselRendererProps> = ({ mediaItems, onIma
             onClick={media.type === 'image' ? onImageClick : undefined}
         >
             {media.type === 'video' ? (
-                <VideoRenderer src={media.url} />
+                <VideoRenderer src={media.url} onCommentIconClick={onCommentIconClick} />
             ) : (
                 <Image
                     src={media.url}
@@ -49,20 +49,6 @@ const CarrouselRenderer: React.FC<CarrouselRendererProps> = ({ mediaItems, onIma
                     width="100%"
                 />
             )}
-            <IconButton
-                icon={<FaRegComment />}
-                position="absolute"
-                top="10px"
-                right="10px"
-                colorScheme="teal"
-                aria-label="Toggle comments"
-                onClick={(e) => {
-                    e.stopPropagation();
-                    if (onCommentIconClick) {
-                        onCommentIconClick();
-                    }
-                }}
-            />
         </Box>
     );
 

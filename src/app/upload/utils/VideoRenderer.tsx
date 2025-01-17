@@ -2,13 +2,15 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Box, Button, IconButton, HStack } from '@chakra-ui/react';
 import { FiVolume2, FiVolumeX, FiMaximize, FiMinimize } from 'react-icons/fi';
 import { LuPause, LuPlay } from 'react-icons/lu';
+import { FaRegComment } from 'react-icons/fa';
 
 type RendererProps = {
     src?: string;
+    onCommentIconClick?: () => void;
     [key: string]: any;
 };
 
-const VideoRenderer = ({ src, ...props }: RendererProps) => {
+const VideoRenderer = ({ src, onCommentIconClick, ...props }: RendererProps) => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const [poster, setPoster] = useState<string>('/home_animation_body.gif');
     const [isPlaying, setIsPlaying] = useState(false);
@@ -228,6 +230,22 @@ const VideoRenderer = ({ src, ...props }: RendererProps) => {
                         >
                             {volume === 0 ? <FiVolumeX /> : <FiVolume2 />}
                         </IconButton>
+                        <IconButton
+                            aria-label='Toggle comments'
+                            icon={<FaRegComment />}
+                            colorScheme='teal'
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                if (onCommentIconClick) {
+                                    onCommentIconClick();
+                                }
+                            }}
+                            p={2}
+                            variant={'ghost'}
+                            color={'white'}
+                            _hover={{ bg: 'transparent', color: 'black' }}
+                            size='md'
+                        />
                         <IconButton
                             aria-label='Fullscreen'
                             onClick={handleFullscreenToggle}
