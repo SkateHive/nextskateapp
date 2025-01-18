@@ -143,7 +143,7 @@ const HBDSendModal: React.FC<isHbdSendProps> = ({
                                     <AuthorAvatar username={previousRecipient} borderRadius={100} />
                                 )}
                                 <Input
-                                    placeholder="@Username"
+                                    placeholder="Username"
                                     value={recipient}
                                     onChange={(e) => setRecipient(e.target.value)}
                                     bg="white"
@@ -151,6 +151,7 @@ const HBDSendModal: React.FC<isHbdSendProps> = ({
                                     borderRadius="5px"
                                     variant="outline"
                                     ml={4}
+                                    _placeholder={{ color: 'gray.500' }} 
                                 />
                             </Box>
                             <Input
@@ -168,6 +169,7 @@ const HBDSendModal: React.FC<isHbdSendProps> = ({
                                 color="black"
                                 borderRadius="5px"
                                 variant="outline"
+                                _placeholder={{ color: 'gray.500' }} 
                             />
                             <Input
                                 placeholder="Memo (Optional)"
@@ -177,6 +179,7 @@ const HBDSendModal: React.FC<isHbdSendProps> = ({
                                 color="black"
                                 borderRadius="5px"
                                 variant="outline"
+                                _placeholder={{ color: 'gray.500' }} 
                             />
                             <HStack spacing={4} mt={4}>
                                 <Button

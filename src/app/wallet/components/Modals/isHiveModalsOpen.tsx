@@ -219,7 +219,7 @@ const HiveModalOpen: React.FC<HiveModalOpenProps> = ({
                                     <AuthorAvatar username={previousRecipient} borderRadius={100} />
                                 )}
                                 <Input
-                                    placeholder="@Username"
+                                    placeholder="Username"
                                     value={recipient}
                                     onChange={(e) => setRecipient(e.target.value)}
                                     bg="white"
@@ -227,6 +227,7 @@ const HiveModalOpen: React.FC<HiveModalOpenProps> = ({
                                     borderRadius="5px"
                                     variant="outline"
                                     ml={4}
+                                    _placeholder={{ color: 'gray.500' }} 
                                 />
                             </Box>
 
@@ -245,6 +246,7 @@ const HiveModalOpen: React.FC<HiveModalOpenProps> = ({
                                 color="black"
                                 borderRadius="5px"
                                 variant="outline"
+                                _placeholder={{ color: 'gray.500' }} 
                             />
 
                             <Input
@@ -255,6 +257,7 @@ const HiveModalOpen: React.FC<HiveModalOpenProps> = ({
                                 color="black"
                                 borderRadius="5px"
                                 variant="outline"
+                                _placeholder={{ color: 'gray.500' }} 
                             />
                             <HStack spacing={4} mt={4}>
                                 <Button
@@ -360,6 +363,7 @@ const HiveModalOpen: React.FC<HiveModalOpenProps> = ({
                                 color="black"
                                 borderRadius="5px"
                                 variant="outline"
+                                _placeholder={{ color: 'gray.500' }} 
                             />
 
                             <Input
@@ -370,6 +374,7 @@ const HiveModalOpen: React.FC<HiveModalOpenProps> = ({
                                 color="black"
                                 borderRadius="5px"
                                 variant="outline"
+                                _placeholder={{ color: 'gray.500' }} 
                             />
                             <HStack spacing={4} mt={4}>
                                 <Button colorScheme="red" onClick={sendPowerUp} width="full">Power Up</Button>
