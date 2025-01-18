@@ -265,6 +265,7 @@ const HBDSavingsModal: React.FC<HbdSavingsModalProps> = ({
                                 color="black"
                                 borderRadius="5px"
                                 variant="outline"
+                                _placeholder={{ color: 'gray.500' }} 
                             />
 
                             <HStack spacing={4} mt={4}>
@@ -343,6 +344,7 @@ const HBDSavingsModal: React.FC<HbdSavingsModalProps> = ({
                                 color="black"
                                 borderRadius="5px"
                                 variant="outline"
+                                _placeholder={{ color: 'gray.500' }} 
                             />
 
                             <HStack spacing={4} mt={4}>

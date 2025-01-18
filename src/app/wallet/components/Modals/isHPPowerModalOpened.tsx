@@ -215,7 +215,7 @@ const HpDelegateModal: React.FC<isHpDelegateProps> = ({
                                     <AuthorAvatar username={previousRecipient} borderRadius={100} />
                                 )}
                                 <Input
-                                    placeholder="@Username"
+                                    placeholder="Username"
                                     value={recipient}
                                     onChange={(e) => setRecipient(e.target.value)}
                                     bg="white"
@@ -223,6 +223,7 @@ const HpDelegateModal: React.FC<isHpDelegateProps> = ({
                                     borderRadius="5px"
                                     variant="outline"
                                     ml={4}
+                                    _placeholder={{ color: 'gray.500' }} 
                                 />
                             </Box>
                             <Input
@@ -233,6 +234,7 @@ const HpDelegateModal: React.FC<isHpDelegateProps> = ({
                                 color="black"
                                 borderRadius="5px"
                                 variant="outline"
+                                _placeholder={{ color: 'gray.500' }} 
                             />
 
                             <HStack spacing={4} mt={4}>
@@ -319,6 +321,7 @@ const HpDelegateModal: React.FC<isHpDelegateProps> = ({
                                 color="black"
                                 borderRadius="5px"
                                 variant="outline"
+                                _placeholder={{ color: 'gray.500' }} 
                             />
                             <HStack spacing={4} mt={4}>
                                 <Button colorScheme="red" onClick={HPPowerDown} width="full">Power Down</Button>
