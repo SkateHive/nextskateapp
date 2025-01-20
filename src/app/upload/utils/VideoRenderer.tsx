@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { Box, Button, IconButton, HStack } from '@chakra-ui/react';
-import { FiVolume2, FiVolumeX, FiMaximize, FiMinimize } from 'react-icons/fi';
-import { LuPause, LuPlay } from 'react-icons/lu';
+import { Box, Button, HStack, IconButton } from '@chakra-ui/react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FaRegComment } from 'react-icons/fa';
+import { FiMaximize, FiMinimize, FiVolume2, FiVolumeX } from 'react-icons/fi';
+import { LuPause, LuPlay } from 'react-icons/lu';
 
 type RendererProps = {
     src?: string;
@@ -102,14 +102,39 @@ const VideoRenderer = ({ src, onCommentIconClick, ...props }: RendererProps) => 
 
     const handleFullscreenToggle = useCallback(() => {
         if (videoRef.current) {
-            if (isFullscreen) {
-                document.exitFullscreen();
+            const videoElement = videoRef.current;
+            
+            // Check if we are currently in fullscreen mode
+            if (document.fullscreenElement) {
+                // If in fullscreen, exit fullscreen
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if ((document as any).webkitExitFullscreen) {
+                    (document as any).webkitExitFullscreen();  
+                } else if ((document as any).mozCancelFullScreen) {
+                    (document as any).mozCancelFullScreen();  
+                } else if ((document as any).msExitFullscreen) {
+                    (document as any).msExitFullscreen();  
+                }
             } else {
-                videoRef.current.requestFullscreen();
+                // If not in fullscreen, request fullscreen
+                if (videoElement.requestFullscreen) {
+                    videoElement.requestFullscreen();
+                } else if ((videoElement as any).webkitRequestFullscreen) {
+                    (videoElement as any).webkitRequestFullscreen();  
+                } else if ((videoElement as any).mozRequestFullScreen) {
+                    (videoElement as any).mozRequestFullScreen();  
+                } else if ((videoElement as any).msRequestFullscreen) {
+                    (videoElement as any).msRequestFullscreen();  
+                }
             }
+            
+            // Toggle fullscreen state
             setIsFullscreen(!isFullscreen);
         }
     }, [isFullscreen]);
+    
+    
 
     const handleProgressChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
