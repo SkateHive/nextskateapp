@@ -27,7 +27,6 @@ import remarkGfm from 'remark-gfm';
 import { MarkdownRenderers } from '@/app/upload/utils/MarkdownRenderers';
 import {
   autoEmbedZoraLink,
-  transformIPFSContent,
   transformNormalYoutubeLinksinIframes,
   transformShortYoutubeLinksinIframes
 } from '@/lib/utils';
@@ -144,7 +143,7 @@ const CommentItem = ({
             <ReactMarkdown components={MarkdownRenderers} rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
               {autoEmbedZoraLink(
                 transformNormalYoutubeLinksinIframes(
-                  transformIPFSContent(transformShortYoutubeLinksinIframes(markdownWithoutMedia))
+                  (transformShortYoutubeLinksinIframes(markdownWithoutMedia))
                 )
               )}
             </ReactMarkdown>

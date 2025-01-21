@@ -54,7 +54,7 @@ const ProposalDetailPanel = ({
     const [permlink, setPermlink] = useState<string | null>(null);
 
     useEffect(() => {
-        if (mainProposal && mainProposal.body) {
+        if (mainProposal?.body) {
             const extractedData = extractAuthorAndPermlink(mainProposal.body);
             if (extractedData) {
                 setAuthor(extractedData.author);
@@ -118,7 +118,6 @@ const ProposalDetailPanel = ({
 
     useEffect(() => {
         fetchVotes(String(mainProposal?.id))
-        console.log("fetching votes")
     }, []);
 
     return (

@@ -66,21 +66,21 @@ const SocialModal: React.FC<SocialModalProps> = ({ isOpen, onClose, postUrl, con
     return (
         <Modal isOpen={isOpen} onClose={onClose} size="lg" motionPreset="slideInBottom">
             <ModalOverlay />
-            <ModalContent border={"1px solid white"} bg="gray.900" color="white">
+            <ModalContent border={"1px solid white"} bg="black" color="white">
                 <ModalHeader fontSize="lg" fontWeight="bold">Share Your Post !!!</ModalHeader>
                 <Divider />
                 <ModalCloseButton />
                 <ModalBody>
                     <VStack spacing={6} align="stretch">
                         <Flex gap={2} marginTop={"5%"} wrap="wrap" justify="center">
-                            <Button onClick={handleShareTwitter} border={"1px solid white"} color="white" leftIcon={<FaXTwitter />} size="sm">Twitter</Button>
-                            <Button onClick={handleShareWarpCast} color={"white"} bg={"#7c65c1"} leftIcon={<Image alt='warpcast' src='/warpcast.png' boxSize="20px" />} size="sm">Warpcast</Button>
-                            <Button onClick={handleShareDiscord} color="white" bg={"purple"} leftIcon={<FaDiscord />} size="sm">Discord</Button>
+                            <Button onClick={handleShareTwitter} bg={'black'} border={"1px solid white"} color="white" leftIcon={<FaXTwitter />} size="sm" _hover={{ bg: "blue.400" }}>Twitter</Button>
+                            <Button onClick={handleShareWarpCast} color={"white"} bg={"#7c65c1"} leftIcon={<Image alt='warpcast' src='/warpcast.png' boxSize="20px" />} size="sm" _hover={{ bg: "white", border: "1px solid white", color: 'black' }}>WarpCast</Button>
+                            <Button onClick={handleShareDiscord} color="white" bg={"purple"} leftIcon={<FaDiscord />} size="sm" _hover={{ bg: "white", border: "1px solid white", color: 'black' }}>Discord</Button>
 
                         </Flex>
                         <Flex align="center" justify="space-between" mt={4}>
-                            <Input value={postUrl} bg={"grey"} isReadOnly variant="filled" size="sm" />
-                            <Button bg={"transparent"} border={"1px solid white"} color={"white"} onClick={handleCopyPostLink} leftIcon={<FaCopy />} size="sm">
+                            <Input value={postUrl} bg={"grey"} isReadOnly variant="filled" size="sm" _hover={{ bg: "white", border: "1px solid white", color: 'black' }} />
+                            <Button bg={"transparent"} border={"1px solid white"} color={"white"} onClick={handleCopyPostLink} leftIcon={<FaCopy />} size="sm" _hover={{ bg: "white", border: "1px solid white", color: 'black' }}>
                                 {postLinkCopied ? 'Copied!' : 'Copy'}
                             </Button>
                         </Flex>

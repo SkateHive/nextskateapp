@@ -1,5 +1,5 @@
 import getSummary from "@/lib/getSummaryAI";
-import { proposalsQuery } from "../utils/queries";
+import { proposalsQuery } from "./queries";
 
 export interface Proposal {
     id: string;

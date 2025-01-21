@@ -1,6 +1,5 @@
 'use client'
 import useAuthHiveUser from "@/lib/useHiveAuth";
-import { transformIPFSContent } from "@/lib/utils";
 import { Avatar, Badge, Box, Button, Center, Checkbox, Divider, Flex, HStack, Image, Input, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Spinner, Text, Tooltip, VStack } from "@chakra-ui/react";
 import MDEditor, { commands } from '@uiw/react-md-editor';
 import { ArrowRightIcon } from "lucide-react";
@@ -15,6 +14,7 @@ import AuthorSearchBar from "./components/searchBar";
 import { MarkdownRenderers } from "./utils/MarkdownRenderers";
 import { extractImageUrls } from "./utils/extractImages";
 import { uploadFileToIPFS } from "./utils/uploadToIPFS";
+import { transform3SpeakContent, transformEcencyImages, transformNormalYoutubeLinksinIframes, transformShortYoutubeLinksinIframes } from "@/lib/utils";
 
 const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN;
 
@@ -592,7 +592,8 @@ export default function Upload() {
                         }
                     }}>
                         <ReactMarkdown components={MarkdownRenderers} rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
-                            {(transformIPFSContent(value))}
+                            {transform3SpeakContent(
+                                transformEcencyImages(transformNormalYoutubeLinksinIframes(transformShortYoutubeLinksinIframes(value))))}
                         </ReactMarkdown>
                     </Box>
                 </Box>

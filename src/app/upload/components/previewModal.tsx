@@ -84,8 +84,6 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
             return;
         }
 
-
-        console.log('finalBeneficiaries', finalBeneficiaries);
         const permlink = slugify(title.toLowerCase());
         const loginMethod = localStorage.getItem('LoginMethod');
 

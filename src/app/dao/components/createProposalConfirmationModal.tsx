@@ -9,6 +9,7 @@ import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import { createProposal } from '../utils/createProposal';
+import { transform3SpeakContent, transformEcencyImages, transformNormalYoutubeLinksinIframes, transformShortYoutubeLinksinIframes } from '@/lib/utils';
 
 export enum ProposalType {
     SingleChoice = 'single-choice',
@@ -145,7 +146,8 @@ const CreateProposalConfirmationModal: React.FC<CreateProposalConfirmationModalP
                         remarkPlugins={[remarkGfm]}
                         rehypePlugins={[rehypeRaw]}
                     >
-                        {proposalBody}
+                        {transform3SpeakContent(
+                            transformEcencyImages(transformNormalYoutubeLinksinIframes(transformShortYoutubeLinksinIframes(proposalBody))))}
                     </ReactMarkdown>
                 </ModalBody>
                 <ModalFooter>

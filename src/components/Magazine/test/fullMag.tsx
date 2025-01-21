@@ -6,7 +6,6 @@ import {
   getTotalPayout,
   transform3SpeakContent,
   transformEcencyImages,
-  transformIPFSContent,
   transformNormalYoutubeLinksinIframes,
   transformShortYoutubeLinksinIframes,
 } from "@/lib/utils";
@@ -224,14 +223,10 @@ export default function FullMag({ tag, query }: TestPageProps) {
                 components={FullMagazineRenderers}
               >
                 {transform3SpeakContent(
-                  transformIPFSContent(
-                    transformEcencyImages(
-                      transformNormalYoutubeLinksinIframes(
-                        transformShortYoutubeLinksinIframes(post.body)
-                      ),
-                    ),
-                  ),
-                ).replace("ipfs.skatehive.app", PINATA_URL)}
+                  (transformEcencyImages(
+                    transformNormalYoutubeLinksinIframes(
+                      transformShortYoutubeLinksinIframes(post.body))))
+                )}
               </ReactMarkdown>
               <Divider mt={4} mb={4} />
               <Flex justifyContent={"space-between"}>

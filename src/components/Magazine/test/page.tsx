@@ -7,7 +7,6 @@ import {
   getTotalPayout,
   transform3SpeakContent,
   transformEcencyImages,
-  transformIPFSContent,
   transformNormalYoutubeLinksinIframes,
   transformShortYoutubeLinksinIframes,
 } from "@/lib/utils";
@@ -251,14 +250,12 @@ export default memo(function Zine({ tag, query }: TestPageProps) {
                 components={MagazineRenderers}
               >
                 {transform3SpeakContent(
-                  transformIPFSContent(
-                    transformEcencyImages(
-                      transformNormalYoutubeLinksinIframes(
-                        transformShortYoutubeLinksinIframes(post.body),
-                      ),
+                  transformEcencyImages(
+                    transformNormalYoutubeLinksinIframes(
+                      transformShortYoutubeLinksinIframes(post.body),
                     ),
                   ),
-                ).replace("ipfs.skatehive.app", PINATA_URL)}
+                )}
               </ReactMarkdown>
               <Divider mt={4} mb={4} />
               <Text>Pending Payout: {post.pending_payout_value.toString()}</Text>

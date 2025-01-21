@@ -7,15 +7,15 @@ import VideoRenderer from './VideoRenderer'; // Import the VideoRenderer
 
 type MarkdownProps = {
   node?: any;
-  alt?: any;
-  src?: any;
-  title?: any;
+  alt?: string;
+  src?: string;
+  title?: string;
 };
 
 type RendererProps = MarkdownProps & {
   children?: React.ReactNode;
   ordered?: any;
-  href?: any;
+  href?: string;
 };
 
 export const MarkdownRenderers = {
@@ -46,10 +46,10 @@ export const MarkdownRenderers = {
   ),
   a: ({ href, children, ...props }: RendererProps) => {
     const skateHivePostRegex = /https:\/\/www\.skatehive\.app\/post\/([^/]+)\/@([^/]+)\/([^/]+)/;
-    const match = skateHivePostRegex.exec(href);
+    const match = skateHivePostRegex.exec(String(href));
 
     const skatehiveProfileRegex = /https:\/\/(www\.)?(skatehive\.app|beta\.skatehive\.app)\/(profile|skater)\/([^/]+)/;
-    const profileMatch = skatehiveProfileRegex.exec(href);
+    const profileMatch = skatehiveProfileRegex.exec(String(href));
 
     if (match) {
       const [fullMatch, parentPermlink, username, postPermlink] = match;
@@ -149,15 +149,24 @@ export const MarkdownRenderers = {
       </center>
     </div>
   ),
-  iframe: ({ src, ...props }: RendererProps) => (
-    <center>
-      <iframe
-        {...props}
-        src={src}
-        style={{ marginBottom: '10px', maxWidth: '100%', minWidth: '100%', aspectRatio: '16/9', height: '100%', border: '2px grey solid' }}
-      />
-    </center>
-  ),
+  iframe: ({ src, ...props }: RendererProps) => {
+    const zoraRegex = /https:\/\/zora\.co\/.*/;
+    const threeSpeakRegex = /https:\/\/3speak\.tv\/.*/;
+
+    if (zoraRegex.test(String(src)) || threeSpeakRegex.test(String(src))) {
+      return (
+        <center>
+          <iframe
+            {...props}
+            src={src}
+            style={{ marginBottom: '10px', maxWidth: '100%', minWidth: '100%', aspectRatio: '16/9', height: '100%', border: '2px grey solid' }}
+          />
+        </center>
+      );
+    } else {
+      return <VideoRenderer src={src} {...props} />;
+    }
+  },
   video: VideoRenderer, // Use the imported VideoRenderer
   table: ({ children, ...props }: RendererProps) => (
     <div style={{

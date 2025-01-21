@@ -77,16 +77,7 @@ export function transform3SpeakContent(content: string): string {
 export function formatETHaddress(address: string) {
   return `${address.slice(0, 4)}...${address.slice(-4)}`
 }
-export function transformIPFSContent(content: string): string {
-  const regex = /<iframe src="https:\/\/ipfs\.skatehive\.app\/ipfs\/([a-zA-Z0-9-?=&]+)"(?:(?!<\/iframe>).)*\sallowfullscreen><\/iframe>/g;
 
-  return content.replace(regex, (match, videoID) => {
-    return `<video controls muted loop> 
-                <source src="https://${PINATA_URL}/ipfs/${videoID}" type="video/mp4">
-                <source src="https://${PINATA_URL}/ipfs/${videoID}" type="video/quicktime">
-            </video>`;
-  });
-}
 export function transformEcencyImages(content: string): string {
   const regex = /https:\/\/images\.ecency\.com\/p\/([\w-?=&.]+)/g;
 
@@ -182,3 +173,65 @@ export const extractMediaItems = (markdown: string): MediaItem[] => {
   }
   return mediaItems;
 };
+
+import * as url from "url"
+
+export interface LinkWithDomain {
+  url: string
+  domain: string
+}
+
+export function extractLinksFromMarkdown(
+  markdownContent: string
+): LinkWithDomain[] {
+  const linkRegex = /!\[.*?\]\((.*?)\)/g
+  const links = markdownContent.match(linkRegex) || []
+
+  const linksWithDomains: LinkWithDomain[] = links.map((link) => {
+    const urlMatch = link.match(/\[.*?\]\((.*?)\)/)
+    const fullUrl = urlMatch ? urlMatch[1] : ""
+    const parsedUrl = url.parse(fullUrl)
+    const domain = parsedUrl.hostname || ""
+    return { url: fullUrl, domain }
+  })
+
+  return linksWithDomains
+}
+
+export function extractIFrameLinks(htmlContent: string): LinkWithDomain[] {
+  const iframeRegex = /<iframe.*?src=["']([^"']*)["']/gi
+  const iframes = htmlContent.match(iframeRegex) || []
+
+  const iframeWithDomains: LinkWithDomain[] = iframes.map((iframe) => {
+    const srcMatch = iframe.match(/src=["']([^"']*)["']/)
+    const fullSrc = srcMatch ? srcMatch[1] : ""
+    const parsedSrc = url.parse(fullSrc)
+    const domain = parsedSrc.hostname || ""
+    return { url: fullSrc, domain }
+  })
+
+  return iframeWithDomains
+}
+
+export function extractCustomLinks(inputText: string): LinkWithDomain[] {
+  const customLinkRegex = /https:\/\/3speak\.tv\/watch\?v=[\w\d\-\/]+/gi
+  const customLinks = inputText.match(customLinkRegex) || []
+
+  const customLinkSet = new Set<string>()
+  const customLinksWithDomains: LinkWithDomain[] = []
+
+  for (const link of customLinks) {
+    if (!customLinkSet.has(link)) {
+      customLinkSet.add(link)
+      const parsedUrl = new URL(link)
+      const domain = parsedUrl.hostname || ""
+      customLinksWithDomains.push({
+        url: link.replace("watch", "embed"),
+        domain,
+      })
+    }
+  }
+
+  return customLinksWithDomains
+}
+

@@ -1,18 +1,19 @@
 "use client"
 
 import { usePostContext } from "@/contexts/PostContext"
-import {
-  LinkWithDomain,
-  extractCustomLinks,
-  extractIFrameLinks,
-  extractLinksFromMarkdown,
-} from "@/lib/markdown"
 import { PINATA_URL } from "@/utils/config"
 import { Box, Image } from "@chakra-ui/react"
 import { useRef } from "react"
 import Carousel from "react-multi-carousel"
 import "react-multi-carousel/lib/styles.css"
 import "./Post.css"
+import {
+  extractCustomLinks,
+  extractIFrameLinks,
+  extractLinksFromMarkdown,
+  LinkWithDomain
+}
+  from "@/lib/utils"
 
 
 

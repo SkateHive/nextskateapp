@@ -7,7 +7,7 @@ import { useComments } from "@/hooks/comments";
 import getTranslation from "@/lib/getTranslation";
 import HiveClient from "@/lib/hive/hiveclient";
 import { HiveAccount } from "@/lib/useHiveAuth";
-import { transform3SpeakContent, transformEcencyImages, transformIPFSContent, transformNormalYoutubeLinksinIframes, transformShortYoutubeLinksinIframes } from "@/lib/utils";
+import { transform3SpeakContent, transformEcencyImages, transformNormalYoutubeLinksinIframes, transformShortYoutubeLinksinIframes } from "@/lib/utils";
 import {
   Box,
   Center,
@@ -131,7 +131,8 @@ export function PostModal({ isOpen, onClose, username }: PostModalInterface) {
               </Center>
             ) : (
               <ReactMarkdown components={MarkdownRenderers} rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
-                {transformNormalYoutubeLinksinIframes(transformShortYoutubeLinksinIframes(transformIPFSContent(isTranslated ? translatedPost : transformedPostBody)))}
+                {transform3SpeakContent(
+                  transformEcencyImages(transformNormalYoutubeLinksinIframes(transformShortYoutubeLinksinIframes((isTranslated ? translatedPost : transformedPostBody)))))}
               </ReactMarkdown>
             )}
           </Box>
