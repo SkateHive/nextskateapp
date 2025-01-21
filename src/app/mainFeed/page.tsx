@@ -19,6 +19,7 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
+  Spinner,
   Text,
   Textarea,
   useToast,
@@ -98,10 +99,11 @@ const SkateCast = () => {
 
   // Calculate the maximum size limit based on the user's HP
   const userHivePower = Number(hivePower) || 0;
-  const maxUploadSizeMB = Math.max(Math.floor(userHivePower / 10), 1); // 1 MB minimum
-  const maxUploadSizeBytes = maxUploadSizeMB * 1024 * 1024;
+  const maxUploadSizeMB = Math.max(Math.floor(userHivePower / 10), 2); // 2 MB minimum
+  const maxUploadSizeBytes = maxUploadSizeMB * 1024 * 2048;
 
   const { getRootProps, getInputProps } = useDropzone({
+
     noClick: true,
     noKeyboard: true,
     onDrop: async (acceptedFiles: File[]) => {
@@ -118,7 +120,7 @@ const SkateCast = () => {
         if (newTotalSize > maxUploadSizeBytes) {
           toast({
             title: "Upload Limit Reached",
-            description: `You have exceeded your upload limit of ${maxUploadSizeMB}MB.`,
+            description: `You have exceeded your upload limit of ${maxUploadSizeMB}MB. To increase your limit, you need  Power.`,
             status: "error",
             duration: 3000,
             isClosable: true,
@@ -482,41 +484,59 @@ const SkateCast = () => {
                   </div>
 
                   <HStack>
-                    {imageList.map((item, index) => (
-                      <Box key={index} position="relative" maxW={100} maxH={100}>
-                        <IconButton
-                          aria-label="Remove image"
-                          icon={<FaTimes style={{ color: "black", strokeWidth: 1 }} />}
-                          size="base"
-                          color="white"
-                          bg="white"
-                          _hover={{ bg: "white", color: "black" }}
-                          _active={{ bg: "white", color: "black" }}
-                          position="absolute"
-                          top="0"
-                          right="0"
-                          onClick={() => handleRemoveImage(index)}
-                          zIndex="1"
-                          borderRadius="full"
-                        />
-                        {item.includes("![Image](") ? (
-                          <Image
-                            src={item.match(/!\[Image\]\((.*?)\)/)?.[1] || ""}
-                            alt="markdown-image"
-                            maxW="100%"
-                            maxH="100%"
-                            objectFit="contain"
-                          />
-                        ) : (
-                          <video
-                            src={item.match(/<iframe src="(.*?)" allowFullScreen={true}><\/iframe>/)?.[1]}
-                            controls
-                            muted
-                            width="100%"
-                          />
-                        )}
-                      </Box>
-                    ))}
+                    <div>
+                     {/* Displaying global loading indicator */}
+                      {isUploading ? (
+                        <div className="loading-indicator">
+                          <Spinner size="xl" />
+                        </div>
+                      ) : (
+                        <div>
+                          {/* Here you display the list of uploaded files */}
+                          {imageList.length > 0 && (
+                            <div>
+                              <Box display="flex" flexWrap="wrap">
+                                {imageList.map((item, index) => (
+                                  <Box key={index} position="relative" maxW={100} maxH={100}>
+                                    <IconButton
+                                      aria-label="Remove image"
+                                      icon={<FaTimes style={{ color: "black", strokeWidth: 1 }} />}
+                                      size="base"
+                                      color="white"
+                                      bg="white"
+                                      _hover={{ bg: "white", color: "black" }}
+                                      _active={{ bg: "white", color: "black" }}
+                                      position="absolute"
+                                      top="0"
+                                      right="0"
+                                      onClick={() => handleRemoveImage(index)}
+                                      zIndex="1"
+                                      borderRadius="full"
+                                    />
+                                    {item.includes("![Image](") ? (
+                                      <Image
+                                        src={item.match(/!\[Image\]\((.*?)\)/)?.[1] || ""}
+                                        alt="markdown-image"
+                                        maxW="100%"
+                                        maxH="100%"
+                                        objectFit="contain"
+                                      />
+                                    ) : (
+                                      <video
+                                        src={item.match(/<iframe src="(.*?)" allowFullScreen={true}><\/iframe>/)?.[1]}
+                                        controls
+                                        muted
+                                        width="100%"
+                                      />
+                                    )}
+                                  </Box>
+                                ))}
+                              </Box>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </HStack>
                 </Flex>
               </Flex>
