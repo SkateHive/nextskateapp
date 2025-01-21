@@ -15,7 +15,7 @@ const VideoRenderer = ({ src, onCommentIconClick, ...props }: RendererProps) => 
     const [poster, setPoster] = useState<string>('/home_animation_body.gif');
     const [isPlaying, setIsPlaying] = useState(false);
     const [isHorizontal, setIsHorizontal] = useState(false);
-    const [volume, setVolume] = useState(1);
+    const [volume, setVolume] = useState(0);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const [progress, setProgress] = useState(0);
@@ -47,40 +47,6 @@ const VideoRenderer = ({ src, onCommentIconClick, ...props }: RendererProps) => 
         }
     }, [src]);
 
-    useEffect(() => {
-        const video = videoRef.current;
-        if (!video) return;
-
-        const handlePlay = () => {
-            if (!videoRef.current) return;
-            videoRef.current.play();
-            setIsPlaying(true);
-        };
-
-        const handlePause = () => {
-            setIsPlaying(false);
-        };
-
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        handlePlay();
-                    } else {
-                        handlePause();
-                    }
-                });
-            },
-            { threshold: 0.5 }
-        );
-
-        observer.observe(video);
-
-        return () => {
-            observer.unobserve(video);
-        };
-    }, [src]);
-
     const handlePlayPause = useCallback(() => {
         if (videoRef.current) {
             if (isPlaying) {
@@ -96,9 +62,11 @@ const VideoRenderer = ({ src, onCommentIconClick, ...props }: RendererProps) => 
         if (videoRef.current) {
             const newVolume = volume === 0 ? 1 : 0;
             videoRef.current.volume = newVolume;
+            videoRef.current.muted = newVolume === 0; // Update mutated state
             setVolume(newVolume);
         }
     }, [volume]);
+    
 
     const handleFullscreenToggle = useCallback(() => {
         if (videoRef.current) {
@@ -134,7 +102,7 @@ const VideoRenderer = ({ src, onCommentIconClick, ...props }: RendererProps) => 
         }
     }, [isFullscreen]);
     
-    
+
 
     const handleProgressChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -205,15 +173,15 @@ const VideoRenderer = ({ src, onCommentIconClick, ...props }: RendererProps) => 
             <picture>
                 <video
                     {...props}
-                    muted={true}
-                    loop={true}
+                    muted={volume === 0}
+                    loop={false}
                     ref={videoRef}
                     controls={false}
                     src={src}
                     poster={poster}
                     crossOrigin='anonymous'
                     playsInline={true}
-                    autoPlay={true}
+                    autoPlay={false}
                     style={{
                         background: 'transparent',
                         marginBottom: '20px',
