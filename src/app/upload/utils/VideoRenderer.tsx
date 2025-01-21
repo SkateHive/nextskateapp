@@ -181,7 +181,7 @@ const VideoRenderer = ({ src, onCommentIconClick, ...props }: RendererProps) => 
                     poster={poster}
                     crossOrigin='anonymous'
                     playsInline={true}
-                    autoPlay={false}
+                    autoPlay={true}
                     style={{
                         background: 'transparent',
                         marginBottom: '20px',
