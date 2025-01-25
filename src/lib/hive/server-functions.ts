@@ -5,8 +5,9 @@ import * as dhive from "@hiveio/dhive"
 import { Client, PrivateKey, VoteOperation } from '@hiveio/dhive'
 import { Buffer } from 'buffer'
 import CryptoJS from "crypto-js"
-import { HiveAccount, VideoPart } from "../models/user"
+import { HiveAccount } from "../useHiveAuth"
 import HiveClient from "./hiveclient"
+import { VideoPart } from "./client-functions"
 const communityTag = process.env.NEXT_PUBLIC_HIVE_COMMUNITY_TAG;
 
 interface ServerLoginResponse {
@@ -183,7 +184,7 @@ export async function updateProfileWithPrivateKey(
   ethAddress: string,
   videoParts: VideoPart[],
   level: number,
-  staticXp:number,
+  staticXp: number,
 ) {
 
   if (encryptedPrivateKey === null) throw new Error("Private key not found");
@@ -307,7 +308,7 @@ export async function getTransactionHistory(username: string, searchAccount: str
       operationsBitmask
     );
 
-// Filter and map transfer transactions
+    // Filter and map transfer transactions
     const filteredTransactions = accountHistory
       .filter(([_, operationDetails]) => {
         const operationType = operationDetails.op[0];
@@ -327,7 +328,7 @@ export async function getTransactionHistory(username: string, searchAccount: str
           timestamp: operationDetails.timestamp,
         };
       });
-// Revert so that the most recent transactions come first
+    // Revert so that the most recent transactions come first
     return filteredTransactions.reverse();
   } catch (error) {
     console.error("Error fetching transaction history:", error);
@@ -372,7 +373,7 @@ export async function toogleFollowWithPassword(encryptedPrivateKey: string | nul
     type = 'blog'
   }
 
-  const json = JSON.stringify(['follow',{
+  const json = JSON.stringify(['follow', {
     follower: follower,
     following: following,
     what: [type], //null value for unfollow, 'blog' for follow

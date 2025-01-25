@@ -1,6 +1,6 @@
 import { Asset, Discussion } from "@hiveio/dhive"
 import { extractFirstLink, getWebsiteURL } from "../utils"
-import { HiveAccount } from "./user"
+import { HiveAccount } from "../useHiveAuth"
 
 export interface PostProps {
   post_id: number
@@ -98,7 +98,7 @@ export default class PostModel {
     }
   }
 
- 
+
 
   metadata(): PostMetadata {
     if (!this._metadata) this._metadata = JSON.parse(this.json_metadata)
