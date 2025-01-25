@@ -23,6 +23,7 @@ import { BsArrowDownCircle, BsArrowUpCircle } from "react-icons/bs";
 import { GiPiggyBank, GiReceiveMoney } from "react-icons/gi";
 import CollapsibleBox from "./CollapsibleBox";
 import HiveModals from "./HiveModals";
+import { HiveAccount } from "@/lib/useHiveAuth";
 
 
 const HIVE_LOGO_URL = "/logos/hiveLogo.png";
@@ -69,7 +70,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
         HBDUsdValue,
         savingsUSDvalue,
         totalValue,
-    } = useHiveBalance(hiveUser);
+    } = useHiveBalance(hiveUser as HiveAccount);
 
     useEffect(() => {
         onNetWorthChange(totalValue);
@@ -87,7 +88,7 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
             maxHeight="666px"
         >
             <VStack
-                w={{ base: "100%", sm: "95%" }} 
+                w={{ base: "100%", sm: "95%" }}
                 gap={4}
                 p={4}
                 borderRadius="10px"

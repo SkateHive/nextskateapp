@@ -2,7 +2,6 @@
 import { Operation, PrivateKey } from "@hiveio/dhive";
 import crypto from 'crypto';
 import { Broadcast, Custom, KeychainKeyTypes, KeychainRequestResponse, KeychainSDK, Login, Post, Transfer, Vote, WitnessVote } from "keychain-sdk";
-import { VideoPart } from "../models/user";
 import HiveClient from "./hiveclient";
 import { signImageHash } from "./server-functions";
 
@@ -11,6 +10,12 @@ interface HiveKeychainResponse {
   publicKey: string
 }
 
+
+export interface VideoPart {
+  videoUrl: string;
+  thumbnailUrl: string;
+  duration: number;
+}
 const communityTag = process.env.NEXT_PUBLIC_HIVE_COMMUNITY_TAG;
 
 /*

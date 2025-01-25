@@ -2,6 +2,7 @@ import { convertVestingSharesToHivePower } from "@/app/wallet/utils/calculateHP"
 import { useHivePrice } from "@/hooks/useHivePrice";
 import { use, useEffect, useState } from "react";
 import useHiveAccount from "./useHiveAccount";
+import { HiveAccount } from "@/lib/useHiveAuth";
 
 interface HiveBalance {
     hiveUsdValue: number;
@@ -16,10 +17,10 @@ interface HiveBalance {
     totalValue: number;
 }
 
-const useHiveBalance = (hiveUser: any): HiveBalance => {
+const useHiveBalance = (hiveUser: HiveAccount | null): HiveBalance => {
     const hivePrice = useHivePrice();
     const [hiveUsdValue, setHiveUsdValue] = useState(0);
-    const hiveAccount = useHiveAccount(hiveUser?.name);
+    const hiveAccount = useHiveAccount(String(hiveUser?.name));
     const vestingShares = hiveAccount?.hiveAccount?.vesting_shares;
     const delegatedVestingShares = hiveAccount?.hiveAccount?.delegated_vesting_shares;
     const receivedVestingShares = hiveAccount?.hiveAccount?.received_vesting_shares;

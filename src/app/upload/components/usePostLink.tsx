@@ -1,4 +1,4 @@
-import { HiveAccount } from '@/lib/models/user';
+import { HiveAccount } from '@/lib/useHiveAuth';
 import { useEffect, useState } from 'react';
 import generatePermlink from '../utils/generatePermlink';
 
