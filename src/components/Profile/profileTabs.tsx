@@ -1,5 +1,5 @@
 import { QueryProvider } from "@/contexts/QueryContext";
-import { HiveAccount } from "@/lib/models/user";
+import { HiveAccount } from "@/lib/useHiveAuth";
 import { Box, Tab, TabList, TabPanel, TabPanels, Tabs, useBreakpointValue } from "@chakra-ui/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { memo } from "react";
