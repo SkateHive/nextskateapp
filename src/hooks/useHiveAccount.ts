@@ -1,5 +1,5 @@
 import HiveClient from "@/lib/hive/hiveclient"
-import { HiveAccount } from "@/lib/models/user"
+import { HiveAccount } from "@/lib/useHiveAuth"
 import { useEffect, useState } from "react"
 
 export default function useHiveAccount(username: string) {
@@ -21,7 +21,7 @@ export default function useHiveAccount(username: string) {
                 } else if (userAccount.json_metadata) {
                     userAccount.metadata = JSON.parse(userAccount.json_metadata)
                 } else {
-                    userAccount.metadata = {} 
+                    userAccount.metadata = {}
                 }
                 setHiveAccount(userAccount)
             } catch {

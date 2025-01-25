@@ -1,7 +1,7 @@
 'use client'
 import { useHiveUser } from "@/contexts/UserContext";
 import { updateProfile } from "@/lib/hive/client-functions";
-import { HiveAccount } from "@/lib/models/user";
+import { HiveAccount } from "@/lib/useHiveAuth";
 import { Box, Button, SimpleGrid, Text, useDisclosure, VStack } from "@chakra-ui/react";
 import { useState } from "react";
 import VideoCard from "./videoPartCard";

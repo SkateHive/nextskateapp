@@ -1,7 +1,7 @@
 "use client";
 import { useHiveUser } from "@/contexts/UserContext";
 import HiveClient from "@/lib/hive/hiveclient";
-import { HiveAccount } from "@/lib/models/user";
+import { HiveAccount } from "@/lib/useHiveAuth";
 import {
   Box,
   Button,

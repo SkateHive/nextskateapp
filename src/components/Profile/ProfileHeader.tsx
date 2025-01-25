@@ -1,7 +1,7 @@
 'use client'
 
 import { useHiveUser } from "@/contexts/UserContext"
-import { HiveAccount } from "@/lib/models/user"
+import { HiveAccount } from "@/lib/useHiveAuth"
 import { HStack, Text, VStack, useDisclosure } from "@chakra-ui/react"
 import { FaPencil } from "react-icons/fa6"
 import EditInfoModal from "./EditInfoModal"
@@ -37,7 +37,7 @@ export default function ProfileHeader({ user }: ProfileProps) {
   return (
     <VStack>
       {isOpen && <EditInfoModal onUpdate={handleProfileUpdate} isOpen={isOpen} onClose={onClose} user={user} />}
-      
+
       <HStack cursor={'pointer'} onClick={onOpen} ml={2} align={"start"}>
         <br />
         <Text mb={3} fontSize={{ base: "sm", lg: "xl" }} fontWeight={"bold"}>

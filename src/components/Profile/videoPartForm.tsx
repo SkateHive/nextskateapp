@@ -1,5 +1,5 @@
 'use client'
-import { HiveAccount } from "@/lib/models/user";
+import { HiveAccount } from "@/lib/useHiveAuth";
 import { Button, Center, FormControl, FormLabel, Image, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, VStack } from "@chakra-ui/react";
 import React, { useState } from "react";
 

@@ -3,10 +3,12 @@
 import { uploadFileToIPFS } from "@/app/upload/utils/uploadToIPFS";
 import { updateProfile } from "@/lib/hive/client-functions";
 import { updateProfileWithPrivateKey } from "@/lib/hive/server-functions";
-import { HiveAccount, VideoPart } from "@/lib/models/user";
-import {  Badge,  Button,  Flex,  HStack,  Image,  Input,
-  Modal,  ModalBody,  ModalCloseButton,  ModalContent,  ModalFooter,  ModalHeader,  ModalOverlay,
-  Text,  Textarea,  VStack
+import { HiveAccount } from "@/lib/useHiveAuth";
+import { VideoPart } from "@/lib/hive/client-functions";
+import {
+  Badge, Button, Flex, HStack, Image, Input,
+  Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay,
+  Text, Textarea, VStack
 } from "@chakra-ui/react";
 import { ChangeEvent, useState } from "react";
 import { FaUpload } from 'react-icons/fa';
@@ -91,8 +93,8 @@ export default function EditInfoModal({ isOpen, onClose, user, onUpdate }: EditM
       onUpdate(); // Call onUpdate after closing the modal
     } else if (loginMethod === "privateKey") {
       const encryptedPrivateKey = localStorage.getItem("EncPrivateKey");
-      await updateProfileWithPrivateKey(encryptedPrivateKey, user.name, 
-        name, about, location, coverImageUrl, avatarUrl, website, 
+      await updateProfileWithPrivateKey(encryptedPrivateKey, user.name,
+        name, about, location, coverImageUrl, avatarUrl, website,
         ethAddress, videoParts, level, staticXp);
       if (window) {
         window.location.reload();
@@ -124,16 +126,16 @@ export default function EditInfoModal({ isOpen, onClose, user, onUpdate }: EditM
             )}
           </VStack>
           {connectedWallet ? (
-              <Button colorScheme="green" variant={"outline"} w={'100%'} onClick={() => {
-                handleClickAddEthAddress();
-                setIsEthSetupModalOpen(false);
-              }}>Confirm Address</Button>
-            ) : (
-              <Button colorScheme="green" variant={"outline"} w={'100%'} onClick={() => {
-                setIsEthSetupModalOpen(false);
-              }}>Latter</Button>
-            )}
-          
+            <Button colorScheme="green" variant={"outline"} w={'100%'} onClick={() => {
+              handleClickAddEthAddress();
+              setIsEthSetupModalOpen(false);
+            }}>Confirm Address</Button>
+          ) : (
+            <Button colorScheme="green" variant={"outline"} w={'100%'} onClick={() => {
+              setIsEthSetupModalOpen(false);
+            }}>Latter</Button>
+          )}
+
         </ModalBody>
       </ModalContent>
     </Modal>

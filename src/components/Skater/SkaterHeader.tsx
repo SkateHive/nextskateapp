@@ -1,6 +1,6 @@
 'use client'
 
-import { HiveAccount } from "@/lib/models/user"
+import { HiveAccount } from "@/lib/useHiveAuth"
 import { Center, HStack, Image, Text, VStack, useDisclosure, useMediaQuery } from "@chakra-ui/react"
 // import { Button, Center, Flex, HStack, Image, Text, VStack, useMediaQuery, useToast } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
@@ -50,7 +50,7 @@ export default function SkaterHeader({ user }: ProfileProps) {
     // const handleFollowButton = async () => {
     //     const loginMethod = localStorage.getItem("LoginMethod")
     //     var errCheckKeychain = false;
-        
+
     //     if (hiveUser.hiveUser?.name && user.name) {
     //         if (loginMethod === "keychain") {
     //             try {

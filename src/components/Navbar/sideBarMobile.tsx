@@ -2,7 +2,7 @@ import NotificationsPage from "@/app/notifications/page";
 import { useHiveUser } from "@/contexts/UserContext";
 import { useIsClient } from "@/hooks/useIsClient";
 import HiveClient from "@/lib/hive/hiveclient";
-import { HiveAccount } from "@/lib/models/user";
+import { HiveAccount } from "@/lib/useHiveAuth";
 import {
     Button,
     Divider,
