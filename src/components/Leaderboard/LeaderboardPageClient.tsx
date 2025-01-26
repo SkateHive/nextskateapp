@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Box, Table, Tbody, Td, Text, Thead, Tr, Button, Th, HStack, VStack, Badge, Image, Center } from '@chakra-ui/react';
+import { Box, Table, Tbody, Td, Text, Thead, Tr, Button, Th, HStack, VStack, Badge, Image, Center, Divider } from '@chakra-ui/react';
 import LeaderboardTable, { formatNumber } from '@/components/Leaderboard/LeaderboardTable';
 import useLeaderboardData from '@/hooks/useLeaderboardData';
 import ModalComponent from '../ModalComponent';
@@ -11,6 +11,7 @@ import AuthorAvatar from '../AuthorAvatar';
 import { useRouter } from 'next/navigation';
 import { FaPencil } from 'react-icons/fa6';
 import { FaServer } from 'react-icons/fa';
+import LoginModal from '../Hive/Login/LoginModal';
 
 const getColorByValue = (value: number, highThreshold: number, lowThreshold: number): string => {
     if (value >= highThreshold) {
@@ -50,6 +51,7 @@ const LeaderboardPageClient = () => {
         actionText: '',
         onAction: () => { },
     });
+    const [isOpen, setIsOpen] = useState(false);
 
     const openModal = (title: string, content: string, actionText: string, onAction: () => void) => {
         setModalProps({ title, content, actionText, onAction });
@@ -76,23 +78,27 @@ const LeaderboardPageClient = () => {
             </Box>
         );
     }
-
+    const handleLoginModal = () => {
+        setIsOpen(true);
+    }
     return (
         <Box
             p={2}
             w={['100%']}
-            bg="gray.800"
+            bg="black"
             borderRadius="md"
             boxShadow="lg"
             overflowX="auto"
         >
-            {connectedUser && (
+            {connectedUser ? (
                 <Box
                     mb={5}
                     p={5}
-                    bg="gray.700"
+                    bg="gray.900"
                     borderRadius="md"
-                    boxShadow="lg"
+                    border="2px solid"
+                    borderColor='green.500'
+                    boxShadow='0 0 10px green'
                 >
                     <HStack spacing={4} alignItems="center" mb={4} justifyContent={['center', 'space-between']}>
                         <HStack>
@@ -127,6 +133,7 @@ const LeaderboardPageClient = () => {
                             {formatNumber(leaderboardData[userRanking - 1]?.points)} 🔥
                         </Text>
                     </HStack>
+                    {/* <Divider mb={3} /> */}
                     <Box overflowX="auto">
                         <Table size="sm" variant="ghost" colorScheme="gray" whiteSpace="nowrap">
                             <Thead>
@@ -228,7 +235,19 @@ const LeaderboardPageClient = () => {
                         </Table>
                     </Box>
                 </Box>
+            ) : (
+                <Box textAlign="center" mt={10}>
+                    <Button onClick={handleLoginModal} colorScheme="green" variant="solid">
+                        Login with Hive
+                    </Button>
+                </Box>
             )}
+            {isOpen && (
+                <LoginModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
+            )}
+            <Text textAlign="center" fontSize="xl" color="lightgreen" textShadow="0 0 10px green">
+                We are {leaderboardData.length} skaters supporting ourselves. 🛹
+            </Text>
             <LeaderboardTable data={leaderboardData} />
             <Center>
                 <Button onClick={handleNavigate} colorScheme="green" variant="solid" mt={5}>

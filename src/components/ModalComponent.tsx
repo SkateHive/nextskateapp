@@ -62,7 +62,13 @@ const ModalComponent: React.FC<ModalProps> = ({ isOpen, onClose, title, content,
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
-            <ModalContent bg={'gray.800'} color={'white'}>
+            <ModalContent
+                bg="gray.900"
+                borderRadius="md"
+                border="2px solid"
+                borderColor='green.500'
+                boxShadow='0 0 10px green'
+            >
                 <ModalHeader>{title}</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>

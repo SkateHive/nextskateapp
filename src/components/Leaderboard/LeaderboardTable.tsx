@@ -33,7 +33,15 @@ const LeaderboardTable = ({ data }: { data: DataBaseAuthor[] }) => {
     const isTablet = useBreakpointValue({ base: false, md: true, lg: false });
 
     return (
-        <Box mt={10} borderRadius="md" boxShadow="lg" overflowX="auto">
+        <Box
+            mt={4}
+            borderRadius="md"
+            overflowX="auto"
+            border="2px solid"
+            borderColor='green.500'
+            bg="gray.900"
+            boxShadow='0 0 10px green'>
+
             <Table fontSize="sm" whiteSpace="nowrap" variant={'ghost'}>
                 <Thead>
                     <Tr>
@@ -51,8 +59,8 @@ const LeaderboardTable = ({ data }: { data: DataBaseAuthor[] }) => {
                 </Thead>
                 <Tbody>
                     {data.slice(0, 40).map((item: DataBaseAuthor, index: number) => (
-                        <Tr key={item.hive_author} bg={index < 3 ? 'gray.600' : 'transparent'} >
-                            <Td color="white" p={2}>
+                        <Tr key={item.hive_author}>
+                            <Td p={2}>
                                 <HStack>
                                     <AuthorAvatar username={item.hive_author} borderRadius={9999} boxSize={9} />
                                     <VStack align="start" gap={-2}>
@@ -91,12 +99,9 @@ const LeaderboardTable = ({ data }: { data: DataBaseAuthor[] }) => {
                                     </VStack>
                                 </HStack>
                             </Td>
-                            <Td textAlign="center" color="white">{formatNumber(Math.ceil(item.points ?? 0))}</Td>
+                            <Td textAlign="center" >{formatNumber(Math.ceil(item.points ?? 0))}</Td>
                             {!isMobile && (
                                 <>
-                                    <Td textAlign="center" color={(item.hive_balance ?? 0) > 500 ? 'lightgreen' : (item.hive_balance ?? 0) >= 100 ? 'khaki' : 'lightcoral'}>
-                                        {formatNumber(item.hive_balance)}
-                                    </Td>
                                     <Td textAlign="center" color={item.has_voted_in_witness ? 'lightgreen' : 'lightcoral'}>
                                         {item.has_voted_in_witness ? 'Yes' : 'No'}
                                     </Td>
@@ -117,6 +122,9 @@ const LeaderboardTable = ({ data }: { data: DataBaseAuthor[] }) => {
                                     </Td>
                                     <Td textAlign="center" color={(item.hp_balance ?? 0) > 2000 ? 'lightgreen' : (item.hp_balance ?? 0) >= 500 ? 'khaki' : 'lightcoral'}>
                                         {formatNumber(item.hp_balance)}
+                                    </Td>
+                                    <Td textAlign="center" color={(item.hive_balance ?? 0) > 500 ? 'lightgreen' : (item.hive_balance ?? 0) >= 100 ? 'khaki' : 'lightcoral'}>
+                                        {formatNumber(item.hive_balance)}
                                     </Td>
                                 </>
                             )}
