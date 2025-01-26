@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Table, Thead, Tbody, Tr, Th, Td, useBreakpointValue, Text } from '@chakra-ui/react';
+import { Box, Table, Thead, Tbody, Tr, Th, Td, useBreakpointValue, Text, HStack, VStack, Badge, Image } from '@chakra-ui/react';
 import { FormattedAddress } from '../NNSAddress';
 import { formatDate } from '@/lib/utils';
 import AuthorAvatar from '../AuthorAvatar';
@@ -30,89 +30,100 @@ export const formatNumber = (value?: number): string => {
 
 const LeaderboardTable = ({ data }: { data: DataBaseAuthor[] }) => {
     const isMobile = useBreakpointValue({ base: true, md: false });
+    const isTablet = useBreakpointValue({ base: false, md: true, lg: false });
 
     return (
-        <Box mt={10} p={5} bg="gray.700" borderRadius="md" boxShadow="lg" overflowX="auto">
-            {!isMobile ? (
-                <Table colorScheme="gray" fontSize="sm" whiteSpace="nowrap">
-                    <Thead>
-                        <Tr>
-                            <Th color="white" textAlign="center">Rank</Th>
-                            <Th color="white">Author</Th>
-                            <Th color="white" textAlign="center">Points</Th>
-                            <Th color="white" textAlign="center">Power</Th>
-
-                            <Th color="white" textAlign="center">Voted</Th>
-                            <Th color="white">ETH Address</Th>
-                            <Th color="white" textAlign="center">Gnars Votes</Th>
-                            <Th color="white" textAlign="center">Skatehive NFTs</Th>
-                            <Th color="white" textAlign="center">Last Post</Th>
-                            <Th color="white" textAlign="center">HBD</Th>
-                            <Th color="white" textAlign="center">HBD Savings</Th>
-                            <Th color="white" textAlign="center">Hive</Th>
-
+        <Box mt={10} borderRadius="md" boxShadow="lg" overflowX="auto">
+            <Table fontSize="sm" whiteSpace="nowrap" variant={'ghost'}>
+                <Thead>
+                    <Tr>
+                        <Th color="white">Author</Th>
+                        <Th color="white" textAlign="center">Points</Th>
+                        {!isMobile && <Th color="white" textAlign="center">Power</Th>}
+                        {!isMobile && <Th color="white" textAlign="center">Voted</Th>}
+                        {!isMobile && <Th color="white" textAlign="center">Gnars Votes</Th>}
+                        {!isMobile && <Th color="white" textAlign="center">Skatehive NFTs</Th>}
+                        {!isMobile && <Th color="white" textAlign="center">Last Post</Th>}
+                        {!isMobile && <Th color="white" textAlign="center">HBD</Th>}
+                        {!isMobile && <Th color="white" textAlign="center">HBD Savings</Th>}
+                        {!isMobile && <Th color="white" textAlign="center">Hive</Th>}
+                    </Tr>
+                </Thead>
+                <Tbody>
+                    {data.slice(0, 40).map((item: DataBaseAuthor, index: number) => (
+                        <Tr key={item.hive_author} bg={index < 3 ? 'gray.600' : 'transparent'} >
+                            <Td color="white" p={2}>
+                                <HStack>
+                                    <AuthorAvatar username={item.hive_author} borderRadius={9999} boxSize={9} />
+                                    <VStack align="start" gap={-2}>
+                                        <Box position="relative">
+                                            <Badge
+                                                position="absolute"
+                                                top={5}
+                                                right={-1}
+                                                bg="gold"
+                                                borderRadius={9999}
+                                                color="black"
+                                                px={1}
+                                                py={0.5}
+                                                fontSize="xs"
+                                                fontWeight="bold"
+                                                shadow="md"
+                                            >
+                                                #{index + 1}
+                                            </Badge>
+                                        </Box>
+                                        <HStack>
+                                            <Text ml={2}>
+                                                {item.hive_author}
+                                            </Text>
+                                            {index === 0 && (
+                                                <Image
+                                                    src="/crown.png"
+                                                    alt="Crown"
+                                                    boxSize={6}
+                                                />
+                                            )}
+                                        </HStack>
+                                        <Box ml={1} color={item.eth_address && item.eth_address !== '0x0000000000000000000000000000000000000000' ? 'lightgreen' : 'lightcoral'}>
+                                            <FormattedAddress address={item.eth_address} />
+                                        </Box>
+                                    </VStack>
+                                </HStack>
+                            </Td>
+                            <Td textAlign="center" color="white">{formatNumber(Math.ceil(item.points ?? 0))}</Td>
+                            {!isMobile && (
+                                <>
+                                    <Td textAlign="center" color={(item.hive_balance ?? 0) > 500 ? 'lightgreen' : (item.hive_balance ?? 0) >= 100 ? 'khaki' : 'lightcoral'}>
+                                        {formatNumber(item.hive_balance)}
+                                    </Td>
+                                    <Td textAlign="center" color={item.has_voted_in_witness ? 'lightgreen' : 'lightcoral'}>
+                                        {item.has_voted_in_witness ? 'Yes' : 'No'}
+                                    </Td>
+                                    <Td textAlign="center" color={(item.gnars_votes ?? 0) > 10 ? 'lightgreen' : (item.gnars_votes ?? 0) > 0 ? 'khaki' : 'lightcoral'}>
+                                        {formatNumber(item.gnars_votes)}
+                                    </Td>
+                                    <Td textAlign="center" color={(item.skatehive_nft_balance ?? 0) > 10 ? 'lightgreen' : (item.skatehive_nft_balance ?? 0) > 0 ? 'khaki' : 'lightcoral'}>
+                                        {formatNumber(item.skatehive_nft_balance)}
+                                    </Td>
+                                    <Td textAlign="center" color={item.last_post && new Date(item.last_post) < new Date(new Date().setFullYear(new Date().getFullYear() - 1)) ? 'lightcoral' : 'lightgreen'}>
+                                        {formatDate(String(item.last_post))}
+                                    </Td>
+                                    <Td textAlign="center" color={(item.hbd_balance ?? 0) > 500 ? 'lightgreen' : (item.hbd_balance ?? 0) >= 100 ? 'khaki' : 'lightcoral'}>
+                                        {formatNumber(item.hbd_balance)}
+                                    </Td>
+                                    <Td textAlign="center" color={(item.hbd_savings_balance ?? 0) > 500 ? 'lightgreen' : (item.hbd_savings_balance ?? 0) >= 100 ? 'khaki' : 'lightcoral'}>
+                                        {formatNumber(item.hbd_savings_balance)}
+                                    </Td>
+                                    <Td textAlign="center" color={(item.hp_balance ?? 0) > 2000 ? 'lightgreen' : (item.hp_balance ?? 0) >= 500 ? 'khaki' : 'lightcoral'}>
+                                        {formatNumber(item.hp_balance)}
+                                    </Td>
+                                </>
+                            )}
                         </Tr>
-                    </Thead>
-                    <Tbody>
-                        {data.slice(0, 40).map((item: DataBaseAuthor, index: number) => (
-                            <Tr key={item.hive_author} bg={index < 20 ? 'gray.600' : 'transparent'}>
-                                <Td textAlign="center" color="white">{index + 1}</Td>
-                                <Td color="white">
-                                    <AuthorAvatar username={item.hive_author} borderRadius={9999} />
-                                    <Text>
-                                        {item.hive_author}
-                                    </Text>
-                                </Td>
-                                <Td textAlign="center" color="white">{formatNumber(Math.ceil(item.points ?? 0))}</Td>
-                                <Td textAlign="center" color={(item.hive_balance ?? 0) > 500 ? 'lightgreen' : (item.hive_balance ?? 0) >= 100 ? 'khaki' : 'lightcoral'}>
-                                    {formatNumber(item.hive_balance)}
-                                </Td>
-                                <Td textAlign="center" color={item.has_voted_in_witness ? 'lightgreen' : 'lightcoral'}>
-                                    {item.has_voted_in_witness ? 'Yes' : 'No'}
-                                </Td>
-                                <Td color={item.eth_address && item.eth_address !== '0x0000000000000000000000000000000000000000' ? 'lightgreen' : 'lightcoral'}>
-                                    <FormattedAddress address={item.eth_address} />
-                                </Td>
-                                <Td textAlign="center" color={(item.gnars_votes ?? 0) > 10 ? 'lightgreen' : (item.gnars_votes ?? 0) > 0 ? 'khaki' : 'lightcoral'}>
-                                    {formatNumber(item.gnars_votes)}
-                                </Td>
-                                <Td textAlign="center" color={(item.skatehive_nft_balance ?? 0) > 10 ? 'lightgreen' : (item.skatehive_nft_balance ?? 0) > 0 ? 'khaki' : 'lightcoral'}>
-                                    {formatNumber(item.skatehive_nft_balance)}
-                                </Td>
-                                <Td textAlign="center" color={item.last_post && new Date(item.last_post) < new Date(new Date().setFullYear(new Date().getFullYear() - 1)) ? 'lightcoral' : 'lightgreen'}>
-                                    {formatDate(String(item.last_post))}
-                                </Td>
-                                <Td textAlign="center" color={(item.hbd_balance ?? 0) > 500 ? 'lightgreen' : (item.hbd_balance ?? 0) >= 100 ? 'khaki' : 'lightcoral'}>
-                                    {formatNumber(item.hbd_balance)}
-                                </Td>
-                                <Td textAlign="center" color={(item.hbd_savings_balance ?? 0) > 500 ? 'lightgreen' : (item.hbd_savings_balance ?? 0) >= 100 ? 'khaki' : 'lightcoral'}>
-                                    {formatNumber(item.hbd_savings_balance)}
-                                </Td>
-                                <Td textAlign="center" color={(item.hp_balance ?? 0) > 2000 ? 'lightgreen' : (item.hp_balance ?? 0) >= 500 ? 'khaki' : 'lightcoral'}>
-                                    {formatNumber(item.hp_balance)}
-                                </Td>
-                            </Tr>
-                        ))}
-                    </Tbody>
-                </Table>
-            ) : (
-                <Table variant="simple" fontSize="sm">
-                    <Thead>
-                        <Tr>
-                            <Th color="white">Rank</Th>
-                            <Th color="white">Points</Th>
-                        </Tr>
-                    </Thead>
-                    <Tbody>
-                        {data.slice(0, 40).map((item: DataBaseAuthor, index: number) => (
-                            <Tr key={item.hive_author} bg={index < 20 ? 'gray.600' : 'transparent'}>
-                                <Td color="white">{index + 1}</Td>
-                                <Td color="white">{formatNumber(Math.ceil(item.points ?? 0))}</Td>
-                            </Tr>
-                        ))}
-                    </Tbody>
-                </Table>
-            )}
+                    ))}
+                </Tbody>
+            </Table>
         </Box>
     );
 };

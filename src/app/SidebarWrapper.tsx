@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react';
 const SidebarWrapper = () => {
     const isClient = useIsClient();
     const pathname = usePathname();
-    const hideSidebarRoutes = ["/communityMag"];
+    const hideSidebarRoutes = ["/communityMag", "/leaderboard"];
     const [shouldRender, setShouldRender] = useState(false);
 
     useEffect(() => {
