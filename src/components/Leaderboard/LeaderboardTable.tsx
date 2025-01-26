@@ -32,6 +32,14 @@ const LeaderboardTable = ({ data }: { data: DataBaseAuthor[] }) => {
     const isMobile = useBreakpointValue({ base: true, md: false });
     const isTablet = useBreakpointValue({ base: false, md: true, lg: false });
 
+    if (!data) {
+        return (
+            <Box textAlign="center" mt={10}>
+                <Text color="white">No data available.</Text>
+            </Box>
+        );
+    }
+
     return (
         <Box
             mt={4}

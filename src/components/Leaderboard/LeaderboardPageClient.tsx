@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Table, Tbody, Td, Text, Thead, Tr, Button, Th, HStack, VStack, Badge, Image, Center, Divider } from '@chakra-ui/react';
 import LeaderboardTable, { formatNumber } from '@/components/Leaderboard/LeaderboardTable';
 import useLeaderboardData from '@/hooks/useLeaderboardData';
@@ -62,6 +62,12 @@ const LeaderboardPageClient = () => {
     const handleNavigate = () => {
         router.push('https://api.skatehive.app');
     };
+
+    useEffect(() => {
+        if (error) {
+            console.error('Failed to load leaderboard data:', error);
+        }
+    }, [error]);
 
     if (isLoading) {
         return (
@@ -200,7 +206,7 @@ const LeaderboardPageClient = () => {
                                         onClick={() => openModal(
                                             'Hive Balance',
                                             'Hive Balance is the total amount of Hive owned by the user.',
-                                            'View Wallet', () => setIsModalOpen(false))}
+                                            'Buy hive', () => setIsModalOpen(false))}
                                     />
                                 </Tr>
                             </Thead>
