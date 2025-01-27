@@ -1,5 +1,7 @@
 import React from 'react';
-import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, Button, Table, Thead, Tbody, Tr, Th, Td } from '@chakra-ui/react';
+import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, Button, Table, Thead, Tbody, Tr, Th, Td, Center, Text } from '@chakra-ui/react';
+import { formatDate } from '@/lib/utils';
+import { DataBaseAuthor } from '@/components/Leaderboard/LeaderboardTable';
 import useHiveBalance from '@/hooks/useHiveBalance';
 import { useHiveUser } from '@/contexts/UserContext';
 
@@ -10,6 +12,7 @@ interface ModalProps {
     content: string;
     actionText: string;
     onAction: () => void;
+    data: DataBaseAuthor;
 }
 
 const InfoBox: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -27,17 +30,27 @@ const InfoBox: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     </code>
 );
 
-const ModalComponent: React.FC<ModalProps> = ({ isOpen, onClose, title, content, actionText, onAction }) => {
+const getColorByValue = (value: number, highThreshold: number, lowThreshold: number): string => {
+    if (value >= highThreshold) {
+        return 'lightgreen';
+    } else if (value >= lowThreshold) {
+        return 'yellow';
+    } else {
+        return 'lightcoral';
+    }
+};
+
+const ModalComponent: React.FC<ModalProps> = ({ isOpen, onClose, title, content, actionText, onAction, data }) => {
     const hiveUser = useHiveUser();
-    const hiveBalance = useHiveBalance(hiveUser?.hiveUser);
-    const {
-        hiveUsdValue,
-        hivePower,
-        delegatedToUserInUSD,
-        HBDUsdValue,
-        savingsUSDvalue,
-        totalValue,
-    } = hiveBalance || {};
+    const { hiveUsdValue, totalHP } = useHiveBalance(hiveUser.hiveUser);
+
+    const handleActionClick = () => {
+        if (title === 'HP Balance' && actionText === 'Power UP') {
+            console.log('Powering up HP');
+        } else {
+            onAction();
+        }
+    };
 
     const renderContent = () => {
         switch (title) {
@@ -52,7 +65,7 @@ const ModalComponent: React.FC<ModalProps> = ({ isOpen, onClose, title, content,
                         </InfoBox>
                         <br />
                         <p>
-                            You own {(hiveUser.hiveUser?.balance)?.toString()} that is worth {Number(hiveUsdValue).toFixed(2)} USD.
+                            You own <span style={{ color: getColorByValue(data.hive_balance ?? 0, 1000, 500), fontWeight: 'bold', textShadow: `0 0 5px ${getColorByValue(data.hive_balance ?? 0, 1000, 500)}` }}>{data.hive_balance}</span> that is worth <span style={{ color: getColorByValue(Number(hiveUsdValue), 1000, 500), fontWeight: 'bold', textShadow: `0 0 5px ${getColorByValue(Number(hiveUsdValue), 1000, 500)}` }}>{Number(hiveUsdValue).toFixed(2)} USD</span>.
                         </p>
                         <br />
                         <Table variant="simple" size="sm">
@@ -65,7 +78,7 @@ const ModalComponent: React.FC<ModalProps> = ({ isOpen, onClose, title, content,
                             <Tbody>
                                 <Tr>
                                     <Td>0.1 points per Hive</Td>
-                                    <Td>Points capped at 1,000 Hive (maximum 100 points)</Td>
+                                    <Td>Points capped at 1,000 Hive</Td>
                                 </Tr>
                             </Tbody>
                         </Table>
@@ -81,11 +94,14 @@ const ModalComponent: React.FC<ModalProps> = ({ isOpen, onClose, title, content,
                             The more HP you have, the more weight your actions carry in the community.
                             For Skatehive users, powering up means becoming an active supporter of the skateboarding culture,
                             with increased opportunities to shape and grow the community.
+
                         </InfoBox>
                         <br />
-                        <p>
-                            You own {hivePower} HP.
-                        </p>
+                        <Center>
+                            <Text>
+                                You own <span style={{ color: getColorByValue(data.hp_balance ?? 0, 12000, 2000), fontWeight: 'bold', textShadow: `0 0 5px ${getColorByValue(data.hp_balance ?? 0, 12000, 2000)}` }}>{data.hp_balance}</span> HP and you control <span style={{ color: getColorByValue(totalHP ?? 0, 12000, 2000), fontWeight: 'bold', textShadow: `0 0 5px ${getColorByValue(totalHP ?? 0, 12000, 2000)}` }}>{totalHP}</span> HP.
+                            </Text>
+                        </Center>
                         <br />
                         <Table variant="simple" size="sm">
                             <Thead>
@@ -111,7 +127,7 @@ const ModalComponent: React.FC<ModalProps> = ({ isOpen, onClose, title, content,
                         </InfoBox>
                         <br />
                         <p>
-                            You have { } Gnars Votes.
+                            You have <span style={{ color: getColorByValue(data.gnars_votes ?? 0, 10, 5), fontWeight: 'bold', textShadow: `0 0 5px ${getColorByValue(data.gnars_votes ?? 0, 10, 5)}` }}>{data.gnars_votes}</span> Gnars Votes.
                         </p>
                         <br />
                         <Table variant="simple" size="sm">
@@ -138,7 +154,7 @@ const ModalComponent: React.FC<ModalProps> = ({ isOpen, onClose, title, content,
                         </InfoBox>
                         <br />
                         <p>
-                            You own { } Skatehive NFTs.
+                            You own <span style={{ color: getColorByValue(data.skatehive_nft_balance ?? 0, 10, 5), fontWeight: 'bold', textShadow: `0 0 5px ${getColorByValue(data.skatehive_nft_balance ?? 0, 10, 5)}` }}>{data.skatehive_nft_balance}</span> Skatehive NFTs.
                         </p>
                         <br />
                         <Table variant="simple" size="sm">
@@ -165,7 +181,7 @@ const ModalComponent: React.FC<ModalProps> = ({ isOpen, onClose, title, content,
                         </InfoBox>
                         <br />
                         <p>
-                            {hiveUser.hiveUser?.witness_votes.includes('skatehive') ? 'You have voted for the Skatehive witness.' : 'You have not voted for the Skatehive witness.'}
+                            {data.has_voted_in_witness ? 'You have voted for the Skatehive witness.' : 'You have not voted for the Skatehive witness.'}
                         </p>
                         <br />
                         <Table variant="simple" size="sm">
@@ -192,7 +208,7 @@ const ModalComponent: React.FC<ModalProps> = ({ isOpen, onClose, title, content,
                         </InfoBox>
                         <br />
                         <p>
-                            You have {hiveUser.hiveUser?.savings_balance?.toString()} HBD in savings.
+                            You have <span style={{ color: getColorByValue(data.hbd_savings_balance ?? 0, 1000, 500), fontWeight: 'bold', textShadow: `0 0 5px ${getColorByValue(data.hbd_savings_balance ?? 0, 1000, 500)}` }}>{data.hbd_savings_balance?.toString()}</span> HBD in savings.
                         </p>
                         <br />
                         <Table variant="simple" size="sm">
@@ -219,7 +235,7 @@ const ModalComponent: React.FC<ModalProps> = ({ isOpen, onClose, title, content,
                         </InfoBox>
                         <br />
                         <p>
-                            You have made {hiveUser.hiveUser?.post_count} posts.
+                            You have made <span style={{ color: getColorByValue(data.post_count ?? 0, 3000, 1500), fontWeight: 'bold', textShadow: `0 0 5px ${getColorByValue(data.post_count ?? 0, 3000, 1500)}` }}>{data.post_count}</span> posts.
                         </p>
                         <br />
                         <Table variant="simple" size="sm">
@@ -246,7 +262,7 @@ const ModalComponent: React.FC<ModalProps> = ({ isOpen, onClose, title, content,
                         </InfoBox>
                         <br />
                         <p>
-                            Your voting power is worth { } USD.
+                            Your voting power is worth <span style={{ color: getColorByValue(data.max_voting_power_usd ?? 0, 1000, 500), fontWeight: 'bold', textShadow: `0 0 5px ${getColorByValue(data.max_voting_power_usd ?? 0, 1000, 500)}` }}>{data.max_voting_power_usd}</span> USD.
                         </p>
                         <br />
                         <Table variant="simple" size="sm">
@@ -273,7 +289,7 @@ const ModalComponent: React.FC<ModalProps> = ({ isOpen, onClose, title, content,
                         </InfoBox>
                         <br />
                         <p>
-                            Your last post was on { }.
+                            Your last post was on <span style={{ color: getColorByValue(new Date(data.last_post ?? '').getTime(), new Date().getTime() - 7 * 24 * 60 * 60 * 1000, new Date().getTime() - 30 * 24 * 60 * 60 * 1000), fontWeight: 'bold', textShadow: `0 0 5px ${getColorByValue(new Date(data.last_post ?? '').getTime(), new Date().getTime() - 7 * 24 * 60 * 60 * 1000, new Date().getTime() - 30 * 24 * 60 * 60 * 1000)}` }}>{formatDate(String(data.last_post))}</span>.
                         </p>
                         <br />
                         <Table variant="simple" size="sm">
@@ -300,7 +316,7 @@ const ModalComponent: React.FC<ModalProps> = ({ isOpen, onClose, title, content,
                         </InfoBox>
                         <br />
                         <p>
-                            Ethereum wallet.
+                            You have <span style={{ color: data.eth_address ? 'lightgreen' : 'lightcoral', fontWeight: 'bold', textShadow: `0 0 5px ${data.eth_address ? 'lightgreen' : 'lightcoral'}` }}>{data.eth_address ? 'a valid' : 'no'}</span> Ethereum wallet.
                         </p>
                         <br />
                         <Table variant="simple" size="sm">
@@ -343,7 +359,7 @@ const ModalComponent: React.FC<ModalProps> = ({ isOpen, onClose, title, content,
                     <Button colorScheme="blue" mr={3} onClick={onClose}>
                         Close
                     </Button>
-                    <Button colorScheme="teal" onClick={onAction}>{actionText}</Button>
+                    <Button colorScheme="teal" onClick={handleActionClick}>{actionText}</Button>
                 </ModalFooter>
             </ModalContent>
         </Modal>

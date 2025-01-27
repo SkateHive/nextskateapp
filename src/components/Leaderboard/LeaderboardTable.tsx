@@ -30,7 +30,6 @@ export const formatNumber = (value?: number): string => {
 
 const LeaderboardTable = ({ data }: { data: DataBaseAuthor[] }) => {
     const isMobile = useBreakpointValue({ base: true, md: false });
-    const isTablet = useBreakpointValue({ base: false, md: true, lg: false });
 
     if (!data) {
         return (
