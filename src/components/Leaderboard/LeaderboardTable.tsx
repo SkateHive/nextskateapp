@@ -110,6 +110,9 @@ const LeaderboardTable = ({ data }: { data: DataBaseAuthor[] }) => {
                             <Td textAlign="center" >{formatNumber(Math.ceil(item.points ?? 0))}</Td>
                             {!isMobile && (
                                 <>
+                                    <Td textAlign="center" color={(item.hp_balance ?? 0) > 2000 ? 'lightgreen' : (item.hp_balance ?? 0) >= 500 ? 'khaki' : 'lightcoral'}>
+                                        {formatNumber(item.hp_balance)}
+                                    </Td>
                                     <Td textAlign="center" color={item.has_voted_in_witness ? 'lightgreen' : 'lightcoral'}>
                                         {item.has_voted_in_witness ? 'Yes' : 'No'}
                                     </Td>
@@ -127,9 +130,6 @@ const LeaderboardTable = ({ data }: { data: DataBaseAuthor[] }) => {
                                     </Td>
                                     <Td textAlign="center" color={(item.hbd_savings_balance ?? 0) > 500 ? 'lightgreen' : (item.hbd_savings_balance ?? 0) >= 100 ? 'khaki' : 'lightcoral'}>
                                         {formatNumber(item.hbd_savings_balance)}
-                                    </Td>
-                                    <Td textAlign="center" color={(item.hp_balance ?? 0) > 2000 ? 'lightgreen' : (item.hp_balance ?? 0) >= 500 ? 'khaki' : 'lightcoral'}>
-                                        {formatNumber(item.hp_balance)}
                                     </Td>
                                     <Td textAlign="center" color={(item.hive_balance ?? 0) > 500 ? 'lightgreen' : (item.hive_balance ?? 0) >= 100 ? 'khaki' : 'lightcoral'}>
                                         {formatNumber(item.hive_balance)}
