@@ -45,7 +45,7 @@ const LeaderboardModal: React.FC<ModalProps> = ({ isOpen, onClose, title, conten
     const { hiveUsdValue, totalHP } = useHiveBalance(hiveUser.hiveUser);
 
     const handleActionClick = () => {
-        if (title === 'HP Balance' && actionText === 'Power UP') {
+        if (title === 'Power' && actionText === 'Power UP') {
             console.log('Powering up HP');
         } else {
             onAction();
@@ -103,7 +103,7 @@ const LeaderboardModal: React.FC<ModalProps> = ({ isOpen, onClose, title, conten
                         </Table>
                     </div>
                 );
-            case 'HP Balance':
+            case 'Power':
                 return (
                     <div>
                         <InfoBox>
@@ -165,7 +165,7 @@ const LeaderboardModal: React.FC<ModalProps> = ({ isOpen, onClose, title, conten
                         </Table>
                     </div>
                 );
-            case 'SKTHV NFTs':
+            case 'SKTHV Votes':
                 return (
                     <div>
                         <InfoBox>
@@ -192,11 +192,11 @@ const LeaderboardModal: React.FC<ModalProps> = ({ isOpen, onClose, title, conten
                         </Table>
                     </div>
                 );
-            case 'Voted Witness':
+            case 'Boost Validator':
                 return (
                     <div>
                         <InfoBox>
-                            Voting for witnesses helps secure the Hive blockchain.
+                            Boosting our validator is free and helps skatehive to secure the network.
                         </InfoBox>
                         <br />
                         <p>

@@ -90,11 +90,11 @@ const ConnectedUserBanner: React.FC<ConnectedUserBannerProps> = ({ connectedUser
                     <Thead>
                         <Tr>
                             <ThComponent
-                                title="HP Balance"
+                                title="Power"
                                 imageSrc="/logos/hp_logo.png"
                                 onClick={() => openModal(
-                                    'HP Balance',
-                                    'HP Balance is the total amount of Hive Power (HP) owned by the user.',
+                                    'Power',
+                                    'Power is the total amount of Hive Power (HP) owned by the user.',
                                     'Power UP', () => { }, userData)}
                             />
                             <ThComponent
@@ -114,12 +114,12 @@ const ConnectedUserBanner: React.FC<ConnectedUserBannerProps> = ({ connectedUser
                                     'Vote Gnars', () => { }, userData)}
                             />
                             <ThComponent
-                                title="SKTHV NFTs"
+                                title="SKTHV Votes"
                                 imageSrc="/skatehive_square_green.png"
                                 onClick={() => openModal(
-                                    'SKTHV NFTs',
-                                    'SKTHV NFTs is the total amount of Skatehive NFTs owned by the user.',
-                                    'Buy SKTHV NFTS', () => { }, userData)}
+                                    'SKTHV Votes',
+                                    'SKTHV Votes is the total amount of Skatehive NFTs owned by the user.',
+                                    'Buy SKTHV Votes', () => { }, userData)}
                             />
                             <ThComponent
                                 title="Last Post"
