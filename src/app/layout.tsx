@@ -25,10 +25,10 @@ export type Metadata = {
 
 export const metadata: Metadata = {
   title: "Skatehive App",
-  description: "The portal of web3 skateboarding",
+  description: "The infinity skateboard maganize",
   manifest: "/manifest.json",
   openGraph: {
-    images: `${getWebsiteURL()}/default_banner.png`,
+    images: `/skatehive_square_green.png`,
   },
 };
 

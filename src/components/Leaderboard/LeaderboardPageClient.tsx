@@ -7,7 +7,6 @@ import useLeaderboardData from '@/hooks/useLeaderboardData';
 import ModalComponent from '../ModalComponent';
 import LoginModal from '../Hive/Login/LoginModal';
 import ConnectedUserBanner from './ConnectedUserBanner';
-import HpDelegateModal from '@/app/wallet/components/Modals/isHPPowerModalOpened';
 import { useRouter } from 'next/navigation';
 
 interface ThComponentProps {
