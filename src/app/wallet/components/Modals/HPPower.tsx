@@ -3,34 +3,33 @@ import { useHiveUser } from "@/contexts/UserContext";
 import { Avatar, Box, Button, HStack, Input, SkeletonCircle, SkeletonText, Text, useToast, VStack } from "@chakra-ui/react";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
-interface HiveModalOpenProps {
-    isHiveModalOpened: boolean;
-    setIsHiveModalOpened: Dispatch<SetStateAction<boolean>>;
-    isHivePowerModalOpened: boolean;
-    setIsHivePowerModalOpened: Dispatch<SetStateAction<boolean>>;
+interface isHpDelegateProps {
+    isHPPowerDown: boolean;
+    onCloseHPPowerDown: Dispatch<SetStateAction<boolean>>;
+    isHpDelegates: boolean;
+    onCloseHpDelegates: Dispatch<SetStateAction<boolean>>;
 }
 
-const HiveModalOpen: React.FC<HiveModalOpenProps> = ({
-    isHiveModalOpened,
-    setIsHiveModalOpened,
-    isHivePowerModalOpened,
-    setIsHivePowerModalOpened,
+const HpDelegateModal: React.FC<isHpDelegateProps> = ({
+    isHPPowerDown,
+    onCloseHPPowerDown,
+    isHpDelegates,
+    onCloseHpDelegates,
 }) => {
-    const { hiveUser } = useHiveUser();
-    const username = hiveUser?.name;
-    const [formattedAmountHive, setFormattedAmountHive] = useState("");
-    const [formattedAmountHivePower, setFormattedAmountHivePower] = useState("");
-    const [recipient, setRecipient] = useState("");
-    const [previousRecipient, setPreviousRecipient] = useState("");
-    const [TempRecipient, setTempRecipient] = useState("");
-    const [debounceTimeout, setDebounceTimeout] = useState<NodeJS.Timeout | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-
-    const [memo, setMemo] = useState("");
-    const memoWallet = "#" + memo;
-
     const toast = useToast();
-    const closeHivePowerModal = () => setIsHivePowerModalOpened(false);
+    const { hiveUser } = useHiveUser();
+
+    const username = hiveUser?.name;
+
+    const [recipient, setRecipient] = useState("");
+    const [formattedHppowerDown, setFormattedHppowerDown] = useState("");
+    const [formattedHpDelegate, setFormattedHpDelegate] = useState('')
+    const closeHPowerModal = () => onCloseHPPowerDown(false);
+    const closeHpDelegatesModal = () => onCloseHpDelegates(false);
+    const [debounceTimeout, setDebounceTimeout] = useState<NodeJS.Timeout | null>(null);
+    const [TempRecipient, setTempRecipient] = useState("");
+    const [previousRecipient, setPreviousRecipient] = useState("");
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         if (debounceTimeout) {
@@ -57,14 +56,95 @@ const HiveModalOpen: React.FC<HiveModalOpenProps> = ({
 
         setTimeout(() => setIsLoading(false), 1000);
     }, []);
-
-    // Hive
-    const sendHive = async () => {
-        if (typeof window !== "undefined") {
-
-            if (!recipient) {
+ 
+    const HPDelegate = async () => {
+        if (!username || !recipient || !formattedHpDelegate) {
+            toast({
+                title: "HP Delegate error.",
+                description: "Username, recipient, or HP amount is missing. Please check and try again.",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+            });
+            return;
+        }
+    
+        const hpAmount = parseFloat(formattedHpDelegate);
+        if (isNaN(hpAmount) || hpAmount <= 0) {
+            toast({
+                title: "Invalid HP amount.",
+                description: "Please enter a valid amount greater than zero for delegation.",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+            });
+            return;
+        }
+    
+        try {
+            if (typeof window.hive_keychain === "undefined") {
                 toast({
-                    title: "Error in HBD Withdrawal.",
+                    title: "Hive Keychain Error",
+                    description: "Hive Keychain is not installed or available. Please install it and try again.",
+                    status: "error",
+                    duration: 5000,
+                    isClosable: true,
+                });
+                return;
+            }
+    
+            const response = await new Promise<{ success: boolean; message?: string }>((resolve, reject) => {
+                const transferOperation = {
+                    type: "delegate_vesting_shares",
+                    username: username,
+                    delegate: recipient,
+                    vesting_shares: `${hpAmount.toFixed(3)}`,
+                    unit: "HP",
+                };
+    
+                window.hive_keychain.requestDelegation(
+                    transferOperation.username,
+                    transferOperation.delegate,
+                    transferOperation.vesting_shares,
+                    transferOperation.unit,
+                    (response: { success: boolean; message?: string }) => {
+                        if (response.success) {
+                            resolve(response);
+                        } else {
+                            reject(new Error(response.message || "Unknown error"));
+                        }
+                    }
+                );
+            });
+    
+            if (response.success) {
+                toast({
+                    title: "Successful HP Delegate!",
+                    description: `You have successfully delegated ${hpAmount.toFixed(3)} HP.`,
+                    status: "success",
+                    duration: 5000,
+                    isClosable: true,
+                });
+                closeHpDelegatesModal();
+            }
+    
+        } catch (error: any) {
+            toast({
+                title: "Failure to delegate HP",
+                description: error.message || "An error occurred when trying to delegate HP.",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+            });
+        }
+    };
+    
+    
+    const HPPowerDown = async () => {
+        if (typeof window !== "undefined") {
+            if (!username) {
+                toast({
+                    title: "HPPowerDown error.",
                     description: "Username not found. Please check and try again.",
                     status: "error",
                     duration: 5000,
@@ -72,126 +152,75 @@ const HiveModalOpen: React.FC<HiveModalOpenProps> = ({
                 });
                 return;
             }
+    
+            if (!window.hive_keychain) {
+                toast({
+                    title: "Hive Keychain not available.",
+                    description: "Please make sure Hive Keychain is installed and active.",
+                    status: "error",
+                    duration: 5000,
+                    isClosable: true,
+                });
+                return;
+            }
+    
             try {
-                const response = await new Promise<{
-                    success: boolean;
-                    message?: string;
-                }>((resolve, reject) => {
-                    if (typeof window.hive_keychain !== "undefined") {
-                        window.hive_keychain.requestTransfer(
-                            username,
-                            recipient,
-                            formattedAmountHive,
-                            memoWallet,
-                            "HIVE",
+                const hpAmount = parseFloat(formattedHppowerDown);
+                if (isNaN(hpAmount) || hpAmount <= 0) {
+                    toast({
+                        title: "Invalid Power Down amount.",
+                        description: "Please enter a valid amount greater than zero.",
+                        status: "error",
+                        duration: 5000,
+                        isClosable: true,
+                    });
+                    return;
+                }
+    
+                const response = await new Promise<{ success: boolean; message?: string }>((resolve, reject) => {
+                    if (window.hive_keychain) {
+                        window.hive_keychain.requestPowerDown(
+                            username, 
+                            `${hpAmount.toFixed(3)}`, // Convert to 3 decimal places
                             (response: { success: boolean; message?: string }) => {
                                 if (response.success) {
                                     resolve(response);
                                 } else {
-                                    reject(new Error(response.message));
+                                    reject(new Error(response.message || "Unknown error"));
                                 }
                             }
                         );
                     } else {
-                        toast({
-                            title: "Transfer error.",
-                            description: "Your passkey is deactivated. Activate it and try again.",
-                            status: "error",
-                            duration: 5000,
-                            isClosable: true,
-                        });
+                        reject(new Error("Hive Keychain not available"));
                     }
                 });
-
+    
                 if (response.success) {
                     toast({
-                        title: "Transfer successful!",
-                        description: "HIVE has been sent successfully.",
+                        title: "HPPowerDown successful!",
+                        description: `You have successfully powered down ${formattedHppowerDown} Hive Power.`,
                         status: "success",
                         duration: 5000,
                         isClosable: true,
                     });
-                    setIsHiveModalOpened(false);
-                    setRecipient('')
-                    setMemo('')
                 }
             } catch (error: any) {
+                console.error("Error during HPPowerDown:", error);
                 toast({
-                    title: "Transfer failed.",
-                    description: error.message || "An error occurred while trying to send the HIVE.",
+                    title: "HPPowerDown failed.",
+                    description: error.message || "An error occurred when trying to perform HPPowerDown.",
                     status: "error",
                     duration: 5000,
                     isClosable: true,
                 });
             }
-        } else {
-            toast({
-                title: "Erro.",
-                description: "Hive Keychain is not available.",
-                status: "error",
-                duration: 5000,
-                isClosable: true,
-            });
         }
     };
-    const sendPowerUp = async () => {
-        if (typeof window !== "undefined") {
-            try {
-                const response = await new Promise<{
-                    success: boolean;
-                    message?: string;
-                }>((resolve, reject) => {
-                    if (typeof window.hive_keychain !== "undefined") {
-                        window.hive_keychain.requestPowerUp(
-                            username,
-                            username,
-                            formattedAmountHivePower,
-                            memoWallet,
-                            "transfer_to_vesting",
-                            (response: { success: boolean; message?: string }) => {
-                                if (response.success) {
-                                    resolve(response);
-                                } else {
-                                    reject(new Error(response.message));
-                                }
-                            }
-                        );
 
-                    } else {
-                        toast({
-                            title: "Power-Up error.",
-                            description: "Your passkey is deactivated. Activate it and try again.",
-                            status: "error",
-                            duration: 5000,
-                            isClosable: true,
-                        });
-                    }
-                });
-
-                if (response.success) {
-                    toast({
-                        title: "Successful Power-Up!",
-                        description: "You just won HIVE Power.",
-                        status: "success",
-                        duration: 5000,
-                        isClosable: true,
-                    });
-                }
-            } catch (error: any) {
-                toast({
-                    title: "Power-Up failed.",
-                    description: error.message || "An error occurred when trying to perform the Power-Up.",
-                    status: "error",
-                    duration: 5000,
-                    isClosable: true,
-                });
-            }
-        };
-    }
     return (
         <>
-            {/* HIVE Modal */}
-            {isHiveModalOpened && (
+            {/* Hp Delegate*/}
+            {isHpDelegates && (
                 <Box
                     width="100vw"
                     height="100vh"
@@ -199,7 +228,7 @@ const HiveModalOpen: React.FC<HiveModalOpenProps> = ({
                     top="0"
                     left="0"
                     bg="rgba(0, 0, 0, 0.6)"
-                    display={isHiveModalOpened ? 'flex' : 'none'}
+                    display={isHpDelegates ? 'flex' : 'none'}
                     alignItems="center"
                     justifyContent="center"
                     zIndex={1000}
@@ -230,18 +259,10 @@ const HiveModalOpen: React.FC<HiveModalOpenProps> = ({
                                     _placeholder={{ color: 'gray.500' }} 
                                 />
                             </Box>
-
                             <Input
                                 placeholder="0.000"
-                                value={formattedAmountHive}
-                                onChange={(e) => {
-                                    const value = e.target.value.replace(/[^0-9.]/g, "");
-                                    setFormattedAmountHive(value);
-                                }}
-                                onBlur={() => {
-                                    const formattedValue = parseFloat(formattedAmountHive || "0").toFixed(3);
-                                    setFormattedAmountHive(formattedValue);
-                                }}
+                                value={formattedHpDelegate}
+                                onChange={(e) => setFormattedHpDelegate(e.target.value)}
                                 bg="white"
                                 color="black"
                                 borderRadius="5px"
@@ -249,39 +270,25 @@ const HiveModalOpen: React.FC<HiveModalOpenProps> = ({
                                 _placeholder={{ color: 'gray.500' }} 
                             />
 
-                            <Input
-                                placeholder="Memo (Optional)"
-                                value={memo}
-                                onChange={(e) => setMemo(e.target.value)}
-                                bg="white"
-                                color="black"
-                                borderRadius="5px"
-                                variant="outline"
-                                _placeholder={{ color: 'gray.500' }} 
-                            />
                             <HStack spacing={4} mt={4}>
                                 <Button
                                     colorScheme="red"
-                                    onClick={sendHive}
+                                    onClick={HPDelegate}
                                     width="full"
                                 >
-                                    Send HIVE
+                                    Delegate HP
                                 </Button>
-                                <Button
-                                    colorScheme="gray"
-                                    onClick={() => setIsHiveModalOpened(false)}
-                                    width="full"
-                                >
-                                    Cancel
-                                </Button>
+                                <Button colorScheme="gray" onClick={closeHpDelegatesModal} width="full">Cancel</Button>
+
                             </HStack>
                         </VStack>
+
                     </Box>
                 </Box>
             )}
 
-            {/* HIVE Power Modal */}
-            {isHivePowerModalOpened && (
+            {/* Power Down Modal */}
+            {isHPPowerDown && (
                 <Box
                     width="100vw"
                     height="100vh"
@@ -289,11 +296,10 @@ const HiveModalOpen: React.FC<HiveModalOpenProps> = ({
                     top="0"
                     left="0"
                     bg="rgba(0, 0, 0, 0.6)"
-                    display={isHivePowerModalOpened ? 'flex' : 'none'}
+                    display={isHPPowerDown ? 'flex' : 'none'}
                     alignItems="center"
                     justifyContent="center"
                     zIndex={1000}
-
                 >
                     <Box
                         bg="red.900"
@@ -303,7 +309,6 @@ const HiveModalOpen: React.FC<HiveModalOpenProps> = ({
                         maxW="500px"
                         boxShadow="0 4px 6px rgba(0, 0, 0, 0.1)"
                         position="relative"
-
                     >
                         <VStack spacing={4} align="stretch">
                             <HStack
@@ -315,7 +320,6 @@ const HiveModalOpen: React.FC<HiveModalOpenProps> = ({
                                 bg="red.900"
                                 cursor="pointer"
                                 alignItems="center"
-
                             >
                                 <SkeletonCircle size="48px" isLoaded={!isLoading} p={0}>
                                     <Avatar
@@ -324,7 +328,6 @@ const HiveModalOpen: React.FC<HiveModalOpenProps> = ({
                                         name={hiveUser?.name}
                                         src={hiveUser?.metadata?.profile.profile_image}
                                     >
-
                                     </Avatar>
                                 </SkeletonCircle>
                                 <Box p={0} ml={4}>
@@ -345,31 +348,8 @@ const HiveModalOpen: React.FC<HiveModalOpenProps> = ({
                             </HStack>
                             <Input
                                 placeholder="0.000"
-                                value={formattedAmountHivePower}
-                                onChange={(e) => {
-                                    const value = e.target.value.replace(/[^0-9.]/g, "");
-
-                                    if ((value.match(/\./g) || []).length > 1) {
-                                        return;
-                                    }
-
-                                    setFormattedAmountHivePower(value);
-                                }}
-                                onBlur={() => {
-                                    const formattedValue = parseFloat(formattedAmountHivePower || "0").toFixed(3);
-                                    setFormattedAmountHivePower(formattedValue);
-                                }}
-                                bg="white"
-                                color="black"
-                                borderRadius="5px"
-                                variant="outline"
-                                _placeholder={{ color: 'gray.500' }} 
-                            />
-
-                            <Input
-                                placeholder="Memo (Optional)"
-                                value={memo}
-                                onChange={(e) => setMemo(e.target.value)}
+                                value={formattedHppowerDown}
+                                onChange={(e) => setFormattedHppowerDown(e.target.value)}
                                 bg="white"
                                 color="black"
                                 borderRadius="5px"
@@ -377,8 +357,8 @@ const HiveModalOpen: React.FC<HiveModalOpenProps> = ({
                                 _placeholder={{ color: 'gray.500' }} 
                             />
                             <HStack spacing={4} mt={4}>
-                                <Button colorScheme="red" onClick={sendPowerUp} width="full">Power Up</Button>
-                                <Button colorScheme="gray" onClick={closeHivePowerModal} width="full">Cancel</Button>
+                                <Button colorScheme="red" onClick={HPPowerDown} width="full">Power Down</Button>
+                                <Button colorScheme="gray" onClick={closeHPowerModal} width="full">Cancel</Button>
                             </HStack>
                         </VStack>
                     </Box>
@@ -388,6 +368,4 @@ const HiveModalOpen: React.FC<HiveModalOpenProps> = ({
     )
 }
 
-
-
-export default HiveModalOpen;
+export default HpDelegateModal;

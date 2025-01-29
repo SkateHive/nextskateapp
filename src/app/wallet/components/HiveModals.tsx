@@ -1,10 +1,10 @@
 import { Dispatch, SetStateAction } from 'react';
-import HBDSavingsModal from './Modals/isDepositHbdSavingsModalOpened';
-import HBDSendModal from './Modals/isHbdModalOpened';
-import HiveModalOpen from './Modals/isHiveModalsOpen';
-import HpDelegateModal from './Modals/isHPPowerModalOpened';
+import HBDSendModal from './Modals/Hbd';
+import HBDSavingsModal from './Modals/HbdSavings';
+import HiveModalOpen from './Modals/Hive';
+import HpDelegateModal from './Modals/HPPower';
 interface HiveModalsProps {
-    isHbdModalOpened: boolean;
+    isSendHBD: boolean;
     setIsHbdModalOpened: Dispatch<SetStateAction<boolean>>;
     isDepositHbdSavingsModalOpened: boolean;
     setIsDepositHbdSavingsModalOpened: Dispatch<SetStateAction<boolean>>;
@@ -20,7 +20,7 @@ interface HiveModalsProps {
     setIsHivePowerModalOpened: Dispatch<SetStateAction<boolean>>;
 }
 const HiveModals: React.FC<HiveModalsProps> = ({
-    isHbdModalOpened,
+    isSendHBD,
     setIsHbdModalOpened,
     isDepositHbdSavingsModalOpened,
     setIsDepositHbdSavingsModalOpened,
@@ -39,26 +39,26 @@ const HiveModals: React.FC<HiveModalsProps> = ({
     return (
         <>
             <HiveModalOpen
-                isHiveModalOpened={isHiveModalOpened}
-                setIsHiveModalOpened={setIsHiveModalOpened}
-                isHivePowerModalOpened={isHivePowerModalOpened}
-                setIsHivePowerModalOpened={setIsHivePowerModalOpened}
+                isHive={isHiveModalOpened}
+                onCloseHive={setIsHiveModalOpened}
+                isHivePowerUp={isHivePowerModalOpened}
+                onCloseHivePowerUp={setIsHivePowerModalOpened}
             />
             <HBDSavingsModal
-                isDepositHbdSavingsModalOpened={isDepositHbdSavingsModalOpened}
-                setIsDepositHbdSavingsModalOpened={setIsDepositHbdSavingsModalOpened}
-                isWithdrawHbdModalOpened={isWithdrawHbdModalOpened}
-                setIsWithdrawHbdModalOp={setIsWithdrawHbdModalOp}
+                isDepositHbd={isDepositHbdSavingsModalOpened}
+                onCloseDepositHbd={setIsDepositHbdSavingsModalOpened}
+                isWithdrawHb={isWithdrawHbdModalOpened}
+                onCloseWithdrawHbd={setIsWithdrawHbdModalOp}
             />
             <HpDelegateModal
-                isHPPowerModalOpened={isHPPowerModalOpened}
-                setIsHPPowerModalOpened={setIsHPPowerModalOpened}
-                isHpDelegatesModalOpened={isHpDelegatesModalOpened}
-                setIsHpDelegatesModalOpened={setIsHpDelegatesModalOpened}
+                isHPPowerDown={isHPPowerModalOpened}
+                onCloseHPPowerDown={setIsHPPowerModalOpened}
+                isHpDelegates={isHpDelegatesModalOpened}
+                onCloseHpDelegates={setIsHpDelegatesModalOpened}
             />
             <HBDSendModal
-                isHbdModalOpened={isHbdModalOpened}
-                setIsHbdModalOpened={setIsHbdModalOpened}
+                isSendHBD={isSendHBD}
+                onCloseSendHBD={setIsHbdModalOpened} 
             />
         </>
     )

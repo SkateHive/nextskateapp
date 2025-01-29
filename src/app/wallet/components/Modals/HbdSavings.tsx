@@ -2,32 +2,37 @@ import { useHiveUser } from "@/contexts/UserContext";
 import { Avatar, Box, Button, HStack, Input, SkeletonCircle, SkeletonText, Text, useToast, VStack } from "@chakra-ui/react";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
+type HiveKeychainResponse = {
+    success: boolean;
+    message?: string;
+  };
 
 interface HbdSavingsModalProps {
-    isDepositHbdSavingsModalOpened: boolean;
-    setIsDepositHbdSavingsModalOpened: Dispatch<SetStateAction<boolean>>;
-    isWithdrawHbdModalOpened: boolean;
-    setIsWithdrawHbdModalOp: Dispatch<SetStateAction<boolean>>;
+    isDepositHbd: boolean;
+    onCloseDepositHbd: Dispatch<SetStateAction<boolean>>;
+    isWithdrawHb: boolean;
+    onCloseWithdrawHbd: Dispatch<SetStateAction<boolean>>;
 }
 
 const HBDSavingsModal: React.FC<HbdSavingsModalProps> = ({
-    isDepositHbdSavingsModalOpened,
-    setIsDepositHbdSavingsModalOpened,
-    isWithdrawHbdModalOpened,
-    setIsWithdrawHbdModalOp,
+    isDepositHbd,
+    onCloseDepositHbd,
+    isWithdrawHb,
+    onCloseWithdrawHbd,
 }) => {
     const toast = useToast();
     const { hiveUser } = useHiveUser();
     const username = hiveUser?.name;
     const [formattedDepositHbd, setFormattedDepositHbd] = useState('');
     const [formattedWithdrawHbd, setFormattedWithdrawHbd] = useState("");
-    const closeDepositHbdModal = () => setIsDepositHbdSavingsModalOpened(false);
-    const closeWithdrawHbdModal = () => setIsWithdrawHbdModalOp(false);
+    const closeDepositHbdModal = () => onCloseDepositHbd(false);
+    const closeWithdrawHbdModal = () => onCloseWithdrawHbd(false);
     const [isLoading, setIsLoading] = useState(true);
+    
     useEffect(() => {
         setTimeout(() => setIsLoading(false), 1000);
     }, []);
-    //Savings
+   
     const WithdrawHBDSavings = async () => {
         if (typeof window !== "undefined") {
             if (!username) {
@@ -60,7 +65,7 @@ const HBDSavingsModal: React.FC<HbdSavingsModalProps> = ({
 
                 const requestId = Math.floor(Math.random() * 1000000000);
 
-                const response = await new Promise<{ success: boolean; message?: string }>((resolve, reject) => {
+                const response = await new Promise<HiveKeychainResponse>((resolve, reject) => {
                     if (typeof window.hive_keychain !== "undefined") {
                         const transferOperation = [
                             "transfer_from_savings",
@@ -77,11 +82,11 @@ const HBDSavingsModal: React.FC<HbdSavingsModalProps> = ({
                             username,
                             [transferOperation],
                             "active",
-                            (response: { success: boolean; message?: string }) => {
+                            (response: HiveKeychainResponse) => {
                                 if (response.success) {
                                     resolve(response);
                                 } else {
-                                    reject(new Error(response.message));
+                                    reject(new Error(response.message || "Unknown error during withdrawal"));
                                 }
                             }
                         );
@@ -99,17 +104,17 @@ const HBDSavingsModal: React.FC<HbdSavingsModalProps> = ({
                 if (response.success) {
                     toast({
                         title: "Successful withdrawal!",
-                        description: "You have successfully withdrawn from your HBD savings.",
+                        description: `You have successfully withdrawn ${amount} HBD from your savings.`,
                         status: "success",
                         duration: 5000,
                         isClosable: true,
                     });
-                    closeDepositHbdModal();
+                    closeWithdrawHbdModal();
                 }
             } catch (error: any) {
                 toast({
                     title: "HBD withdrawal failed.",
-                    description: error.message || "Ocorreu um erro ao tentar realizar a retirada HBD.",
+                    description: error.message || "An error occurred while trying to withdraw from HBD savings.",
                     status: "error",
                     duration: 5000,
                     isClosable: true,
@@ -132,13 +137,12 @@ const HBDSavingsModal: React.FC<HbdSavingsModalProps> = ({
             }
 
             try {
-
                 const amount = parseFloat(formattedDepositHbd).toFixed(3);
                 if (isNaN(Number(amount))) {
-                    throw new Error("The withdrawal amount is invalid.");
+                    throw new Error("The deposit amount is invalid.");
                 }
 
-                const response = await new Promise<{ success: boolean; message?: string }>((resolve, reject) => {
+                const response = await new Promise<HiveKeychainResponse>((resolve, reject) => {
                     if (typeof window.hive_keychain !== "undefined") {
                         const transferOperation = [
                             "transfer_to_savings",
@@ -148,18 +152,17 @@ const HBDSavingsModal: React.FC<HbdSavingsModalProps> = ({
                                 amount: `${amount} HBD`,
                                 memo: "",
                             },
-
                         ];
 
                         window.hive_keychain.requestBroadcast(
                             username,
                             [transferOperation],
                             "active",
-                            (response: { success: boolean; message?: string }) => {
+                            (response: HiveKeychainResponse) => {
                                 if (response.success) {
                                     resolve(response);
                                 } else {
-                                    reject(new Error(response.message));
+                                    reject(new Error(response.message || "Unknown error during deposit"));
                                 }
                             }
                         );
@@ -176,8 +179,8 @@ const HBDSavingsModal: React.FC<HbdSavingsModalProps> = ({
 
                 if (response.success) {
                     toast({
-                        title: "Successful deposit!",
-                        description: "You have just made a deposit into your savings account.",
+                        title: "Successful Deposit!",
+                        description: `You have successfully deposited ${amount} HBD into your savings.`,
                         status: "success",
                         duration: 5000,
                         isClosable: true,
@@ -187,7 +190,7 @@ const HBDSavingsModal: React.FC<HbdSavingsModalProps> = ({
             } catch (error: any) {
                 toast({
                     title: "HBD Deposit Failure.",
-                    description: error.message || "An error occurred when trying to make the HBD Deposit.",
+                    description: error.message || "An error occurred when trying to make the HBD deposit.",
                     status: "error",
                     duration: 5000,
                     isClosable: true,
@@ -195,10 +198,11 @@ const HBDSavingsModal: React.FC<HbdSavingsModalProps> = ({
             }
         }
     };
+
     return (
         <>
             {/* DepositHBD Modal */}
-            {isDepositHbdSavingsModalOpened && (
+            {isDepositHbd && (
                 <Box
                     width="100vw"
                     height="100vh"
@@ -206,7 +210,7 @@ const HBDSavingsModal: React.FC<HbdSavingsModalProps> = ({
                     top="0"
                     left="0"
                     bg="rgba(0, 0, 0, 0.6)"
-                    display={isDepositHbdSavingsModalOpened ? 'flex' : 'none'}
+                    display={isDepositHbd ? 'flex' : 'none'}
 
                     alignItems="center"
                     justifyContent="center"
@@ -278,7 +282,7 @@ const HBDSavingsModal: React.FC<HbdSavingsModalProps> = ({
             )}
 
             {/* Withdraw HBD Modal */}
-            {isWithdrawHbdModalOpened && (
+            {isWithdrawHb && (
                 <Box
                     width="100vw"
                     height="100vh"
@@ -286,7 +290,7 @@ const HBDSavingsModal: React.FC<HbdSavingsModalProps> = ({
                     top="0"
                     left="0"
                     bg="rgba(0, 0, 0, 0.6)"
-                    display={isWithdrawHbdModalOpened ? 'flex' : 'none'}
+                    display={isWithdrawHb ? 'flex' : 'none'}
                     alignItems="center"
                     justifyContent="center"
                     zIndex={1000}
