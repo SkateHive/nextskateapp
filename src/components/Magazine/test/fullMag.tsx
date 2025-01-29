@@ -247,7 +247,7 @@ export default function FullMag({ tag, query }: TestPageProps) {
 
         <Box sx={backCoverStyles}>
           <Heading>Back Cover</Heading>
-          <Text>Thrasher my ass!</Text>
+          <Text>Last Page</Text>
         </Box>
       </HTMLFlipBook>
     </VStack>

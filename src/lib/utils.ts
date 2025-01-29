@@ -1,7 +1,7 @@
 import { Comment } from "@/app/mainFeed/page"
-import { PINATA_URL } from "@/utils/config"
 import { isNaN } from "lodash"
 import HiveClient from "./hive/hiveclient"
+import * as url from "url"
 
 export function getWebsiteURL() {
   return process.env.NEXT_PUBLIC_WEBSITE_URL || ""
@@ -77,7 +77,6 @@ export function transform3SpeakContent(content: string): string {
 export function formatETHaddress(address: string) {
   return `${address.slice(0, 4)}...${address.slice(-4)}`
 }
-
 export function transformEcencyImages(content: string): string {
   const regex = /https:\/\/images\.ecency\.com\/p\/([\w-?=&.]+)/g;
 
@@ -149,12 +148,10 @@ export async function fetchSkateHivePostMetadata(postId: string, username: strin
     return null;
   }
 }
-
 export type MediaItem = {
   type: 'image' | 'video';
   url: string;
 };
-
 export const extractMediaItems = (markdown: string): MediaItem[] => {
   const imageMarkdownRegex = /!\[.*?\]\((.*?)\)/g;
   const imageHtmlRegex = /<img[^>]+src="([^"]+)"[^>]*>/g;
@@ -173,14 +170,10 @@ export const extractMediaItems = (markdown: string): MediaItem[] => {
   }
   return mediaItems;
 };
-
-import * as url from "url"
-
 export interface LinkWithDomain {
   url: string
   domain: string
 }
-
 export function extractLinksFromMarkdown(
   markdownContent: string
 ): LinkWithDomain[] {
@@ -197,7 +190,6 @@ export function extractLinksFromMarkdown(
 
   return linksWithDomains
 }
-
 export function extractIFrameLinks(htmlContent: string): LinkWithDomain[] {
   const iframeRegex = /<iframe.*?src=["']([^"']*)["']/gi
   const iframes = htmlContent.match(iframeRegex) || []
@@ -212,7 +204,6 @@ export function extractIFrameLinks(htmlContent: string): LinkWithDomain[] {
 
   return iframeWithDomains
 }
-
 export function extractCustomLinks(inputText: string): LinkWithDomain[] {
   const customLinkRegex = /https:\/\/3speak\.tv\/watch\?v=[\w\d\-\/]+/gi
   const customLinks = inputText.match(customLinkRegex) || []

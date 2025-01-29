@@ -40,7 +40,7 @@ const getColorByValue = (value: number, highThreshold: number, lowThreshold: num
     }
 };
 
-const ModalComponent: React.FC<ModalProps> = ({ isOpen, onClose, title, content, actionText, onAction, data }) => {
+const LeaderboardModal: React.FC<ModalProps> = ({ isOpen, onClose, title, content, actionText, onAction, data }) => {
     const hiveUser = useHiveUser();
     const { hiveUsdValue, totalHP } = useHiveBalance(hiveUser.hiveUser);
 
@@ -52,20 +52,39 @@ const ModalComponent: React.FC<ModalProps> = ({ isOpen, onClose, title, content,
         }
     };
 
-    const renderContent = () => {
+    const renderContent = (): JSX.Element => {
         switch (title) {
             case 'Hive Balance':
                 return (
                     <div>
                         <InfoBox>
-                            Hive is the main currency of the Hive blockchain, powering the Skatehive ecosystem.
-                            It’s a liquid cryptocurrency you earn for sharing skate content and receiving upvotes.
-                            Hive can be traded, used for transactions, or powered up to increase your influence,
-                            enabling skaters to support each other and thrive in a decentralized, global economy.
+                            Hive is the main currency of the Skatehive, powering the Skatehive ecosystem.
+                            It’s a liquid currency you earn for sharing skate content and receiving upvotes (likes).
+                            Hive can be traded into Dollars or Bitcoin or powered up to increase your influence,
+                            enabling skaters to support each other and thrive together.
                         </InfoBox>
                         <br />
                         <p>
-                            You own <span style={{ color: getColorByValue(data.hive_balance ?? 0, 1000, 500), fontWeight: 'bold', textShadow: `0 0 5px ${getColorByValue(data.hive_balance ?? 0, 1000, 500)}` }}>{data.hive_balance}</span> that is worth <span style={{ color: getColorByValue(Number(hiveUsdValue), 1000, 500), fontWeight: 'bold', textShadow: `0 0 5px ${getColorByValue(Number(hiveUsdValue), 1000, 500)}` }}>{Number(hiveUsdValue).toFixed(2)} USD</span>.
+                            You own
+                            <span
+                                style={{
+                                    color: getColorByValue(data.hive_balance ?? 0, 1000, 500),
+                                    fontWeight: 'bold',
+                                    textShadow: `0 0 5px ${getColorByValue(data.hive_balance ?? 0, 1000, 500)}`
+                                }}
+                            >
+                                {data.hive_balance}
+                            </span>
+                            that is worth
+                            <span
+                                style={{
+                                    color: getColorByValue(Number(hiveUsdValue), 1000, 500),
+                                    fontWeight: 'bold',
+                                    textShadow: `0 0 5px ${getColorByValue(Number(hiveUsdValue), 1000, 500)}`
+                                }}
+                            >
+                                {Number(hiveUsdValue).toFixed(2)} USD
+                            </span>.
                         </p>
                         <br />
                         <Table variant="simple" size="sm">
@@ -366,4 +385,4 @@ const ModalComponent: React.FC<ModalProps> = ({ isOpen, onClose, title, content,
     );
 };
 
-export default ModalComponent;
+export default LeaderboardModal;

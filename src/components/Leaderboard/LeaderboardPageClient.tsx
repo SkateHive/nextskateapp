@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Box, Table, Tbody, Td, Text, Thead, Tr, Button, Th, HStack, VStack, Badge, Image, Center, Divider } from '@chakra-ui/react';
-import LeaderboardTable, { formatNumber } from '@/components/Leaderboard/LeaderboardTable';
+import { Box, Text, Button, Th, VStack, Image, Center } from '@chakra-ui/react';
+import LeaderboardTable from '@/components/Leaderboard/LeaderboardTable';
 import useLeaderboardData from '@/hooks/useLeaderboardData';
-import ModalComponent from '../ModalComponent';
 import LoginModal from '../Hive/Login/LoginModal';
 import ConnectedUserBanner from './ConnectedUserBanner';
 import { useRouter } from 'next/navigation';
+import LeaderboardModal from '../ModalComponent';
 
 interface ThComponentProps {
     title: string;
@@ -92,9 +92,9 @@ const LeaderboardPageClient = () => {
                     openModal={openModal}
                 />
             ) : (
-                <Box textAlign="center" mt={10}>
-                    <Button onClick={handleLoginModal} colorScheme="green" variant="solid">
-                        Login with Hive
+                <Box textAlign="center" m={10}>
+                    <Button onClick={handleLoginModal} colorScheme="red" variant="solid">
+                        Log in to see your stats
                     </Button>
                 </Box>
             )}
@@ -110,7 +110,7 @@ const LeaderboardPageClient = () => {
                     Check the Complete List
                 </Button>
             </Center>
-            <ModalComponent
+            <LeaderboardModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 title={modalProps.title}

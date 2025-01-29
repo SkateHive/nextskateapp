@@ -104,13 +104,6 @@ const NavigationButtons: React.FC<NavigationButtonsProps> = ({
 }) => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
-  const handleCreateClick = () => {
-    if (!hiveUser.hiveUser) {
-      setIsLoginModalOpen(true);
-    } else {
-      window.location.href = "/upload";
-    }
-  };
 
   const buttonStyle = {
     "&:hover": {
@@ -122,18 +115,7 @@ const NavigationButtons: React.FC<NavigationButtonsProps> = ({
     },
   };
 
-  const createButtonStyle = {
-    "&:hover": {
-      boxShadow: "5px 5px 10px rgba(167, 255, 0, 0.8)",
-      backgroundColor: "green",
-      color: "black",
-      border: "2px solid black",
-    },
-    "&:active": {
-      transform: "translate(2px, 2px)",
-      boxShadow: "2px 2px 10px rgba(167, 255, 0, 0.8)",
-    },
-  };
+
 
   const [openBook, setOpenBook] = useState(false);
   const isMobile = useMediaQuery("(max-width: 768px)")[0];
@@ -142,31 +124,7 @@ const NavigationButtons: React.FC<NavigationButtonsProps> = ({
 
   return (
     <>
-      {isLoginModalOpen && (
-        <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
-      )}
       <VStack justifyContent="center" margin="12px" spacing={4}>
-        <Box display="flex" justifyContent="center">
-          <Button
-            size={"lg"}
-            onClick={handleCreateClick}
-            colorScheme="green"
-            variant={"outline"}
-            fontFamily="Joystix"
-            sx={createButtonStyle}
-          >
-            <Box marginRight={3}>
-              <Image
-                src="/treboard.gif"
-                alt="tre flip Skateboard icon"
-                width={42}
-                height={42}
-                style={{ width: "auto", height: "auto" }}
-              />
-            </Box>
-            + Add to Mag
-          </Button>
-        </Box>
         <ButtonGroup size="sm" isAttached variant="outline" colorScheme="green">
           <Button
             onClick={() => updateFeed("trending", SKATEHIVE_TAG)}

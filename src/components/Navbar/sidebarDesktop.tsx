@@ -17,6 +17,7 @@ import {
   useToast
 } from "@chakra-ui/react";
 import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   FaBook,
@@ -25,6 +26,7 @@ import {
   FaHive,
   FaMapMarkerAlt,
   FaSpeakap,
+  FaTrophy,
   FaUser,
   FaWallet
 } from "react-icons/fa";
@@ -33,11 +35,12 @@ import "../../styles/fonts.css";
 import LoginModal from "../Hive/Login/LoginModal";
 import CommunityTotalPayout from "../communityTotalPayout";
 // import checkRewards from "./utils/checkReward";
+import { useLastAuction } from "@/hooks/auction";
 import { useIsClient } from "@/hooks/useIsClient";
 import Confetti from 'react-confetti';
 import { FormattedAddress } from "../NNSAddress";
 import { claimRewards } from "./utils/claimRewards";
-import { ImProfile } from "react-icons/im";
+import { FaRankingStar } from "react-icons/fa6";
 
 const blink = keyframes`
   0% { color: gold; opacity: 1; }
@@ -60,6 +63,7 @@ const SidebarDesktop = () => {
   const [globalProps, setGlobalProps] = useState<any>(null); // Store global props
   const [showConfetti, setShowConfetti] = useState(false);
   const toast = useToast();
+  const { data: activeAuction } = useLastAuction();
 
   const client = HiveClient;
 
@@ -189,11 +193,11 @@ const SidebarDesktop = () => {
         color={"white"}
         fontSize={"20px"}
       >
-        <Heading size="md">
+        <Link href={`https://nouns.build/dao/base/${activeAuction?.token?.tokenContract}`} passHref target="_blank" rel="noopener noreferrer">
           <Image
             width={"48px"}
             height={"auto"}
-            src="/SKATE_HIVE_VECTOR_FIN.svg"
+            src={"/SKATE_HIVE_VECTOR_FIN.svg"}
             alt="SkateHive"
             borderRadius={"5px"}
             _hover={{
@@ -201,15 +205,13 @@ const SidebarDesktop = () => {
               transform: "scale(1.03)",
               border: "1px solid #A5D6A7",
               zIndex: 1,
+              content: `url(${activeAuction?.token?.image || "/SKATE_HIVE_VECTOR_FIN_HOVER.svg"})`,
             }}
             transition="transform 0.3s ease-out"
             minW={"100%"}
             h={"auto"}
-            onClick={() => {
-              window.location.href = "/";
-            }}
           />
-        </Heading>
+        </Link>
         <Divider
           my={4}
           style={{ color: "#A5D6A7", borderColor: "#A5D6A7" }}
@@ -246,20 +248,12 @@ const SidebarDesktop = () => {
             window.location.href = "/dao";
           }}>Dao</Text>
         </HStack>
-
-        {!hiveUser && (
-          <HStack padding={0} gap={3}>
-            <FaDiscord size={"22px"} />
-            <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime' }} as="a"
-              href="https://discord.gg/G4bamNkZuE"
-              target="_blank"
-              rel="noopener noreferrer"
-
-            >Chat</Text>
-          </HStack>
-        )}
-
-
+        <HStack padding={0} gap={3} >
+          <FaTrophy color={'white'} size={"22px"} />
+          <Text fontFamily="Joystix" color={"white"} cursor={"pointer"} _hover={{ color: 'lime' }} onClick={() => {
+            window.location.href = "/leaderboard";
+          }}>Ranking</Text>
+        </HStack>
         {hiveUser ? (
           <>
             <HStack padding={0} gap={3}>
@@ -295,19 +289,20 @@ const SidebarDesktop = () => {
               )}
             </HStack>
 
-
-            <HStack padding={0} gap={3}>
-              <FaDiscord size={"22px"} />
-              <Text
-                fontFamily="Joystix"
-                color={"white"}
-                cursor={"pointer"}
-                _hover={{ color: 'lime' }}
-                onClick={handleClick}
-              >
-                Chat
-              </Text>
-            </HStack>
+            {!hiveUser &&
+              <HStack padding={0} gap={3}>
+                <FaDiscord size={"22px"} />
+                <Text
+                  fontFamily="Joystix"
+                  color={"white"}
+                  cursor={"pointer"}
+                  _hover={{ color: 'lime' }}
+                  onClick={handleClick}
+                >
+                  Chat
+                </Text>
+              </HStack>
+            }
 
 
             {/* <HStack
