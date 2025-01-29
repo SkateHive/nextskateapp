@@ -17,11 +17,12 @@ const TopMenu = ({ sortedComments }: TopMenuProps) => {
   const router = useRouter()
   const [isMobile] = useMediaQuery("(max-width: 574px)")
   const { isOpen: isMagOpen, onOpen, onClose } = useDisclosure();
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       setLoginMethod(localStorage.getItem("LoginMethod"))
     }
-  }, [localStorage.getItem("LoginMethod")])
+  }, []);
 
   const handleCloseModal = () => {
     setIsOpen(false)

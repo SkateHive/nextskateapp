@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   description: "The infinity skateboard maganize",
   manifest: "/manifest.json",
   openGraph: {
-    images: `/ogimage.png`,
+    images: "/ogimage.png",
   },
 };
 
