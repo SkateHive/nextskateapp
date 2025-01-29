@@ -2,6 +2,8 @@ import AuthorAvatar from "@/components/AuthorAvatar";
 import { useHiveUser } from "@/contexts/UserContext";
 import { Avatar, Box, Button, HStack, Input, SkeletonCircle, SkeletonText, Text, useToast, VStack } from "@chakra-ui/react";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { sendPowerUp } from '@/lib/hive/client-functions';
+import { sendPowerUpWithPrivateKey } from '@/lib/hive/server-functions';
 
 interface HiveModalOpenProps {
     isHive: boolean;
@@ -134,60 +136,39 @@ const HiveModalOpen: React.FC<HiveModalOpenProps> = ({
             });
         }
     };
-    const sendPowerUp = async () => {
-        if (typeof window !== "undefined") {
-            try {
-                const response = await new Promise<{
-                    success: boolean;
-                    message?: string;
-                }>((resolve, reject) => {
-                    if (typeof window.hive_keychain !== "undefined") {
-                        window.hive_keychain.requestPowerUp(
-                            username,
-                            username,
-                            formattedAmountHivePower,
-                            memoWallet,
-                            "transfer_to_vesting",
-                            (response: { success: boolean; message?: string }) => {
-                                if (response.success) {
-                                    resolve(response);
-                                } else {
-                                    reject(new Error(response.message));
-                                }
-                            }
-                        );
 
-                    } else {
-                        toast({
-                            title: "Power-Up error.",
-                            description: "Your passkey is deactivated. Activate it and try again.",
-                            status: "error",
-                            duration: 5000,
-                            isClosable: true,
-                        });
-                    }
-                });
-
-                if (response.success) {
-                    toast({
-                        title: "Successful Power-Up!",
-                        description: "You just won HIVE Power.",
-                        status: "success",
-                        duration: 5000,
-                        isClosable: true,
-                    });
-                }
-            } catch (error: any) {
+    const handlePowerUp = async () => {
+        const loginMethod = localStorage.getItem("LoginMethod");
+        if (loginMethod === "keychain") {
+            if (username) {
+                await sendPowerUp(username, parseFloat(formattedAmountHivePower));
+                closeHivePowerModal();
+            } else {
                 toast({
-                    title: "Power-Up failed.",
-                    description: error.message || "An error occurred when trying to perform the Power-Up.",
+                    title: "Error",
+                    description: "Username is not defined.",
                     status: "error",
                     duration: 5000,
                     isClosable: true,
                 });
             }
-        };
-    }
+        } else if (loginMethod === "privateKey") {
+            const privateKey = process.env.NEXT_PUBLIC_HIVE_ACTIVE_KEY;
+            if (username && privateKey) {
+                await sendPowerUpWithPrivateKey(username, parseFloat(formattedAmountHivePower), privateKey);
+                closeHivePowerModal();
+            } else {
+                toast({
+                    title: "Error",
+                    description: "Username or private key is not defined.",
+                    status: "error",
+                    duration: 5000,
+                    isClosable: true,
+                });
+            }
+        }
+    };
+
     return (
         <>
             {/* HIVE Modal */}
@@ -227,7 +208,7 @@ const HiveModalOpen: React.FC<HiveModalOpenProps> = ({
                                     borderRadius="5px"
                                     variant="outline"
                                     ml={4}
-                                    _placeholder={{ color: 'gray.500' }} 
+                                    _placeholder={{ color: 'gray.500' }}
                                 />
                             </Box>
 
@@ -246,7 +227,7 @@ const HiveModalOpen: React.FC<HiveModalOpenProps> = ({
                                 color="black"
                                 borderRadius="5px"
                                 variant="outline"
-                                _placeholder={{ color: 'gray.500' }} 
+                                _placeholder={{ color: 'gray.500' }}
                             />
 
                             <Input
@@ -257,7 +238,7 @@ const HiveModalOpen: React.FC<HiveModalOpenProps> = ({
                                 color="black"
                                 borderRadius="5px"
                                 variant="outline"
-                                _placeholder={{ color: 'gray.500' }} 
+                                _placeholder={{ color: 'gray.500' }}
                             />
                             <HStack spacing={4} mt={4}>
                                 <Button
@@ -363,7 +344,7 @@ const HiveModalOpen: React.FC<HiveModalOpenProps> = ({
                                 color="black"
                                 borderRadius="5px"
                                 variant="outline"
-                                _placeholder={{ color: 'gray.500' }} 
+                                _placeholder={{ color: 'gray.500' }}
                             />
 
                             <Input
@@ -374,10 +355,10 @@ const HiveModalOpen: React.FC<HiveModalOpenProps> = ({
                                 color="black"
                                 borderRadius="5px"
                                 variant="outline"
-                                _placeholder={{ color: 'gray.500' }} 
+                                _placeholder={{ color: 'gray.500' }}
                             />
                             <HStack spacing={4} mt={4}>
-                                <Button colorScheme="red" onClick={sendPowerUp} width="full">Power Up</Button>
+                                <Button colorScheme="red" onClick={handlePowerUp} width="full">Power Up</Button>
                                 <Button colorScheme="gray" onClick={closeHivePowerModal} width="full">Cancel</Button>
                             </HStack>
                         </VStack>
@@ -387,7 +368,5 @@ const HiveModalOpen: React.FC<HiveModalOpenProps> = ({
         </>
     )
 }
-
-
 
 export default HiveModalOpen;

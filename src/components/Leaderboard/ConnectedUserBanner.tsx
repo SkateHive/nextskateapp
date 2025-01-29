@@ -106,28 +106,28 @@ const ConnectedUserBanner: React.FC<ConnectedUserBannerProps> = ({ connectedUser
                                     'Vote Witness', () => handleWitnessVote(userData.hive_author), userData)}
                             />
                             <ThComponent
-                                title="Gnars Votes"
-                                imageSrc="/logos/gnars_logo.png"
-                                onClick={() => openModal(
-                                    'Buy Gnars',
-                                    'Gnars Votes is the total amount of Gnars Votes owned by the user.',
-                                    'Vote Gnars', () => { }, userData)}
-                            />
-                            <ThComponent
-                                title="SKTHV Votes"
-                                imageSrc="/skatehive_square_green.png"
-                                onClick={() => openModal(
-                                    'SKTHV Votes',
-                                    'SKTHV Votes is the total amount of Skatehive NFTs owned by the user.',
-                                    'Buy SKTHV Votes', () => { }, userData)}
-                            />
-                            <ThComponent
                                 title="Last Post"
                                 icon={<FaPencil size={20} />}
                                 onClick={() => openModal(
                                     'Last Post',
                                     'Last Post is the date of the last post made by the user.',
                                     'Create Post', () => { }, userData)}
+                            />
+                            <ThComponent
+                                title="SKTHV Art"
+                                imageSrc="/skatehive_square_green.png"
+                                onClick={() => openModal(
+                                    'SKTHV Art',
+                                    'SKTHV Art is the total amount of Skatehive NFTs owned by the user.',
+                                    'Buy SKTHV Art', () => { }, userData)}
+                            />
+                            <ThComponent
+                                title="Gnars Votes"
+                                imageSrc="/logos/gnars_logo.png"
+                                onClick={() => openModal(
+                                    'Buy Gnars',
+                                    'Gnars Votes is the total amount of Gnars Votes owned by the user.',
+                                    'Vote Gnars', () => { }, userData)}
                             />
                             <ThComponent
                                 title="HBD Balance"

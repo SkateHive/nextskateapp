@@ -499,3 +499,36 @@ export async function getSkateHiveTotalPayout(): Promise<number | null> {
     return null; // Return null in case of an error
   }
 }
+
+export async function sendPowerUp(username: string, amount: number): Promise<void> {
+  if (typeof window !== "undefined") {
+    try {
+      const response = await new Promise<{ success: boolean; message?: string }>((resolve, reject) => {
+        if (typeof window.hive_keychain !== "undefined") {
+          window.hive_keychain.requestPowerUp(
+            username,
+            username,
+            amount.toFixed(3),
+            "",
+            "transfer_to_vesting",
+            (response: { success: boolean; message?: string }) => {
+              if (response.success) {
+                resolve(response);
+              } else {
+                reject(new Error(response.message));
+              }
+            }
+          );
+        } else {
+          reject(new Error("Hive Keychain is not available."));
+        }
+      });
+
+      if (response.success) {
+        console.log("Power-Up successful!");
+      }
+    } catch (error: any) {
+      console.error("Power-Up failed:", error.message || "An error occurred when trying to perform the Power-Up.");
+    }
+  }
+}

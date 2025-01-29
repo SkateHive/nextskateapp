@@ -1,9 +1,11 @@
 import React from 'react';
-import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, Button, Table, Thead, Tbody, Tr, Th, Td, Center, Text } from '@chakra-ui/react';
+import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, Button, Table, Thead, Tbody, Tr, Th, Td, Center, Text, Slider, SliderTrack, SliderFilledTrack, SliderThumb, SliderMark, Box, VStack } from '@chakra-ui/react';
 import { formatDate } from '@/lib/utils';
 import { DataBaseAuthor } from '@/components/Leaderboard/LeaderboardTable';
 import useHiveBalance from '@/hooks/useHiveBalance';
 import { useHiveUser } from '@/contexts/UserContext';
+import { sendPowerUp } from '@/lib/hive/client-functions';
+import { sendPowerUpWithPrivateKey } from '@/lib/hive/server-functions';
 
 interface ModalProps {
     isOpen: boolean;
@@ -40,17 +42,51 @@ const getColorByValue = (value: number, highThreshold: number, lowThreshold: num
     }
 };
 
+const getEmojiByValue = (value: number, max: number): string => {
+    if (value === 0) {
+        return '😢';
+    } else if (value === max) {
+        return '😇';
+    } else {
+        const percentage = (value / max) * 100;
+        if (percentage < 50) {
+            return '🙂';
+        } else {
+            return '😃';
+        }
+    }
+};
+
 const LeaderboardModal: React.FC<ModalProps> = ({ isOpen, onClose, title, content, actionText, onAction, data }) => {
     const hiveUser = useHiveUser();
     const { hiveUsdValue, totalHP } = useHiveBalance(hiveUser.hiveUser);
+    const [powerUpAmount, setPowerUpAmount] = React.useState(0);
 
-    const handleActionClick = () => {
+    const handleActionClick = async () => {
         if (title === 'Power' && actionText === 'Power UP') {
-            console.log('Powering up HP');
-        } else {
+            const loginMethod = localStorage.getItem("LoginMethod");
+            if (loginMethod === "keychain") {
+                if (hiveUser.hiveUser) {
+                    await sendPowerUp(hiveUser.hiveUser.name, powerUpAmount);
+                } else {
+                    console.error("Hive user is not available.");
+                }
+            } else if (loginMethod === "privateKey") {
+                const privateKey = process.env.NEXT_PUBLIC_HIVE_ACTIVE_KEY;
+                if (hiveUser.hiveUser && privateKey) {
+                    await sendPowerUpWithPrivateKey(hiveUser.hiveUser.name, powerUpAmount, privateKey);
+                } else {
+                    console.error("Hive user or private key is not available.");
+                }
+            }
+        } else if (title === 'Last Post Activity' && actionText === 'Make a Post') {
+            window.open('https://skatehive.com/upload', '_blank');
+        }
+        else {
             onAction();
         }
     };
+
 
     const renderContent = (): JSX.Element => {
         switch (title) {
@@ -65,7 +101,7 @@ const LeaderboardModal: React.FC<ModalProps> = ({ isOpen, onClose, title, conten
                         </InfoBox>
                         <br />
                         <p>
-                            You own
+                            You own{''}
                             <span
                                 style={{
                                     color: getColorByValue(data.hive_balance ?? 0, 1000, 500),
@@ -73,9 +109,9 @@ const LeaderboardModal: React.FC<ModalProps> = ({ isOpen, onClose, title, conten
                                     textShadow: `0 0 5px ${getColorByValue(data.hive_balance ?? 0, 1000, 500)}`
                                 }}
                             >
-                                {data.hive_balance}
+                                {data.hive_balance}{''}
                             </span>
-                            that is worth
+                            that is worth {''}
                             <span
                                 style={{
                                     color: getColorByValue(Number(hiveUsdValue), 1000, 500),
@@ -87,6 +123,15 @@ const LeaderboardModal: React.FC<ModalProps> = ({ isOpen, onClose, title, conten
                             </span>.
                         </p>
                         <br />
+                        <Box w={'100%'} h={'80%'} borderRadius={10} p={4}>
+                            <iframe
+                                id="simpleswap-frame"
+                                name="SimpleSwap Widget"
+                                width="100%"
+                                height="500px"
+                                style={{ border: "none", borderRadius: "50px" }}
+                                src="https://simpleswap.io/widget/df29d743-6c03-4c7e-a745-4a0bfd19c656" ></iframe>
+                        </Box>
                         <Table variant="simple" size="sm">
                             <Thead>
                                 <Tr>
@@ -107,25 +152,46 @@ const LeaderboardModal: React.FC<ModalProps> = ({ isOpen, onClose, title, conten
                 return (
                     <div>
                         <InfoBox>
-                            Hive Power or POWER! represents your stake and influence on the Hive blockchain.
+                            Hive Power or POWER! represents your stake and influence on Skatehive.
                             When you power up Hive into HP, you gain the ability to cast stronger upvotes,
-                            which directly impacts the rewards other skaters receive for their content.
-                            The more HP you have, the more weight your actions carry in the community.
-                            For Skatehive users, powering up means becoming an active supporter of the skateboarding culture,
-                            with increased opportunities to shape and grow the community.
+                            which directly impacts the rewards other skaters receive for their content and how much YOU receive for your curation/likes.
+                            Thats how we generate monetization to each other on skatehive, so this metric is very important.
 
                         </InfoBox>
                         <br />
-                        <Center>
+                        <VStack spacing={4}>
                             <Text>
-                                You own <span style={{ color: getColorByValue(data.hp_balance ?? 0, 12000, 2000), fontWeight: 'bold', textShadow: `0 0 5px ${getColorByValue(data.hp_balance ?? 0, 12000, 2000)}` }}>{data.hp_balance}</span> HP and you control <span style={{ color: getColorByValue(totalHP ?? 0, 12000, 2000), fontWeight: 'bold', textShadow: `0 0 5px ${getColorByValue(totalHP ?? 0, 12000, 2000)}` }}>{totalHP}</span> HP.
+                                You own <span style={{ color: getColorByValue(data.hp_balance ?? 0, 2000, 500), fontWeight: 'bold', textShadow: `0 0 5px ${getColorByValue(data.hp_balance ?? 0, 2000, 500)}` }}>{data.hp_balance}</span> HP and you control <span style={{ color: getColorByValue(totalHP ?? 0, 2000, 500), fontWeight: 'bold', textShadow: `0 0 5px ${getColorByValue(totalHP ?? 0, 2000, 500)}` }}>{totalHP}</span> HP.
                             </Text>
-                        </Center>
+                            <Text>Power Up Amount: {powerUpAmount} HIVE</Text>
+
+                        </VStack>
+                        <Box justifyContent={'center'} mx="6">
+                            <Slider
+                                defaultValue={0}
+                                min={0}
+                                max={data.hive_balance ?? 0}
+                                step={1}
+                                onChange={(val) => setPowerUpAmount(val)}
+                                color={getColorByValue(powerUpAmount, data.hive_balance ?? Number(data.hive_balance), Number(data.hive_balance) / 2)}
+                            >
+                                <SliderMark value={0} mt="2" ml="-2.5" fontSize="sm">0</SliderMark>
+                                <SliderMark value={data.hive_balance ?? 0} mt="2" ml="-2.5" fontSize="sm">{data.hive_balance ?? 0}</SliderMark>
+                                <SliderTrack>
+                                    <SliderFilledTrack
+                                        backgroundColor={getColorByValue(powerUpAmount, data.hive_balance ?? Number(data.hive_balance), Number(data.hive_balance) / 3)}
+                                    />
+                                </SliderTrack>
+                                <SliderThumb>
+                                    <Box color="tomato">{getEmojiByValue(powerUpAmount, data.hive_balance ?? 0)}</Box>
+                                </SliderThumb>
+                            </Slider>
+                        </Box>
                         <br />
                         <Table variant="simple" size="sm">
                             <Thead>
                                 <Tr>
-                                    <Th>Action</Th>
+                                    <Th>Rules</Th>
                                     <Th>Points</Th>
                                 </Tr>
                             </Thead>
@@ -136,6 +202,8 @@ const LeaderboardModal: React.FC<ModalProps> = ({ isOpen, onClose, title, conten
                                 </Tr>
                             </Tbody>
                         </Table>
+                        <br />
+
                     </div>
                 );
             case 'Gnars Votes':
@@ -143,6 +211,7 @@ const LeaderboardModal: React.FC<ModalProps> = ({ isOpen, onClose, title, conten
                     <div>
                         <InfoBox>
                             Gnars Votes represent your voting power in the Gnars DAO.
+                            Skatehive supports Gnars and Gnars supports Skatehive
                         </InfoBox>
                         <br />
                         <p>
@@ -152,7 +221,7 @@ const LeaderboardModal: React.FC<ModalProps> = ({ isOpen, onClose, title, conten
                         <Table variant="simple" size="sm">
                             <Thead>
                                 <Tr>
-                                    <Th>Action</Th>
+                                    <Th>Rules</Th>
                                     <Th>Points</Th>
                                 </Tr>
                             </Thead>
@@ -165,11 +234,11 @@ const LeaderboardModal: React.FC<ModalProps> = ({ isOpen, onClose, title, conten
                         </Table>
                     </div>
                 );
-            case 'SKTHV Votes':
+            case 'SKTHV Art':
                 return (
                     <div>
                         <InfoBox>
-                            Skatehive NFTs represent your ownership of unique digital assets in the Skatehive ecosystem.
+                            The number of Skatehive Art pieces you collected to support Skatehive Treasure.
                         </InfoBox>
                         <br />
                         <p>
@@ -304,11 +373,16 @@ const LeaderboardModal: React.FC<ModalProps> = ({ isOpen, onClose, title, conten
                 return (
                     <div>
                         <InfoBox>
-                            Your last post activity on the Hive blockchain.
+                            Your last post activity in Skatehive.
                         </InfoBox>
                         <br />
                         <p>
                             Your last post was on <span style={{ color: getColorByValue(new Date(data.last_post ?? '').getTime(), new Date().getTime() - 7 * 24 * 60 * 60 * 1000, new Date().getTime() - 30 * 24 * 60 * 60 * 1000), fontWeight: 'bold', textShadow: `0 0 5px ${getColorByValue(new Date(data.last_post ?? '').getTime(), new Date().getTime() - 7 * 24 * 60 * 60 * 1000, new Date().getTime() - 30 * 24 * 60 * 60 * 1000)}` }}>{formatDate(String(data.last_post))}</span>.
+                        </p>
+                        <p>
+                            {new Date(data.last_post ?? '').getTime() < new Date().getTime() - 7 * 24 * 60 * 60 * 1000 ?
+                                'Get off your lazy ass and make a post!' :
+                                'Nice, you have been posting recently. Why not post about that?'}
                         </p>
                         <br />
                         <Table variant="simple" size="sm">
@@ -331,7 +405,7 @@ const LeaderboardModal: React.FC<ModalProps> = ({ isOpen, onClose, title, conten
                 return (
                     <div>
                         <InfoBox>
-                            Bonus points for having a valid Ethereum wallet.
+                            Bonus points for having a valid Ethereum wallet connected.
                         </InfoBox>
                         <br />
                         <p>

@@ -404,3 +404,24 @@ export async function signImageHash(hash: string): Promise<string> {
 
   return signature.toString();
 }
+
+export async function sendPowerUpWithPrivateKey(username: string, amount: number, privateKey: string): Promise<void> {
+  const client = HiveClient;
+
+  const operation: dhive.Operation = [
+    'transfer_to_vesting',
+    {
+      from: username,
+      to: username,
+      amount: `${amount.toFixed(3)} HIVE`
+    }
+  ];
+
+  try {
+    const result = await client.broadcast.sendOperations([operation], dhive.PrivateKey.fromString(privateKey));
+    console.log('Power-Up broadcast result:', result);
+  } catch (error) {
+    console.error('Error broadcasting Power-Up:', error);
+    throw error;
+  }
+}
