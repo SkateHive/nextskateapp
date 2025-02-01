@@ -19,6 +19,13 @@ interface MentionCommentProps {
     onPaste?: React.ClipboardEventHandler<HTMLTextAreaElement>;
     textareaProps?: React.TextareaHTMLAttributes<HTMLTextAreaElement>;
     ref?: React.RefObject<HTMLTextAreaElement>;
+    overflow?: string;
+    resize?: "none" | "both" | "horizontal" | "vertical";
+    _focus?: { border: string; boxShadow: string };
+    bg?: string;
+    minHeight?: string;
+    borderRadius?: string;
+    border?: string;
 }
 
 const MentionComment: React.FC<MentionCommentProps> = ({
@@ -28,6 +35,13 @@ const MentionComment: React.FC<MentionCommentProps> = ({
     ref,
     isLoading,
     onPaste,
+    bg,
+    border,
+    borderRadius,
+    _focus,
+    minHeight,
+    overflow,
+    resize,
     textareaProps = {},
 }) => {
     const [comment, setComment] = useState("");
@@ -114,15 +128,17 @@ const MentionComment: React.FC<MentionCommentProps> = ({
                     onCommentChange?.(newComment);
                 }}
                 placeholder={placeholder} // Use dynamic placeholder here
-                bg="transparent"
-                _focus={{ border: "#A5D6A7", boxShadow: "none" }}
-                resize="none"
-                minHeight="100px"
-                borderRadius="xl"
-                border="1px solid grey"
+                bg={bg ?? "transparent"}
+                _focus={_focus}
+                resize={resize ?? "none"}
+                minHeight={minHeight}
+                borderRadius={borderRadius}
+                border={border}
+                overflow={overflow}
                 {...textareaProps} // Spread any other custom props for Textarea here
             />
-            <Box mt={2} minHeight="24px">
+
+            <Box mt={2} >
                 {renderHighlightedText(comment)}
             </Box>
 
