@@ -2,6 +2,7 @@ import AuthorAvatar from "@/components/AuthorAvatar";
 import UserAvatar from "@/components/UserAvatar";
 import { useHiveUser } from "@/contexts/UserContext";
 import { commentWithPrivateKey } from "@/lib/hive/server-functions";
+import { extractMediaItems } from "@/lib/utils";
 import {
     Box,
     Button,
@@ -15,13 +16,12 @@ import {
     ModalHeader,
     ModalOverlay,
     Text,
-    Textarea,
     VStack
 } from "@chakra-ui/react";
 import * as dhive from "@hiveio/dhive";
 import { useState } from "react";
 import CarrouselRenderer from "../utils/CarrouselRenderer";
-import { extractMediaItems } from "@/lib/utils";
+import MentionComment from "./MentionUserComment";
 
 interface ReplyModalProps {
     isOpen: boolean;
@@ -61,7 +61,7 @@ const ReplyModal = ({ isOpen, onClose, comment, onNewComment, content }: ReplyMo
                     parent_permlink: comment.permlink,
                     author: username,
                     permlink: newPermLink,
-                    title: "reply",
+                    title: `Reply to ${comment.author}`,
                     body: replyBody,
                     json_metadata: JSON.stringify({
                         tags: ["skateboard"],
@@ -167,9 +167,9 @@ const ReplyModal = ({ isOpen, onClose, comment, onNewComment, content }: ReplyMo
                                         <Text ml={5} color="gray.400">
                                             replying to @{comment.author}
                                         </Text>
-                                        <Textarea
-                                            value={replyBody}
-                                            onChange={(e) => setReplyBody(e.target.value)}
+                                        <MentionComment
+                                            onCommentSubmit={setReplyBody}
+                                            onCommentChange={(comment: string) => setReplyBody(comment)}
                                             placeholder="Write your reply here"
                                             bg="transparent"
                                             _focus={{ border: "#A5D6A7", boxShadow: "none" }}
