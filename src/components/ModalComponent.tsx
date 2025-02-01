@@ -6,7 +6,7 @@ import useHiveBalance from '@/hooks/useHiveBalance';
 import { useHiveUser } from '@/contexts/UserContext';
 import { sendPowerUp } from '@/lib/hive/client-functions';
 import { sendPowerUpWithPrivateKey } from '@/lib/hive/server-functions';
-
+import { useRouter } from 'next/navigation';
 interface ModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -61,7 +61,7 @@ const LeaderboardModal: React.FC<ModalProps> = ({ isOpen, onClose, title, conten
     const hiveUser = useHiveUser();
     const { hiveUsdValue, totalHP } = useHiveBalance(hiveUser.hiveUser);
     const [powerUpAmount, setPowerUpAmount] = React.useState(0);
-
+    const router = useRouter();
     const handleActionClick = async () => {
         if (title === 'Power' && actionText === 'Power UP') {
             const loginMethod = localStorage.getItem("LoginMethod");
@@ -81,6 +81,8 @@ const LeaderboardModal: React.FC<ModalProps> = ({ isOpen, onClose, title, conten
             }
         } else if (title === 'Last Post Activity' && actionText === 'Make a Post') {
             window.open('https://skatehive.com/upload', '_blank');
+        } else if (title === 'Giveth Donations' && actionText === 'Donate') {
+            window.open("https://giveth.io/project/skatehive-skateboarding-community", "_blank", "noopener,noreferrer");
         }
         else {
             onAction();
@@ -428,6 +430,35 @@ const LeaderboardModal: React.FC<ModalProps> = ({ isOpen, onClose, title, conten
                         </Table>
                     </div>
                 );
+            case 'Giveth Donations':
+                return (
+                    <div>
+                        <InfoBox>
+                            The total of donations you have made to the Giveth community.
+                        </InfoBox>
+                        <br />
+                        <p>
+                            You have donated <span style={{ color: getColorByValue(data.giveth_donations_usd ?? 0, 10, 5), fontWeight: 'bold', textShadow: `0 0 5px ${getColorByValue(data.giveth_donations_usd ?? 0, 10, 5)}` }}>{data.giveth_donations_usd}</span> USDS to skatehive treasure through Giveth
+                        </p>
+                        <br />
+                        <Table variant="simple" size="sm">
+                            <Thead>
+                                <Tr>
+                                    <Th>Action</Th>
+                                    <Th>Points</Th>
+                                </Tr>
+                            </Thead>
+                            <Tbody>
+                                <Tr>
+                                    <Td>10 points per donation</Td>
+                                    <Td></Td>
+                                </Tr>
+                            </Tbody>
+                        </Table>
+                    </div>
+                );
+
+
             default:
                 return <p>{content}</p>;
         }
