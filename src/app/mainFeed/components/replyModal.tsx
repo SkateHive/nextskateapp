@@ -20,8 +20,8 @@ import {
 } from "@chakra-ui/react";
 import * as dhive from "@hiveio/dhive";
 import { useState } from "react";
+import MentionComment from "../../../components/Mention/MentionUserComment";
 import CarrouselRenderer from "../utils/CarrouselRenderer";
-import MentionComment from "./MentionUserComment";
 
 interface ReplyModalProps {
     isOpen: boolean;

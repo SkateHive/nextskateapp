@@ -30,9 +30,9 @@ import { useDropzone } from "react-dropzone";
 import { FaHistory, FaImage, FaMoneyBill, FaTimes } from "react-icons/fa";
 import { FaArrowRightArrowLeft, FaFaceSmile } from "react-icons/fa6";
 import { IoFilter } from "react-icons/io5";
+import MentionComment from "../../components/Mention/MentionUserComment";
 import { uploadFileToIPFS } from "../upload/utils/uploadToIPFS";
 import CommentList from "./components/CommentsList";
-import MentionComment from "./components/MentionUserComment";
 import TopMenu from "./components/TopMenu";
 
 const LoadingComponent = dynamic(() => import("./components/loadingComponent"), { ssr: false });
