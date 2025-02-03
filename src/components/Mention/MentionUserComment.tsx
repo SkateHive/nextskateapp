@@ -12,6 +12,8 @@ import debounce from "lodash/debounce";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 interface MentionCommentProps {
+    value?: string;
+    children?: React.ReactNode; 
     onCommentChange?: (comment: string) => void;
     onCommentSubmit?: React.Dispatch<React.SetStateAction<string>>;
     placeholder?: string;
@@ -28,8 +30,11 @@ interface MentionCommentProps {
     border?: string;
 }
 
+
 const MentionComment: React.FC<MentionCommentProps> = ({
     onCommentChange,
+    children,
+    value,
     onCommentSubmit,
     placeholder,
     ref,
@@ -54,10 +59,16 @@ const MentionComment: React.FC<MentionCommentProps> = ({
 
     const fetchAuthors = async (query: string) => {
         if (!query) return;
+
+        if (query.length > 16) {
+            query = query.slice(0, 16); 
+        }
+
         if (cacheRef.current[query]) {
             setAuthors(cacheRef.current[query]);
             return;
         }
+
         setLocalIsLoading(true);
         try {
             const sanitizedQuery = query.startsWith("@") ? query.slice(1) : query;
@@ -74,18 +85,21 @@ const MentionComment: React.FC<MentionCommentProps> = ({
         }
     };
 
+    // Function with debourance to improve search performance
     const debouncedFetchAuthors = useCallback(
         debounce((search: string) => {
+            console.log ("calling debouondfetchauthors with:", search); // debug: check when debounce is called
             fetchAuthors(search);
         }, 500),
         []
     );
 
     useEffect(() => {
-        const match = comment.match(/@(\\w+)$/);
+        const match = comment.match(/@(\w+)$/);
         if (match) {
             setMentionIndex(match.index || null);
-            debouncedFetchAuthors(match[1]);
+            console.log("Match encontrado:", match[1]); 
+            debouncedFetchAuthors(match[1]);  
             setIsListVisible(true);
         } else {
             setAuthors([]);
@@ -121,11 +135,11 @@ const MentionComment: React.FC<MentionCommentProps> = ({
         <>
             <Textarea
                 ref={ref}
-                value={comment}
+                value={comment} 
                 onChange={(e) => {
                     const newComment = e.target.value;
                     setComment(newComment);
-                    onCommentChange?.(newComment);
+                    onCommentChange?.(newComment); 
                 }}
                 placeholder={placeholder} // Use dynamic placeholder here
                 bg={bg ?? "transparent"}
@@ -144,7 +158,7 @@ const MentionComment: React.FC<MentionCommentProps> = ({
 
             {isListVisible && authors.length > 0 && (
                 <List position="absolute" top="100%" left={0} bg="white" boxShadow="md" zIndex="999" width="100%">
-                    {isLoading ? (
+                    {isLoading || localIsLoading ? (
                         <Spinner color="#A5D6A7" />
                     ) : (
                         authors.map((author) => (
