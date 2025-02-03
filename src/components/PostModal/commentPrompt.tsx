@@ -1,25 +1,14 @@
-"use client";
 import { uploadFileToIPFS } from "@/app/upload/utils/uploadToIPFS";
 import { useHiveUser } from "@/contexts/UserContext";
 import { Comment, useComments } from "@/hooks/comments";
 import { commentWithPrivateKey } from "@/lib/hive/server-functions";
 import PostModel from "@/lib/models/post";
-import {
-  Box,
-  Button,
-  Center,
-  Flex,
-  Spinner,
-  Text,
-  Tooltip,
-  useToast
-} from "@chakra-ui/react";
+import { Box, Button, Center, Flex, Spinner, Text, Tooltip, useToast } from "@chakra-ui/react";
 import * as dhive from "@hiveio/dhive";
-import MDEditor, { commands } from "@uiw/react-md-editor";
 import { useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { FaImage, FaSave } from "react-icons/fa";
-import rehypeSanitize from "rehype-sanitize";
+import MentionComment from "../Mention/MentionUserComment";
 
 interface CommandPromptProps {
   post: PostModel | Comment;
@@ -215,47 +204,19 @@ const CommandPrompt = ({ post, onClose, author, permlink, onNewComment }: Comman
             <Spinner />
           </Center>
         )}
-        <MDEditor
-          value={value}
-          onChange={(value) => {
-            setValue(value || "");
-          }}
-          commands={[
-            commands.bold,
-            commands.italic,
-            commands.strikethrough,
-            commands.hr,
-            commands.code,
-            commands.table,
-            commands.link,
-            commands.quote,
-            commands.unorderedListCommand,
-            commands.orderedListCommand,
-            commands.codeBlock,
-          ]}
-          extraCommands={extraCommands}
-          previewOptions={{ rehypePlugins: [[rehypeSanitize]] }}
-          height="200px"
-          preview="edit"
-          style={{
-            border: "1px solid #2D3748",
-            borderRadius: "8px",
-            padding: "15px",
-            backgroundColor: "#1A202C",
-            color: "white",
-            minHeight: "150px",
-            fontSize: "16px",
-            lineHeight: "1.5",
-          }}
+        <MentionComment
+          onCommentChange={(comment) => setValue(comment)} 
+          onCommentSubmit={() => submitComment(value)} 
+          value={value} 
+          placeholder="Write your comment ..."
+          isLoading={isUploading}
+          bg="blackAlpha.800"
+          border="1px solid #2D3748"
+          borderRadius="8px"
+          minHeight="150px"
         />
 
       </Box>
-      <input
-        type="file"
-        id="md-image-upload"
-        {...getInputProps()}
-        style={{ display: "none" }}
-      />
       <Flex justify="flex-end">
         <Button
           colorScheme="teal"
@@ -267,7 +228,6 @@ const CommandPrompt = ({ post, onClose, author, permlink, onNewComment }: Comman
         </Button>
       </Flex>
       {error && <Text color="red.500">{error}</Text>}
-
     </Box>
   );
 };
