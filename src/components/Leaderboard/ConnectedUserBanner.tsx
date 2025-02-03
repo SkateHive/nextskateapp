@@ -163,15 +163,16 @@ const ConnectedUserBanner: React.FC<ConnectedUserBannerProps> = ({ connectedUser
                             <Td color={userData.has_voted_in_witness ? 'lightgreen' : 'lightcoral'} textAlign="center" display={['none', 'table-cell']}>
                                 {userData.has_voted_in_witness ? 'Yes' : 'No'}
                             </Td>
-                            <Td color={(userData.gnars_votes ?? 0) > 10 ? 'lightgreen' : (userData.gnars_votes ?? 0) > 0 ? 'khaki' : 'lightcoral'} textAlign="center" display={['none', 'table-cell']}>
-                                {formatNumber(userData.gnars_votes)}
+                            <Td color={userData.last_post && new Date(userData.last_post) < new Date(new Date().setFullYear(new Date().getFullYear() - 1)) ? 'lightcoral' : 'lightgreen'} textAlign="center" display={['none', 'table-cell']}>
+                                {formatDate(String(userData.last_post))}
                             </Td>
                             <Td color={(userData.skatehive_nft_balance ?? 0) > 10 ? 'lightgreen' : (userData.skatehive_nft_balance ?? 0) > 0 ? 'khaki' : 'lightcoral'} textAlign="center" display={['none', 'table-cell']}>
                                 {formatNumber(userData.skatehive_nft_balance)}
                             </Td>
-                            <Td color={userData.last_post && new Date(userData.last_post) < new Date(new Date().setFullYear(new Date().getFullYear() - 1)) ? 'lightcoral' : 'lightgreen'} textAlign="center" display={['none', 'table-cell']}>
-                                {formatDate(String(userData.last_post))}
+                            <Td color={(userData.gnars_votes ?? 0) > 10 ? 'lightgreen' : (userData.gnars_votes ?? 0) > 0 ? 'khaki' : 'lightcoral'} textAlign="center" display={['none', 'table-cell']}>
+                                {formatNumber(userData.gnars_votes)}
                             </Td>
+
                             <Td color={(userData.giveth_donations_usd ?? 0) > 500 ? 'lightgreen' : (userData.giveth_donations_usd ?? 0) >= 100 ? 'khaki' : 'lightcoral'} textAlign="center" display={['none', 'table-cell']}>
                                 {formatNumber(userData.giveth_donations_usd)}
                             </Td>
