@@ -13,7 +13,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 
 interface MentionCommentProps {
     value?: string;
-    children?: React.ReactNode; 
+    children?: React.ReactNode;
     onCommentChange?: (comment: string) => void;
     onCommentSubmit?: React.Dispatch<React.SetStateAction<string>>;
     placeholder?: string;
@@ -28,8 +28,21 @@ interface MentionCommentProps {
     minHeight?: string;
     borderRadius?: string;
     border?: string;
+    background?: string;
+    _placeholder?: { fontSize: string | undefined; color: string; }
+    width?: {
+        base: string;
+        md: string;
+    }
+    ml?: {
+        base: number;
+        md: number;
+    }
+    mb?: {
+        base: number;
+        md: number;
+    }
 }
-
 
 const MentionComment: React.FC<MentionCommentProps> = ({
     onCommentChange,
@@ -48,6 +61,10 @@ const MentionComment: React.FC<MentionCommentProps> = ({
     overflow,
     resize,
     textareaProps = {},
+    _placeholder,
+    width,
+    ml,
+    mb,
 }) => {
     const [comment, setComment] = useState("");
     const [authors, setAuthors] = useState<string[]>([]);
@@ -61,7 +78,7 @@ const MentionComment: React.FC<MentionCommentProps> = ({
         if (!query) return;
 
         if (query.length > 16) {
-            query = query.slice(0, 16); 
+            query = query.slice(0, 16);
         }
 
         if (cacheRef.current[query]) {
@@ -88,7 +105,7 @@ const MentionComment: React.FC<MentionCommentProps> = ({
     // Function with debourance to improve search performance
     const debouncedFetchAuthors = useCallback(
         debounce((search: string) => {
-            console.log ("calling debouondfetchauthors with:", search); // debug: check when debounce is called
+            console.log("calling debouondfetchauthors with:", search); // debug: check when debounce is called
             fetchAuthors(search);
         }, 500),
         []
@@ -98,8 +115,8 @@ const MentionComment: React.FC<MentionCommentProps> = ({
         const match = comment.match(/@(\w+)$/);
         if (match) {
             setMentionIndex(match.index || null);
-            console.log("Match encontrado:", match[1]); 
-            debouncedFetchAuthors(match[1]);  
+            console.log("Match encontrado:", match[1]);
+            debouncedFetchAuthors(match[1]);
             setIsListVisible(true);
         } else {
             setAuthors([]);
@@ -135,11 +152,11 @@ const MentionComment: React.FC<MentionCommentProps> = ({
         <>
             <Textarea
                 ref={ref}
-                value={comment} 
+                value={comment}
                 onChange={(e) => {
                     const newComment = e.target.value;
                     setComment(newComment);
-                    onCommentChange?.(newComment); 
+                    onCommentChange?.(newComment);
                 }}
                 placeholder={placeholder} // Use dynamic placeholder here
                 bg={bg ?? "transparent"}
@@ -149,6 +166,10 @@ const MentionComment: React.FC<MentionCommentProps> = ({
                 borderRadius={borderRadius}
                 border={border}
                 overflow={overflow}
+                width={width ?? { base: "100%", md: "100%" }}
+                ml={ml ?? 0}
+                mb={mb ?? 4}
+                _placeholder={_placeholder}
                 {...textareaProps} // Spread any other custom props for Textarea here
             />
 
