@@ -32,6 +32,7 @@ import {
 } from '@/lib/utils';
 import { RiUserFollowLine } from "react-icons/ri";
 import { checkFollow, changeFollow } from "@/lib/hive/client-functions";
+import { changeFollowWithPassword } from "@/lib/hive/server-functions";
 
 interface CommentItemProps {
   comment: any;
@@ -67,6 +68,7 @@ const CommentItem = ({
   const { comments } = useComments(comment.author, comment.permlink);
   const { voteValue } = useHiveUser();
   const [isFollowing, setIsFollowing] = useState<boolean | null>(null);
+  const loginMethod = localStorage.getItem("LoginMethod");
 
   const toggleValueTooltip = () => {
     setIsValueTooltipOpen(true);
@@ -123,11 +125,24 @@ const CommentItem = ({
   const handleFollow = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!username) return;
-    try {
-      const result = await changeFollow(username, comment.author);
-      setIsFollowing(result === 'blog');
-    } catch (error) {
-      console.error("Failed to change follow:", error);
+    if (loginMethod === "keychain") {
+      try {
+        const result = await changeFollow(username, comment.author);
+        setIsFollowing(result === 'blog');
+      } catch (error) {
+        console.error("Failed to change follow:", error);
+      }
+    } else if (loginMethod === "privateKey") {
+      try {
+        const encryptedKey = localStorage.getItem("EncPrivateKey");
+        if (!encryptedKey) {
+          throw new Error("Encrypted private key not found");
+        }
+        await changeFollowWithPassword(encryptedKey, username, comment.author);
+        setIsFollowing(true); // update state on successful follow
+      } catch (error) {
+        console.error("Failed to change follow with private key:", error);
+      }
     }
   };
 
