@@ -39,32 +39,11 @@ export const MarkdownRenderers = {
     </span>
   ),
 
-  p: ({ children, ...props }: RendererProps) => {
-    // Here we will process the text to identify mentions
-    const processText = (text: React.ReactNode) => {
-      if (typeof text === "string") {
-        // We use a regex to identify mentions in the @username format
-        return text.split(/(@\w+)/g).map((part, index) => {
-          if (part && part.startsWith('@')) {
-            // If it's a mention, we apply the desired style
-            return (
-              <span key={index} style={{ color: 'limegreen', fontWeight: 'bold' }}>
-                {part}
-              </span>
-            );
-          }
-          return part; // If it's not a mention, we return the normal text
-        });
-      }
-      return text;
-    };
-  
-    return (
-      <div {...props} style={{ color: 'white', fontSize: '18px', paddingBottom: '15px' }}>
-        {processText(children)}
-      </div>
-    );
-  },  
+  p: ({ children, ...props }: RendererProps) => (
+    <div {...props} style={{ color: 'white', fontSize: '18px', paddingBottom: '15px' }}>
+      {children}
+    </div>
+  ),
   a: ({ href, children, ...props }: RendererProps) => {
     const skateHivePostRegex = /https:\/\/www\.skatehive\.app\/post\/([^/]+)\/@([^/]+)\/([^/]+)/;
     const match = skateHivePostRegex.exec(String(href));
