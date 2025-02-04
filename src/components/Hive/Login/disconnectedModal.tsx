@@ -17,6 +17,7 @@ import {
 } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
 import { FaHive } from "react-icons/fa"
+import Keyboard from "../Keyboard"
 
 function DisconnectedUserModal({
     onClose,
@@ -38,6 +39,9 @@ function DisconnectedUserModal({
     errorMessage: string
 }) {
     const [isKeychainInstalled, setIsKeychainInstalled] = useState(false)
+    // New states for custom keyboard
+    const [showKeyboard, setShowKeyboard] = useState(false)
+    const [activeField, setActiveField] = useState<"username" | "privateKey" | null>(null)
 
     useEffect(() => {
         if (window.hive_keychain) {
@@ -50,6 +54,22 @@ function DisconnectedUserModal({
     const handleKeyDown = (event: any) => {
         if (event.key === "Enter") {
             doLogin()
+        }
+    }
+
+    const handleKeyPress = (key: string) => {
+        if (activeField === "username") {
+            setUsername(username + key)
+        } else if (activeField === "privateKey") {
+            setPrivateKey(privateKey + key)
+        }
+    }
+
+    const handleBackspace = () => {
+        if (activeField === "username") {
+            setUsername(username.slice(0, -1))
+        } else if (activeField === "privateKey") {
+            setPrivateKey(privateKey.slice(0, -1))
         }
     }
 
@@ -72,7 +92,12 @@ function DisconnectedUserModal({
                             _placeholder={{ color: "#A5D6A7", opacity: 0.4 }}
                             focusBorderColor="#A5D6A7"
                             placeholder="Hive Username"
-                            onChange={(event) => setUsername(event.target.value.toLowerCase())}
+                            value={username}
+                            readOnly
+                            onFocus={() => {
+                                setActiveField("username")
+                                setShowKeyboard(true)
+                            }}
                             onKeyDown={handleKeyDown}
                         />
                         {!isKeychainInstalled && (
@@ -83,7 +108,12 @@ function DisconnectedUserModal({
                                 _placeholder={{ color: "#A5D6A7", opacity: 0.4 }}
                                 focusBorderColor="#A5D6A7"
                                 placeholder="Password"
-                                onChange={(event1) => setPrivateKey(event1.target.value)}
+                                value={privateKey}
+                                readOnly
+                                onFocus={() => {
+                                    setActiveField("privateKey")
+                                    setShowKeyboard(true)
+                                }}
                             />
                         )}
                     </VStack>
@@ -112,6 +142,14 @@ function DisconnectedUserModal({
                     Get Help
                 </Button>
             </ModalFooter>
+            {showKeyboard && (
+                <Keyboard
+                    onKeyPress={handleKeyPress}
+                    onBackspace={handleBackspace}
+                    onClose={() => setShowKeyboard(false)}
+                    isActive={showKeyboard}
+                />
+            )}
         </>
     )
 }

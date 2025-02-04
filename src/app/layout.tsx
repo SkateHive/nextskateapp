@@ -1,6 +1,5 @@
 import Favicon from "@/components/FaviconLinks";
 import MobileNavbar from "@/components/Navbar/MobileNavbar";
-import { getWebsiteURL } from "@/lib/utils";
 import { Flex } from "@chakra-ui/react";
 import dynamic from 'next/dynamic';
 import { Share_Tech_Mono } from "next/font/google";
