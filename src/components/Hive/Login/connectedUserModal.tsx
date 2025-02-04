@@ -57,28 +57,6 @@ function ConnectedUserModal({ onClose }: { onClose: () => void }) {
                         <ListItem>We have a newsletter, make sure to put your email <Link color={"yellow"} href="https://paragraph.xyz/@skatehive" isExternal>in that shit</Link> </ListItem>
                         <ListItem>Support for Luganda Language in the docs</ListItem>
                     </UnorderedList>
-                    <Heading as="h2" size="md">
-                        <HStack spacing={2}>
-                            <FaHourglassHalf />
-                            <Text as="span">Upcoming</Text>
-                        </HStack>
-                    </Heading>
-                    <UnorderedList>
-                        <ListItem>Mentions (already functional but needs a style upgrade)</ListItem>
-                        <ListItem>Leaderboard Airdrop</ListItem>
-                        <ListItem>Weekly Challenge</ListItem>
-                    </UnorderedList>
-                    <Heading as="h2" size="md">
-                        <HStack spacing={2}>
-                            <FaBug />
-                            <Text as="span">Known Bugs</Text>
-                        </HStack>
-                    </Heading>
-                    <UnorderedList>
-                        <ListItem>Create Proposal in dao page not working</ListItem>
-                        <ListItem>Treasure not showing the right amount</ListItem>
-                        <ListItem>+99 others</ListItem>
-                    </UnorderedList>
                 </VStack>
             </ModalBody>
             <ModalFooter gap={2} justifyContent={"space-between"}>
