@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { Button, Flex } from "@chakra-ui/react";
-import { FaArrowUpFromBracket } from "react-icons/fa6";
+import { FaArrowUpFromBracket, FaDeleteLeft } from "react-icons/fa6";
+import { FaEraser } from "react-icons/fa";
 
 interface KeyboardProps {
     onKeyPress: (key: string) => void;
@@ -23,19 +24,19 @@ const Keyboard = ({ onKeyPress, onBackspace, onClose, isActive }: KeyboardProps)
 
     const buttonStyles = {
         m: "0.1rem",
-        p: "0.1rem",
-        width: "1rem",
-        h: "2rem",
+        width: "0.8rem",
+        h: "2.2rem",
         colorScheme: "green",
         variant: "outline",
-        fontSize: "0.8rem",
+        fontSize: "1.5rem",
+
     };
 
     return (
         <Flex
             direction="column"
             align="center"
-            // position="fixed"
+            // ...existing positioning...
             bottom={0}
             left={0}
             right={0}
@@ -45,7 +46,7 @@ const Keyboard = ({ onKeyPress, onBackspace, onClose, isActive }: KeyboardProps)
             borderRadius="0"
             zIndex={9999}
             boxShadow={isActive ? "0 0 10px limegreen" : "0 0 10px rgba(0,0,0,0.3)"}
-            mr={1}
+        // removed mr={1} to avoid overflow
         >
             {isShiftActive ? (
                 <Flex direction="row" width="100%" justify="center" flexWrap="wrap">
@@ -61,7 +62,7 @@ const Keyboard = ({ onKeyPress, onBackspace, onClose, isActive }: KeyboardProps)
                     ))}
                 </Flex>
             ) : (
-                <Flex direction="column" align="center" width="100%" flexWrap="wrap">
+                <Flex direction="column" align="center" width="100%" flexWrap="nowrap" m={1}>
                     {[row1, row2, row3].map((row, rowIndex) => (
                         <Flex key={rowIndex} justify="center" mt="0.5rem">
                             {row.map((key) => (
@@ -78,7 +79,7 @@ const Keyboard = ({ onKeyPress, onBackspace, onClose, isActive }: KeyboardProps)
                     <FaArrowUpFromBracket />
                 </Button>
                 <Button {...buttonStyles} width="5rem" onClick={onBackspace}>
-                    ⌫
+                    <FaDeleteLeft />
                 </Button>
                 {/* Changed button: overriding colorscheme to red */}
                 <Button {...buttonStyles} width="5rem" colorScheme="red" onClick={onClose}>
