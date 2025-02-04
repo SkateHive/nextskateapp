@@ -24,12 +24,13 @@ const Keyboard = ({ onKeyPress, onBackspace, onClose, isActive }: KeyboardProps)
 
     const buttonStyles = {
         m: "0rem",
-        width: "0.8rem",
-        h: "2rem", // reduced height
+        minW: "0",
+        width: { base: "2rem", md: "1.5rem" },  // default key width
+        h: { base: "3rem", md: "2rem" },         // key height
         colorScheme: "green",
         variant: "outline",
-        fontSize: "1.25rem",
-        p: "-0.1rem", // added padding to reduce internal space
+        fontSize: { base: "1.25rem", md: "1rem" },
+        p: "0.1rem",
     };
 
     return (
@@ -63,12 +64,18 @@ const Keyboard = ({ onKeyPress, onBackspace, onClose, isActive }: KeyboardProps)
                     {[row1, row2, row3].map((row, rowIndex) => (
                         <Flex key={rowIndex} justify="center" mt="0.5rem">
                             {row.map((key) => (
-                                <Button key={key} {...buttonStyles} onClick={() => onKeyPress(key)}>
+                                <Button
+                                    key={key}
+                                    {...buttonStyles}
+                                    // Use smaller width for first row keys
+                                    width={rowIndex === 0 ? { base: "2rem", md: "1rem" } : buttonStyles.width}
+                                    onClick={() => onKeyPress(key)}
+                                >
                                     {key}
                                 </Button>
                             ))}
                             {rowIndex === 2 && (
-                                <Button {...buttonStyles} width="3.5rem" colorScheme="red" ml={1} onClick={onBackspace}>
+                                <Button {...buttonStyles} width={{ base: "3.5rem", md: "3rem" }} colorScheme="red" ml={1} onClick={onBackspace}>
                                     <FaDeleteLeft />
                                 </Button>
                             )}
@@ -77,11 +84,11 @@ const Keyboard = ({ onKeyPress, onBackspace, onClose, isActive }: KeyboardProps)
                 </Flex>
             )}
             <Flex mt={3} justify="center">
-                <Button {...buttonStyles} width="5rem" onClick={toggleShift}>
+                <Button {...buttonStyles} width={{ base: "5rem", md: "4rem" }} onClick={toggleShift}>
                     <FaArrowUpFromBracket />
                 </Button>
                 {/* Changed button: overriding colorscheme to red */}
-                <Button {...buttonStyles} width="5rem" colorScheme="red" onClick={onClose}>
+                <Button {...buttonStyles} width={{ base: "5rem", md: "4rem" }} colorScheme="red" onClick={onClose}>
                     Close
                 </Button>
             </Flex>

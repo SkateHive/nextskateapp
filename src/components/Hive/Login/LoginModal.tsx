@@ -48,8 +48,6 @@ function LoginModal({
         border={"1.2px solid #A5D6A7"}
         boxShadow={"0 0 20px #A5D6A7"}
         color={"#A5D6A7"}
-        w="100%"           // added to force full width
-        maxW="100vw"       // added to limit modal width within viewport
         overflowX="hidden" // ensure no horizontal overflow
       >
         {hiveUser ? (
