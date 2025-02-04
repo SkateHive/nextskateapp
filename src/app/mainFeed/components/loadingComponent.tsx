@@ -13,7 +13,7 @@ const randomSentences = [
   "Loading Stokenomics...",
   "Initiating Proof of Stoke...",
   "We will load as fast as Daryl Rolls",
-  "who was Gnartoshi Shredamoto?",
+  "who was Gnartoshi Shredmoto?",
   "bless up",
   "skate or die",
   "take back the internet!",
@@ -22,7 +22,10 @@ const randomSentences = [
   "Peoples Thrasher",
   "Stack HP, buy with HBD",
   "Drop hills not bombs!",
-  "This app was made by Raissa Legal"
+  "Nobody owns Skatehive",
+  "Connecting with Uganda Nodes",
+  "Preserve Macba",
+  "If it takes to long, your connection sucks"
 ];
 
 function getRandomChar() {
