@@ -46,13 +46,8 @@ interface MentionCommentProps {
 
 const MentionComment: React.FC<MentionCommentProps> = ({
     onCommentChange,
-    children,
-    value,
-    onCommentSubmit,
     placeholder,
-    ref,
     isLoading,
-    onPaste,
     bg,
     border,
     borderRadius,
@@ -60,7 +55,6 @@ const MentionComment: React.FC<MentionCommentProps> = ({
     minHeight,
     overflow,
     resize,
-    textareaProps = {},
     _placeholder,
     width,
     ml,
@@ -75,6 +69,7 @@ const MentionComment: React.FC<MentionCommentProps> = ({
     const cacheRef = useRef<{ [key: string]: string[] }>({});
     const [localIsLoading, setLocalIsLoading] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const shadowRef = useRef<HTMLDivElement>(null);
 
     const fetchAuthors = async (query: string) => {
         if (!query) return;
@@ -100,7 +95,7 @@ const MentionComment: React.FC<MentionCommentProps> = ({
 
     // Function with debourance to improve search performance
     const debouncedFetchAuthors = useCallback(
-        debounce((search: string) => fetchAuthors(search), 500), // debug: check when debounce is called
+        debounce((search: string) => fetchAuthors(search), 500),
         []
     );
 
@@ -146,6 +141,13 @@ const MentionComment: React.FC<MentionCommentProps> = ({
         }
     };
 
+    useEffect(() => {
+        if (shadowRef.current && textareaRef.current) {
+            shadowRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+        }
+    }, [comment]);
+
+
     const highlightMentions = (text: string) => {
         return text.split(/(@[a-zA-Z0-9!_\-]+)/g).map((part, index) => {
             if (part.startsWith("@")) {
@@ -158,30 +160,8 @@ const MentionComment: React.FC<MentionCommentProps> = ({
             return part;
         });
     };
-
     return (
         <Box position="relative" width="100%">
-            <Box
-                position="absolute"
-                top="0"
-                left="0"
-                padding="10px"
-                width="100%"
-                height="100%"
-                background="black"
-                pointerEvents="none"
-                style={{
-                    color: "white",
-                    fontSize: "16px",
-                    lineHeight: "1.5",
-                    whiteSpace: "pre-wrap",
-                    wordBreak: "break-word",
-                    overflow: "hidden",
-                }}
-            >
-                {highlightMentions(comment)}
-            </Box>
-
             <Textarea
                 ref={textareaRef}
                 value={comment}
@@ -192,7 +172,7 @@ const MentionComment: React.FC<MentionCommentProps> = ({
                 }}
                 onKeyDown={handleKeyDown}
                 placeholder={placeholder}
-                bg={bg ?? "transparent"}
+                bg="transparent"
                 _focus={_focus}
                 resize={resize ?? "none"}
                 minHeight={minHeight}
@@ -203,15 +183,37 @@ const MentionComment: React.FC<MentionCommentProps> = ({
                 ml={ml ?? 0}
                 mb={mb ?? 4}
                 _placeholder={_placeholder}
-                position="relative"
+                padding="15px"
+                fontSize="16px"
+                lineHeight="1.5"
                 style={{
                     backgroundColor: "transparent",
-                    color: "transparent", // Transparente para exibir a camada de fundo colorida
+                    color: "transparent",
                     caretColor: "white",
-                    position: "relative",
                 }}
-                {...textareaProps}
             />
+
+            <Box
+                ref={shadowRef}
+                position="absolute"
+                top="0"
+                left="0"
+                padding="15px"
+                width="100%"
+                minHeight={minHeight}
+                background="black"
+                pointerEvents="none"
+                fontSize="16px"
+                lineHeight="1.5"
+                whiteSpace="pre-wrap"
+                wordBreak="break-word"
+                overflow="hidden"
+                color="white"
+            >
+                {comment ? highlightMentions(comment) : (
+                    <Text color="gray.500">{placeholder}</Text>
+                )}
+            </Box>
 
             {isListVisible && authors.length > 0 && (
                 <List
@@ -233,7 +235,11 @@ const MentionComment: React.FC<MentionCommentProps> = ({
                         authors.map((author, index) => (
                             <ListItem
                                 key={author}
-                                onClick={() => handleSelectUser(author)}
+                                onMouseEnter={() => setSelectedIndex(index)}
+                                onMouseDown={(e) => {
+                                    e.preventDefault();
+                                    handleSelectUser(author);
+                                }}
                                 p={2}
                                 cursor="pointer"
                                 display="flex"
@@ -248,6 +254,7 @@ const MentionComment: React.FC<MentionCommentProps> = ({
                                     size="sm"
                                     mr={2}
                                 />
+
                                 <Text fontSize="14px">{author}</Text>
                             </ListItem>
                         ))
@@ -255,7 +262,9 @@ const MentionComment: React.FC<MentionCommentProps> = ({
                 </List>
             )}
         </Box>
+
     );
 };
 
 export default MentionComment;
+
