@@ -30,6 +30,9 @@ import {
   transformNormalYoutubeLinksinIframes,
   transformShortYoutubeLinksinIframes
 } from '@/lib/utils';
+import { RiUserFollowLine } from "react-icons/ri";
+import { checkFollow, changeFollow } from "@/lib/hive/client-functions";
+import { changeFollowWithPassword } from "@/lib/hive/server-functions";
 
 interface CommentItemProps {
   comment: any;
@@ -62,9 +65,10 @@ const CommentItem = ({
   const [isEyeClicked, setIsEyeClicked] = useState(false);
   const [isCommentFormVisible, setIsCommentFormVisible] = useState(false);
   const [shouldShowAllComments, setShouldShowAllComments] = useState(false);
-
   const { comments } = useComments(comment.author, comment.permlink);
   const { voteValue } = useHiveUser();
+  const [isFollowing, setIsFollowing] = useState<boolean | null>(null);
+  const loginMethod = localStorage.getItem("LoginMethod");
 
   const toggleValueTooltip = () => {
     setIsValueTooltipOpen(true);
@@ -83,6 +87,17 @@ const CommentItem = ({
       setShouldShowAllComments(false);
     }
   }, [isCommentFormVisible]);
+
+  useEffect(() => {
+    if (username && comment.author !== username) {
+      checkFollow(username, comment.author)
+        .then(result => setIsFollowing(result))
+        .catch(error => {
+          console.error("Failed to check follow status:", error);
+          setIsFollowing(false);
+        });
+    }
+  }, [username, comment.author]);
 
   const handleNewComment = (newComment: any) => {
     setCommentReplies((prevComments) => [newComment, ...prevComments]);
@@ -106,6 +121,30 @@ const CommentItem = ({
   const toggleCommentVisibility = () => {
     setIsCommentFormVisible((prev) => !prev);
   }
+
+  const handleFollow = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!username) return;
+    if (loginMethod === "keychain") {
+      try {
+        const result = await changeFollow(username, comment.author);
+        setIsFollowing(result === 'blog');
+      } catch (error) {
+        console.error("Failed to change follow:", error);
+      }
+    } else if (loginMethod === "privateKey") {
+      try {
+        const encryptedKey = localStorage.getItem("EncPrivateKey");
+        if (!encryptedKey) {
+          throw new Error("Encrypted private key not found");
+        }
+        await changeFollowWithPassword(encryptedKey, username, comment.author);
+        setIsFollowing(true); // update state on successful follow
+      } catch (error) {
+        console.error("Failed to change follow with private key:", error);
+      }
+    }
+  };
 
   const mediaItems = useMemo(() => extractMediaItems(editedCommentBody), [editedCommentBody]);
 
@@ -134,7 +173,21 @@ const CommentItem = ({
         </Box>
         <VStack w={"100%"} ml={4} alignItems={"start"} marginRight={"16px"}>
           <HStack justify={"space-between"} width={"full"} cursor="pointer" gap="2px" >
-            <Text fontWeight="bold" mt={2}>{comment.author}</Text>
+            <HStack mt={2}>
+              <Text fontWeight="bold">{comment.author}</Text>
+              {username && comment.author !== username && isFollowing === false && (
+                <Button
+                  id="follow"
+                  height={6}
+                  variant="outline"
+                  size="sm"
+                  colorScheme="green"
+                  onClick={handleFollow}
+                >
+                  <RiUserFollowLine />
+                </Button>
+              )}
+            </HStack>
             <Text ml={2} color="gray.400" fontSize="14px">
               {formatDate(String(comment.created))}
             </Text>
