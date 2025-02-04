@@ -23,29 +23,26 @@ const Keyboard = ({ onKeyPress, onBackspace, onClose, isActive }: KeyboardProps)
     const toggleShift = () => setIsShiftActive(!isShiftActive);
 
     const buttonStyles = {
-        m: "0.1rem",
+        m: "0rem",
         width: "0.8rem",
-        h: "2.2rem",
+        h: "2rem", // reduced height
         colorScheme: "green",
         variant: "outline",
-        fontSize: "1.5rem",
-
+        fontSize: "1.25rem",
+        p: "-0.1rem", // added padding to reduce internal space
     };
 
     return (
         <Flex
             direction="column"
             align="center"
-            // ...existing positioning...
             bottom={0}
             left={0}
             right={0}
             width="100%"
-            bg="#212121"
+            bg="black"
             p={1}
             borderRadius="0"
-            zIndex={9999}
-            boxShadow={isActive ? "0 0 10px limegreen" : "0 0 10px rgba(0,0,0,0.3)"}
         // removed mr={1} to avoid overflow
         >
             {isShiftActive ? (
@@ -70,6 +67,11 @@ const Keyboard = ({ onKeyPress, onBackspace, onClose, isActive }: KeyboardProps)
                                     {key}
                                 </Button>
                             ))}
+                            {rowIndex === 2 && (
+                                <Button {...buttonStyles} width="3.5rem" colorScheme="red" ml={1} onClick={onBackspace}>
+                                    <FaDeleteLeft />
+                                </Button>
+                            )}
                         </Flex>
                     ))}
                 </Flex>
@@ -77,9 +79,6 @@ const Keyboard = ({ onKeyPress, onBackspace, onClose, isActive }: KeyboardProps)
             <Flex mt={3} justify="center">
                 <Button {...buttonStyles} width="5rem" onClick={toggleShift}>
                     <FaArrowUpFromBracket />
-                </Button>
-                <Button {...buttonStyles} width="5rem" onClick={onBackspace}>
-                    <FaDeleteLeft />
                 </Button>
                 {/* Changed button: overriding colorscheme to red */}
                 <Button {...buttonStyles} width="5rem" colorScheme="red" onClick={onClose}>
