@@ -2,9 +2,12 @@
 import AuthorAvatar from "@/components/AuthorAvatar";
 import VotingButton from "@/components/ButtonVoteComponent/VotingButton";
 import TipButton from "@/components/PostCard/TipButton";
+import MarkdownRenderer from "@/components/ReactMarkdown/page";
 import { useHiveUser } from "@/contexts/UserContext";
 import { useComments } from "@/hooks/comments";
-import { formatDate, getTotalPayout, extractMediaItems } from "@/lib/utils";
+import { changeFollow, checkFollow } from "@/lib/hive/client-functions";
+import { changeFollowWithPassword } from "@/lib/hive/server-functions";
+import { extractMediaItems, formatDate, getTotalPayout } from "@/lib/utils";
 import {
   Box,
   Button,
@@ -14,25 +17,14 @@ import {
   Tooltip,
   VStack,
 } from "@chakra-ui/react";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FaRegComment } from "react-icons/fa";
 import { FaPencil } from "react-icons/fa6";
+import { RiUserFollowLine } from "react-icons/ri";
 import CarrouselRenderer from "../utils/CarrouselRenderer";
 import { EditCommentModal } from "./EditCommentModal";
 import ReplyModal from "./replyModal";
 import ToggleComments from "./ToggleComments";
-import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
-import remarkGfm from 'remark-gfm';
-import { MarkdownRenderers } from '@/app/upload/utils/MarkdownRenderers';
-import {
-  autoEmbedZoraLink,
-  transformNormalYoutubeLinksinIframes,
-  transformShortYoutubeLinksinIframes
-} from '@/lib/utils';
-import { RiUserFollowLine } from "react-icons/ri";
-import { checkFollow, changeFollow } from "@/lib/hive/client-functions";
-import { changeFollowWithPassword } from "@/lib/hive/server-functions";
 
 interface CommentItemProps {
   comment: any;
@@ -193,13 +185,7 @@ const CommentItem = ({
             </Text>
           </HStack>
           <Box w="100%">
-            <ReactMarkdown components={MarkdownRenderers} rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
-              {autoEmbedZoraLink(
-                transformNormalYoutubeLinksinIframes(
-                  (transformShortYoutubeLinksinIframes(markdownWithoutMedia))
-                )
-              )}
-            </ReactMarkdown>
+            <MarkdownRenderer content={markdownWithoutMedia} />
           </Box>
         </VStack>
       </Flex>

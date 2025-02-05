@@ -2,15 +2,11 @@
 import AuthorAvatar from "@/components/AuthorAvatar";
 import TipButton from "@/components/PostCard/TipButton";
 import { MagModal } from "@/components/Profile/MagModal";
+import MarkdownRenderer from "@/components/ReactMarkdown/page";
 import { useQueryResult } from "@/contexts/QueryContext";
 import {
-  getTotalPayout,
-  transform3SpeakContent,
-  transformEcencyImages,
-  transformNormalYoutubeLinksinIframes,
-  transformShortYoutubeLinksinIframes,
+  getTotalPayout
 } from "@/lib/utils";
-import { PINATA_URL } from "@/utils/config";
 import {
   Box,
   Center,
@@ -26,12 +22,8 @@ import {
 } from "@chakra-ui/react";
 import { Discussion } from "@hiveio/dhive";
 import { memo, useEffect, useRef, useState } from "react";
-import ReactMarkdown from "react-markdown";
 import HTMLFlipBook from "react-pageflip";
-import rehypeRaw from "rehype-raw";
-import remarkGfm from "remark-gfm";
 import { Comment } from "../../../app/mainFeed/page";
-import { MagazineRenderers } from "../MagazineRenderers";
 interface Post extends Discussion {
   post_id: number;
   pending_payout_value: string;
@@ -241,22 +233,11 @@ export default memo(function Zine({ tag, query }: TestPageProps) {
               <Text fontSize={"8px"} color="white" mt={-2}>
                 {new Date(post.created).toLocaleDateString()}
               </Text>
-
-              <ReactMarkdown
-                key={post.id}
-                className="page"
-                remarkPlugins={[remarkGfm]}
-                rehypePlugins={[rehypeRaw]}
-                components={MagazineRenderers}
-              >
-                {transform3SpeakContent(
-                  transformEcencyImages(
-                    transformNormalYoutubeLinksinIframes(
-                      transformShortYoutubeLinksinIframes(post.body),
-                    ),
-                  ),
-                )}
-              </ReactMarkdown>
+              {posts.map((post) => (
+                <div key={post.id} className="page">
+                  <MarkdownRenderer content={post.body} />
+                </div>
+              ))}
               <Divider mt={4} mb={4} />
               <Text>Pending Payout: {post.pending_payout_value.toString()}</Text>
             </Box>

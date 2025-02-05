@@ -1,15 +1,11 @@
-import { MarkdownRenderers } from '@/app/upload/utils/MarkdownRenderers';
+import MarkdownRenderer from '@/components/ReactMarkdown/page';
 import { useHiveUser } from '@/contexts/UserContext';
 import { commentWithKeychain } from '@/lib/hive/client-functions';
 import { Button, Center, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay } from "@chakra-ui/react";
 import { Web3Provider } from '@ethersproject/providers';
 import React, { useCallback, useMemo, useState } from 'react';
 import Confetti from 'react-confetti';
-import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
-import remarkGfm from 'remark-gfm';
 import { createProposal } from '../utils/createProposal';
-import { transform3SpeakContent, transformEcencyImages, transformNormalYoutubeLinksinIframes, transformShortYoutubeLinksinIframes } from '@/lib/utils';
 
 export enum ProposalType {
     SingleChoice = 'single-choice',
@@ -141,14 +137,8 @@ const CreateProposalConfirmationModal: React.FC<CreateProposalConfirmationModalP
                 </Center>
                 <ModalCloseButton />
                 <ModalBody>
-                    <ReactMarkdown
-                        components={MarkdownRenderers}
-                        remarkPlugins={[remarkGfm]}
-                        rehypePlugins={[rehypeRaw]}
-                    >
-                        {transform3SpeakContent(
-                            transformEcencyImages(transformNormalYoutubeLinksinIframes(transformShortYoutubeLinksinIframes(proposalBody))))}
-                    </ReactMarkdown>
+                <MarkdownRenderer content={proposalBody} />
+
                 </ModalBody>
                 <ModalFooter>
                     <Button variant="outline" color="limegreen" mr={3} onClick={handleCreateProposal}>

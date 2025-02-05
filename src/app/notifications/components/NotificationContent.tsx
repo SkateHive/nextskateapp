@@ -1,26 +1,25 @@
-import React, { useState, useEffect, useMemo } from "react"
+import ReplyModal from "@/app/mainFeed/components/replyModal"
+import MarkdownRenderer from "@/components/ReactMarkdown/page"
+import { changeFollow, checkFollow } from "@/lib/hive/client-functions"
 import { calculateTimeAgo } from "@/lib/utils"
 import {
   Avatar,
+  Box,
+  Button,
   Flex,
   HStack,
   IconButton,
+  Image,
   Link,
   Stack,
   Text,
   Tooltip,
-  Button,
-  Image,
-  Box,
 } from "@chakra-ui/react"
-import { ExternalLink } from "lucide-react"
-import { Notification } from "../page"
-import { getPostDetails } from "../lib/getPostDetails"
-import { checkFollow, changeFollow } from "@/lib/hive/client-functions"
 import { Comment } from "@hiveio/dhive"
-import ReactMarkdown from "react-markdown"
-import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers"
-import ReplyModal from "@/app/mainFeed/components/replyModal"
+import { ExternalLink } from "lucide-react"
+import { useEffect, useMemo, useState } from "react"
+import { getPostDetails } from "../lib/getPostDetails"
+import { Notification } from "../page"
 
 interface NotificationContentProps {
   notification: Notification
@@ -181,7 +180,7 @@ export function NotificationContent({
         {/* Only show post content for reply and reply_comment */}
         {post !== null && (notification.type === "reply" || notification.type === "reply_comment") && (
           <Box mt={2}>
-            <ReactMarkdown components={MarkdownRenderers}>{post.body}</ReactMarkdown>
+             <MarkdownRenderer content={post.body} />
 
             <Flex justifyContent={"flex-start"} mt={2}>
               <Button

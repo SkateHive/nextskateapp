@@ -1,5 +1,4 @@
 'use client'
-import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
 import VotingButton from "@/components/ButtonVoteComponent/VotingButton";
 import { usePostContext } from "@/contexts/PostContext";
 import { useHiveUser } from "@/contexts/UserContext";
@@ -7,7 +6,7 @@ import { useComments } from "@/hooks/comments";
 import getTranslation from "@/lib/getTranslation";
 import HiveClient from "@/lib/hive/hiveclient";
 import { HiveAccount } from "@/lib/useHiveAuth";
-import { transform3SpeakContent, transformEcencyImages, transformNormalYoutubeLinksinIframes, transformShortYoutubeLinksinIframes } from "@/lib/utils";
+import { transform3SpeakContent, transformEcencyImages } from "@/lib/utils";
 import {
   Box,
   Center,
@@ -26,11 +25,9 @@ import {
 import debounce from 'lodash.debounce';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FaGlobe } from "react-icons/fa";
-import ReactMarkdown from "react-markdown";
-import rehypeRaw from "rehype-raw";
-import remarkGfm from "remark-gfm";
 import Header from "../PostCard/Header";
 import TipButton from "../PostCard/TipButton";
+import MarkdownRenderer from "../ReactMarkdown/page";
 import CommandPrompt from "./commentPrompt";
 import CommentsSection from "./commentSection";
 interface PostModalInterface {
@@ -130,10 +127,8 @@ export function PostModal({ isOpen, onClose, username }: PostModalInterface) {
 
               </Center>
             ) : (
-              <ReactMarkdown components={MarkdownRenderers} rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
-                {transform3SpeakContent(
-                  transformEcencyImages(transformNormalYoutubeLinksinIframes(transformShortYoutubeLinksinIframes((isTranslated ? translatedPost : transformedPostBody)))))}
-              </ReactMarkdown>
+            
+              <MarkdownRenderer content={isTranslated ? translatedPost : transformedPostBody} />
             )}
           </Box>
           <Box minW="50%">
