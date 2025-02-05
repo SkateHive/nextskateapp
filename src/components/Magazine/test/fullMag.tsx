@@ -9,7 +9,7 @@ import {
   transformNormalYoutubeLinksinIframes,
   transformShortYoutubeLinksinIframes,
 } from "@/lib/utils";
-import { PINATA_URL } from "@/utils/config";
+import { PINATA_URL } from "@/utils/constants";
 import {
   Badge,
   Box,

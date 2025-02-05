@@ -1,7 +1,7 @@
 "use client"
 
 import { usePostContext } from "@/contexts/PostContext"
-import { PINATA_URL } from "@/utils/config"
+import { PINATA_URL } from "@/utils/constants"
 import { Box, Image } from "@chakra-ui/react"
 import { useRef } from "react"
 import Carousel from "react-multi-carousel"
