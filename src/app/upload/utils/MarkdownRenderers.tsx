@@ -1,7 +1,7 @@
 'use client'
+import { SkateHivePreviewCard } from '@/app/mainFeed/components/SkatehivePreviewCard';
 import { Box, Divider, Image } from '@chakra-ui/react';
 import React from 'react';
-import { SkateHivePreviewCard } from '@/app/mainFeed/components/SkatehivePreviewCard';
 import ProfileLink from './ProfileLink';
 import VideoRenderer from './VideoRenderer'; // Import the VideoRenderer
 
