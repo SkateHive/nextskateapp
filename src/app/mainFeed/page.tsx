@@ -19,9 +19,8 @@ import {
   MenuItem,
   MenuList,
   Text,
-  Textarea,
   useToast,
-  VStack,
+  VStack
 } from "@chakra-ui/react";
 import { CommentOperation, CommentOptionsOperation } from "@hiveio/dhive";
 import EmojiPicker, { Theme } from 'emoji-picker-react';
@@ -31,9 +30,10 @@ import { useDropzone } from "react-dropzone";
 import { FaHistory, FaImage, FaMoneyBill, FaTimes } from "react-icons/fa";
 import { FaArrowRightArrowLeft, FaFaceSmile } from "react-icons/fa6";
 import { IoFilter } from "react-icons/io5";
+import MentionComment from "../../components/Mention/MentionUserComment";
 import { uploadFileToIPFS } from "../upload/utils/uploadToIPFS";
-import TopMenu from "./components/TopMenu";
 import CommentList from "./components/CommentsList";
+import TopMenu from "./components/TopMenu";
 
 const LoadingComponent = dynamic(() => import("./components/loadingComponent"), { ssr: false });
 
@@ -399,7 +399,7 @@ const SkateCast = () => {
                 {/* @ts-ignore */}
                 <UserAvatar hiveAccount={user.hiveUser || {}} boxSize={12} borderRadius={5} />
                 <Flex flexDir="column" w="100%">
-                  <Textarea
+                  <MentionComment
                     border="none"
                     _focus={{ border: "none", boxShadow: "none" }}
                     overflow={"hidden"}
@@ -408,7 +408,7 @@ const SkateCast = () => {
                     placeholder="Write your stuff..."
                     onPaste={handlePaste}
                     // If isLoading, you could disable this or show a skeleton
-                    isDisabled={isLoading}
+                    isLoading={isLoading}
                   />
 
                   <div
