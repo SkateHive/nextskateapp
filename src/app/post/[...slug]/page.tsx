@@ -3,7 +3,6 @@ import CommentsComponent from "@/app/dao/components/comments";
 import AuthorAvatar from "@/components/AuthorAvatar";
 import VoteButton from "@/components/ButtonVoteComponent/VoteButtonModal";
 import HiveClient from "@/lib/hive/hiveclient";
-import { autoEmbedZoraLink, transform3SpeakContent, transformNormalYoutubeLinksinIframes, transformShortYoutubeLinksinIframes } from "@/lib/utils";
 import {
   Box,
   Center,
@@ -161,9 +160,7 @@ export default function Page({ params }: { params: { slug: string[] } }) {
           color="white"
           fontSize={['16px', '18px', '20px', '24px']}
         >
-          <ClientMarkdownRenderer content={autoEmbedZoraLink(
-            transformNormalYoutubeLinksinIframes(
-              (transformShortYoutubeLinksinIframes(transform3SpeakContent(post.body)))))} />
+          <ClientMarkdownRenderer content={(post.body)} />
         </Box>
         <Container p={4}>
 

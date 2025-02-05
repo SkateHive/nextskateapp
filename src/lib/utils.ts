@@ -9,6 +9,12 @@ export function getWebsiteURL() {
 export function getCommunityTag() {
   return process.env.NEXT_PUBLIC_HIVE_COMMUNITY_TAG
 }
+export const getTotalPayout = (comment: Comment): number => {
+  const payout = parseFloat(comment.total_payout_value?.split(" ")[0] || "0");
+  const pendingPayout = parseFloat(comment.pending_payout_value?.split(" ")[0] || "0");
+  const curatorPayout = parseFloat(comment.curator_payout_value?.split(" ")[0] || "0");
+  return payout + pendingPayout + curatorPayout;
+};
 export function calculateTimeAgo(date: string): string {
   const currentUTCDate = new Date()
   const seconds = Math.floor(
@@ -74,6 +80,26 @@ export function transform3SpeakContent(content: string): string {
   }
   return content;
 }
+export function formatDate(date: string) {
+  const now = new Date()
+  const postDate = new Date(date)
+  const diffInSeconds = Math.floor(
+    (now.getTime() - postDate.getTime()) / 1000
+  )
+
+  if (!date || diffInSeconds < 60) {
+    return "Just now"
+  } else if (diffInSeconds < 3600) {
+    const minutes = Math.floor(diffInSeconds / 60)
+    return `${minutes}m`
+  } else if (diffInSeconds < 86400) {
+    const hours = Math.floor(diffInSeconds / 3600)
+    return `${hours}h`
+  } else {
+    const days = Math.floor(diffInSeconds / 86400)
+    return isNaN(days) ? "Just now" : `${days}d` // @todo remove after CommentItem any prop refactor
+  }
+}
 export function formatETHaddress(address: string) {
   return `${address.slice(0, 4)}...${address.slice(-4)}`
 }
@@ -110,32 +136,6 @@ export function autoEmbedZoraLink(content: string) {
     return `<iframe src="${embedUrl}" style="border:0;background-color:black;position:relative;inset:0" width="100%" height="300px" allowtransparency="true" allowfullscreen="true" sandbox="allow-pointer-lock allow-same-origin allow-scripts allow-popups"></iframe>`;
   });
 }
-export function formatDate(date: string) {
-  const now = new Date()
-  const postDate = new Date(date)
-  const diffInSeconds = Math.floor(
-    (now.getTime() - postDate.getTime()) / 1000
-  )
-
-  if (!date || diffInSeconds < 60) {
-    return "Just now"
-  } else if (diffInSeconds < 3600) {
-    const minutes = Math.floor(diffInSeconds / 60)
-    return `${minutes}m`
-  } else if (diffInSeconds < 86400) {
-    const hours = Math.floor(diffInSeconds / 3600)
-    return `${hours}h`
-  } else {
-    const days = Math.floor(diffInSeconds / 86400)
-    return isNaN(days) ? "Just now" : `${days}d` // @todo remove after CommentItem any prop refactor
-  }
-}
-export const getTotalPayout = (comment: Comment): number => {
-  const payout = parseFloat(comment.total_payout_value?.split(" ")[0] || "0");
-  const pendingPayout = parseFloat(comment.pending_payout_value?.split(" ")[0] || "0");
-  const curatorPayout = parseFloat(comment.curator_payout_value?.split(" ")[0] || "0");
-  return payout + pendingPayout + curatorPayout;
-};
 export async function fetchSkateHivePostMetadata(postId: string, username: string) {
   try {
     const post = await HiveClient.database.call('get_content', [

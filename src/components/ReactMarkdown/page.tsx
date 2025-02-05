@@ -1,5 +1,5 @@
 import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
-import { transform3SpeakContent, transformEcencyImages, transformNormalYoutubeLinksinIframes, transformShortYoutubeLinksinIframes } from "@/lib/utils";
+import { autoEmbedZoraLink, transform3SpeakContent, transformEcencyImages, transformNormalYoutubeLinksinIframes, transformShortYoutubeLinksinIframes } from "@/lib/utils";
 import React from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
@@ -13,19 +13,22 @@ interface MarkdownRendererProps {
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, className }) => {
     return (
         <div className={className}>
-        <ReactMarkdown
-            components={MarkdownRenderers}
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeRaw]}
-        >
-            {transform3SpeakContent(
-                transformEcencyImages(
-                    transformNormalYoutubeLinksinIframes(
-                        transformShortYoutubeLinksinIframes(content)
+            <ReactMarkdown
+                components={MarkdownRenderers}
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeRaw]}
+            >
+                {autoEmbedZoraLink(
+                    transform3SpeakContent(
+                        transformEcencyImages(
+                            transformNormalYoutubeLinksinIframes(
+                                transformShortYoutubeLinksinIframes(content)
+                            )
+                        )
                     )
                 )
-            )}
-        </ReactMarkdown>
+                }
+            </ReactMarkdown>
         </div>
     );
 };
