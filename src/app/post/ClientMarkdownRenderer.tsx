@@ -1,7 +1,8 @@
 'use client';
 
 import MarkdownRenderer from '@/components/ReactMarkdown/page';
-import { PINATA_URL } from '@/utils/config';
+import { MarkdownRenderers } from '@/app/upload/utils/MarkdownRenderers';
+import { PINATA_URL } from '@/utils/constants';
 import React from 'react';
 
 type ClientMarkdownRendererProps = {
@@ -13,8 +14,6 @@ const ClientMarkdownRenderer: React.FC<ClientMarkdownRendererProps> = ({ content
         <>
             <MarkdownRenderer content={content.replace("ipfs.skatehive.app", PINATA_URL)} />
         </>
-
-
     );
 };
 

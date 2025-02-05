@@ -7,6 +7,8 @@ import { useQueryResult } from "@/contexts/QueryContext";
 import {
   getTotalPayout
 } from "@/lib/utils";
+import { PINATA_URL } from "@/utils/constants";
+
 import {
   Box,
   Center,

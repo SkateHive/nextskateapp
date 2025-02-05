@@ -6,7 +6,7 @@ import { blockedUsers } from "@/lib/constants";
 import {
   getTotalPayout
 } from "@/lib/utils";
-import { PINATA_URL } from "@/utils/config";
+import { PINATA_URL } from "@/utils/constants";
 import {
   Badge,
   Box,

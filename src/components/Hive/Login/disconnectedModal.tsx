@@ -13,9 +13,10 @@ import {
     ModalHeader,
     Spinner,
     Text,
-    VStack
+    VStack,
+    useMediaQuery
 } from "@chakra-ui/react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { FaHive } from "react-icons/fa"
 import Keyboard from "../Keyboard"
 
@@ -42,6 +43,11 @@ function DisconnectedUserModal({
     // New states for custom keyboard
     const [showKeyboard, setShowKeyboard] = useState(false)
     const [activeField, setActiveField] = useState<"username" | "privateKey" | null>(null)
+    // New: determine if on mobile device
+    const [isMobile] = useMediaQuery("(max-width: 768px)")
+    // New: refs for input fields
+    const usernameRef = useRef<HTMLInputElement>(null)
+    const privateKeyRef = useRef<HTMLInputElement>(null)
 
     useEffect(() => {
         if (window.hive_keychain) {
@@ -50,6 +56,14 @@ function DisconnectedUserModal({
             setIsKeychainInstalled(false)
         }
     }, [])
+
+    useEffect(() => {
+        if (showKeyboard && activeField === "username" && usernameRef.current) {
+            usernameRef.current.focus()
+        } else if (showKeyboard && activeField === "privateKey" && privateKeyRef.current) {
+            privateKeyRef.current.focus()
+        }
+    }, [showKeyboard, activeField])
 
     const handleKeyDown = (event: any) => {
         if (event.key === "Enter") {
@@ -87,21 +101,26 @@ function DisconnectedUserModal({
                 <FormControl isInvalid={Boolean(errorMessage)}>
                     <VStack align={"normal"}>
                         <Input
+                            ref={usernameRef} // attach ref
                             borderColor={"green.600"}
                             color={"#A5D6A7"}
                             _placeholder={{ color: "#A5D6A7", opacity: 0.4 }}
                             focusBorderColor="#A5D6A7"
                             placeholder="Hive Username"
                             value={username}
-                            readOnly
+                            readOnly={isMobile} // only readOnly on mobile
                             onFocus={() => {
-                                setActiveField("username")
-                                setShowKeyboard(true)
+                                if (isMobile) {
+                                    setActiveField("username")
+                                    setShowKeyboard(true)
+                                }
                             }}
+                            onChange={(e) => setUsername(e.target.value)} // handle input change for desktop
                             onKeyDown={handleKeyDown}
                         />
                         {!isKeychainInstalled && (
                             <Input
+                                ref={privateKeyRef} // attach ref
                                 type="password"
                                 borderColor={"green.600"}
                                 color={"#A5D6A7"}
@@ -109,11 +128,14 @@ function DisconnectedUserModal({
                                 focusBorderColor="#A5D6A7"
                                 placeholder="Password"
                                 value={privateKey}
-                                readOnly
+                                readOnly={isMobile} // only readOnly on mobile
                                 onFocus={() => {
-                                    setActiveField("privateKey")
-                                    setShowKeyboard(true)
+                                    if (isMobile) {
+                                        setActiveField("privateKey")
+                                        setShowKeyboard(true)
+                                    }
                                 }}
+                                onChange={(e) => setPrivateKey(e.target.value)} // handle input change for desktop
                             />
                         )}
                     </VStack>
@@ -142,7 +164,7 @@ function DisconnectedUserModal({
                     Get Help
                 </Button>
             </ModalFooter>
-            {showKeyboard && (
+            {isMobile && showKeyboard && (
                 <Keyboard
                     onKeyPress={handleKeyPress}
                     onBackspace={handleBackspace}
