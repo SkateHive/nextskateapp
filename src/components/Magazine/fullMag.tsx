@@ -22,8 +22,8 @@ import {
 import { Discussion } from "@hiveio/dhive";
 import { useEffect, useRef } from "react";
 import HTMLFlipBook from "react-pageflip";
-import { Comment } from "../../../app/mainFeed/page";
-import { FullMagazineRenderers } from "../FullMagazineRenderers";
+import { Comment } from "../../app/mainFeed/page";
+import { FullMagazineRenderers } from "./FullMagazineRenderers";
 
 const pageStyles = {
   backgroundColor: "black",

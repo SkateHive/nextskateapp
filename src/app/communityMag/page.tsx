@@ -1,5 +1,5 @@
 'use client'
-import FullMag from "@/components/Magazine/test/fullMag";
+import FullMag from "@/components/Magazine/fullMag";
 import { useEffect } from "react";
 
 const CommunityMagPage = () => {

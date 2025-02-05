@@ -23,8 +23,8 @@ import {
 import { Discussion } from "@hiveio/dhive";
 import { memo, useEffect, useRef, useState } from "react";
 import HTMLFlipBook from "react-pageflip";
-import { Comment } from "../../../app/mainFeed/page";
-import { MagazineRenderers } from "../MagazineRenderers";
+import { Comment } from "../../app/mainFeed/page";
+import { MagazineRenderers } from "./MagazineRenderers";
 
 interface Post extends Discussion {
   post_id: number;

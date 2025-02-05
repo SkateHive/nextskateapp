@@ -3,7 +3,7 @@ import { HiveAccount } from "@/lib/useHiveAuth";
 import { Box, Tab, TabList, TabPanel, TabPanels, Tabs, useBreakpointValue } from "@chakra-ui/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { memo } from "react";
-import Zine from "../Magazine/test/page";
+import Zine from "../Magazine/page";
 import ProfileBlog from "./ProfileBlog";
 import ProfileDashboard from "./profileDashboard";
 import VideoParts from "./profileVideos";

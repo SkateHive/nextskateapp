@@ -2,7 +2,7 @@ import { QueryProvider } from "@/contexts/QueryContext";
 import { HiveAccount } from "@/lib/useHiveAuth";
 import { Box, Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Zine from "../Magazine/test/page";
+import Zine from "../Magazine/page";
 import ProfileDashboard from "../Profile/profileDashboard";
 import ProfilePosts from "../Profile/ProfilePosts";
 import VideoParts from "../Profile/profileVideos";
