@@ -37,6 +37,7 @@ const pageStyles = {
   overflow: "auto",
   position: "relative",
   height: 100,
+  zIndex: 1, // Ensure page is below video and controls
 };
 
 const flipbookStyles = {
@@ -65,15 +66,13 @@ const backCoverStyles = {
 };
 
 
-export interface TestPageProps {
+export interface FullMagProps {
   tag: { tag: string; limit: number }[];
   query: string;
 }
 
-export default function FullMag({ tag, query }: TestPageProps) {
-  console.log("FullMag props", tag, query);
-  const { posts, error, isLoading, setQueryCategory, setDiscussionQuery } =
-    usePosts(query, tag);
+export default function FullMag({ tag, query }: FullMagProps) {
+  const { posts, error, isLoading } = usePosts(query, tag);
   const flipBookRef = useRef<any>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -104,7 +103,7 @@ export default function FullMag({ tag, query }: TestPageProps) {
   if (isLoading) {
     return (
       <Flex justify="center" align="center" w="100vw" h="100vh" p={5}>
-        <Text color={"white"}>Loading...</Text>
+        <Text color={"white"}>Use your keyboard to navigate and the mouse scroll to read</Text>
       </Flex>
     );
   }
@@ -127,7 +126,7 @@ export default function FullMag({ tag, query }: TestPageProps) {
   const filteredPosts = posts ? posts.filter(post => !blockedUsers.includes(post.author)) : [];
 
   return (
-    <VStack justify="center" align="center" w="100%" h="100vh" p={5}>
+    <VStack justify="center" align="center" w="100%" p={5}>
       <audio ref={audioRef} src="/pageflip.mp3" preload="auto" />
 
       <HTMLFlipBook
@@ -139,20 +138,20 @@ export default function FullMag({ tag, query }: TestPageProps) {
         maxHeight={750}
         startPage={0}
         size="stretch"
-        drawShadow
+        drawShadow={false} // Disable shadow drawing
         flippingTime={1000}
         usePortrait
         startZIndex={0}
         autoSize={true}
-        maxShadowOpacity={0.5}
+        maxShadowOpacity={0.2} // Reduce shadow opacity
         showCover={false}
         mobileScrollSupport
-        swipeDistance={30}
-        clickEventForward
+        swipeDistance={50} // Increase swipe distance for less sensitivity
+        clickEventForward={false}
         useMouseEvents
-        renderOnlyPageLengthChange={false}
+        renderOnlyPageLengthChange={true} // Enable render only on page length change
         showPageCorners={false}
-        disableFlipByClick={false}
+        disableFlipByClick={true}
         className="flipbook"
         style={flipbookStyles}
         ref={flipBookRef}
@@ -162,8 +161,7 @@ export default function FullMag({ tag, query }: TestPageProps) {
       >
         <Box sx={coverStyles}>
           <Flex direction="column" align="center" justify="center">
-            {/* <Image src="/skatehive-banner.png" alt="SkateHive Logo" mb="5" /> */}
-            <Image src="https://ipfs.skatehive.app/ipfs/QmR7KVsGDQH93eU3C8CSCejnbuXrmku2RkyodSdJn61RAN" alt="SkateHive Logo" height={750} />
+            <Image src="https://ipfs.skatehive.app/ipfs/QmR7KVsGDQH93eU3C8CSCejnbuXrmku2RkyodSdJn61RAN" alt="SkateHive Logo" height={750} loading="lazy" />
           </Flex>
           <Flex justifyContent={'right'}>
             <Text color={'limegreen'} fontSize={36}> issue ∞ </Text>
@@ -177,7 +175,7 @@ export default function FullMag({ tag, query }: TestPageProps) {
                 <VStack p={1} borderRadius={5} width={"20%"} >
                   <AuthorAvatar username={post.author} boxSize={30} borderRadius={100} />
                   <Text color={"white"} mt={0} fontSize={10}>
-                    {post.author.replace("ipfs.skatehive.app", PINATA_URL)}
+                    {post.author}
                   </Text>
                 </VStack>
                 <Text
@@ -200,6 +198,7 @@ export default function FullMag({ tag, query }: TestPageProps) {
                   width={"20%"}
                   cursor={"pointer"}
                   onClick={(e) => e.stopPropagation()}
+                  zIndex={10}
                 >
                   <Center>
                     <Text fontSize={'22px'}> ${Number(getTotalPayout(post as Comment)).toFixed(2)}</Text>

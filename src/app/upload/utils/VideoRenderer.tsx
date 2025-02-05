@@ -66,42 +66,42 @@ const VideoRenderer = ({ src, onCommentIconClick, ...props }: RendererProps) => 
             setVolume(newVolume);
         }
     }, [volume]);
-    
+
 
     const handleFullscreenToggle = useCallback(() => {
         if (videoRef.current) {
             const videoElement = videoRef.current;
-            
+
             // Check if we are currently in fullscreen mode
             if (document.fullscreenElement) {
                 // If in fullscreen, exit fullscreen
                 if (document.exitFullscreen) {
                     document.exitFullscreen();
                 } else if ((document as any).webkitExitFullscreen) {
-                    (document as any).webkitExitFullscreen();  
+                    (document as any).webkitExitFullscreen();
                 } else if ((document as any).mozCancelFullScreen) {
-                    (document as any).mozCancelFullScreen();  
+                    (document as any).mozCancelFullScreen();
                 } else if ((document as any).msExitFullscreen) {
-                    (document as any).msExitFullscreen();  
+                    (document as any).msExitFullscreen();
                 }
             } else {
                 // If not in fullscreen, request fullscreen
                 if (videoElement.requestFullscreen) {
                     videoElement.requestFullscreen();
                 } else if ((videoElement as any).webkitRequestFullscreen) {
-                    (videoElement as any).webkitRequestFullscreen();  
+                    (videoElement as any).webkitRequestFullscreen();
                 } else if ((videoElement as any).mozRequestFullScreen) {
-                    (videoElement as any).mozRequestFullScreen();  
+                    (videoElement as any).mozRequestFullScreen();
                 } else if ((videoElement as any).msRequestFullscreen) {
-                    (videoElement as any).msRequestFullscreen();  
+                    (videoElement as any).msRequestFullscreen();
                 }
             }
-            
+
             // Toggle fullscreen state
             setIsFullscreen(!isFullscreen);
         }
     }, [isFullscreen]);
-    
+
 
 
     const handleProgressChange = useCallback(
@@ -182,10 +182,12 @@ const VideoRenderer = ({ src, onCommentIconClick, ...props }: RendererProps) => 
                     crossOrigin='anonymous'
                     playsInline={true}
                     autoPlay={true}
+                    onClick={(e) => e.stopPropagation()} // Prevent page flip
                     style={{
                         background: 'transparent',
                         marginBottom: '20px',
                         width: '100%',
+                        zIndex: 2, // Ensure video is on top
                     }}
                 />
             </picture>
@@ -200,26 +202,29 @@ const VideoRenderer = ({ src, onCommentIconClick, ...props }: RendererProps) => 
                     display='flex'
                     alignItems='center'
                     justifyContent='space-between'
+                    zIndex={3} // Ensure controls are on top
                 >
                     <HStack gap={0}>
                         <Button
-                            onClick={handlePlayPause}
+                            onClick={(e) => { e.stopPropagation(); handlePlayPause(); }} // Prevent page flip
                             size='md'
                             p={2}
                             variant={'ghost'}
                             color={'white'}
                             _hover={{ bg: 'transparent', color: 'black' }}
+                            zIndex={3} // Ensure button is on top
                         >
                             {isPlaying ? <LuPause /> : <LuPlay />}
                         </Button>
                         <IconButton
                             aria-label='Volume'
-                            onClick={handleVolumeChange}
+                            onClick={(e) => { e.stopPropagation(); handleVolumeChange(); }} // Prevent page flip
                             p={2}
                             variant={'ghost'}
                             color={'white'}
                             _hover={{ bg: 'transparent', color: 'black' }}
                             size='md'
+                            zIndex={3} // Ensure button is on top
                         >
                             {volume === 0 ? <FiVolumeX /> : <FiVolume2 />}
                         </IconButton>
@@ -227,26 +232,23 @@ const VideoRenderer = ({ src, onCommentIconClick, ...props }: RendererProps) => 
                             aria-label='Toggle comments'
                             icon={<FaRegComment />}
                             colorScheme='teal'
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                if (onCommentIconClick) {
-                                    onCommentIconClick();
-                                }
-                            }}
+                            onClick={(e) => { e.stopPropagation(); if (onCommentIconClick) { onCommentIconClick(); } }} // Prevent page flip
                             p={2}
                             variant={'ghost'}
                             color={'white'}
                             _hover={{ bg: 'transparent', color: 'black' }}
                             size='md'
+                            zIndex={3} // Ensure button is on top
                         />
                         <IconButton
                             aria-label='Fullscreen'
-                            onClick={handleFullscreenToggle}
+                            onClick={(e) => { e.stopPropagation(); handleFullscreenToggle(); }} // Prevent page flip
                             p={2}
                             variant={'ghost'}
                             color={'white'}
                             _hover={{ bg: 'transparent', color: 'black' }}
                             size='md'
+                            zIndex={3} // Ensure button is on top
                         >
                             {isFullscreen ? <FiMinimize /> : <FiMaximize />}
                         </IconButton>
@@ -268,6 +270,8 @@ const VideoRenderer = ({ src, onCommentIconClick, ...props }: RendererProps) => 
                                 height: '8px',
                                 borderRadius: '4px',
                                 outline: 'none',
+                                cursor: 'pointer',
+                                zIndex: 3, // Ensure slider is on top
                             }}
                         />
 

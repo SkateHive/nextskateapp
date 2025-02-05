@@ -1,4 +1,3 @@
-'use client'
 import { SkateHivePreviewCard } from '@/app/mainFeed/components/SkatehivePreviewCard';
 import { Box, Divider, Image } from '@chakra-ui/react';
 import React from 'react';
@@ -52,10 +51,10 @@ export const MarkdownRenderers = {
     const profileMatch = skatehiveProfileRegex.exec(String(href));
 
     if (match) {
-      const [fullMatch, parentPermlink, username, postPermlink] = match;
+      const [, , username, postPermlink] = match;
       return <SkateHivePreviewCard postId={postPermlink} username={username} />;
     } else if (profileMatch) {
-      const [fullMatch, something, subdomain, type, username] = profileMatch;
+      const [, , , , username] = profileMatch;
 
       return (
         <Box>
@@ -167,7 +166,7 @@ export const MarkdownRenderers = {
       return <VideoRenderer src={src} {...props} />;
     }
   },
-  video: VideoRenderer, // Use the imported VideoRenderer
+  video: VideoRenderer,
   table: ({ children, ...props }: RendererProps) => (
     <div style={{
       display: 'flex', justifyContent: 'center',

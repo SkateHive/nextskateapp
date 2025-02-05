@@ -1,8 +1,6 @@
-'use client'
+import React from 'react';
 import VideoRenderer from '@/app/upload/utils/VideoRenderer';
-import { PINATA_URL } from '@/utils/constants';
 import { Divider, Image } from '@chakra-ui/react';
-import React, { useEffect, useRef, useState } from 'react';
 
 type MarkdownProps = {
     node?: any;

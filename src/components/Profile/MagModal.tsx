@@ -25,7 +25,7 @@ export function MagModal({ username, query, isOpen, onClose }: MagModalProps) {
                 <ModalOverlay backdropFilter="blur(8px)" />
                 <ModalContent bg={'transparent'}>
                     <ModalCloseButton />
-                    <ModalBody bg='transparent'>
+                    <ModalBody overflow="hidden">
                         <FullMag tag={[{ tag: String(username), limit: 30 }]} query={query} />
                     </ModalBody>
                 </ModalContent>

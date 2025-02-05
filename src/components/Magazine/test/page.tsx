@@ -7,8 +7,6 @@ import { useQueryResult } from "@/contexts/QueryContext";
 import {
   getTotalPayout
 } from "@/lib/utils";
-import { PINATA_URL } from "@/utils/constants";
-
 import {
   Box,
   Center,
@@ -27,6 +25,7 @@ import { memo, useEffect, useRef, useState } from "react";
 import HTMLFlipBook from "react-pageflip";
 import { Comment } from "../../../app/mainFeed/page";
 import { MagazineRenderers } from "../MagazineRenderers";
+
 interface Post extends Discussion {
   post_id: number;
   pending_payout_value: string;
@@ -43,7 +42,6 @@ const pageStyles = {
   justifyContent: "space-between",
   padding: "20px",
   color: "black",
-  // maxHeight: '100vh',
   overflow: "auto",
   position: "relative",
 };
