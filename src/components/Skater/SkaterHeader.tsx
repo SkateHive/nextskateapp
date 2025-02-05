@@ -20,12 +20,8 @@ export default function SkaterHeader({ user }: ProfileProps) {
     const [isSmallerThan400] = useMediaQuery("(max-width: 400px)");
 
     const { isOpen, onOpen, onClose } = useDisclosure();
-    // const hiveUser = useHiveUser();
-    // const metadata_extended = user.json_metadata ? JSON.parse(user.json_metadata) : {};
-    // const isMobile = useMediaQuery("(max-width: 400px)")[0];
     const [boxSize, setBoxSize] = useState(20)
-    // const [isFollowing, setIsFollowing] = useState(false)
-    // const toast = useToast();
+
 
     useEffect(() => {
         if (isSmallerThan400) {
@@ -35,59 +31,6 @@ export default function SkaterHeader({ user }: ProfileProps) {
             setBoxSize(40)
         }
     }, [isSmallerThan400])
-
-    // useEffect(() => {
-    //     const fetchFollowStatus = async () => {
-    //         if (hiveUser.hiveUser?.name && user.name) {
-    //             const isFollowing = await checkFollow(hiveUser.hiveUser?.name, user.name)
-    //             setIsFollowing(isFollowing)
-    //         }
-    //     }
-    //     fetchFollowStatus()
-    // }, [hiveUser.hiveUser?.name, user.name])
-
-
-    // const handleFollowButton = async () => {
-    //     const loginMethod = localStorage.getItem("LoginMethod")
-    //     var errCheckKeychain = false;
-
-    //     if (hiveUser.hiveUser?.name && user.name) {
-    //         if (loginMethod === "keychain") {
-    //             try {
-    //                 if(window && window.hive_keychain) {
-    //                     changeFollow(hiveUser.hiveUser?.name, user.name)
-    //                         .then( result => {
-    //                             if(result) {
-    //                                 console.log(result == "blog")
-    //                                 setIsFollowing(result == "blog");
-    //                             }
-    //                         })
-    //                         .catch(()=> {
-    //                             errCheckKeychain = true;
-    //                         });
-    //                 } else {
-    //                     errCheckKeychain = true;
-    //                 } 
-    //             } catch (error) {
-    //                 errCheckKeychain = true;
-    //             }
-
-    //             if(errCheckKeychain)
-    //                 toast({
-    //                     title: "Error Broadcasting.",
-    //                     description: "Check if your Keychain is Enabled.",
-    //                     status: "error",
-    //                     duration: 5000,
-    //                     isClosable: true,
-    //                 });
-    //         }
-    //         else if (loginMethod === "privateKey") {
-    //             const encKey = localStorage.getItem("encryptedPrivateKey")
-    //             await changeFollowWithPassword(encKey, hiveUser.hiveUser?.name, user.name)
-    //             setIsFollowing(!isFollowing)
-    //         }
-    //     }
-    // }
 
     return (
         <>
@@ -118,19 +61,6 @@ export default function SkaterHeader({ user }: ProfileProps) {
                     </Text>
                 </HStack>
             </VStack>
-
-            {/* {isMobile ? null :
-                <Flex justifyContent={"flex-end"}>
-                    <Button mt={"-85px"} mr={'15px'} mb={"75px"}
-                        variant={"solid"}
-                        colorScheme="yellow"
-                        _hover={{ bg: "black", color: 'white' }}
-                        onClick={() => handleFollowButton()}
-                    >
-                        {isFollowing ? "Unfollow" : "Follow"}
-                    </Button>
-                </Flex >
-            } */}
         </>
     )
 }
