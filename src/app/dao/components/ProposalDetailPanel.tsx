@@ -19,6 +19,7 @@ import { useEnsName } from "wagmi";
 import { Proposal } from "../utils/fetchProposals";
 import { PropDates } from "./propDates";
 import ProposerAvatar from "./proposerAvatar";
+import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
 
 interface Vote {
     id: string;
@@ -118,38 +119,38 @@ const ProposalDetailPanel = ({
     }, []);
 
     return (
-        <Box mt={2} w={{ base: '100%', md: '100%' }} color={"white"} bg="black">
-            <Tabs isLazy isFitted variant="enclosed-colored" onChange={(index) => {
-                if (index === 1 && mainProposal) fetchVotes(mainProposal.id);
+        <Box w={{ base: '100%', md: '50%' }} color={"white"} bg="#1E1E1E">
+            <HStack>
+                <ProposerAvatar authorAddress={String(mainProposal?.author)} boxSize={100} />
+                <Text fontSize={24} fontWeight={"bold"} mt={5}>{String(mainProposal?.title)}</Text>
+            </HStack>
+            <Divider color={"white"} mt={5} />
+
+            <Tabs isLazy isFitted variant="line" onChange={(index) => {
+                if (index === 1 && mainProposal)
+                    fetchVotes(mainProposal.id);
             }}>
-                <Center>
-                    <Box bg="black" w="100%">
-                        <TabList bg="black" borderBottom="2px solid limegreen">
-                            <Tab
-                                _selected={{ bg: "limegreen", color: "black" }}
-                                bg="gray.800"
-                                color="white"
-                            >
-                                Proposal
-                            </Tab>
-                            <Tab
-                                _selected={{ bg: "limegreen", color: "black" }}
-                                bg="gray.800"
-                                color="white"
-                            >
-                                Votes
-                            </Tab>
-                            <Tab
-                                _selected={{ bg: "limegreen", color: "black" }}
-                                bg="gray.800"
-                                color="white"
-                                onClick={() => extractAuthorAndPermlink(mainProposal?.body || '')}
-                            >
-                                Report
-                            </Tab>
-                        </TabList>
-                    </Box>
-                </Center>
+                <TabList w="100%" borderBottom="2px solid limegreen">
+                    <Tab
+                        _selected={{ bg: "limegreen", color: "black" }}
+                        color="white"
+                    >
+                        Proposal
+                    </Tab>
+                    <Tab
+                        _selected={{ bg: "limegreen", color: "black" }}
+                        color="white"
+                    >
+                        Votes
+                    </Tab>
+                    <Tab
+                        _selected={{ bg: "limegreen", color: "black" }}
+                        color="white"
+                        onClick={() => extractAuthorAndPermlink(mainProposal?.body || '')}
+                    >
+                        Report
+                    </Tab>
+                </TabList>
 
                 <TabPanels>
                     <TabPanel>
@@ -165,20 +166,14 @@ const ProposalDetailPanel = ({
                             </Center>
                         ) : (
                             <>
-                                <Divider color={"white"} mb={5} />
-                                <HStack>
-                                    <ProposerAvatar authorAddress={mainProposal.author} boxSize={100} />
-                                    <Text fontSize={24} fontWeight={"bold"} mt={5}>{mainProposal.title}</Text>
-                                </HStack>
-                                <Divider color={"white"} mt={5} />
-                                <Box mt={2} h={'85vh'} overflow={"auto"} bg="black" color="white">
-                                    <MarkdownRenderer content={mainProposal.body} />
+                                <Box mt={2} h={'80vh'} color="white">
+                                    <MarkdownRenderer content={mainProposal.body} renderers={MarkdownRenderers} />
                                 </Box>
                             </>
                         )}
                     </TabPanel>
 
-                    <TabPanel>
+                    <TabPanel maxH={"80vh"} overflow={"auto"}>
                         {loadingVotes ? (
                             <Center>
                                 <Image
@@ -192,7 +187,7 @@ const ProposalDetailPanel = ({
                         ) : votes.length === 0 ? (
                             <Text>No votes yet</Text>
                         ) : (
-                            <Box>
+                            <Box >
                                 {votes.map((vote) => (
                                     <Box
                                         key={vote.id}
@@ -247,7 +242,7 @@ const ProposalDetailPanel = ({
                     </TabPanel>
                 </TabPanels>
             </Tabs>
-        </Box>
+        </Box >
     );
 };
 

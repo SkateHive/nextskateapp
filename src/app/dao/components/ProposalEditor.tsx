@@ -91,7 +91,19 @@ const ProposalEditor: React.FC<ProposalEditorProps> = ({ value, setValue, title,
                 value={value}
                 onChange={(value: any) => setValue(value || "")}
                 commands={[
-                    commands.bold, commands.italic, commands.strikethrough, commands.hr, commands.code, commands.table, commands.link, commands.quote, commands.unorderedListCommand, commands.orderedListCommand, commands.fullscreen
+                    commands.bold,
+                    commands.italic,
+                    commands.strikethrough,
+                    commands.hr,
+                    commands.code,
+                    commands.table,
+                    commands.link,
+                    commands.quote,
+                    commands.unorderedListCommand,
+                    commands.orderedListCommand,
+                    commands.fullscreen,
+                    commands.codeEdit,
+                    commands.codeLive,
                 ]}
                 extraCommands={extraCommands}
                 previewOptions={{ rehypePlugins: [[rehypeSanitize]] }}

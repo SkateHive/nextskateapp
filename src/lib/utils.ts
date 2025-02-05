@@ -124,11 +124,16 @@ export function transformNormalYoutubeLinksinIframes(content: string) {
 }
 export function autoEmbedZoraLink(content: string) {
   const regex = /https:\/\/zora\.co\/collect\/([^\/\s?]+)(?:\/([^\/\s?]+))?(?:\?referrer=([^\/\s]+))?/g;
+  const iframeRegex = /<iframe.*?src=["']https:\/\/zora\.co\/collect\/.*?["']/g;
+
+  // Check if the content already contains the correct iframe
+  if (iframeRegex.test(content)) {
+    return content;
+  }
 
   return content.replace(regex, (fullMatch, tokenId, extraPath, referrer) => {
     // Construct embed URL dynamically
-    const embedUrl = `https://zora.co/collect/${tokenId}${extraPath ? `/${extraPath}` : ''}/embed${referrer ? `?referrer=${referrer}` : ''
-      }`;
+    const embedUrl = `https://zora.co/collect/${tokenId}${extraPath ? `/${extraPath}` : ''}/embed${referrer ? `?referrer=${referrer}` : ''}`;
 
     console.log("Constructed Embed URL:", embedUrl);
 

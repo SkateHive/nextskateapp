@@ -1,5 +1,5 @@
 "use client";
-import { Box, Flex, Center, Image, VStack, Progress, Text } from "@chakra-ui/react";
+import { Box, Flex, Center, Image, VStack, Progress, Text, Button } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import CreateProposalModal from "./components/createProposalModal";
@@ -81,12 +81,15 @@ const DaoPage = () => {
     );
   }
   return (
-    <Box mt={5} w={"100%"} overflowY={"hidden"} overflowX={"hidden"}>
+    <Box mt={5} w={"100%"} overflowY={"hidden"} overflowX={"hidden"} maxHeight={"100vh"}>
       {isCreateProposalModalOpen ? (
-        <CreateProposalModal connectedUserAddress={ethAccount || ""} />
+        <Box w={{ base: "100%", md: "50%" }} mx="auto">
+          <Button mb={2} onClick={handleCreateProposalButton} variant={"outline"} color={"limegreen"}>Go Back</Button>
+          <CreateProposalModal connectedUserAddress={ethAccount || ""} />
+        </Box>
       ) : (
         <Flex gap={1} flexDirection={{ base: "column", md: "row" }}>
-          <Box maxW={{ base: "100%", md: "40%" }} h={"100%"}>
+          <Box maxW={{ base: "100%", md: "50%" }} h={"100%"}>
             <DaoHeader
               isMobile={false}
               handleCreateProposalButton={handleCreateProposalButton}
@@ -102,11 +105,11 @@ const DaoPage = () => {
               ethAccount={ethAccount}
             />
           </Box>
-          <Box w={"100%"} h={"100%"}>
-            <ProposalDetailPanel
-              mainProposal={mainProposal}
-            />s
-          </Box>
+
+          <ProposalDetailPanel
+            mainProposal={mainProposal}
+          />
+
         </Flex>
       )}
     </Box>
