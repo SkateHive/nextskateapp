@@ -14,7 +14,7 @@ const ProposerAvatar: React.FC<ProposerAvatarProps> = ({ authorAddress, boxSize 
         const loadAvatar = async () => {
             try {
                 const url = await getENSavatar(authorAddress)
-                setAvatarUrl(url || "/infinitypepe.gif")
+                setAvatarUrl(url)
             } catch (error) {
                 console.error(
                     "Failed to fetch avatar for address:",
@@ -28,7 +28,7 @@ const ProposerAvatar: React.FC<ProposerAvatarProps> = ({ authorAddress, boxSize 
         if (authorAddress) {
             loadAvatar()
         }
-    }, [authorAddress])
+    }, [authorAddress,])
 
     return (
         <Avatar
