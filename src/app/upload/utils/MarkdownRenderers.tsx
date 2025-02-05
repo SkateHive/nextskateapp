@@ -26,10 +26,15 @@ const MentionRenderer = ({ children }: { children: React.ReactNode }) => {
         if (typeof part === 'string') {
           return part.split(/(@[a-zA-Z0-9!_\-]+)/g).map((subPart, subIndex) => {
             if (subPart.startsWith('@')) {
+              const username = subPart.slice(1);
               return (
-                <span key={`${index}-${subIndex}`} style={{ color: 'limegreen', fontWeight: 'bold' }}>
+                <a
+                  key={`${index}-${subIndex}`}
+                  href={`/skater/${username}`}
+                  style={{ color: 'limegreen', fontWeight: 'bold' }}
+                >
                   {subPart}
-                </span>
+                </a>
               );
             }
             return subPart;
