@@ -1,10 +1,7 @@
 'use client';
-import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
+import MarkdownRenderer from "@/components/ReactMarkdown/page";
 import { Box } from "@chakra-ui/react";
 import React from "react";
-import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
-import remarkGfm from 'remark-gfm';
 
 interface ProposalPreviewProps {
     value: string;
@@ -20,13 +17,7 @@ const ProposalPreview: React.FC<ProposalPreviewProps> = ({ value }) => {
             p={4}
             h={{ base: '60vh', md: '80vh' }}
         >
-            <ReactMarkdown
-                components={MarkdownRenderers}
-                remarkPlugins={[remarkGfm]}
-                rehypePlugins={[rehypeRaw]}
-            >
-                {value}
-            </ReactMarkdown>
+            <MarkdownRenderer content={value} />
         </Box>
     );
 };

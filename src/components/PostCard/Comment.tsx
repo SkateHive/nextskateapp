@@ -1,6 +1,5 @@
 "use client"
 import { handleVote } from "@/app/mainFeed/utils/handleFeedVote"
-import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers"
 import CommentsSection from "@/components/PostModal/commentSection"
 import { useHiveUser } from "@/contexts/UserContext"
 import { Comment } from "@/hooks/comments"
@@ -9,10 +8,8 @@ import { Flex, Text } from "@chakra-ui/react"
 import moment from "moment-timezone"
 import { useEffect, useState } from "react"
 import { FaFire } from "react-icons/fa"
-import ReactMarkdown from "react-markdown"
-import rehypeRaw from "rehype-raw"
-import remarkGfm from "remark-gfm"
 import CommandPrompt from "../PostModal/commentPrompt"
+import MarkdownRenderer from "../ReactMarkdown/page"
 import UserAvatar from "../UserAvatar"
 import { voting_value } from "./calculateHiveVotingValue"
 
@@ -95,13 +92,7 @@ export default function PostComment({ comment }: PostCommentProps) {
         </Text>
       </Flex>
       <Flex direction={"column"} border={"1px solid grey"} p={5} bg={"#201d21"}>
-        <ReactMarkdown
-          components={MarkdownRenderers}
-          rehypePlugins={[rehypeRaw]}
-          remarkPlugins={[remarkGfm]}
-        >
-          {comment.body}
-        </ReactMarkdown>
+        <MarkdownRenderer content={comment.body} />
         <br />
         <Flex justifyContent="flex-end">
           {" "}

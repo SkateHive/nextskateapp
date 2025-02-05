@@ -1,13 +1,10 @@
-import { MarkdownRenderers } from '@/app/upload/utils/MarkdownRenderers';
+import MarkdownRenderer from '@/components/ReactMarkdown/page';
 import { sendHiveOperation } from '@/lib/hive/server-functions';
 import PostModel from '@/lib/models/post';
 import { Box, Button, Center, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Textarea } from '@chakra-ui/react';
 import { Operation } from '@hiveio/dhive';
 import { diff_match_patch } from 'diff-match-patch';
 import { useEffect, useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
-import remarkGfm from 'remark-gfm';
 
 const parent_author = process.env.NEXT_PUBLIC_MAINFEED_AUTHOR || "skatehacker";
 const parent_permlink = process.env.NEXT_PUBLIC_MAINFEED_PERMLINK || "test-advance-mode-post";
@@ -160,13 +157,7 @@ export const EditCommentModal = ({ isOpen, onClose, commentBody, onSave, post, u
                     </ModalHeader>
                     <ModalBody>
                         <Box p={2} borderRadius={'10px'} border={'1px solid white'} overflow={'auto'} >
-                            <ReactMarkdown
-                                rehypePlugins={[rehypeRaw]}
-                                remarkPlugins={[remarkGfm]}
-                                components={MarkdownRenderers}
-                            >
-                                {editedContent}
-                            </ReactMarkdown>
+                            <MarkdownRenderer content={editedContent} />
                         </Box>
                     </ModalBody>
                     <ModalFooter>

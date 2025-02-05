@@ -1,4 +1,4 @@
-import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
+import MarkdownRenderer from "@/components/ReactMarkdown/page";
 import { formatETHaddress } from "@/lib/utils";
 import {
     Box,
@@ -14,9 +14,6 @@ import {
     Text
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import ReactMarkdown from "react-markdown";
-import rehypeRaw from "rehype-raw";
-import remarkGfm from "remark-gfm";
 import { mainnet } from "viem/chains";
 import { useEnsName } from "wagmi";
 import { Proposal } from "../utils/fetchProposals";
@@ -175,13 +172,7 @@ const ProposalDetailPanel = ({
                                 </HStack>
                                 <Divider color={"white"} mt={5} />
                                 <Box mt={2} h={'85vh'} overflow={"auto"} bg="black" color="white">
-                                    <ReactMarkdown
-                                        components={MarkdownRenderers}
-                                        rehypePlugins={[rehypeRaw]}
-                                        remarkPlugins={[remarkGfm]}
-                                    >
-                                        {mainProposal.body}
-                                    </ReactMarkdown>
+                                    <MarkdownRenderer content={mainProposal.body} />
                                 </Box>
                             </>
                         )}

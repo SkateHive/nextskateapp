@@ -1,13 +1,10 @@
 "use client";
 import AuthorAvatar from "@/components/AuthorAvatar";
+import MarkdownRenderer from "@/components/ReactMarkdown/page";
 import usePosts from "@/hooks/usePosts";
 import { blockedUsers } from "@/lib/constants";
 import {
-  getTotalPayout,
-  transform3SpeakContent,
-  transformEcencyImages,
-  transformNormalYoutubeLinksinIframes,
-  transformShortYoutubeLinksinIframes,
+  getTotalPayout
 } from "@/lib/utils";
 import { PINATA_URL } from "@/utils/constants";
 import {
@@ -24,12 +21,8 @@ import {
 } from "@chakra-ui/react";
 import { Discussion } from "@hiveio/dhive";
 import { useEffect, useRef } from "react";
-import ReactMarkdown from "react-markdown";
 import HTMLFlipBook from "react-pageflip";
-import rehypeRaw from "rehype-raw";
-import remarkGfm from "remark-gfm";
 import { Comment } from "../../../app/mainFeed/page";
-import { FullMagazineRenderers } from "../FullMagazineRenderers";
 
 const pageStyles = {
   backgroundColor: "black",
@@ -215,19 +208,12 @@ export default function FullMag({ tag, query }: TestPageProps) {
               </HStack>
 
               <Divider mt={2} mb={2} />
-              <ReactMarkdown
-                key={post.id}
-                className="page"
-                remarkPlugins={[remarkGfm]}
-                rehypePlugins={[rehypeRaw]}
-                components={FullMagazineRenderers}
-              >
-                {transform3SpeakContent(
-                  (transformEcencyImages(
-                    transformNormalYoutubeLinksinIframes(
-                      transformShortYoutubeLinksinIframes(post.body))))
-                )}
-              </ReactMarkdown>
+              {posts.map((post) => (
+                <div key={post.id} className="page">
+                  <MarkdownRenderer content={post.body} />
+                </div>
+              ))}
+
               <Divider mt={4} mb={4} />
               <Flex justifyContent={"space-between"}>
                 <Badge colorScheme="green" variant={"outline"} h={"30px"} width={"20%"}>
