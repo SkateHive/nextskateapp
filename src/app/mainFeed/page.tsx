@@ -167,6 +167,7 @@ const SkateCast = () => {
       return;
     } else {
       handlePost(markdownString);
+      postBodyRef.current!.value = "";
     }
   };
 

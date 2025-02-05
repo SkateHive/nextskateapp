@@ -1,3 +1,4 @@
+import React, { useCallback, useEffect, useRef, useState, forwardRef } from "react";
 import {
     Avatar,
     Box,
@@ -9,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { Client } from "@hiveio/dhive";
 import debounce from "lodash/debounce";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import HiveClient from "@/lib/hive/hiveclient";
 
 interface MentionCommentProps {
     value?: string;
@@ -44,7 +45,7 @@ interface MentionCommentProps {
     }
 }
 
-const MentionComment: React.FC<MentionCommentProps> = ({
+const MentionComment = forwardRef<HTMLTextAreaElement, MentionCommentProps>(({
     onCommentChange,
     placeholder,
     isLoading,
@@ -59,13 +60,13 @@ const MentionComment: React.FC<MentionCommentProps> = ({
     width,
     ml,
     mb,
-}) => {
+}, ref) => {
     const [comment, setComment] = useState("");
     const [authors, setAuthors] = useState<string[]>([]);
     const [isListVisible, setIsListVisible] = useState(false);
     const [mentionIndex, setMentionIndex] = useState<number | null>(null);
     const [selectedIndex, setSelectedIndex] = useState(0);
-    const client = useRef(new Client(["https://api.hive.blog"]));
+    const client = HiveClient
     const cacheRef = useRef<{ [key: string]: string[] }>({});
     const [localIsLoading, setLocalIsLoading] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -83,7 +84,7 @@ const MentionComment: React.FC<MentionCommentProps> = ({
         setLocalIsLoading(true);
         try {
             const sanitizedQuery = query.startsWith("@") ? query.slice(1) : query;
-            const result = await client.current.database.call("lookup_accounts", [sanitizedQuery, 5]);
+            const result = await client.database.call("lookup_accounts", [sanitizedQuery, 5]);
             cacheRef.current[query] = result;
             setAuthors(result);
         } catch (error) {
@@ -163,7 +164,7 @@ const MentionComment: React.FC<MentionCommentProps> = ({
     return (
         <Box position="relative" width="100%">
             <Textarea
-                ref={textareaRef}
+                ref={ref} // Ensure ref is used here
                 value={comment}
                 onChange={(e) => {
                     const newComment = e.target.value;
@@ -264,7 +265,7 @@ const MentionComment: React.FC<MentionCommentProps> = ({
         </Box>
 
     );
-};
+});
 
 export default MentionComment;
 

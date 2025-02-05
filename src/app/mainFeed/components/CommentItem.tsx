@@ -25,6 +25,7 @@ import CarrouselRenderer from "../utils/CarrouselRenderer";
 import { EditCommentModal } from "./EditCommentModal";
 import ReplyModal from "./replyModal";
 import ToggleComments from "./ToggleComments";
+import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
 
 interface CommentItemProps {
   comment: any;
@@ -185,7 +186,7 @@ const CommentItem = ({
             </Text>
           </HStack>
           <Box w="100%">
-            <MarkdownRenderer content={markdownWithoutMedia} />
+            <MarkdownRenderer content={markdownWithoutMedia} renderers={MarkdownRenderers} />
           </Box>
         </VStack>
       </Flex>
