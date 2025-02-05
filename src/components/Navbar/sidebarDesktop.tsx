@@ -14,7 +14,8 @@ import {
   VStack,
   keyframes,
   useDisclosure,
-  useToast
+  useToast,
+  Skeleton
 } from "@chakra-ui/react";
 import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
 import Link from "next/link";
@@ -41,6 +42,7 @@ import Confetti from 'react-confetti';
 import { FormattedAddress } from "../NNSAddress";
 import { claimRewards } from "./utils/claimRewards";
 import { FaRankingStar } from "react-icons/fa6";
+import type { Image as ChakraImage } from "@chakra-ui/react";
 
 const blink = keyframes`
   0% { color: gold; opacity: 1; }
@@ -64,6 +66,7 @@ const SidebarDesktop = () => {
   const [showConfetti, setShowConfetti] = useState(false);
   const toast = useToast();
   const { data: activeAuction } = useLastAuction();
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   const client = HiveClient;
 
@@ -109,6 +112,14 @@ const SidebarDesktop = () => {
       getUserAccount();
     }
   }, [hiveUser?.name]);
+
+  useEffect(() => {
+    if (activeAuction?.token?.image) {
+      const img = new window.Image();
+      img.src = activeAuction.token.image;
+      img.onload = () => setImageLoaded(true);
+    }
+  }, [activeAuction?.token?.image]);
 
   const {
     isOpen: isLoginOpen,
@@ -194,23 +205,23 @@ const SidebarDesktop = () => {
         fontSize={"20px"}
       >
         <Link href={`https://nouns.build/dao/base/${activeAuction?.token?.tokenContract}`} passHref target="_blank" rel="noopener noreferrer">
-          <Image
-            width={"48px"}
-            height={"auto"}
-            src={"/SKATE_HIVE_VECTOR_FIN.svg"}
-            alt="SkateHive"
-            borderRadius={"5px"}
-            _hover={{
-              cursor: "pointer",
-              transform: "scale(1.03)",
-              border: "1px solid #A5D6A7",
-              zIndex: 1,
-              content: `url(${activeAuction?.token?.image || "/SKATE_HIVE_VECTOR_FIN_HOVER.svg"})`,
-            }}
-            transition="transform 0.3s ease-out"
-            minW={"100%"}
-            h={"auto"}
-          />
+          <Skeleton isLoaded={imageLoaded} bg={"green.200"} borderRadius={"5px"}>
+            <Image
+              width={"48px"}
+              height={"auto"}
+              src={"/SKATE_HIVE_VECTOR_FIN.svg"}
+              alt="SkateHive"
+              _hover={{
+                cursor: "pointer",
+                transform: "scale(1.03)",
+                zIndex: 1,
+                content: `url(${activeAuction?.token?.image || "/SKATE_HIVE_VECTOR_FIN_HOVER.svg"})`,
+              }}
+              transition="transform 0.3s ease-out"
+              minW={"100%"}
+              h={"auto"}
+            />
+          </Skeleton>
         </Link>
         <Divider
           my={4}
