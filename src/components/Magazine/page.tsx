@@ -1,7 +1,7 @@
 "use client";
 import AuthorAvatar from "@/components/AuthorAvatar";
 import TipButton from "@/components/PostCard/TipButton";
-import { MagModal } from "@/components/Profile/MagModal";
+import { MagModal } from "@/components/Magazine/MagModal";
 import MarkdownRenderer from "@/components/ReactMarkdown/page";
 import { useQueryResult } from "@/contexts/QueryContext";
 import {
