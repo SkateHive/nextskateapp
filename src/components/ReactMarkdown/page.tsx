@@ -6,28 +6,34 @@ import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 
 interface MarkdownRendererProps {
+    key?: number | string;
     content: string;
     className?: string;
+    renderers?: any;
 }
 
-const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, className }) => {
+const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ key, content, className, renderers = MarkdownRenderers }) => {
+    const transformedContent = React.useMemo(() => {
+        return autoEmbedZoraLink(
+            transform3SpeakContent(
+                transformEcencyImages(
+                    transformNormalYoutubeLinksinIframes(
+                        transformShortYoutubeLinksinIframes(content)
+                    )
+                )
+            )
+        );
+    }, [content]);
+
     return (
         <div className={className}>
             <ReactMarkdown
-                components={MarkdownRenderers}
+                key={key ? key : "markdown-renderer"}
+                components={renderers}
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeRaw]}
             >
-                {autoEmbedZoraLink(
-                    transform3SpeakContent(
-                        transformEcencyImages(
-                            transformNormalYoutubeLinksinIframes(
-                                transformShortYoutubeLinksinIframes(content)
-                            )
-                        )
-                    )
-                )
-                }
+                {transformedContent}
             </ReactMarkdown>
         </div>
     );

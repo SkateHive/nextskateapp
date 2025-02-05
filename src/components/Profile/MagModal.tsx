@@ -4,14 +4,9 @@ import {
     Modal,
     ModalOverlay,
     ModalContent,
-    ModalHeader,
-    ModalFooter,
     ModalBody,
     ModalCloseButton,
-    Button,
-    useDisclosure
 } from "@chakra-ui/react";
-import { HiveAccount } from "@/lib/useHiveAuth";
 import FullMag from "../Magazine/test/fullMag";
 import { QueryProvider } from "@/contexts/QueryContext";
 

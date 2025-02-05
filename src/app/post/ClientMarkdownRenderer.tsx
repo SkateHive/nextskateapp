@@ -9,9 +9,11 @@ type ClientMarkdownRendererProps = {
 };
 
 const ClientMarkdownRenderer: React.FC<ClientMarkdownRendererProps> = ({ content }) => {
+    const transformedContent = content.replace("ipfs.skatehive.app", PINATA_URL);
+
     return (
         <>
-            <MarkdownRenderer content={content.replace("ipfs.skatehive.app", PINATA_URL)} />
+            <MarkdownRenderer content={transformedContent} />
         </>
     );
 };

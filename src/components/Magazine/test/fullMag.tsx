@@ -23,6 +23,7 @@ import { Discussion } from "@hiveio/dhive";
 import { useEffect, useRef } from "react";
 import HTMLFlipBook from "react-pageflip";
 import { Comment } from "../../../app/mainFeed/page";
+import { FullMagazineRenderers } from "../FullMagazineRenderers";
 
 const pageStyles = {
   backgroundColor: "black",
@@ -48,8 +49,6 @@ const coverStyles = {
   ...pageStyles,
   backgroundColor: "darkblue",
   color: "white",
-  backgroundImage:
-    "url(https://i.pinimg.com/originals/c6/ea/8e/c6ea8e9623abb4ca57e0594e5766c872.gif)",
   backgroundSize: "cover",
   textAlign: "center",
 };
@@ -72,6 +71,7 @@ export interface TestPageProps {
 }
 
 export default function FullMag({ tag, query }: TestPageProps) {
+  console.log("FullMag props", tag, query);
   const { posts, error, isLoading, setQueryCategory, setDiscussionQuery } =
     usePosts(query, tag);
   const flipBookRef = useRef<any>(null);
@@ -208,12 +208,7 @@ export default function FullMag({ tag, query }: TestPageProps) {
               </HStack>
 
               <Divider mt={2} mb={2} />
-              {posts.map((post) => (
-                <div key={post.id} className="page">
-                  <MarkdownRenderer content={post.body} />
-                </div>
-              ))}
-
+              <MarkdownRenderer key={post.id} content={post.body} renderers={FullMagazineRenderers} className="page" />
               <Divider mt={4} mb={4} />
               <Flex justifyContent={"space-between"}>
                 <Badge colorScheme="green" variant={"outline"} h={"30px"} width={"20%"}>

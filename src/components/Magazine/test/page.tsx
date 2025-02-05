@@ -26,6 +26,7 @@ import { Discussion } from "@hiveio/dhive";
 import { memo, useEffect, useRef, useState } from "react";
 import HTMLFlipBook from "react-pageflip";
 import { Comment } from "../../../app/mainFeed/page";
+import { MagazineRenderers } from "../MagazineRenderers";
 interface Post extends Discussion {
   post_id: number;
   pending_payout_value: string;
@@ -58,8 +59,6 @@ const coverStyles = {
   ...pageStyles,
   backgroundColor: "darkblue",
   color: "white",
-  backgroundImage:
-    "url(https://media1.giphy.com/media/9ZsHm0z5QwSYpV7g01/giphy.gif?cid=6c09b952uxaerotyqa9vct5pkiwvar6l6knjgsctieeg0sh1&ep=v1_gifs_search&rid=giphy.gif&ct=g)",
   backgroundSize: "cover",
   textAlign: "center",
 };
@@ -235,11 +234,7 @@ export default memo(function Zine({ tag, query }: TestPageProps) {
               <Text fontSize={"8px"} color="white" mt={-2}>
                 {new Date(post.created).toLocaleDateString()}
               </Text>
-              {posts.map((post) => (
-                <div key={post.id} className="page">
-                  <MarkdownRenderer content={post.body} />
-                </div>
-              ))}
+              <MarkdownRenderer key={post.id} content={post.body} renderers={MagazineRenderers} className="page" />
               <Divider mt={4} mb={4} />
               <Text>Pending Payout: {post.pending_payout_value.toString()}</Text>
             </Box>
