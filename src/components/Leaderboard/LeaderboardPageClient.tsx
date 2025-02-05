@@ -16,18 +16,6 @@ interface ThComponentProps {
     onClick: () => void;
 }
 
-const ThComponent: React.FC<ThComponentProps> = ({ title, icon, imageSrc, onClick }) => (
-    <Th color="white" textAlign="center" display={['none', 'table-cell']}
-        _hover={{ cursor: 'pointer' }}
-        onClick={onClick}
-    >
-        <VStack _hover={{ transform: 'scale(1.1)' }} >
-            {icon ? icon : <Image src={imageSrc} alt={title} boxSize={6} _hover={{ transform: 'scale(1.1)' }} />}
-            <Text fontSize="xs">{title}</Text>
-        </VStack>
-    </Th>
-);
-
 const LeaderboardPageClient = () => {
     const { leaderboardData, userRanking, connectedUser, isLoading, error } = useLeaderboardData();
     const [isModalOpen, setIsModalOpen] = useState(false);

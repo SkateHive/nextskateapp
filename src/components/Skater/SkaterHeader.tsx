@@ -2,12 +2,10 @@
 
 import { HiveAccount } from "@/lib/useHiveAuth"
 import { Center, HStack, Image, Text, VStack, useDisclosure, useMediaQuery } from "@chakra-ui/react"
-// import { Button, Center, Flex, HStack, Image, Text, VStack, useMediaQuery, useToast } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
 import AuthorAvatar from "../AuthorAvatar"
-// import { useHiveUser } from "@/contexts/UserContext"
-// import { changeFollow, checkFollow } from "@/lib/hive/client-functions"
-// import { changeFollowWithPassword } from "@/lib/hive/server-functions"
+import useLeaderboardData from "@/hooks/useLeaderboardData"
+import ConnectedUserBanner from "../Leaderboard/ConnectedUserBanner"
 
 interface ProfileProps {
     user: HiveAccount
@@ -18,7 +16,6 @@ export default function SkaterHeader({ user }: ProfileProps) {
     const coverImageUrl = metadata?.profile?.cover_image || "https://i.pinimg.com/originals/4b/c7/91/4bc7917beb4aac43d2d405b05911e35f.gif";
     const profileName = metadata?.profile?.name || user.name;
     const [isSmallerThan400] = useMediaQuery("(max-width: 400px)");
-
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [boxSize, setBoxSize] = useState(20)
 
