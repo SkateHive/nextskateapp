@@ -8,7 +8,6 @@ import {
     Text,
     Textarea,
 } from "@chakra-ui/react";
-import { Client } from "@hiveio/dhive";
 import debounce from "lodash/debounce";
 import HiveClient from "@/lib/hive/hiveclient";
 
@@ -49,7 +48,6 @@ const MentionComment = forwardRef<HTMLTextAreaElement, MentionCommentProps>(({
     onCommentChange,
     placeholder,
     isLoading,
-    bg,
     border,
     borderRadius,
     _focus,
@@ -66,7 +64,7 @@ const MentionComment = forwardRef<HTMLTextAreaElement, MentionCommentProps>(({
     const [isListVisible, setIsListVisible] = useState(false);
     const [mentionIndex, setMentionIndex] = useState<number | null>(null);
     const [selectedIndex, setSelectedIndex] = useState(0);
-    const client = HiveClient
+    const client = HiveClient;
     const cacheRef = useRef<{ [key: string]: string[] }>({});
     const [localIsLoading, setLocalIsLoading] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -94,9 +92,8 @@ const MentionComment = forwardRef<HTMLTextAreaElement, MentionCommentProps>(({
         }
     };
 
-    // Function with debourance to improve search performance
     const debouncedFetchAuthors = useCallback(
-        debounce((search: string) => fetchAuthors(search), 500),
+        debounce((search: string) => fetchAuthors(search), 300),
         []
     );
 
@@ -148,7 +145,6 @@ const MentionComment = forwardRef<HTMLTextAreaElement, MentionCommentProps>(({
         }
     }, [comment]);
 
-
     const highlightMentions = (text: string) => {
         return text.split(/(@[a-zA-Z0-9!_\-]+)/g).map((part, index) => {
             if (part.startsWith("@")) {
@@ -161,10 +157,11 @@ const MentionComment = forwardRef<HTMLTextAreaElement, MentionCommentProps>(({
             return part;
         });
     };
+
     return (
         <Box position="relative" width="100%">
             <Textarea
-                ref={ref} // Ensure ref is used here
+                ref={ref}
                 value={comment}
                 onChange={(e) => {
                     const newComment = e.target.value;
@@ -263,9 +260,10 @@ const MentionComment = forwardRef<HTMLTextAreaElement, MentionCommentProps>(({
                 </List>
             )}
         </Box>
-
     );
 });
+
+MentionComment.displayName = "MentionComment";
 
 export default MentionComment;
 

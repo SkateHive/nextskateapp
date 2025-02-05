@@ -171,7 +171,6 @@ const ReplyModal = ({ isOpen, onClose, comment, onNewComment, content }: ReplyMo
                                             onCommentSubmit={setReplyBody}
                                             onCommentChange={(comment: string) => setReplyBody(comment)}
                                             placeholder="Write your reply here"
-                                            bg="transparent"
                                             _focus={{ border: "#A5D6A7", boxShadow: "none" }}
                                             resize="none"
                                             minHeight="100px"

@@ -17,6 +17,30 @@ type RendererProps = MarkdownProps & {
   href?: string;
 };
 
+const MentionRenderer = ({ children }: { children: React.ReactNode }) => {
+  const parts = React.Children.toArray(children);
+  console.log(parts, 'parts', children, 'children');
+  return (
+    <>
+      {parts.map((part, index) => {
+        if (typeof part === 'string') {
+          return part.split(/(@[a-zA-Z0-9!_\-]+)/g).map((subPart, subIndex) => {
+            if (subPart.startsWith('@')) {
+              return (
+                <span key={`${index}-${subIndex}`} style={{ color: 'limegreen', fontWeight: 'bold' }}>
+                  {subPart}
+                </span>
+              );
+            }
+            return subPart;
+          });
+        }
+        return part;
+      })}
+    </>
+  );
+};
+
 export const MarkdownRenderers = {
   img: ({ alt, src, title, ...props }: RendererProps) => (
     <span style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -40,7 +64,7 @@ export const MarkdownRenderers = {
 
   p: ({ children, ...props }: RendererProps) => (
     <div {...props} style={{ color: 'white', fontSize: '18px', paddingBottom: '15px' }}>
-      {children}
+      <MentionRenderer>{children}</MentionRenderer>
     </div>
   ),
   a: ({ href, children, ...props }: RendererProps) => {
