@@ -21,6 +21,7 @@ type LeaderboardData = {
     points: number;
     post_count: number;
     skatehive_nft_balance: number;
+    // Add any other properties from DataBaseAuthor if needed
 };
 
 const fetcher = async (url: string) => {

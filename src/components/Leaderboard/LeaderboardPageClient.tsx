@@ -8,6 +8,7 @@ import LoginModal from '../Hive/Login/LoginModal';
 import ConnectedUserBanner from './ConnectedUserBanner';
 import { useRouter } from 'next/navigation';
 import LeaderboardModal from '../ModalComponent';
+import { DataBaseAuthor } from './LeaderboardTable';
 
 interface ThComponentProps {
     title: string;
@@ -60,9 +61,11 @@ const LeaderboardPageClient = () => {
             </Box>
         );
     }
+
     const handleLoginModal = () => {
         setIsOpen(true);
     }
+
     return (
         <Box
             p={2}
@@ -72,11 +75,11 @@ const LeaderboardPageClient = () => {
             boxShadow="lg"
             overflowX="auto"
         >
-            {connectedUser ? (
+            {connectedUser && userRanking !== undefined ? (
                 <ConnectedUserBanner
                     connectedUser={connectedUser}
                     userRanking={userRanking}
-                    userData={leaderboardData[userRanking - 1]}
+                    userData={leaderboardData && leaderboardData[userRanking - 1] ? leaderboardData[userRanking - 1] as DataBaseAuthor : { hive_author: '' }}
                     openModal={openModal}
                 />
             ) : (
@@ -90,9 +93,9 @@ const LeaderboardPageClient = () => {
                 <LoginModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
             )}
             <Text textAlign="center" fontSize="xl" color="lightgreen" textShadow="0 0 10px green">
-                We are {leaderboardData.length} skaters supporting ourselves. 🛹
+                We are {leaderboardData ? leaderboardData.length : 0} skaters supporting ourselves. 🛹
             </Text>
-            <LeaderboardTable data={leaderboardData} />
+            <LeaderboardTable data={leaderboardData || []} />
             <Center>
                 <Button onClick={handleNavigate} colorScheme="green" variant="solid" mt={5}>
                     Check the Complete List
