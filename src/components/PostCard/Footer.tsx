@@ -36,7 +36,7 @@ export default function Footer({ username }: FooterProps) {
         >
           <Badge
             fontWeight={"bold"}
-            color={"green.400"}
+            colorScheme="green"
             cursor={"pointer"}
             fontSize={"1rem"}
           >
