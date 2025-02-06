@@ -1,17 +1,16 @@
 import { QueryProvider } from "@/contexts/QueryContext";
 import { HiveAccount } from "@/lib/useHiveAuth";
-import { Box, Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
+import { Box, Center, Tab, TabList, TabPanel, TabPanels, Tabs, VStack } from "@chakra-ui/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Zine from "../Magazine/page";
-import ProfileDashboard from "../Profile/profileDashboard";
 import ProfilePosts from "../Profile/ProfilePosts";
 import VideoParts from "../Profile/profileVideos";
+import ProfileCard from "../Profile/profileCard";
 
 interface ProfilePageProps {
   user: HiveAccount;
 }
 
-const tabNames = ["card", "zine", "posts", "videoparts"];
+const tabNames = ["card", "pages", "videoparts"];
 
 export default function SkaterTabs({ user }: ProfilePageProps) {
   const searchParams = useSearchParams();
@@ -41,16 +40,16 @@ export default function SkaterTabs({ user }: ProfilePageProps) {
         >
           <TabList color={"white"} mb="1em">
             <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Card</Tab>
-            <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Zine</Tab>
-            <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Posts</Tab>
+            <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Pages</Tab>
             <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>VideoParts</Tab>
           </TabList>
           <TabPanels>
             <TabPanel>
-              <ProfileDashboard user={user} />
-            </TabPanel>
-            <TabPanel>
-              <Zine tag={[{ tag: user.name, limit: 20 }]} query="blog" />
+              <Center mb={3}>
+                <VStack>
+                  <ProfileCard user={user} />
+                </VStack>
+              </Center>
             </TabPanel>
             <TabPanel>
               <ProfilePosts user={user} />

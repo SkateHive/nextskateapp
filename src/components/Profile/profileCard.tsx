@@ -8,15 +8,16 @@ import {
     VStack,
     Skeleton, SkeletonCircle, SkeletonText
 } from '@chakra-ui/react';
-import { FaHive } from 'react-icons/fa';
+import { FaPhotoVideo } from 'react-icons/fa';
 import { FaGear } from "react-icons/fa6";
 import '../../styles/profile-card-styles.css';
 import UserAvatar from '../UserAvatar';
 import EditInfoModal from "./EditInfoModal";
-import { useHiveUser } from '@/contexts/UserContext';
 import { checkFollow, toogleFollow } from "@/lib/hive/client-functions";
 import { toogleFollowWithPassword } from "@/lib/hive/server-functions";
 import useLeaderboardData from '@/hooks/useLeaderboardData';
+import { MagModal } from '../Magazine/MagModal';
+import { RiUserFollowLine, RiUserUnfollowLine } from 'react-icons/ri';
 
 interface ProfileCardProps {
     user: HiveAccount
@@ -34,6 +35,13 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
     const canEditProfile = (connectedUser == user.name);
     const [stateFollowing, setStateFollowing] = useState(false);
 
+
+    // check if the connected user is already following the user
+    useEffect(() => {
+        if (!canEditProfile) {
+            fetchFollowState();
+        }
+    }, [connectedUser]);
 
     useEffect(() => {
         // if the user is ranked between 1 and 10 they are the max level and goes on
@@ -130,7 +138,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
     const handleProfileUpdate = () => {
     }
 
-
+    const [isMagOpen, setIsMagOpen] = useState(false);
 
     return (
         <>
@@ -141,13 +149,15 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                     onClose={onClose} user={user}
                 />
             }
-
+            {isMagOpen &&
+                <MagModal username={user.name} query="blog" isOpen={isMagOpen} onClose={() => setIsMagOpen(false)} />
+            }
             <Flex justify="center" direction="column" width="full" height="full">
 
                 {/* Profile Card Container */}
                 <Box id="containerCardProfile"
                     border="2px solid white"            // thick border to add with cards borders
-                    borderRadius="20px"                 // adding 3d effect
+                    borderRadius="10px"                 // adding 3d effect
                     position="relative" className={`level-${userLevel}`}
                     transition="0.6s"
                     transform={isFlipped ? 'rotateY(180deg) translateZ(1px)' : 'none'}
@@ -169,7 +179,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                         position={'absolute'}               // do not remove
                         transition="0.6s"                   // hack
                         border="2px solid white"            // thick border to add with container borders
-                        borderRadius="20px"                 // adding 3d effect
+                        borderRadius="10px"                 // adding 3d effect
                         opacity={isFlipped ? '0' : '1'}     // display hide when flip
                         zIndex={isFlipped ? '0' : '2'}      //  ...
                     >
@@ -251,10 +261,9 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                                 <Flex justify="center">
                                     <div style={{ zIndex: 10 }}>
                                         {canEditProfile ? (
-                                            <>
+                                            <HStack>
                                                 <Button className={`box-level-${userLevel} btn-profile-card`}
                                                     width="100%"
-                                                    leftIcon={<FaGear size={"22px"} />}
                                                     m={2}
                                                     variant="outline"
                                                     w="auto"
@@ -267,27 +276,63 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                                                         event.stopPropagation();
                                                         onOpen();
                                                     }}
-                                                >SETTINGS </Button>
-                                            </>) : (
-                                            <Button className={`box-level-${userLevel} btn-profile-card`}
-                                                // _hover={{ background: "black", color:"white!important" }}
-                                                leftIcon={<FaHive size={"22px"} />}
-                                                width={"100%"}
-                                                m={2}
-                                                variant={"outline"}
-                                                w={"auto"}
-                                                style={{
-                                                    backfaceVisibility: 'hidden',
-                                                    position: 'relative',
-                                                    zIndex: 15              // button high above others divs
-                                                }}
-                                                onClick={(event) => {
-                                                    event.stopPropagation();
-                                                    handleFollowButton();
-                                                }}
-                                            >
-                                                {isLoading ? <Skeleton height="20px" width="70px" /> : (stateFollowing ? "Unfollow" : "Follow")}
-                                            </Button>
+                                                ><FaGear size={"22"} /></Button>
+                                                <Button className={`box-level-${userLevel} btn-profile-card`}
+                                                    width="100%"
+                                                    leftIcon={<FaPhotoVideo size={"22px"} />}
+                                                    m={2}
+                                                    variant="outline"
+                                                    w="auto"
+                                                    style={{
+                                                        backfaceVisibility: 'hidden',
+                                                        position: 'relative',
+                                                        zIndex: 15              // button high above others divs
+                                                    }}
+                                                    onClick={(event) => {
+                                                        event.stopPropagation();
+                                                        setIsMagOpen(true);
+                                                    }}
+                                                >MAGAZINE</Button>
+                                            </HStack>
+                                        ) : (
+                                            <HStack justifyContent={"space-between"} gap={-2}>
+                                                <Button className={`box-level-${userLevel} btn-profile-card`}
+                                                    // _hover={{ background: "black", color:"white!important" }}
+                                                    leftIcon={stateFollowing ? <RiUserFollowLine size={"22px"} /> : <RiUserUnfollowLine size={"22px"} />}
+                                                    width={"100%"}
+                                                    m={2}
+                                                    variant={"outline"}
+                                                    w={"auto"}
+                                                    style={{
+                                                        backfaceVisibility: 'hidden',
+                                                        position: 'relative',
+                                                        zIndex: 15              // button high above others divs
+                                                    }}
+                                                    onClick={(event) => {
+                                                        event.stopPropagation();
+                                                        handleFollowButton();
+                                                    }}
+                                                >
+                                                    {isLoading ? <Skeleton height="20px" width="70px" /> : (stateFollowing ? "Unfollow" : "Follow")}
+                                                </Button>
+                                                <Button className={`box-level-${userLevel} btn-profile-card`}
+                                                    width="100%"
+                                                    leftIcon={<FaPhotoVideo size={"22px"} />}
+                                                    m={2}
+                                                    variant="outline"
+                                                    w="auto"
+                                                    style={{
+                                                        backfaceVisibility: 'hidden',
+                                                        position: 'relative',
+                                                        zIndex: 15              // button high above others divs
+                                                    }}
+                                                    onClick={(event) => {
+                                                        event.stopPropagation();
+
+                                                        setIsMagOpen(true);
+                                                    }}
+                                                >MAGAZINE</Button>
+                                            </HStack>
                                         )}
                                     </div>
                                 </Flex>
@@ -301,7 +346,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                         color="white"                       //move from css to here for chakra
                         bg={'transparent'}                  //need to be here for chakra
                         border="2px solid white"            // thick border to add with container borders
-                        borderRadius="20px"                 // adding 3d effect
+                        borderRadius="10px"                 // adding 3d effect
                         opacity={isFlipped ? '1' : '0'}     // visible when flipped
                         zIndex={isFlipped ? '2' : '0'}      // send to back when flipped
                     >

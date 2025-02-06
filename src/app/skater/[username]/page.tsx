@@ -17,7 +17,7 @@ export default function SkaterPage({ params }: ProfilePageProps) {
   return (
     <Box
       color={"white"}
-      w={"100%"}
+      w={{ base: "100%", lg: "60vw" }}
       h={"100vh"}
       overflow={"scroll"}
       id="SkaterPage"

@@ -1,12 +1,10 @@
-import { QueryProvider } from "@/contexts/QueryContext";
 import { HiveAccount } from "@/lib/useHiveAuth";
-import { Box, Tab, TabList, TabPanel, TabPanels, Tabs, useBreakpointValue } from "@chakra-ui/react";
+import { Box, Center, Tab, TabList, TabPanel, TabPanels, Tabs, VStack } from "@chakra-ui/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { memo } from "react";
-import Zine from "../Magazine/page";
 import ProfileBlog from "./ProfileBlog";
-import ProfileDashboard from "./profileDashboard";
 import VideoParts from "./profileVideos";
+import ProfileCard from "./profileCard";
 
 interface ProfilePageProps {
     user: HiveAccount;
@@ -15,7 +13,6 @@ interface ProfilePageProps {
 const tabNames = ["level", "mag", "posts", "videoparts"];
 
 export default memo(function ProfileTabs({ user }: ProfilePageProps) {
-    const displayZine = useBreakpointValue({ base: 'none', lg: 'block' });
     const searchParams = useSearchParams();
     const router = useRouter();
 
@@ -31,37 +28,35 @@ export default memo(function ProfileTabs({ user }: ProfilePageProps) {
     };
 
     return (
-        <QueryProvider query="blog" tag={[{ tag: user.name, limit: 20 }]}>
-            <Box justifyContent={'center'}>
-                <Tabs
-                    isLazy
-                    isFitted
-                    variant="enclosed-colored"
-                    index={tabIndex >= 0 ? tabIndex : 0}
-                    onChange={handleTabChange}
-                >
-                    <TabList color={"white"} mb="1em">
-                        <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Level</Tab>
-                        <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }} display={displayZine}>Mag</Tab>
-                        <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Posts</Tab>
-                        <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>VideoParts</Tab>
-                    </TabList>
-                    <TabPanels>
-                        <TabPanel>
-                            <ProfileDashboard user={user} />
-                        </TabPanel>
-                        <TabPanel display={displayZine}>
-                            <Zine tag={[{ tag: user.name, limit: 10 }]} query="blog" />
-                        </TabPanel>
-                        <TabPanel>
-                            <ProfileBlog user={user} />
-                        </TabPanel>
-                        <TabPanel>
-                            <VideoParts skater={user} />
-                        </TabPanel>
-                    </TabPanels>
-                </Tabs>
-            </Box>
-        </QueryProvider>
+        <Box justifyContent={'center'}>
+            <Tabs
+                isLazy
+                isFitted
+                variant="enclosed-colored"
+                index={tabIndex >= 0 ? tabIndex : 0}
+                onChange={handleTabChange}
+            >
+                <TabList color={"white"} mb="1em">
+                    <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Level</Tab>
+                    <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Posts</Tab>
+                    <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>VideoParts</Tab>
+                </TabList>
+                <TabPanels>
+                    <TabPanel>
+                        <Center mb={3}>
+                            <VStack>
+                                <ProfileCard user={user} />
+                            </VStack>
+                        </Center>
+                    </TabPanel>
+                    <TabPanel>
+                        <ProfileBlog user={user} />
+                    </TabPanel>
+                    <TabPanel>
+                        <VideoParts skater={user} />
+                    </TabPanel>
+                </TabPanels>
+            </Tabs>
+        </Box>
     );
 });
