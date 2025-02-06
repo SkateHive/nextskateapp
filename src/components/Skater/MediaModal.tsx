@@ -8,7 +8,6 @@ import VideoRenderer from "@/app/upload/utils/VideoRenderer";
 import { useComments } from "@/hooks/comments";
 import { Discussion } from "@hiveio/dhive";
 import AuthorAvatar from "../AuthorAvatar";
-import LoadingComponent from "@/app/mainFeed/components/loadingComponent";
 import { useState, useEffect } from "react";
 import { HiveAccount } from "@/lib/useHiveAuth";
 import { commentWithPrivateKey } from "@/lib/hive/server-functions";
@@ -28,7 +27,6 @@ interface MediaModalProps {
 const MediaModal = ({ media, isOpen, onClose, user, onNewComment }: MediaModalProps) => {
     const modalSize = useBreakpointValue({ base: "full", md: "5xl" });
     const isMobile = useBreakpointValue({ base: true, md: false });
-    const [isVideoLoading, setIsVideoLoading] = useState(true);
     const [replyBody, setReplyBody] = useState(""); // Added state for reply input
     const [error, setError] = useState<string | null>(null); // Moved error state to component level
     const { comments: replyComments, isLoading: repliesLoading, error: repliesError } =
@@ -182,14 +180,11 @@ const MediaModal = ({ media, isOpen, onClose, user, onNewComment }: MediaModalPr
                                 objectFit="contain"
                             />
                         ) : (
-                            isVideoLoading ? (
-                                <LoadingComponent />
-                            ) : (
-                                <VideoRenderer
-                                    src={media.url}
-                                    onVideoLoaded={() => setIsVideoLoading(false)}
-                                />
-                            )
+
+                            <VideoRenderer
+                                src={media.url}
+                            />
+
                         )}
                     </Box>
 

@@ -8,11 +8,10 @@ import LoadingComponent from '../../mainFeed/components/loadingComponent'; // ad
 type RendererProps = {
     src?: string;
     onCommentIconClick?: () => void;
-    onVideoLoaded?: () => void;
     [key: string]: any;
 };
 
-const VideoRenderer = ({ src, onCommentIconClick, onVideoLoaded, ...props }: RendererProps) => {
+const VideoRenderer = ({ src, onCommentIconClick, ...props }: RendererProps) => {
 
     const videoRef = useRef<HTMLVideoElement>(null);
     // Removed poster state
@@ -32,8 +31,7 @@ const VideoRenderer = ({ src, onCommentIconClick, onVideoLoaded, ...props }: Ren
         if (videoRef.current) {
             setIsHorizontal(videoRef.current.videoWidth > videoRef.current.videoHeight);
         }
-        if (onVideoLoaded) onVideoLoaded();
-    }, [onVideoLoaded]);
+    }, []);
 
     const handlePlayPause = useCallback(() => {
         if (videoRef.current) {
