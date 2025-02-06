@@ -5,12 +5,13 @@ import { memo } from "react";
 import ProfileBlog from "./ProfileBlog";
 import VideoParts from "./profileVideos";
 import ProfileCard from "./profileCard";
+import SkaterFeed from "../Skater/SkaterFeed";
 
 interface ProfilePageProps {
     user: HiveAccount;
 }
 
-const tabNames = ["level", "mag", "posts", "videoparts"];
+const tabNames = ["feed", "card", "pages", "videoparts"];
 
 export default memo(function ProfileTabs({ user }: ProfilePageProps) {
     const searchParams = useSearchParams();
@@ -37,11 +38,15 @@ export default memo(function ProfileTabs({ user }: ProfilePageProps) {
                 onChange={handleTabChange}
             >
                 <TabList color={"white"} mb="1em">
-                    <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Level</Tab>
+                    <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Feed</Tab>
+                    <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Card</Tab>
                     <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Posts</Tab>
                     <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>VideoParts</Tab>
                 </TabList>
                 <TabPanels>
+                    <TabPanel>
+                        <SkaterFeed user={user} />
+                    </TabPanel>
                     <TabPanel>
                         <Center mb={3}>
                             <VStack>

@@ -1,12 +1,9 @@
 'use client';
-import { MagModal } from "@/components/Magazine/MagModal";
 import ETHprofile from "@/components/Profile/ETHprofile";
-// import ProfileHeader from "@/components/Profile/ProfileHeader";
+import ProfileHeader from "@/components/Profile/ProfileHeader";
 import ProfileTabs from "@/components/Profile/profileTabs";
-import { QueryProvider } from "@/contexts/QueryContext";
 import useHiveAccount from "@/hooks/useHiveAccount";
-import { Box, Button, Center } from "@chakra-ui/react";
-import { useState } from "react";
+import { Box, Center } from "@chakra-ui/react";
 import { Address } from "viem";
 
 interface ProfilePageProps {
@@ -17,7 +14,6 @@ interface ProfilePageProps {
 
 export default function ProfilePage({ params }: ProfilePageProps) {
   const { hiveAccount, error, isLoading } = useHiveAccount(params.username);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   if (params.username.length === 42 && params.username.startsWith("0x")) {
     return (
@@ -30,7 +26,7 @@ export default function ProfilePage({ params }: ProfilePageProps) {
   return (
     <Box
       color={"white"}
-      w={{ base: "100%", lg: "60vw" }}
+      w={{ base: "100%", lg: "55vw" }}
       h={"100vh"}
       overflow={"scroll"}
       id="SkaterPage"
@@ -46,6 +42,8 @@ export default function ProfilePage({ params }: ProfilePageProps) {
         </Center>
       ) : hiveAccount ? (
         <Box>
+          <ProfileHeader user={hiveAccount} />
+
           {hiveAccount && <ProfileTabs user={hiveAccount} />}
         </Box>
       ) : (

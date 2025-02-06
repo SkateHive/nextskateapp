@@ -5,8 +5,8 @@ import { useEffect, useState } from "react"
 
 type UserAvatarProps = {
   hiveAccount: HiveAccount;
-  borderRadius: number;
-  boxSize: number;
+  borderRadius?: number;
+  boxSize?: number;
   size?: string | undefined;
 };
 
@@ -55,7 +55,7 @@ export default function UserAvatar({
     };
 
     getUserAvatar(); // Call the function to set the avatar
-  }, [hiveAccount.name, metadata]);
+  }, [hiveAccount.name, metadata, size]);
 
   return (
     <Avatar

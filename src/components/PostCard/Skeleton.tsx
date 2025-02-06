@@ -51,9 +51,9 @@ export default function PostSkeleton() {
               />
             </Flex>
           </Flex>
-          <Flex gap={1} align={"center"}>
+          {/* <Flex gap={1} align={"center"}>
             <Skeleton startColor="#A5D6A7" endColor="black" h={4} w={16} />
-          </Flex>
+          </Flex> */}
         </Flex>
       </CardHeader>
       <Box p={3}>
