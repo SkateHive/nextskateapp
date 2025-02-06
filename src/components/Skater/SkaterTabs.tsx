@@ -1,22 +1,29 @@
 import { QueryProvider } from "@/contexts/QueryContext";
 import { HiveAccount } from "@/lib/useHiveAuth";
-import { Box, Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
+import { Box, Center, Tab, TabList, TabPanel, TabPanels, Tabs, VStack } from "@chakra-ui/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Zine from "../Magazine/page";
-import ProfileDashboard from "../Profile/profileDashboard";
 import ProfilePosts from "../Profile/ProfilePosts";
 import VideoParts from "../Profile/profileVideos";
+import ProfileCard from "../Profile/profileCard";
+import { useComments } from "@/hooks/comments";
+import { extractMediaItems } from "@/lib/utils";
+import SkaterFeed from "./SkaterFeed";
 
 interface ProfilePageProps {
   user: HiveAccount;
 }
 
-const tabNames = ["card", "zine", "posts", "videoparts"];
+const tabNames = ["feed", "card", "pages", "videoparts"];
+
+const parent_author = process.env.NEXT_PUBLIC_MAINFEED_AUTHOR || "skatehacker";
+const parent_permlink = process.env.NEXT_PUBLIC_MAINFEED_PERMLINK || "test-advance-mode-post";
+
 
 export default function SkaterTabs({ user }: ProfilePageProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
-
+  const filteredComments = useComments(parent_author, parent_permlink, false, user.name);
+  console.log("filteredComments", filteredComments);
   // Converting ReadonlyURLSearchParams to URLSearchParams
   const params = new URLSearchParams(searchParams?.toString() || "");
 
@@ -40,17 +47,21 @@ export default function SkaterTabs({ user }: ProfilePageProps) {
           onChange={handleTabChange}
         >
           <TabList color={"white"} mb="1em">
+            <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Feed</Tab>
             <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Card</Tab>
-            <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Zine</Tab>
-            <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Posts</Tab>
+            <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Pages</Tab>
             <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>VideoParts</Tab>
           </TabList>
           <TabPanels>
             <TabPanel>
-              <ProfileDashboard user={user} />
+              <SkaterFeed user={user} />
             </TabPanel>
             <TabPanel>
-              <Zine tag={[{ tag: user.name, limit: 20 }]} query="blog" />
+              <Center mb={3}>
+                <VStack>
+                  <ProfileCard user={user} />
+                </VStack>
+              </Center>
             </TabPanel>
             <TabPanel>
               <ProfilePosts user={user} />

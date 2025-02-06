@@ -1,42 +1,28 @@
 import { Avatar, Center, Image, Text, VStack } from "@chakra-ui/react";
-import { createConfig, http } from '@wagmi/core';
-import { useState } from "react";
-import { base, mainnet } from "viem/chains";
+import { Address } from "viem";
+import { mainnet } from "viem/chains";
 import { normalize } from 'viem/ens';
 import { useEnsAvatar, useEnsName, useEnsText } from "wagmi";
+import { FormattedAddress } from "../NNSAddress";
 
 interface ProfileProps {
-    eth_address: string;
+    eth_address: Address;
 }
 
-// Create and export the configuration outside the component
-const config = createConfig({
-    chains: [base, mainnet],
-    transports: {
-        [base.id]: http(),
-        [mainnet.id]: http(),
-    },
-});
-
 const ETHprofile: React.FC<ProfileProps> = ({ eth_address }) => {
-    const [ens_address, setEnsAddress] = useState<string>(eth_address);
-    const [coverImageUrl, setCoverImageUrl] = useState<string>("https://i.pinimg.com/originals/4b/c7/91/4bc7917beb4aac43d2d405b05911e35f.gif");
-    const [ens_profile, setEnsProfile] = useState<string>("/loading.gif");
-    const ensAddress = useEnsName({
-        address: eth_address as `0x${string}`,
-        chainId: mainnet.id,
-    });
+    const ens_address = useEnsName({ address: eth_address, chainId: mainnet.id });
+
     const ensAvatar = useEnsAvatar({
-        name: normalize(ensAddress.data || ""),
+        name: normalize(ens_address.data || ""),
         chainId: mainnet.id,
     })
     const coverImage = useEnsText({
-        name: normalize(ensAddress.data || ""),
+        name: normalize(ens_address.data || ""),
         key: "coverImageUrl",
     });
 
     const ensHiveText = useEnsText({
-        name: normalize(ensAddress.data || ""),
+        name: normalize(ens_address.data || ""),
         key: "profile",
     });
 
@@ -44,7 +30,7 @@ const ETHprofile: React.FC<ProfileProps> = ({ eth_address }) => {
         <VStack color={'white'}>
             <Image
                 w={{ base: "100%", lg: "80%" }}
-                src={coverImage.data || coverImageUrl}
+                src={coverImage.data || ""}
                 height={"200px"}
                 objectFit="cover"
                 borderRadius="md"
@@ -55,14 +41,15 @@ const ETHprofile: React.FC<ProfileProps> = ({ eth_address }) => {
             />
             <Center border={"3px solid limegreen"} borderRadius={7} mt={'-80px'}>
                 <Avatar
-                    src={ensAvatar.data || ens_profile}
+                    src={ensAvatar.data || ""}
                     borderRadius={4}
                     boxSize={100}
                 />
             </Center>
-            <Text>{ensAddress.data || eth_address}</Text>
+            <FormattedAddress address={eth_address} />
 
         </VStack>
+        // TODO: ETH profile of someone with farcaster posts 
     );
 };
 

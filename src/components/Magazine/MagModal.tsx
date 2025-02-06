@@ -7,7 +7,7 @@ import {
     ModalBody,
     ModalCloseButton,
 } from "@chakra-ui/react";
-import FullMag from "../Magazine/fullMag";
+import FullMag from "./fullMag";
 import { QueryProvider } from "@/contexts/QueryContext";
 
 interface MagModalProps {

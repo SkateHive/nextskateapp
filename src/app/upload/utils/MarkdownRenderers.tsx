@@ -19,7 +19,6 @@ type RendererProps = MarkdownProps & {
 
 const MentionRenderer = ({ children }: { children: React.ReactNode }) => {
   const parts = React.Children.toArray(children);
-  console.log(parts, 'parts', children, 'children');
   return (
     <>
       {parts.map((part, index) => {

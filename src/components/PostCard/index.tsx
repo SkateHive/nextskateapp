@@ -16,11 +16,11 @@ export default function Post({ postData }: PostComponentProps) {
     <Card
       bg={"black"}
       border={"1px solid #A5D6A7"}
-      size="sm"
+      size="md"
       boxShadow="none"
       borderRadius="5px"
-      p={2}
-      m={2}
+      p={0.5}
+      m={1}
       _hover={{ boxShadow: "0 0 1px 1px #A5D6A7" }}
     >
       <PostProvider postData={postData}>

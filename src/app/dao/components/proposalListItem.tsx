@@ -81,11 +81,6 @@ const ProposalListItem = ({
                     {isActive ? "Active" : outcome.hasWon ? "Passed" : "Failed"}
                 </Badge>
             </HStack>
-            {isSelected && (
-                <Center mt={4}>
-                    <ProposerAvatar authorAddress={proposal.author} boxSize={24} />
-                </Center>
-            )}
             <Text mt={3} mb={3} color="white" fontSize="lg" fontWeight="bold" isTruncated m={2} align={isSelected ? "center" : "left"}>
                 {proposal.title}
             </Text>

@@ -195,7 +195,7 @@ const SidebarDesktop = () => {
       <LoginModal isOpen={isLoginOpen} onClose={onLoginClose} />
       <Box
         bg="Black"
-        w={{ base: "full", md: 280 }}
+        w={{ base: "full", md: 240 }}
         px={2}
         py={8}
         h="100vh"

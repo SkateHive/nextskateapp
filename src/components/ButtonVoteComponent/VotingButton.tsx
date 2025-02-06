@@ -1,7 +1,7 @@
 import { handleVote } from "@/app/mainFeed/utils/handleFeedVote";
 import LoginModal from "@/components/Hive/Login/LoginModal";
-import { Flex, HStack, Text } from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
+import { HStack, Text } from "@chakra-ui/react";
+import { useRef, useState } from "react";
 import { FaHeart, FaHeartBroken, FaRegHeart } from "react-icons/fa";
 import { useReward } from "react-rewards";
 
@@ -10,11 +10,9 @@ import VoteButtonModal from "./VoteButtonModal";
 const VotingButton = ({
   comment,
   username,
-  toggleValueTooltipButton
 }: {
   comment: any;
   username: string;
-  toggleValueTooltipButton: () => void;
 }) => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isVoteModalOpen, setIsVoteModalOpen] = useState(false);
@@ -31,7 +29,6 @@ const VotingButton = ({
   const TOUCH_TIMEOUT = 1000;
 
   const voteButtonRef = useRef<HTMLDivElement>(null);
-  const heartIconRef = useRef<HTMLSpanElement>(null);
   const initialUpvoted = comment.active_votes?.some(
     (vote: any) => vote.voter === username && vote.percent > 0
   );
@@ -229,10 +226,14 @@ const VotingButton = ({
           alignItems="center"
           gap={2}
         >
-          <Text fontSize="18px" color={isUpvoted ? "limegreen" : "#61ad64"}>
-            {renderUpvoteIcon()}
+          {renderUpvoteIcon()}
+          <Text
+            fontWeight={"bold"}
+            color={"green.400"}
+            cursor={"pointer"}
+          >
+            {upvoteCount}
           </Text>
-          <Text fontSize="18px">{upvoteCount}</Text>
         </HStack>
         {isDownvoted && (
           <HStack

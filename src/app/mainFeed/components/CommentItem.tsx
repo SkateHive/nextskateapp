@@ -263,7 +263,6 @@ const CommentItem = ({
         <VotingButton
           comment={comment}
           username={username}
-          toggleValueTooltipButton={toggleValueTooltip}
         />
 
         <Tooltip
@@ -278,9 +277,8 @@ const CommentItem = ({
             cursor={"pointer"}
             mt={2}
             color="#A5D6A7"
-
           >
-            ${getTotalPayout(comment)}
+            ${getTotalPayout(comment).toFixed(3)}
           </Text>
         </Tooltip>
       </Flex>

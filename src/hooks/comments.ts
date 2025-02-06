@@ -57,11 +57,19 @@ export interface ActiveVote {
   weight: number
 }
 
+const commentsCache: { [key: string]: Comment[] } = {};
+
 export async function fetchComments(
   author: string,
   permlink: string,
-  recursive: boolean = false
+  recursive: boolean = false,
+  filteredCommenter?: string
 ): Promise<Comment[]> {
+  const cacheKey = `${author}-${permlink}-${recursive}-${filteredCommenter}`;
+  if (commentsCache[cacheKey]) {
+    return commentsCache[cacheKey];
+  }
+
   try {
     const comments = (await HiveClient.database.call("get_content_replies", [
       author,
@@ -71,14 +79,22 @@ export async function fetchComments(
     if (recursive) {
       const fetchReplies = async (comment: Comment): Promise<Comment> => {
         if (comment.children && comment.children > 0) {
-          comment.replies = await fetchComments(comment.author, comment.permlink, true);
+          comment.replies = await fetchComments(comment.author, comment.permlink, true, filteredCommenter);
         }
         return comment;
       };
       const commentsWithReplies = await Promise.all(comments.map(fetchReplies));
-      return commentsWithReplies;
+      const filteredComments = filteredCommenter
+        ? commentsWithReplies.filter(comment => comment.author === filteredCommenter)
+        : commentsWithReplies;
+      commentsCache[cacheKey] = filteredComments;
+      return filteredComments;
     } else {
-      return comments;
+      const filteredComments = filteredCommenter
+        ? comments.filter(comment => comment.author === filteredCommenter)
+        : comments;
+      commentsCache[cacheKey] = filteredComments;
+      return filteredComments;
     }
   } catch (error) {
     console.error("Failed to fetch comments:", error);
@@ -89,7 +105,8 @@ export async function fetchComments(
 export function useComments(
   author: string,
   permlink: string,
-  recursive: boolean = false
+  recursive: boolean = false,
+  filteredCommenter?: string
 ) {
   const [comments, setComments] = useState<Comment[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -98,7 +115,7 @@ export function useComments(
   const fetchAndUpdateComments = useCallback(async () => {
     setIsLoading(true);
     try {
-      const fetchedComments = await fetchComments(author, permlink, recursive);
+      const fetchedComments = await fetchComments(author, permlink, recursive, filteredCommenter);
       setComments(fetchedComments);
       setIsLoading(false);
     } catch (err: any) {
@@ -106,7 +123,7 @@ export function useComments(
       console.error(err);
       setIsLoading(false);
     }
-  }, [author, permlink, recursive]);
+  }, [author, permlink, recursive, filteredCommenter]);
 
   useEffect(() => {
     fetchAndUpdateComments();

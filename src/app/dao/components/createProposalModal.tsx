@@ -10,7 +10,6 @@ import {
 import { Web3Provider } from '@ethersproject/providers';
 import { useEffect, useMemo, useState } from "react";
 import ProposalEditor from "./ProposalEditor";
-import ProposalPreview from "./ProposalPreview";
 import CreateProposalConfirmationModal from "./createProposalConfirmationModal";
 
 const hub = 'https://hub.snapshot.org';
@@ -53,8 +52,7 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
     }, []);
 
     return (
-        <Box
-        >
+        <Box>
             {isConfirmationModalOpen && (
                 <CreateProposalConfirmationModal
                     proposalBody={value}
@@ -64,94 +62,28 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
                     title={title}
                 />
             )}
-            {useBreakpointValue({
-                base: (
-                    <VStack spacing="4" w={'100%'} p={0}>
-                        <ProposalEditor
-                            value={value}
-                            setValue={setValue}
-                            title={title}
-                            setTitle={setTitle}
-                            setIsUploading={setIsUploading}
-                            PINATA_GATEWAY_TOKEN={PINATA_GATEWAY_TOKEN}
-                        />
 
-
-                        {title !== "" ? (
-                            <Text color={"white"}>
-                                {title}
-                            </Text>
-                        ) : (
-                            <Text color={"white"}>Proposal Preview</Text>
-                        )}
-                        <ProposalPreview value={value} />
-                        <Button
-                            width={"100%"}
-                            mt={4}
-                            colorScheme="green"
-                            variant={"outline"}
-                            onClick={() => {
-                                setIsConfirmationModalOpen(true);
-                            }}
-                        >
-                            Create Proposal
-                        </Button>
-                    </VStack>
-                ),
-                md: (
-                    <HStack>
-                        <Box width="50%">
-                            <ProposalEditor
-                                value={value}
-                                setValue={setValue}
-                                title={title}
-                                setTitle={setTitle}
-                                setIsUploading={setIsUploading}
-                                PINATA_GATEWAY_TOKEN={PINATA_GATEWAY_TOKEN}
-                            />
-                            <Button
-                                width={"100%"}
-                                mt={4}
-                                colorScheme="green"
-                                variant={"outline"}
-                                onClick={() => {
-                                    setIsConfirmationModalOpen(true);
-                                }}
-                            >
-                                Create Proposal
-                            </Button>
-                            <Button
-                                width={"100%"}
-                                mt={4}
-                                colorScheme="green"
-                                variant={"outline"}
-                                onClick={() => {
-                                    console.log(spaceInfo);
-                                }}
-                            >
-                                Log Space Details
-                            </Button>
-                        </Box>
-                        <Box
-                            width="50%"
-                        >
-                            {title !== "" ? (
-                                <Text color={"white"}>
-                                    {title}
-                                </Text>
-                            ) : (
-                                <Text color={"white"}>Proposal Preview</Text>
-                            )}
-
-
-                            <ProposalPreview value={value} />
-                        </Box>
-                    </HStack>
-                )
-
-            })}
-
-
+            <VStack spacing="4" >
+                <ProposalEditor
+                    value={value}
+                    setValue={setValue}
+                    title={title}
+                    setTitle={setTitle}
+                    setIsUploading={setIsUploading}
+                    PINATA_GATEWAY_TOKEN={PINATA_GATEWAY_TOKEN}
+                />
+                <Button
+                    width={"auto"}
+                    mt={4}
+                    colorScheme="green"
+                    variant={"outline"}
+                    onClick={() => {
+                        setIsConfirmationModalOpen(true);
+                    }}
+                >
+                    Create Proposal
+                </Button>
+            </VStack>
         </Box>
     );
 };

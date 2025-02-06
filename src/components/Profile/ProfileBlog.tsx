@@ -39,7 +39,6 @@ export default function ProfileBlog({ user }: ProfilePageProps) {
             base: "repeat(1, 1fr)",
             md: "repeat(2, 1fr)",
             lg: "repeat(3, 1fr)",
-            xl: "repeat(3, 1fr)",
           }}
           gap={0}
           minHeight="100vh"
@@ -59,7 +58,6 @@ export default function ProfileBlog({ user }: ProfilePageProps) {
         next={() => setVisiblePosts(visiblePosts + 3)}
         hasMore={visiblePosts < posts.length}
         scrollableTarget={"scrollableDiv"}
-
         loader={
           <Flex justify="center">
             <BeatLoader size={8} color="darkgrey" />
@@ -72,10 +70,11 @@ export default function ProfileBlog({ user }: ProfilePageProps) {
             base: "repeat(1, 1fr)",
             md: "repeat(2, 1fr)",
             lg: "repeat(3, 1fr)",
-            xl: "repeat(3, 1fr)",
           }}
           gap={0}
+          minHeight="100vh"
         >
+
           {posts.length > 0 &&
             posts.slice(0, visiblePosts).map((post, i) => {
               return (

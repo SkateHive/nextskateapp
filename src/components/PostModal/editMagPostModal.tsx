@@ -8,12 +8,12 @@ import { diff_match_patch } from 'diff-match-patch';
 import { Fragment, useEffect, useState } from 'react';
 import { FaEye } from 'react-icons/fa';
 import MarkdownRenderer from '../ReactMarkdown/page';
+import { useHiveUser } from '@/contexts/UserContext';
 
 interface editModalProps {
     isOpen: boolean;
     onClose: () => void;
     post: PostModel;
-    username: string;
 }
 
 const extractImagesFromContent = (content: string): string[] => {
@@ -31,18 +31,15 @@ const extractImagesFromContent = (content: string): string[] => {
     return [];
 };
 
-export const EditModal = ({ isOpen, onClose, post, username }: editModalProps) => {
+export const EditModal = ({ isOpen, onClose, post }: editModalProps) => {
     const [editedContent, setEditedContent] = useState(post.body);
     const [editedTitle, setEditedTitle] = useState(post.title);
-    const [editedImages, setEditedImages] = useState(extractImagesFromContent(post.body));
-    const [isSaving, setIsSaving] = useState(false);
-    const [isSaved, setIsSaved] = useState(false);
-    const [patch, setPatch] = useState<string | null>(null);
     const [isSmallerThan400] = useMediaQuery('(max-width: 400px)');
     const [selectedThumbnail, setSelectedThumbnail] = useState<string | null>(null);
     const [postImages, setPostImages] = useState<string[]>([]);
     const [isEditing, setIsEditing] = useState(true);
-
+    const user = useHiveUser();
+    const username = user?.hiveUser?.name || '';
     useEffect(() => {
         const parsedMetadata = JSON.parse(post.json_metadata);
         const postImagesFromMetadata = parsedMetadata.images || [];
@@ -195,7 +192,7 @@ export const EditModal = ({ isOpen, onClose, post, username }: editModalProps) =
                         </Box>
                         <Box p={2} borderRadius={'10px'} border={'2px solid white'} overflow={'auto'} h={{ base: "300px", md: "400px", lg: "600px" }}
                         >
-                              <MarkdownRenderer content={editedContent} />
+                            <MarkdownRenderer content={editedContent} />
                         </Box>
 
 

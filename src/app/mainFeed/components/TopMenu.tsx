@@ -5,7 +5,7 @@ import { FaBell, FaUserPlus, FaBook, FaGift, FaDiscord, FaMap } from "react-icon
 import AirdropModal from "./airdropModal"
 import { useRouter } from "next/navigation";
 import { useMediaQuery } from "@chakra-ui/react";
-import { MagModal } from "@/components/Profile/MagModal";
+import { MagModal } from "@/components/Magazine/MagModal";
 
 interface TopMenuProps {
   sortedComments: any[]

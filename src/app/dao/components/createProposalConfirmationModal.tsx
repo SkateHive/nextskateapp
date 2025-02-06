@@ -6,6 +6,9 @@ import { Web3Provider } from '@ethersproject/providers';
 import React, { useCallback, useMemo, useState } from 'react';
 import Confetti from 'react-confetti';
 import { createProposal } from '../utils/createProposal';
+import { MarkdownRenderers } from '@/app/upload/utils/MarkdownRenderers';
+import { useBlockNumber } from 'wagmi'
+import { mainnet } from 'viem/chains';
 
 export enum ProposalType {
     SingleChoice = 'single-choice',
@@ -28,21 +31,14 @@ const generatePermlink = (text: string) => text.replace(/[^a-zA-Z0-9]/g, '-').to
 
 const CreateProposalConfirmationModal: React.FC<CreateProposalConfirmationModalProps> = ({ isOpen, onClose, proposalBody, connectedUserAddress, title }) => {
     const web3 = useMemo(() => new Web3Provider(window.ethereum), []);
-    const [state, setState] = useState({ currentBlockNumber: 0, confetti: false });
     const hiveUser = useHiveUser();
-
-    const fetchCurrentBlockNumber = useCallback(async () => {
-        const blockNumber = await web3.getBlockNumber();
-        return blockNumber;
-    }, [web3]);
+    const block_number = useBlockNumber({
+        chainId: mainnet.id,
+    })
 
     const handleCreateProposal = useCallback(async () => {
         try {
-            const currentBlockNumber = await fetchCurrentBlockNumber();
 
-            if (currentBlockNumber <= 0) {
-                throw new Error('Invalid block number, please try again');
-            }
             const proPostPermlink = generatePermlink(title);
             const currentTimeInSeconds = Math.floor(Date.now() / 1000);
             const start = currentTimeInSeconds;
@@ -58,14 +54,14 @@ const CreateProposalConfirmationModal: React.FC<CreateProposalConfirmationModalP
 
             let proposalData = {
                 space: "skatehive.eth",
-                type: ProposalType.SingleChoice,
+                type: ProposalType.Basic,
                 title: title,
                 body: propostBody,
                 discussion: '',
                 choices: ['For', 'Against', 'Abstain'],
                 start: start,
                 end: end,
-                snapshot: currentBlockNumber,
+                snapshot: Number(block_number.data),
                 plugins: JSON.stringify({}),
                 app: 'Skatehive App'
             };
@@ -98,11 +94,10 @@ const CreateProposalConfirmationModal: React.FC<CreateProposalConfirmationModalP
                     })
                 }
             };
-
             const response = await commentWithKeychain(hivePostMetadata);
             if (response?.success) {
-                await createProposal(web3, proposalData);
-                setState({ currentBlockNumber, confetti: true });
+                const create_proposal = await createProposal(web3, proposalData);
+                console.log("createProposal Response:", create_proposal);
                 onClose();
             } else {
                 throw new Error('Hive post unsuccessful');
@@ -112,11 +107,10 @@ const CreateProposalConfirmationModal: React.FC<CreateProposalConfirmationModalP
             console.error("Failed to create proposal:", error);
             alert("Error creating proposal: " + error.message);
         }
-    }, [web3, proposalBody, title, hiveUser, fetchCurrentBlockNumber]);
+    }, [web3, proposalBody, title, hiveUser, block_number]);
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose}>
-            {state.confetti && <Confetti />}
+        <Modal isOpen={isOpen} onClose={onClose} size={"xl"}>
             <ModalOverlay
                 style={{
                     backdropFilter: 'blur(10px)',
@@ -125,7 +119,7 @@ const CreateProposalConfirmationModal: React.FC<CreateProposalConfirmationModalP
             />
             <ModalContent
                 maxW={{ base: "95%", md: "70%" }}
-                w="auto"
+                minW={{ base: "95%", md: "70%" }}
                 color="white"
                 border="1px solid limegreen"
                 bg="black"
@@ -137,7 +131,7 @@ const CreateProposalConfirmationModal: React.FC<CreateProposalConfirmationModalP
                 </Center>
                 <ModalCloseButton />
                 <ModalBody>
-                <MarkdownRenderer content={proposalBody} />
+                    <MarkdownRenderer content={proposalBody} renderers={MarkdownRenderers} />
 
                 </ModalBody>
                 <ModalFooter>
