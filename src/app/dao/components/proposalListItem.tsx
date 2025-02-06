@@ -42,6 +42,7 @@ const ProposalListItem = ({
             borderRadius="10px"
             _hover={{ borderColor: "gray.400" }}
             transition="border-color 0.2s"
+            minW={"100%"}
         >
             {isModalOpen && (
                 <VoteConfirmationModal

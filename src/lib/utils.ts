@@ -155,6 +155,7 @@ export async function fetchSkateHivePostMetadata(postId: string, username: strin
 }
 export type MediaItem = {
   type: 'image' | 'video';
+  subtitle?: string;
   url: string;
 };
 export const extractMediaItems = (markdown: string): MediaItem[] => {
@@ -229,5 +230,13 @@ export function extractCustomLinks(inputText: string): LinkWithDomain[] {
   }
 
   return customLinksWithDomains
+}
+export function extractSubtitle(markdown: string): string {
+  // Remove markdown image syntax, HTML image tags, and iframes, then trim the remaining text.
+  return markdown
+    .replace(/!\[.*?\]\(.*?\)/g, '')
+    .replace(/<img[^>]+>/g, '')
+    .replace(/<iframe[^>]*>.*?<\/iframe>/g, '')
+    .trim();
 }
 
