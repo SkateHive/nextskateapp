@@ -35,6 +35,7 @@ const ReplyModal = ({ isOpen, onClose, comment, onNewComment, content }: ReplyMo
     const user = useHiveUser();
     const [replyBody, setReplyBody] = useState("");
     const [error, setError] = useState<string | null>(null);
+    const loginMethod = localStorage.getItem("LoginMethod");
 
     const handleReply = async () => {
         const loginMethod = localStorage.getItem("LoginMethod");
@@ -142,7 +143,6 @@ const ReplyModal = ({ isOpen, onClose, comment, onNewComment, content }: ReplyMo
             setError(error.message);
         }
     };
-    const loginMethod = localStorage.getItem("LoginMethod");
     return (
         <Modal isOpen={isOpen} onClose={onClose} size="lg" isCentered>
             <ModalOverlay style={{ backdropFilter: "blur(5px)" }} />

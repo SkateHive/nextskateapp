@@ -44,7 +44,7 @@ export default memo(function ProfileTabs({ user }: ProfilePageProps) {
                     <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>VideoParts</Tab>
                 </TabList>
                 <TabPanels>
-                    <TabPanel>
+                    <TabPanel p={0}>
                         <SkaterFeed user={user} />
                     </TabPanel>
                     <TabPanel>

@@ -1,5 +1,6 @@
 "use client";
 
+import LoadingComponent from "@/app/mainFeed/components/loadingComponent";
 import SkaterHeader from "@/components/Skater/SkaterHeader";
 import SkaterTabs from "@/components/Skater/SkaterTabs";
 import useHiveAccount from "@/hooks/useHiveAccount";
@@ -13,7 +14,7 @@ interface ProfilePageProps {
 
 export default function SkaterPage({ params }: ProfilePageProps) {
   const { hiveAccount } = useHiveAccount(params.username);
-  if (!hiveAccount) return <Box w={"100%"}>Loading...</Box>;
+  if (!hiveAccount) return <Box w={"100%"}><LoadingComponent /></Box>;
   return (
     <Box
       color={"white"}

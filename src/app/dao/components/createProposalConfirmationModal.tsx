@@ -97,7 +97,6 @@ const CreateProposalConfirmationModal: React.FC<CreateProposalConfirmationModalP
             const response = await commentWithKeychain(hivePostMetadata);
             if (response?.success) {
                 const create_proposal = await createProposal(web3, proposalData);
-                console.log("createProposal Response:", create_proposal);
                 onClose();
             } else {
                 throw new Error('Hive post unsuccessful');

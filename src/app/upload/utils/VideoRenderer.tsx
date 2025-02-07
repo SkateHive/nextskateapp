@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FaRegComment } from 'react-icons/fa';
 import { FiMaximize, FiMinimize, FiVolume2, FiVolumeX } from 'react-icons/fi';
 import { LuPause, LuPlay } from 'react-icons/lu';
+import LoadingComponent from '../../mainFeed/components/loadingComponent'; // added import
 
 type RendererProps = {
     src?: string;
@@ -11,8 +12,9 @@ type RendererProps = {
 };
 
 const VideoRenderer = ({ src, onCommentIconClick, ...props }: RendererProps) => {
+
     const videoRef = useRef<HTMLVideoElement>(null);
-    const [poster, setPoster] = useState<string>('/home_animation_body.gif');
+    // Removed poster state
     const [isPlaying, setIsPlaying] = useState(false);
     const [isHorizontal, setIsHorizontal] = useState(false);
     const [volume, setVolume] = useState(0);
@@ -20,40 +22,20 @@ const VideoRenderer = ({ src, onCommentIconClick, ...props }: RendererProps) => 
     const [isHovered, setIsHovered] = useState(false);
     const [progress, setProgress] = useState(0);
     const [hoverTime, setHoverTime] = useState<number | null>(null);
+    const [isVideoLoaded, setIsVideoLoaded] = useState(false); // loading state
 
-    useEffect(() => {
-        const video = videoRef.current;
-        if (video) {
-            const captureThumbnail = () => {
-                const canvas = document.createElement('canvas');
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                const context = canvas.getContext('2d');
-                if (context) {
-                    video.currentTime = 2;
-                    video.addEventListener('seeked', function capture() {
-                        context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                        setPoster(canvas.toDataURL('image/jpeg'));
-                        setIsHorizontal(video.videoWidth > video.videoHeight);
-                        video.removeEventListener('seeked', capture);
-                    });
-                }
-            };
-            if (video.readyState >= 2) {
-                captureThumbnail();
-            } else {
-                video.addEventListener('loadeddata', captureThumbnail);
-            }
+
+
+    const handleLoadedData = useCallback(() => {
+        setIsVideoLoaded(true);
+        if (videoRef.current) {
+            setIsHorizontal(videoRef.current.videoWidth > videoRef.current.videoHeight);
         }
-    }, [src]);
+    }, []);
 
     const handlePlayPause = useCallback(() => {
         if (videoRef.current) {
-            if (isPlaying) {
-                videoRef.current.pause();
-            } else {
-                videoRef.current.play();
-            }
+            isPlaying ? videoRef.current.pause() : videoRef.current.play();
             setIsPlaying(!isPlaying);
         }
     }, [isPlaying]);
@@ -62,47 +44,26 @@ const VideoRenderer = ({ src, onCommentIconClick, ...props }: RendererProps) => 
         if (videoRef.current) {
             const newVolume = volume === 0 ? 1 : 0;
             videoRef.current.volume = newVolume;
-            videoRef.current.muted = newVolume === 0; // Update mutated state
+            videoRef.current.muted = newVolume === 0;
             setVolume(newVolume);
         }
     }, [volume]);
 
-
     const handleFullscreenToggle = useCallback(() => {
         if (videoRef.current) {
             const videoElement = videoRef.current;
-
-            // Check if we are currently in fullscreen mode
             if (document.fullscreenElement) {
-                // If in fullscreen, exit fullscreen
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                } else if ((document as any).webkitExitFullscreen) {
-                    (document as any).webkitExitFullscreen();
-                } else if ((document as any).mozCancelFullScreen) {
-                    (document as any).mozCancelFullScreen();
-                } else if ((document as any).msExitFullscreen) {
-                    (document as any).msExitFullscreen();
-                }
+                document.exitFullscreen
+                    ? document.exitFullscreen()
+                    : (document as any).webkitExitFullscreen?.();
             } else {
-                // If not in fullscreen, request fullscreen
-                if (videoElement.requestFullscreen) {
-                    videoElement.requestFullscreen();
-                } else if ((videoElement as any).webkitRequestFullscreen) {
-                    (videoElement as any).webkitRequestFullscreen();
-                } else if ((videoElement as any).mozRequestFullScreen) {
-                    (videoElement as any).mozRequestFullScreen();
-                } else if ((videoElement as any).msRequestFullscreen) {
-                    (videoElement as any).msRequestFullscreen();
-                }
+                videoElement.requestFullscreen
+                    ? videoElement.requestFullscreen()
+                    : (videoElement as any).webkitRequestFullscreen?.();
             }
-
-            // Toggle fullscreen state
             setIsFullscreen(!isFullscreen);
         }
     }, [isFullscreen]);
-
-
 
     const handleProgressChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -139,11 +100,10 @@ const VideoRenderer = ({ src, onCommentIconClick, ...props }: RendererProps) => 
     }, []);
 
     useEffect(() => {
-        const video = videoRef.current;
-        if (video) {
-            video.addEventListener('timeupdate', handleTimeUpdate);
+        if (videoRef.current) {
+            videoRef.current.addEventListener('timeupdate', handleTimeUpdate);
             return () => {
-                video.removeEventListener('timeupdate', handleTimeUpdate);
+                videoRef.current?.removeEventListener('timeupdate', handleTimeUpdate);
             };
         }
     }, [handleTimeUpdate]);
@@ -170,28 +130,42 @@ const VideoRenderer = ({ src, onCommentIconClick, ...props }: RendererProps) => 
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            <picture>
+            <picture style={{ position: 'relative', width: '100%', height: '100%' }}>
                 <video
                     {...props}
-                    muted={volume === 0}
-                    loop={false}
                     ref={videoRef}
-                    controls={false}
                     src={src}
-                    poster={poster}
-                    crossOrigin='anonymous'
+                    muted={volume === 0}
+                    controls={false}
                     playsInline={true}
                     autoPlay={true}
-                    onClick={(e) => e.stopPropagation()} // Prevent page flip
+                    preload="metadata"
+                    onLoadedData={handleLoadedData}
+                    onClick={(e) => e.stopPropagation()}
                     style={{
                         background: 'transparent',
                         marginBottom: '20px',
                         width: '100%',
-                        zIndex: 2, // Ensure video is on top
+                        zIndex: 2,
                     }}
                 />
+                {!isVideoLoaded && (
+                    <Box
+                        position='absolute'
+                        top={0}
+                        left={0}
+                        width='100%'
+                        height='100%'
+                        zIndex={3}
+                        display='flex'
+                        alignItems='center'
+                        justifyContent='center'
+                        overflow='hidden'
+                    >
+                        <LoadingComponent />
+                    </Box>
+                )}
             </picture>
-
             {isHovered && (
                 <Box
                     position='absolute'

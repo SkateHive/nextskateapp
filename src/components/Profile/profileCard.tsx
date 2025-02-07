@@ -427,9 +427,9 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                                         borderRadius="10px"
                                         p={2}
                                     >
-                                        <Text fontWeight="bold" fontSize="18px">
+                                        <Box fontWeight="bold" fontSize="18px">
                                             {isLoading ? <Skeleton height="20px" width="50px" /> : `XP ${userInfo?.points || 0}`}
-                                        </Text>
+                                        </Box>
                                     </Box>
                                 </Flex>
                             </VStack>

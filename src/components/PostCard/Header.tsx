@@ -135,14 +135,14 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
               <AuthorAvatar username={post.author} boxSize={10} borderRadius={20} quality="small" />
             </Link>
             <Flex flexDir="column" gap={0} w={"100%"}>
-              <Flex gap={1} alignItems="center">
-                <Text color="limegreen" fontSize="14px" as="b">
+              <Flex gap={1} alignItems="center" cursor={"pointer"}>
+                <Text color="limegreen" fontSize="14px" as="b" onClick={onOpen}>
                   {post.author}
                 </Text>
-                <Text fontSize="14px" color="darkgray">
+                <Text fontSize="14px" color="darkgray" onClick={onOpen}>
                   ·
                 </Text>
-                <Text fontSize="12px" color="darkgray" fontWeight="300">
+                <Text fontSize="12px" color="darkgray" fontWeight="300" onClick={onOpen}>
                   {moment
                     .utc(post.created)
                     .fromNow()
@@ -177,6 +177,7 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
               placement={
                 variant == "open" && isSmallerThan400 ? "bottom" : "bottom-end"
               }
+              colorScheme="white"
             >
 
               <MenuButton

@@ -1,4 +1,5 @@
 'use client';
+import LoadingComponent from "@/app/mainFeed/components/loadingComponent";
 import ETHprofile from "@/components/Profile/ETHprofile";
 import ProfileHeader from "@/components/Profile/ProfileHeader";
 import ProfileTabs from "@/components/Profile/profileTabs";
@@ -34,7 +35,7 @@ export default function ProfilePage({ params }: ProfilePageProps) {
     >
       {(isLoading) ? (
         <Center>
-          Loading...
+          <Box w={"100%"}><LoadingComponent /></Box>;
         </Center>
       ) : error != null ? (
         <Center>
