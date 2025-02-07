@@ -52,11 +52,11 @@ const PostFeed: React.FC<PostFeedProps> = ({ posts, visiblePosts, setVisiblePost
   }, [setVisiblePosts]);
   if (loading || !posts) {
     return (
-      <Grid p={1} templateColumns="repeat(1, 1fr)" gap={0} width="100%">
+      <VStack gap={0} width="100%">
         {Array.from({ length: 3 }).map((_, i) => (
           <PostSkeleton key={i} />
         ))}
-      </Grid>
+      </VStack>
     );
   }
 
@@ -196,21 +196,21 @@ export default function MagColumn() {
   if (error) return <p>Error loading posts. Please try again later.</p>;
   if (isLoading || !posts) {
     return (
-      <>
+      <Box overflow="auto" sx={{ "&::-webkit-scrollbar": { display: "none" } }}>
         <NavigationButtons updateFeed={updateFeed} feedConfig={feedConfig} hiveUser={hiveUser} />
         <Box display="flex" justifyContent="center">
-          <Box width="300px">
+          <Box width="100%">
             <AuthorSearchBar
               onSearch={(author) => updateFeed("blog", [{ tag: author, limit: 10 }])}
             />
           </Box>
         </Box>
-        <Grid p={1} templateColumns="repeat(1, 1fr)" gap={0} minHeight="100vh" width="100%">
+        <VStack gap={0} minHeight="100vh" width="100%">
           {Array.from({ length: visiblePosts }).map((_, i) => (
             <PostSkeleton key={i} />
           ))}
-        </Grid>
-      </>
+        </VStack>
+      </Box>
     );
   }
 
@@ -218,7 +218,7 @@ export default function MagColumn() {
     <Box overflow="auto" sx={{ "&::-webkit-scrollbar": { display: "none" } }}>
       <NavigationButtons updateFeed={updateFeed} feedConfig={feedConfig} hiveUser={hiveUser} />
       <Box display="flex" justifyContent="center">
-        <Box width="300px">
+        <Box width="100%" m={1}>
           <AuthorSearchBar
             onSearch={(author) => updateFeed("blog", [{ tag: author, limit: 10 }])}
           />
