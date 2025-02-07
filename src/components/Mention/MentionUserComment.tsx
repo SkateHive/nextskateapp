@@ -1,4 +1,3 @@
-import React, { useCallback, useEffect, useRef, useState, forwardRef } from "react";
 import {
     Avatar,
     Box,
@@ -9,7 +8,7 @@ import {
     Textarea,
 } from "@chakra-ui/react";
 import debounce from "lodash/debounce";
-import HiveClient from "@/lib/hive/hiveclient";
+import React, { forwardRef, useCallback, useEffect, useRef, useState } from "react";
 
 interface MentionCommentProps {
     value?: string;
@@ -64,7 +63,6 @@ const MentionComment = forwardRef<HTMLTextAreaElement, MentionCommentProps>(({
     const [isListVisible, setIsListVisible] = useState(false);
     const [mentionIndex, setMentionIndex] = useState<number | null>(null);
     const [selectedIndex, setSelectedIndex] = useState(0);
-    const client = HiveClient;
     const cacheRef = useRef<{ [key: string]: string[] }>({});
     const [localIsLoading, setLocalIsLoading] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -81,16 +79,27 @@ const MentionComment = forwardRef<HTMLTextAreaElement, MentionCommentProps>(({
 
         setLocalIsLoading(true);
         try {
+            const response = await fetch("https://api.skatehive.app/api/skatehive");
+            if (!response.ok) throw new Error("Error searching for authors");
+
+            const users = await response.json();
             const sanitizedQuery = query.startsWith("@") ? query.slice(1) : query;
-            const result = await client.database.call("lookup_accounts", [sanitizedQuery, 5]);
-            cacheRef.current[query] = result;
-            setAuthors(result);
+
+            // Filter users that start with the query entered
+            const filteredAuthors = users
+                .filter((user: any) => user.hive_author.toLowerCase().startsWith(sanitizedQuery.toLowerCase()))
+                .map((user: any) => user.hive_author)
+                .slice(0, 5);
+
+            cacheRef.current[query] = filteredAuthors;
+            setAuthors(filteredAuthors);
         } catch (error) {
-            console.error("Error fetching authors:", error);
+            console.error("Error searching for authors:", error);
         } finally {
             setLocalIsLoading(false);
         }
     };
+
 
     const debouncedFetchAuthors = useCallback(
         debounce((search: string) => fetchAuthors(search), 300),
