@@ -1,5 +1,3 @@
-"use client"
-
 import {
     Button,
     Center,
@@ -7,6 +5,8 @@ import {
     FormErrorMessage,
     Image,
     Input,
+    InputGroup,
+    InputRightElement,
     ModalBody,
     ModalCloseButton,
     ModalFooter,
@@ -16,8 +16,8 @@ import {
     VStack,
     useMediaQuery
 } from "@chakra-ui/react"
-import { useEffect, useState, useRef } from "react"
-import { FaHive } from "react-icons/fa"
+import { useEffect, useRef, useState } from "react"
+import { FaCheck, FaHive, FaPaste } from "react-icons/fa"
 import Keyboard from "../Keyboard"
 
 function DisconnectedUserModal({
@@ -40,14 +40,12 @@ function DisconnectedUserModal({
     errorMessage: string
 }) {
     const [isKeychainInstalled, setIsKeychainInstalled] = useState(false)
-    // New states for custom keyboard
     const [showKeyboard, setShowKeyboard] = useState(false)
     const [activeField, setActiveField] = useState<"username" | "privateKey" | null>(null)
-    // New: determine if on mobile device
     const [isMobile] = useMediaQuery("(max-width: 768px)")
-    // New: refs for input fields
     const usernameRef = useRef<HTMLInputElement>(null)
     const privateKeyRef = useRef<HTMLInputElement>(null)
+    const [pasted, setPasted] = useState(false)
 
     useEffect(() => {
         if (window.hive_keychain) {
@@ -65,25 +63,16 @@ function DisconnectedUserModal({
         }
     }, [showKeyboard, activeField])
 
-    const handleKeyDown = (event: any) => {
-        if (event.key === "Enter") {
-            doLogin()
-        }
-    }
-
-    const handleKeyPress = (key: string) => {
-        if (activeField === "username") {
-            setUsername(username + key)
-        } else if (activeField === "privateKey") {
-            setPrivateKey(privateKey + key)
-        }
-    }
-
-    const handleBackspace = () => {
-        if (activeField === "username") {
-            setUsername(username.slice(0, -1))
-        } else if (activeField === "privateKey") {
-            setPrivateKey(privateKey.slice(0, -1))
+    const handlePaste = async () => {
+        try {
+            const text = await navigator.clipboard.readText()
+            if (text) {
+                setPrivateKey(text)
+                setPasted(true)
+                setTimeout(() => setPasted(false), 2000)
+            }
+        } catch (err) {
+            console.error("Error pasting:", err)
         }
     }
 
@@ -116,27 +105,40 @@ function DisconnectedUserModal({
                                 }
                             }}
                             onChange={(e) => setUsername(e.target.value)} // handle input change for desktop
-                            onKeyDown={handleKeyDown}
                         />
                         {!isKeychainInstalled && (
-                            <Input
-                                ref={privateKeyRef} // attach ref
-                                type="password"
-                                borderColor={"green.600"}
-                                color={"#A5D6A7"}
-                                _placeholder={{ color: "#A5D6A7", opacity: 0.4 }}
-                                focusBorderColor="#A5D6A7"
-                                placeholder="Password"
-                                value={privateKey}
-                                readOnly={isMobile} // only readOnly on mobile
-                                onFocus={() => {
-                                    if (isMobile) {
-                                        setActiveField("privateKey")
-                                        setShowKeyboard(true)
-                                    }
-                                }}
-                                onChange={(e) => setPrivateKey(e.target.value)} // handle input change for desktop
-                            />
+                            <InputGroup>
+                                <Input
+                                    ref={privateKeyRef} // attach ref
+                                    type="password"
+                                    borderColor={"green.600"}
+                                    color={"#A5D6A7"}
+                                    _placeholder={{ color: "#A5D6A7", opacity: 0.4 }}
+                                    focusBorderColor="#A5D6A7"
+                                    placeholder="Password"
+                                    value={privateKey}
+                                    readOnly={isMobile} // only readOnly on mobile
+                                    onFocus={() => {
+                                        if (isMobile) {
+                                            setActiveField("privateKey")
+                                            setShowKeyboard(true)
+                                        }
+                                    }}
+                                    onChange={(e) => setPrivateKey(e.target.value)} // handle input change for desktop
+                                />
+                                {isMobile && (
+                                    <InputRightElement>
+                                        <Button
+                                            size="sm"
+                                            variant="ghost"
+                                            colorScheme={pasted ? "green" : "gray"}
+                                            onClick={handlePaste}
+                                        >
+                                            {pasted ? <FaCheck /> : <FaPaste />}
+                                        </Button>
+                                    </InputRightElement>
+                                )}
+                            </InputGroup>
                         )}
                     </VStack>
                     {Boolean(errorMessage) && (
@@ -166,8 +168,20 @@ function DisconnectedUserModal({
             </ModalFooter>
             {isMobile && showKeyboard && (
                 <Keyboard
-                    onKeyPress={handleKeyPress}
-                    onBackspace={handleBackspace}
+                    onKeyPress={(key) => {
+                        if (activeField === "username") {
+                            setUsername(username + key)
+                        } else if (activeField === "privateKey") {
+                            setPrivateKey(privateKey + key)
+                        }
+                    }}
+                    onBackspace={() => {
+                        if (activeField === "username") {
+                            setUsername(username.slice(0, -1))
+                        } else if (activeField === "privateKey") {
+                            setPrivateKey(privateKey.slice(0, -1))
+                        }
+                    }}
                     onClose={() => setShowKeyboard(false)}
                     isActive={showKeyboard}
                 />
