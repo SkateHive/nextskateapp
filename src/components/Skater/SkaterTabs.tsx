@@ -6,7 +6,6 @@ import ProfilePosts from "../Profile/ProfilePosts";
 import VideoParts from "../Profile/profileVideos";
 import ProfileCard from "../Profile/profileCard";
 import { useComments } from "@/hooks/comments";
-import { extractMediaItems } from "@/lib/utils";
 import SkaterFeed from "./SkaterFeed";
 
 interface ProfilePageProps {
@@ -28,7 +27,7 @@ export default function SkaterTabs({ user }: ProfilePageProps) {
   const params = new URLSearchParams(searchParams?.toString() || "");
 
   const tab = params.get('tab');
-  const tabIndex = tabNames.indexOf(tab || "card");
+  const tabIndex = tabNames.indexOf(tab || "feed");
 
   const handleTabChange = (index: number) => {
     params.set('tab', tabNames[index]);

@@ -128,13 +128,13 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
       <CardHeader p={2} pb={0}>
         <Flex
           gap="4"
-          align={"start"}
+          align={"center"}
         >
           <Flex flex="1" gap="2" alignItems="center">
             <Link href={`/skater/${post.author}`} >
               <AuthorAvatar username={post.author} boxSize={10} borderRadius={20} quality="small" />
             </Link>
-            <Flex flexDir="column" gap={0} w={"100%"}>
+            <Flex flexDir="column" gap={1}>
               <Flex gap={1} alignItems="center" cursor={"pointer"}>
                 <Text color="limegreen" fontSize="14px" as="b" onClick={onOpen}>
                   {post.author}

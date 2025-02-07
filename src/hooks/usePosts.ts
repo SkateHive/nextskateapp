@@ -3,6 +3,7 @@ import { Discussion } from "@hiveio/dhive";
 import { useEffect, useState } from "react";
 
 export default function usePosts(query: String, params: any[]) {
+  // @refresh
   const [posts, setPosts] = useState<Discussion[]>()
   const [queryCategory, setQueryCategory] = useState<String>(query)
   const [discussionQuery, setDiscussionQuery] = useState(params)

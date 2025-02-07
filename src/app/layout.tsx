@@ -8,6 +8,7 @@ import { Providers } from "./providers";
 import SidebarWrapper from "./SidebarWrapper";
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import SidebarDesktop from "@/components/Navbar/sidebarDesktop";
 
 const share_tech_mono = Share_Tech_Mono({ subsets: ["latin"], weight: "400" });
 
@@ -88,7 +89,7 @@ export default function RootLayout({
           <Flex w={"100%"}
             justifyContent={"center"} id="layout">
             <div className="hide-on-mobile">
-              <SidebarWrapper />
+              <SidebarDesktop />
             </div>
             <div className="mobile-menu-button">
               <MobileNavbar />

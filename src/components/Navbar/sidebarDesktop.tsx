@@ -37,12 +37,10 @@ import LoginModal from "../Hive/Login/LoginModal";
 import CommunityTotalPayout from "../communityTotalPayout";
 // import checkRewards from "./utils/checkReward";
 import { useLastAuction } from "@/hooks/auction";
-import { useIsClient } from "@/hooks/useIsClient";
 import Confetti from 'react-confetti';
 import { FormattedAddress } from "../NNSAddress";
 import { claimRewards } from "./utils/claimRewards";
-import { FaRankingStar } from "react-icons/fa6";
-import type { Image as ChakraImage } from "@chakra-ui/react";
+import React, { memo } from "react";
 
 const blink = keyframes`
   0% { color: gold; opacity: 1; }
@@ -55,7 +53,6 @@ interface Asset {
 }
 
 const SidebarDesktop = () => {
-  const isClient = useIsClient();
   const user = useHiveUser();
   const hiveUser = user.hiveUser;
   const ethAccount = useAccount();
@@ -186,7 +183,6 @@ const SidebarDesktop = () => {
     }
   };
 
-  if (!isClient) return null;
 
   return (
     <>
@@ -205,23 +201,21 @@ const SidebarDesktop = () => {
         fontSize={"20px"}
       >
         <Link href={`https://nouns.build/dao/base/${activeAuction?.token?.tokenContract}`} passHref target="_blank" rel="noopener noreferrer">
-          <Skeleton isLoaded={imageLoaded} bg={"green.200"} borderRadius={"5px"}>
-            <Image
-              width={"48px"}
-              height={"auto"}
-              src={"/SKATE_HIVE_VECTOR_FIN.svg"}
-              alt="SkateHive"
-              _hover={{
-                cursor: "pointer",
-                transform: "scale(1.03)",
-                zIndex: 1,
-                content: `url(${activeAuction?.token?.image || "/SKATE_HIVE_VECTOR_FIN_HOVER.svg"})`,
-              }}
-              transition="transform 0.3s ease-out"
-              minW={"100%"}
-              h={"auto"}
-            />
-          </Skeleton>
+          <Image
+            width={"48px"}
+            height={"auto"}
+            src={"/SKATE_HIVE_VECTOR_FIN.svg"}
+            alt="SkateHive"
+            _hover={{
+              cursor: "pointer",
+              transform: "scale(1.03)",
+              zIndex: 1,
+              content: `url(${activeAuction?.token?.image || "/SKATE_HIVE_VECTOR_FIN_HOVER.svg"})`,
+            }}
+            transition="transform 0.3s ease-out"
+            minW={"100%"}
+            h={"auto"}
+          />
         </Link>
         <Divider
           my={4}
@@ -380,4 +374,4 @@ const SidebarDesktop = () => {
   );
 };
 
-export default SidebarDesktop;
+export default memo(SidebarDesktop);

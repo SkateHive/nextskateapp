@@ -51,8 +51,12 @@ export interface Comment {
   curator_payout_value?: string;
 }
 
+interface IPFSData {
+  IpfsHash: string;
+}
+
 const SkateCast = () => {
-  const { comments, addComment, isLoading } = useComments(parent_author, parent_permlink);
+  const { comments, addComment, isLoading } = useComments(parent_author, parent_permlink) || { comments: [], addComment: () => { }, isLoading: true };
   const [visiblePosts, setVisiblePosts] = useState<number>(6);
   const postBodyRef = useRef<HTMLTextAreaElement>(null);
   const user = useHiveUser();
@@ -67,6 +71,7 @@ const SkateCast = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const toast = useToast();
 
+
   const handleOutsideClick = (e: any) => {
     if (parentRef.current && !parentRef.current.contains(e.target)) {
       setIsPickingEmoji(false);
@@ -77,6 +82,7 @@ const SkateCast = () => {
     postBodyRef.current?.setRangeText(emoji.emoji, postBodyRef.current?.selectionStart || 0, postBodyRef.current?.selectionEnd || 0, 'end');
     setIsPickingEmoji(false);
   }
+
   useEffect(() => {
     document.addEventListener('mousedown', handleOutsideClick);
     return () => {
@@ -84,9 +90,7 @@ const SkateCast = () => {
     };
   }, []);
 
-  interface IPFSData {
-    IpfsHash: string;
-  }
+
 
   const { getRootProps, getInputProps } = useDropzone({
     noClick: true,
@@ -356,6 +360,7 @@ const SkateCast = () => {
   }, []);
 
 
+
   return (
     <VStack
       id="scrollableDiv"
@@ -377,23 +382,23 @@ const SkateCast = () => {
     */}
 
       <TopMenu sortedComments={sortedComments || []} />
-
+      {isLoading && (
+        <Box
+          position="absolute"
+          top={0}
+          left={0}
+          width="100%"
+          height="100%"
+          bg="black"
+          zIndex={10}
+        >
+          <LoadingComponent />
+        </Box>
+      )}
       {user.hiveUser && (
         <>
           <Box p={4} width={"100%"} bg="black" color="white" {...getRootProps()}>
-            {isLoading && (
-              <Box
-                position="absolute"
-                top={0}
-                left={0}
-                width="100%"
-                height="100%"
-                bg="black"
-                zIndex={10}
-              >
-                <LoadingComponent />
-              </Box>
-            )}
+
             <div>
               <Flex>
                 {/* show user avatar or a skeleton avatar placeholder */}

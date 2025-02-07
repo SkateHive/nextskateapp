@@ -156,8 +156,8 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
 
                 {/* Profile Card Container */}
                 <Box id="containerCardProfile"
-                    border="2px solid white"            // thick border to add with cards borders
-                    borderRadius="10px"                 // adding 3d effect
+                    border="2px solid white"
+                    borderRadius="10px"
                     position="relative" className={`level-${userLevel}`}
                     transition="0.6s"
                     transform={isFlipped ? 'rotateY(180deg) translateZ(1px)' : 'none'}
@@ -368,7 +368,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                                 </HStack>
                                 <Text fontWeight="bold" fontSize="18px"
                                     textShadow="2px 2px 1px rgba(0,0,0,1)">
-                                    {isLoading ? <Skeleton height="20px" width="50px" /> : `Rank ${userLevel}`}
+                                    {isLoading ? <Skeleton height="20px" width="50px" /> : `Rank ${userRanking}`}
                                 </Text>
                             </HStack>
                         </CardHeader>
