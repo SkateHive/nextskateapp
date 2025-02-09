@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import { Button, Flex } from "@chakra-ui/react";
-import { FaArrowUpFromBracket, FaDeleteLeft } from "react-icons/fa6";
-import { FaEraser } from "react-icons/fa";
+import { useState } from "react";
+import { FaArrowUpFromBracket, FaDeleteLeft, FaTextHeight } from "react-icons/fa6";
 
 interface KeyboardProps {
     onKeyPress: (key: string) => void;
@@ -20,7 +19,17 @@ const Keyboard = ({ onKeyPress, onBackspace, onClose, isActive }: KeyboardProps)
     const symbolsRow = ["-", "."];
 
     const [isShiftActive, setIsShiftActive] = useState(false);
-    const toggleShift = () => setIsShiftActive(!isShiftActive);
+    const [isCapsLock, setIsCapsLock] = useState(false);
+
+    const toggleShift = () => {
+        setIsShiftActive(!isShiftActive);
+        setIsCapsLock(false);
+    };
+
+    const toggleCapsLock = () => {
+        setIsCapsLock(!isCapsLock);
+        setIsShiftActive(false);
+    };
 
     const buttonStyles = {
         m: "0rem",
@@ -44,7 +53,6 @@ const Keyboard = ({ onKeyPress, onBackspace, onClose, isActive }: KeyboardProps)
             bg="black"
             p={1}
             borderRadius="0"
-        // removed mr={1} to avoid overflow
         >
             {isShiftActive ? (
                 <Flex direction="row" width="100%" justify="center" flexWrap="wrap">
@@ -69,9 +77,9 @@ const Keyboard = ({ onKeyPress, onBackspace, onClose, isActive }: KeyboardProps)
                                     {...buttonStyles}
                                     // Use smaller width for first row keys
                                     width={rowIndex === 0 ? { base: "2rem", md: "1rem" } : buttonStyles.width}
-                                    onClick={() => onKeyPress(key)}
+                                    onClick={() => onKeyPress(isShiftActive || isCapsLock ? key.toUpperCase() : key)}
                                 >
-                                    {key}
+                                    {isShiftActive || isCapsLock ? key.toUpperCase() : key}
                                 </Button>
                             ))}
                             {rowIndex === 2 && (
@@ -84,10 +92,13 @@ const Keyboard = ({ onKeyPress, onBackspace, onClose, isActive }: KeyboardProps)
                 </Flex>
             )}
             <Flex mt={3} justify="center">
-                <Button {...buttonStyles} width={{ base: "5rem", md: "4rem" }} onClick={toggleShift}>
+                <Button {...buttonStyles} width={{ base: "5rem", md: "4rem" }} colorScheme={isShiftActive ? "blue" : "green"} onClick={toggleShift}>
                     <FaArrowUpFromBracket />
                 </Button>
                 {/* Changed button: overriding colorscheme to red */}
+                <Button {...buttonStyles} width={{ base: "5rem", md: "4rem" }} colorScheme={isCapsLock ? "blue" : "green"} onClick={toggleCapsLock}>
+                    <FaTextHeight />
+                </Button>
                 <Button {...buttonStyles} width={{ base: "5rem", md: "4rem" }} colorScheme="red" onClick={onClose}>
                     Close
                 </Button>
