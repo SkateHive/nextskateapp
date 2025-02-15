@@ -1,3 +1,4 @@
+import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
 import MarkdownRenderer from "@/components/ReactMarkdown/page";
 import { formatETHaddress } from "@/lib/utils";
 import {
@@ -19,7 +20,6 @@ import { useEnsName } from "wagmi";
 import { Proposal } from "../utils/fetchProposals";
 import { PropDates } from "./propDates";
 import ProposerAvatar from "./proposerAvatar";
-import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
 
 interface Vote {
     id: string;
@@ -166,7 +166,7 @@ const ProposalDetailPanel = ({
                             </Center>
                         ) : (
                             <>
-                                <Box mt={2} h={'80vh'} color="white">
+                                 <Box mt={2} h={'80vh'} color="white" overflowY="auto">
                                     <MarkdownRenderer content={mainProposal.body} renderers={MarkdownRenderers} />
                                 </Box>
                             </>
