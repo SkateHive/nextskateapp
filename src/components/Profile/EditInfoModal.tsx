@@ -10,7 +10,7 @@ import {
   Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay,
   Text, Textarea, VStack
 } from "@chakra-ui/react";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, JSXElementConstructor, ReactElement, ReactFragment, ReactPortal, useState } from "react";
 import { FaUpload } from 'react-icons/fa';
 import Select from 'react-select';
 import countryList from 'react-select-country-list';
@@ -157,7 +157,7 @@ export default function EditInfoModal({ isOpen, onClose, user, onUpdate }: EditM
           <Text>Location</Text>
           <Select
             styles={{
-              control: (provided, state) => ({
+              control: (provided: any, state: any) => ({
                 ...provided,
                 backgroundColor: 'white',
                 color: 'black',
@@ -171,7 +171,7 @@ export default function EditInfoModal({ isOpen, onClose, user, onUpdate }: EditM
             options={countryOptions}
             value={countryOptions.find(option => option.value === location)}
             onChange={(option: any) => setLocation(option.value)}
-            formatOptionLabel={option => (
+            formatOptionLabel={(option: { value: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | ReactFragment | ReactPortal | null | undefined; label: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | ReactFragment | ReactPortal | null | undefined; }) => (
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <span style={{ color: "black" }}>{option.value} - </span>
                 <span style={{ color: "black", marginLeft: 10 }}>{option.label}</span>

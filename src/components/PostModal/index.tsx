@@ -22,7 +22,7 @@ import {
   Tooltip,
   VStack
 } from "@chakra-ui/react";
-import debounce from 'lodash.debounce';
+import debounce from "lodash.debounce";
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FaGlobe } from "react-icons/fa";
 import Header from "../PostCard/Header";

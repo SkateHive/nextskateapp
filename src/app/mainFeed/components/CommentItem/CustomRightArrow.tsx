@@ -1,5 +1,5 @@
 import { Box, Icon } from "@chakra-ui/react";
-import { LuArrowRightSquare } from "react-icons/lu";
+import { LucideArrowRight } from "lucide-react";
 
 interface CustomRightArrowProps {
     onClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
@@ -30,7 +30,7 @@ const CustomRightArrow = ({ onClick, color }: CustomRightArrowProps) => {
             borderBottomRightRadius="10px"
             _hover={{ opacity: 1 }}
         >
-            <Icon as={LuArrowRightSquare} color={color} boxSize={{ base: '30px', md: '40px', lg: '50px' }} />
+            <LucideArrowRight color={color} />
         </Box>
     );
 };
