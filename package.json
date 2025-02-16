@@ -94,8 +94,13 @@
     "@types/react-dom": "^18.2.24",
     "@types/react-select-country-list": "^2.2.3",
     "@types/remarkable": "^2.0.8",
-    "eslint": "^8.57.0",
-    "eslint-config-next": "14.1.4",
+    "eslint": "^8.58.0",
+    "eslint-config-next": "^14.1.4",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-jsx-a11y": "^6.8.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "@typescript-eslint/parser": "^6.15.0",
     "typescript": "^5.4.5"
   },
   "pnpm": {
