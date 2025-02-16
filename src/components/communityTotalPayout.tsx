@@ -79,6 +79,7 @@ function CommunityTotalPayout() {
         backgroundPosition="center"
         backgroundSize="cover"
         zIndex={0}
+        mb={4}
       >
         <Box
           position="absolute"

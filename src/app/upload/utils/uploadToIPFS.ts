@@ -1,8 +1,3 @@
-type UploadResponse = {
-    success: boolean;
-    message: string;
-    url?: string;
-};
 
 const PINATA_API_KEY = process.env.NEXT_PUBLIC_PINATA_API_KEY;
 const PINATA_SECRET = process.env.NEXT_PUBLIC_PINATA_SECRET;

@@ -1,8 +1,6 @@
-import NotificationsPage from "@/app/notifications/page";
+'use client'
 import { useHiveUser } from "@/contexts/UserContext";
 import { useIsClient } from "@/hooks/useIsClient";
-import HiveClient from "@/lib/hive/hiveclient";
-import { HiveAccount } from "@/lib/useHiveAuth";
 import {
     Button,
     Divider,
@@ -19,79 +17,55 @@ import {
     useDisclosure
 } from "@chakra-ui/react";
 import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
-import Link from 'next/link';
-import { useEffect, useState } from "react";
-import { FaBell, FaBook, FaEthereum, FaHive, FaMapMarkerAlt, FaSpeakap, FaUser, FaWallet } from "react-icons/fa";
 import { useAccount } from "wagmi";
 import "../../styles/fonts.css";
 import LoginModal from "../Hive/Login/LoginModal";
 import { FormattedAddress } from "../NNSAddress";
 import CommunityTotalPayout from "../communityTotalPayout";
-import checkRewards from "./utils/checkReward";
-import { claimRewards } from "./utils/claimRewards";
+import ClaimRewardsButton from "./ClaimRewardsButton";
+import MenuItems from "./MenuItems";
+import { FaBook, FaEthereum, FaHive, FaMapMarkerAlt, FaSpeakap, FaUser, FaWallet } from "react-icons/fa";
+
 const blink = keyframes`
   0% { color: gold; opacity: 1; }
   50% { opacity: 0.1; }
   100% { opacity: 1; }
 `;
 
-
 const SideBarMobile = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) => {
     const isClient = useIsClient();
     const user = useHiveUser();
     const hiveUser = user.hiveUser;
-    const client = HiveClient;
+    const ethAccount = useAccount();
+    const { openConnectModal } = useConnectModal();
+    const { openAccountModal } = useAccountModal();
 
-    const ethAccount = useAccount()
-    const [notifications, setNotifications] = useState(false)
-    const [hasRewards, setHasRewards] = useState(false)
     const {
         isOpen: isLoginOpen,
         onOpen: onLoginOpen,
         onClose: onLoginClose,
-    } = useDisclosure()
-    const { openConnectModal } = useConnectModal()
-    const { openAccountModal } = useAccountModal()
-    const [hiveAccount, setHiveAccount] = useState<HiveAccount>();
+    } = useDisclosure();
+
+    const menuItems = [
+        { icon: FaSpeakap, label: "Feed", path: "/" },
+        { icon: FaMapMarkerAlt, label: "Map", path: "/map" },
+        { icon: FaBook, label: "Magazine", path: "/mag" },
+        { icon: FaEthereum, label: "Dao", path: "/dao" },
+    ];
+
+    const conditionalItems = [
+        { icon: FaUser, label: "Profile", path: `/profile/${hiveUser?.name}`, condition: !!hiveUser },
+    ];
 
 
-    useEffect(() => {
-        if (hiveUser?.metadata?.profile?.name && !hiveAccount) {
-            const getUserAccount = async () => {
-                try {
-                    const userAccount = await client.database.getAccounts([hiveUser.name]);
-                    if (userAccount.length > 0) {
-                        setHiveAccount(userAccount[0]);
-                    }
-                } catch (error) {
-                    console.error("Failed to fetch user account", error);
-                }
-            };
-
-            getUserAccount();
-        }
-    }, [hiveUser?.name]);
-
-    useEffect(() => {
-        const checkUserRewards = async () => {
-            if (hiveUser) {
-                setHasRewards(await checkRewards(String(hiveUser.name)));
-            }
-        };
-
-        checkUserRewards();
-    }, [hiveUser]);
-    const handleClaimRewards = () => {
-        if (hiveAccount) {
-            claimRewards(hiveAccount);
-        }
-    };
-    const handleNotifications = () => {
-        setNotifications(!notifications)
-    }
 
     if (!isClient) return null;
 
+    const hasRewards = hiveUser && (
+        parseFloat(hiveUser.reward_hbd_balance.toString()) > 0 ||
+        parseFloat(hiveUser.reward_hive_balance.toString()) > 0 ||
+        parseFloat(hiveUser.reward_vesting_balance.toString()) > 0
+    );
     return (
         <>
             <LoginModal isOpen={isLoginOpen} onClose={onLoginClose} />
@@ -121,81 +95,24 @@ const SideBarMobile = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
                         <Divider mb={3} mt={3} style={{ color: '#A5D6A7', borderColor: '#A5D6A7' }} />
                         <CommunityTotalPayout />
 
-                        <HStack onClick={() => { setNotifications(false); onClose(); }} padding={0} mt={8} gap={3} fontSize={"22px"}>
-                            <FaSpeakap size={"22px"} />
-                            <Text fontFamily="Joystix">
-                                <Link href={"/"}>Feed</Link>
-                            </Text>
-                        </HStack>
-                        <HStack onClick={() => { setNotifications(false); onClose(); }} padding={0} gap={3} fontSize={"22px"}>
-                            <FaMapMarkerAlt size={"22px"} />
-                            <Text fontFamily="Joystix">
-                                <Link href={"/map"}>Map</Link>
-                            </Text>
-                        </HStack>
-                        <HStack onClick={() => { setNotifications(false); onClose(); }} padding={0} gap={3} fontSize={"22px"}>
-                            <FaBook size={"22px"} />
-                            <Text fontFamily="Joystix">
-                                <Link href={"/mag"}>Magazine</Link>
-                            </Text>
-                        </HStack>
-                        {ethAccount.address && (
+                        <MenuItems items={menuItems} onClose={onClose} />
+                        <MenuItems items={conditionalItems} onClose={onClose} />
 
-                            <HStack onClick={() => { setNotifications(false); onClose(); }} padding={0} gap={3} fontSize={"22px"}>
-                                <FaEthereum size={"22px"} />
-                                <Text fontFamily="Joystix">
-                                    <Link href={"/dao"}>Dao</Link>
-                                </Text>
+                        {hiveUser && (
+                            <HStack padding={0} gap={3} fontSize={"22px"}>
+                                <FaWallet size={"22px"} />
+                                <Text fontFamily="Joystix" cursor={"pointer"} onClick={() => {
+                                    window.location.href = `/wallet`;
+                                }}>Wallet</Text>
+                                {hasRewards && (
+                                    <ClaimRewardsButton
+                                        hiveAccount={hiveUser}
+                                    />
+                                )}
                             </HStack>
                         )}
-                        {hiveUser ? (
-                            <>
-                                <HStack onClick={() => { setNotifications(false); onClose(); }} padding={0} gap={3} fontSize={"22px"}>
-                                    <FaUser size={"22px"} />
-                                    <Text fontFamily="Joystix" cursor={"pointer"} onClick={() => {
-                                        window.location.href = `/profile/${hiveUser.name}`;
-                                    }}>Profile</Text>
-                                </HStack>
-                                <HStack onClick={() => { setNotifications(false); onClose(); }} padding={0} gap={3} fontSize={"22px"}>
-                                    <FaWallet size={"22px"} />
-                                    <Text fontFamily="Joystix" cursor={"pointer"} onClick={() => {
-                                        window.location.href = `/wallet`;
-                                    }}>Wallet</Text>
-                                    {hasRewards && (
-                                        <Button
-                                            gap={0}
-                                            leftIcon={<Icon as={FaHive} />}
-                                            ml={-2}
-                                            p={2}
-                                            justifyContent={"center"}
-                                            color="gold"
-                                            variant="outline"
-                                            border={"none"}
-                                            animation={`${blink} 1s linear infinite`}
-                                            onClick={handleClaimRewards}
-                                            _hover={{
-                                                animation: "none",
-                                                border: "1px dashed yellow",
-                                            }}
-                                        >
-                                            Rewards
-                                        </Button>
-                                    )}
-                                </HStack>
-                                <HStack
-                                    cursor={"pointer"}
-                                    onClick={handleNotifications}
-                                    padding={0}
-                                    gap={3}
-                                    fontSize={"22px"}
-                                    fontFamily="Joystix"
-                                >
-                                    <FaBell size={"22px"} />
-                                    <Text> Notifications</Text>
-                                </HStack>
-                                {notifications ? <NotificationsPage /> : null}
-                            </>
-                        ) : null}
+
+
                     </DrawerBody>
                     <DrawerFooter
                         display={"flex"}
@@ -226,7 +143,6 @@ const SideBarMobile = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
                                 width={"100%"}
                                 bg="black"
                                 colorScheme="blue"
-
                                 leftIcon={
                                     <Icon
                                         color={ethAccount.address ? "blue.400" : "white"}

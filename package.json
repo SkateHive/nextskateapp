@@ -21,7 +21,6 @@
     "@giphy/js-types": "^5.0.0",
     "@giphy/react-components": "^9.3.0",
     "@hiveio/dhive": "^1.2.8",
-    "@pinata/sdk": "^2.1.0",
     "@rainbow-me/rainbowkit": "^2.0.5",
     "@snapshot-labs/snapshot.js": "^0.11.16",
     "@supabase/supabase-js": "^2.46.1",

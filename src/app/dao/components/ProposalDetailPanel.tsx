@@ -116,7 +116,7 @@ const ProposalDetailPanel = ({
 
     useEffect(() => {
         fetchVotes(String(mainProposal?.id))
-    }, []);
+    }, [mainProposal?.id]);
 
     return (
         <Box w={{ base: '100%', md: '50%' }} color={"white"} bg="#1E1E1E">
@@ -166,7 +166,7 @@ const ProposalDetailPanel = ({
                             </Center>
                         ) : (
                             <>
-                                 <Box mt={2} h={'80vh'} color="white" overflowY="auto">
+                                <Box mt={2} h={'80vh'} color="white" overflowY="auto">
                                     <MarkdownRenderer content={mainProposal.body} renderers={MarkdownRenderers} />
                                 </Box>
                             </>

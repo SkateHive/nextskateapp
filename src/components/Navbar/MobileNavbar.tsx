@@ -43,7 +43,7 @@ const MobileNavbar = () => {
     }, []);
 
     return (
-        <Box position="fixed" bottom="0" width="100%" bg="black" borderTop="0.6px solid grey">
+        <Box zIndex={9999} position="fixed" bottom="0" width="100%" bg="black" borderTop="0.6px solid grey">
             <Flex m={2} justify="space-between" align="center">
                 <Box m={2}>
                     <ImMenu size={25} onClick={toggleMenu} color='white' />
@@ -61,7 +61,7 @@ const MobileNavbar = () => {
                     <MdOutlineMenuBook onClick={() => window.location.href = '/mag'} size={25} color="white" />
                 </Box>
             </Flex>
-            <SideBarMobile onClose={closeMenu} isOpen={isOpen} />
+            {isOpen && <SideBarMobile onClose={closeMenu} isOpen={isOpen} />}
         </Box>
     );
 };

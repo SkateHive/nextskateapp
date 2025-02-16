@@ -41,7 +41,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
         if (!canEditProfile) {
             fetchFollowState();
         }
-    }, [connectedUser]);
+    }, [canEditProfile]);
 
     useEffect(() => {
         // if the user is ranked between 1 and 10 they are the max level and goes on
