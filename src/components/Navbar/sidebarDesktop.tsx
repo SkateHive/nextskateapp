@@ -7,7 +7,6 @@ import {
   Button,
   Divider,
   HStack,
-  Heading,
   Icon,
   Image,
   Text,
@@ -15,7 +14,6 @@ import {
   keyframes,
   useDisclosure,
   useToast,
-  Skeleton
 } from "@chakra-ui/react";
 import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
 import Link from "next/link";

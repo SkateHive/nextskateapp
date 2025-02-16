@@ -1,10 +1,7 @@
+'use client'
 import { SKATEHIVE_TAG } from "@/lib/constants";
 import { Box, Flex, Image, Text, VStack } from "@chakra-ui/react";
 import { useEffect, useMemo, useState } from "react";
-
-interface CommunityTotalPayout {
-  totalHBDPayout: number;
-}
 
 function CommunityTotalPayout() {
   const [totalHBDPayout, setTotalHBDPayout] = useState<number>(0);
@@ -27,28 +24,17 @@ function CommunityTotalPayout() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const hiveHubResponse = await fetch(
+        const response = await fetch(
           `https://stats.hivehub.dev/communities?c=${SKATEHIVE_TAG}`
         );
-        const resJson = await hiveHubResponse.json();
-        const hiveInfo = resJson[SKATEHIVE_TAG];
-        let totalPayoutNumber = 65666;
-        if (hiveInfo && hiveInfo.total_payouts_hbd) {
-          try {
-            totalPayoutNumber = parseFloat(
-              hiveInfo.total_payouts_hbd.replace("$", "")
-            );
-          } catch (error) {
-            console.error("Error reading 'total_payouts_hbd': ", error);
-            totalPayoutNumber = 65666;
-          }
-        }
-
-        setTotalHBDPayout(totalPayoutNumber);
-        setLoading(false);
+        const data = await response.json();
+        const payout = parseFloat(data[SKATEHIVE_TAG]?.total_payouts_hbd?.replace("$", "") || "90000");
+        setTotalHBDPayout(payout);
       } catch (error: any) {
-        setTotalHBDPayout(420.0);
+        console.error("Error fetching data: ", error);
         setError(error.message);
+        setTotalHBDPayout(420.0);
+      } finally {
         setLoading(false);
       }
     };
@@ -58,20 +44,16 @@ function CommunityTotalPayout() {
 
   useEffect(() => {
     if (!loading && !error) {
-      const randomizeDigits = () => {
+      const intervalId = setInterval(() => {
         setDisplayedNumber(
           formattedNumber.split("").map(() => Math.floor(Math.random() * 10)).join("")
         );
-      };
+      }, 100);
 
-      const intervalId = setInterval(randomizeDigits, 100);
-
-      const revealFinalNumber = () => {
+      const timeoutId = setTimeout(() => {
         clearInterval(intervalId);
         setDisplayedNumber(formattedNumber);
-      };
-
-      const timeoutId = setTimeout(revealFinalNumber, 4000); // Randomize digits for 4 seconds
+      }, 4000);
 
       return () => {
         clearInterval(intervalId);
