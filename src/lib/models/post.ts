@@ -98,8 +98,6 @@ export default class PostModel {
     }
   }
 
-
-
   metadata(): PostMetadata {
     if (!this._metadata) this._metadata = JSON.parse(this.json_metadata)
     return this._metadata as PostMetadata
@@ -127,6 +125,7 @@ export interface PostMetadata {
   users: string[]
   links: string[]
   image: string[]
+  beneficiaries: Array<{ account: string; weight: number }>
 }
 
 export interface PostActiveVotes {

@@ -1,26 +1,28 @@
-import PostModel, { PostProps } from "@/lib/models/post"
-import { ReactNode, createContext, useContext, useState } from "react"
+"use client";
+
+import PostModel, { PostProps } from "@/lib/models/post";
+import { ReactNode, createContext, useContext, useState } from "react";
 
 export interface PostContextProps {
-  post: PostModel
+  post: PostModel;
 }
 
-interface PostProviderProps {
-  children: ReactNode
-  postData: PostProps
-}
+const PostContext = createContext<PostContextProps | undefined>(undefined);
 
-const PostContext = createContext<PostContextProps>({} as PostContextProps)
-
-export const PostProvider = ({ children, postData }: PostProviderProps) => {
-  const [post, setPost] = useState(new PostModel(postData))
+export const PostProvider = ({ children, postData }: { children: ReactNode; postData: PostProps }) => {
+  const [post, setPost] = useState(new PostModel(postData));
 
   return (
-    <PostContext.Provider value={{ post }}>{children}</PostContext.Provider>
-  )
-}
+    <PostContext.Provider value={{ post }}>
+      {children}
+    </PostContext.Provider>
+  );
+};
 
 export const usePostContext = (): PostContextProps => {
-  const context = useContext(PostContext)
-  return context
-}
+  const context = useContext(PostContext);
+  if (!context) {
+    throw new Error("usePostContext must be used within a PostProvider");
+  }
+  return context;
+};

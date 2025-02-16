@@ -1,29 +1,39 @@
+'use client';
 import CommandPrompt from "@/components/PostModal/commentPrompt";
 import CommentsSection from "@/components/PostModal/commentSection";
 import { usePostContext } from "@/contexts/PostContext";
 import { useComments } from "@/hooks/comments";
-import { Box } from "@chakra-ui/react";
+import { Box, useToast } from "@chakra-ui/react";
+import { useState } from "react";
 
 interface CommentsProps {
   author: string;
   permlink: string;
-  commentsUpdated: boolean;
   onCommentPosted: () => void;
 }
 
 const CommentsComponent = (props: CommentsProps) => {
   const { author, permlink } = props;
   const { post } = usePostContext();
-
-  const { comments, addComment, isLoading } = useComments(author, permlink);
+  const { comments, addComment, isLoading, updateComments } = useComments(author, permlink);
+  const [commentsUpdated, setCommentsUpdated] = useState<boolean>(false);
+  const toast = useToast();
 
   const onClose = () => {
     ("Closing comment section...");
   };
 
   const handleNewComment = (newComment: any) => {
-    addComment(newComment); 
-    props.onCommentPosted(); 
+    addComment(newComment);
+    setCommentsUpdated((prev: boolean) => !prev);
+    updateComments();
+    props.onCommentPosted();
+    toast({
+      title: "Comment added!",
+      status: "success",
+      duration: 2000,
+      isClosable: true,
+    });
   };
 
   return (
@@ -33,7 +43,7 @@ const CommentsComponent = (props: CommentsProps) => {
         onClose={onClose}
         author={author}
         permlink={permlink}
-        onNewComment={handleNewComment} 
+        onNewComment={handleNewComment}
       />
       <CommentsSection comments={comments} />
     </Box>
