@@ -1,21 +1,29 @@
-
 .desktop-layout {
+  display: none;
+}
+
+@media (min-width: 700px) {
+  .desktop-layout {
+    display: block;
+  }
+}
+
+.mobile-layout {
+  display: block;
+}
+
+@media (min-width: 700px) {
+  .mobile-layout {
     display: none;
   }
-  
-  @media (min-width: 700px) {
-    .desktop-layout {
-      display: block;
-    }
+}
+
+.mobile-layout-padding {
+  padding-bottom: 60px;
+}
+
+@media (min-width: 700px) {
+  .mobile-layout-padding {
+    padding-bottom: 0;
   }
-  
-  .mobile-layout {
-    display: block; 
-  }
-  
-  @media (min-width: 700px) {
-    .mobile-layout {
-      display: none;
-    }
-  }
-  
+}

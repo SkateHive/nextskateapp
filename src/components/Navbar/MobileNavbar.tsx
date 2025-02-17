@@ -43,26 +43,29 @@ const MobileNavbar = () => {
     }, []);
 
     return (
-        <Box zIndex={9999} position="fixed" bottom="0" width="100%" bg="black" borderTop="0.6px solid grey">
-            <Flex m={2} justify="space-between" align="center">
-                <Box m={2}>
-                    <ImMenu size={25} onClick={toggleMenu} color='white' />
-                </Box>
-                <Box m={2}>
-                    <FaHome size={25} color='white' onClick={() => window.location.href = '/'} />
-                </Box>
-                <Box position="relative" right={"2px"} top="-20px">
-                    {dynamicButton}
-                </Box>
-                <Box>
-                    <FaWallet onClick={() => window.location.href = '/wallet'} size={25} color="white" />
-                </Box>
-                <Box>
-                    <MdOutlineMenuBook onClick={() => window.location.href = '/mag'} size={25} color="white" />
-                </Box>
-            </Flex>
-            {isOpen && <SideBarMobile onClose={closeMenu} isOpen={isOpen} />}
-        </Box>
+        <>
+            <Box height="60px" /> {/* Spacer to prevent overlap */}
+            <Box zIndex={9999} position="fixed" bottom="0" width="100%" bg="black" borderTop="0.6px solid grey">
+                <Flex m={2} justify="space-between" align="center">
+                    <Box m={2}>
+                        <ImMenu size={25} onClick={toggleMenu} color='white' />
+                    </Box>
+                    <Box m={2}>
+                        <FaHome size={25} color='white' onClick={() => window.location.href = '/'} />
+                    </Box>
+                    <Box position="relative" right={"2px"} top="-20px">
+                        {dynamicButton}
+                    </Box>
+                    <Box>
+                        <FaWallet onClick={() => window.location.href = '/wallet'} size={25} color="white" />
+                    </Box>
+                    <Box>
+                        <MdOutlineMenuBook onClick={() => window.location.href = '/mag'} size={25} color="white" />
+                    </Box>
+                </Flex>
+                {isOpen && <SideBarMobile onClose={closeMenu} isOpen={isOpen} />}
+            </Box>
+        </>
     );
 };
 

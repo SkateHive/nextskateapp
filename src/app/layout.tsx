@@ -5,10 +5,10 @@ import dynamic from 'next/dynamic';
 import { Share_Tech_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 import { Providers } from "./providers";
-import SidebarWrapper from "./SidebarWrapper";
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import SidebarDesktop from "@/components/Navbar/sidebarDesktop";
+import "@/app/layout.css"; // Import the CSS file
 
 const share_tech_mono = Share_Tech_Mono({ subsets: ["latin"], weight: "400" });
 
@@ -87,7 +87,7 @@ export default function RootLayout({
         <ColorModeScriptWrapper />
         <Providers>
           <Flex w={"100%"}
-            justifyContent={"center"} id="layout">
+            justifyContent={"center"} id="layout" className="mobile-layout-padding">
             <div className="hide-on-mobile">
               <SidebarDesktop />
             </div>
