@@ -71,7 +71,7 @@ function PostContent({ user, postId }: { user: string, postId: string }) {
 
     return (
         <Container maxW="container.md" color="white" p={4}>
-            <Heading mt={{ base: "0px", lg: "20px" }} size="md" border="1px solid grey" borderRadius={5}>
+            <Heading mt={{ base: "0px", lg: "8px" }} size="md" border="1px solid grey" borderRadius={5}>
                 <Box bg="#201d21" borderRadius={5} p={4}>
                     <VStack spacing={4} align="stretch">
                         <HStack spacing={4} justifyContent={"space-between"}>
