@@ -15,6 +15,7 @@ import {
     useDisclosure,
     Button,
     useBreakpointValue,
+    Container
 } from "@chakra-ui/react";
 import { FaDollarSign, FaComment } from "react-icons/fa";
 import ClientMarkdownRenderer from "../ClientMarkdownRenderer";
@@ -69,7 +70,7 @@ function PostContent({ user, postId }: { user: string, postId: string }) {
     };
 
     return (
-        <>
+        <Container maxW="container.md" color="white" p={4}>
             <Heading mt={{ base: "0px", lg: "20px" }} size="md" border="1px solid grey" borderRadius={5}>
                 <Box bg="#201d21" borderRadius={5} p={4}>
                     <VStack spacing={4} align="stretch">
@@ -84,20 +85,21 @@ function PostContent({ user, postId }: { user: string, postId: string }) {
                             <Text fontSize="15px" fontWeight="bold" color="white" display="flex" alignItems="center" gap={2}>
                                 <FaDollarSign /> {getTotalPayout(post).toFixed(2)} USD
                             </Text>
-                            {connectedUser?.hiveUser && (
-                                <HStack spacing={4} alignItems="center">
+                            <HStack spacing={4} alignItems="center">
+                                {connectedUser?.hiveUser && (
                                     <VotingButton comment={post} username={String(connectedUser.hiveUser.name)} />
-                                    <Button
-                                        aria-label="Open Comments"
-                                        leftIcon={<FaComment />}
-                                        onClick={onOpen}
-                                        colorScheme="green"
-                                        variant="ghost"
-                                    >
-                                        <Text color={"green.200"} fontWeight={"bold"}                                        >{comments.length}</Text>
-                                    </Button>
-                                </HStack>
-                            )}
+                                )}
+                                <Button
+                                    aria-label="Open Comments"
+                                    leftIcon={<FaComment />}
+                                    onClick={onOpen}
+                                    colorScheme="green"
+                                    variant="ghost"
+                                >
+                                    <Text color={"green.200"} fontWeight={"bold"}                                        >{comments.length}</Text>
+                                </Button>
+                            </HStack>
+
                         </HStack>
                     </VStack>
                 </Box>
@@ -108,12 +110,12 @@ function PostContent({ user, postId }: { user: string, postId: string }) {
             <Center>
                 <Text color={"white"} fontSize="12px">{transformDate(post.created)}</Text>
             </Center>
-            <Drawer isOpen={isOpen} placement={drawerPlacement} onClose={onClose}>
+            <Drawer isOpen={isOpen} placement={drawerPlacement} onClose={onClose} size={{ base: "sm", lg: "sm" }}>
                 <DrawerOverlay />
                 <DrawerContent bg="black">
                     <DrawerCloseButton />
                     <DrawerHeader>Comments</DrawerHeader>
-                    <DrawerBody>
+                    <DrawerBody maxH={{ base: `calc(100vh - 40vh)`, lg: "100%" }} overflow="auto">
                         <CommentsComponent author={user.substring(3)} permlink={postId} onCommentPosted={handleCommentPosted} />
                     </DrawerBody>
                     <DrawerFooter>
@@ -123,7 +125,7 @@ function PostContent({ user, postId }: { user: string, postId: string }) {
                     </DrawerFooter>
                 </DrawerContent>
             </Drawer>
-        </>
+        </Container>
     );
 }
 

@@ -24,7 +24,6 @@ const CommentsSection = ({ comments, isCommentReply = false }: CommentsSectionPr
             border={isCommentReply ? "" : "0px solid #A5D6A7"}
             borderLeft={isCommentReply ? "1.4px dashed green" : ""}
             borderRadius={0}
-            height="fit-content"
         >
             <Stack gap={1}>
                 {filteredComments.map((comment, i) => (

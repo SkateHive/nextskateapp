@@ -4,6 +4,7 @@ import PostModel from "@/lib/models/post";
 import { Metadata } from 'next';
 import dynamic from 'next/dynamic';
 import { Container } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 
 const PostContent = dynamic(() => import('./PostContent'), { ssr: false });
 
@@ -43,9 +44,9 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
 
   return (
     <PostProvider postData={postData}>
-      <Container maxW="container.md" color="white" p={4}>
+      <Box w="container.md" color="white" p={4}>
         <PostContent user={user} postId={postId} />
-      </Container>
+      </Box>
     </PostProvider>
   );
 }
