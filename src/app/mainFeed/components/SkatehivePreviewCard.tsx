@@ -40,7 +40,6 @@ export const SkateHivePreviewCard = ({ postId, username }: SkateHivePreviewProps
     if (!post) return null;
 
     const metadata = JSON.parse(post.json_metadata);
-    console.log("post", post);
     const thumbnail = extractImageUrls(post.body)[0] || metadata.image[0];
 
     return (
@@ -54,7 +53,7 @@ export const SkateHivePreviewCard = ({ postId, username }: SkateHivePreviewProps
                 flexDirection="row"
                 bg="gray.900"
                 p={4}
-                m={4}
+                mt={1}
                 alignItems="center"
             >
                 <Image src={thumbnail} alt={post.title} boxSize="100px" objectFit="cover" border={"1px solid #A5D6A7"} />
@@ -62,7 +61,7 @@ export const SkateHivePreviewCard = ({ postId, username }: SkateHivePreviewProps
                     <Text color={"#A5D6A7"} fontSize="lg" fontWeight="bold">
                         {post.title}
                     </Text>
-                    <Text mt={2} fontSize="sm" color="gray.400">
+                    <Text mt={0} fontSize="sm" color="gray.400">
                         By {username} | {new Date(post.created).toLocaleDateString()}
                     </Text>
                 </Box>

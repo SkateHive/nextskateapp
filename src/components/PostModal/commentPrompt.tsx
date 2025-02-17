@@ -155,59 +155,20 @@ const CommandPrompt = ({ post, onClose, author, permlink, onNewComment }: Comman
     multiple: false,
   });
 
-  const extraCommands = [
-    {
-      name: "uploadImage",
-      keyCommand: "uploadImage",
-      buttonProps: { "aria-label": "Upload image" },
-      icon: (
-        <Tooltip label="Upload Image or Video">
-          <span>
-            <FaImage color="yellow" />
-          </span>
-        </Tooltip>
-      ),
-      execute: () => {
-        const element = document.getElementById("md-image-upload");
-        if (element) {
-          element.click();
-        }
-      },
-    },
-    {
-      name: "saveDraftInTxt",
-      keyCommand: "saveDraftInTxt",
-      buttonProps: { "aria-label": "Save Draft" },
-      icon: (
-        <Tooltip label="Save Draft">
-          <span>
-            <FaSave color="#A5D6A7" />
-          </span>
-        </Tooltip>
-      ),
-      execute: () => {
-        const element = document.createElement("a");
-        const file = new Blob([value], { type: "text/plain" });
-        element.href = URL.createObjectURL(file);
-        element.download = "draft.txt";
-        document.body.appendChild(element);
-        element.click();
-      },
-    },
-  ];
 
   return (
-    <Box p={4} borderRadius="md" boxShadow="lg" color="white" {...getRootProps()}>
-      <Box p={4} bg="blackAlpha.800" borderRadius="md" boxShadow="sm" mb={4}>
+    <Box borderRadius="md" color="white" {...getRootProps()}>
+      <Box p={2} bg="blackAlpha.800" borderRadius="md" boxShadow="sm">
+
         {isUploading && (
           <Center>
             <Spinner />
           </Center>
         )}
         <MentionComment
-          onCommentChange={(comment) => setValue(comment)} 
-          onCommentSubmit={() => submitComment(value)} 
-          value={value} 
+          onCommentChange={(comment) => setValue(comment)}
+          onCommentSubmit={() => submitComment(value)}
+          value={value}
           placeholder="Write your comment ..."
           isLoading={isUploading}
           bg="blackAlpha.800"
@@ -219,8 +180,9 @@ const CommandPrompt = ({ post, onClose, author, permlink, onNewComment }: Comman
       </Box>
       <Flex justify="flex-end">
         <Button
-          colorScheme="teal"
-          size="lg"
+          colorScheme="green"
+          size="md"
+          variant={"outline"}
           onClick={() => submitComment(value)}
           isDisabled={!value.trim() || !localStorage.getItem("LoginMethod")}
         >

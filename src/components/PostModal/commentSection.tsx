@@ -20,15 +20,13 @@ const CommentsSection = ({ comments, isCommentReply = false }: CommentsSectionPr
 
     return (
         <Box
-            bg="black"
-            p={4}
+            p={1}
             border={isCommentReply ? "" : "0px solid #A5D6A7"}
             borderLeft={isCommentReply ? "1.4px dashed green" : ""}
-            pl={isCommentReply ? 8 : 4}
             borderRadius={0}
             height="fit-content"
         >
-            <Stack gap={0}>
+            <Stack gap={1}>
                 {filteredComments.map((comment, i) => (
                     <PostComment key={`${comment.id}-${i}`} comment={comment} />
                 ))}

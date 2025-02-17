@@ -229,7 +229,7 @@ const VotingButton = ({
           {renderUpvoteIcon()}
           <Text
             fontWeight={"bold"}
-            color={"green.400"}
+            color={"green.200"}
             cursor={"pointer"}
           >
             {upvoteCount}
