@@ -1,27 +1,42 @@
 import { PostProvider } from "@/contexts/PostContext";
 import HiveClient from "@/lib/hive/hiveclient";
 import PostModel from "@/lib/models/post";
-import { Metadata } from 'next';
+import type { Metadata, ResolvingMetadata } from 'next';
 import dynamic from 'next/dynamic';
 import { Box } from "@chakra-ui/react";
 
 const PostContent = dynamic(() => import('./PostContent'), { ssr: false });
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { slug: [tag: string, user: string, postId: string] };
-}): Promise<Metadata> {
+export async function generateMetadata(
+  { params }: { params: { slug: [tag: string, user: string, postId: string] } },
+  parent: ResolvingMetadata
+): Promise<Metadata> {
   let [tag, user, postId] = params.slug;
   const post = await getData(user, postId);
   const banner = JSON.parse(post.json_metadata).image;
+
+  // Get metadataBase from parent if available
+  const parentMetadata = await parent;
+  const metadataBase = parentMetadata.metadataBase || new URL('https://skatehive.app');
+
   return {
     title: post.title,
     description: `${String(post.body).slice(0, 128)}...`,
     authors: [{ name: post.author }],
     applicationName: 'SkateHive',
     openGraph: {
-      images: banner,
+      url: `${metadataBase.origin}/post/${postId}`, // Ensure absolute URL
+      images: banner.map((img: string) => ({
+        url: new URL(img, metadataBase).toString(),
+        width: 1200,
+        height: 630,
+      })),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: `${String(post.body).slice(0, 128)}...`,
+      images: banner.map((img: string) => new URL(img, metadataBase).toString()),
     },
   };
 }

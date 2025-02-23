@@ -15,6 +15,7 @@ const share_tech_mono = Share_Tech_Mono({ subsets: ["latin"], weight: "400" });
 const ColorModeScriptWrapper = dynamic(() => import('./ColorModeScriptWrapper'), { ssr: false });
 
 export type Metadata = {
+  metadataBase: URL;
   title: string;
   description: string;
   manifest: string;
@@ -24,6 +25,7 @@ export type Metadata = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://skatehive.app'), // Defina seu domínio aqui
   title: "Skatehive App",
   description: "The infinity skateboard maganize",
   manifest: "/manifest.json",
