@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { Box, Flex } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { FaHome, FaWallet } from "react-icons/fa";
@@ -9,7 +9,7 @@ import WalletButton from "./WalletButton";
 import MagButton from "./magButton";
 import SideBarMobile from "./sideBarMobile";
 import UploadPageButton from "./uploadPageButton";
-
+import Dock from "@/app/mainFeed/components/Dock";
 const MobileNavbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [dynamicButton, setDynamicButton] = useState(<UploadImageButton />);
@@ -42,27 +42,44 @@ const MobileNavbar = () => {
         }
     }, []);
 
+    const dockItems = [
+        {
+            icon: <ImMenu size={22} />,
+            label: "Menu",
+            onClick: toggleMenu,
+        },
+        {
+            icon: <FaHome size={22} />,
+            label: "Home",
+            onClick: () => window.location.href = '/',
+        },
+        {
+            icon: dynamicButton,
+            label: "Upload",
+            onClick: () => window.location.href = '/upload',
+        },
+        {
+            icon: <FaWallet size={22} />,
+            label: "Wallet",
+            onClick: () => window.location.href = '/wallet',
+        },
+        {
+            icon: <MdOutlineMenuBook size={22} />,
+            label: "Magazine",
+            onClick: () => window.location.href = '/mag',
+        },
+    ];
+
     return (
         <>
-            <Box height="60px" /> {/* Spacer to prevent overlap */}
-            <Box zIndex={9999} position="fixed" bottom="0" width="100%" bg="black" borderTop="0.6px solid grey">
-                <Flex m={2} justify="space-between" align="center">
-                    <Box m={2}>
-                        <ImMenu size={25} onClick={toggleMenu} color='white' />
-                    </Box>
-                    <Box m={2}>
-                        <FaHome size={25} color='white' onClick={() => window.location.href = '/'} />
-                    </Box>
-                    <Box position="relative" right={"2px"} top="-20px">
-                        {dynamicButton}
-                    </Box>
-                    <Box>
-                        <FaWallet onClick={() => window.location.href = '/wallet'} size={25} color="white" />
-                    </Box>
-                    <Box>
-                        <MdOutlineMenuBook onClick={() => window.location.href = '/mag'} size={25} color="white" />
-                    </Box>
-                </Flex>
+            <Box
+                zIndex={9999}
+                position="fixed"
+                bottom="0"
+                width="100%"
+                padding="5px 0"
+            >
+                <Dock items={dockItems} panelHeight={70} baseItemSize={45} magnification={60} className="m-2" />
                 {isOpen && <SideBarMobile onClose={closeMenu} isOpen={isOpen} />}
             </Box>
         </>

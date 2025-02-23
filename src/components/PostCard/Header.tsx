@@ -25,6 +25,7 @@ import PostModal from "../PostModal";
 import { EditModal } from "../PostModal/editMagPostModal";
 import { useRouter } from "next/navigation";
 import { IoIosArrowDown } from "react-icons/io";
+import DecryptedText from "../DecryptedText";
 
 type Variant = "preview" | "open";
 interface HeaderInterface {
@@ -148,7 +149,7 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
                 noOfLines={1}
                 onClick={onOpen}
               >
-                {post.title}
+                <DecryptedText text={post.title} />
               </Text>
             </Flex>
           </Flex>

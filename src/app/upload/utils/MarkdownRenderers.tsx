@@ -3,6 +3,7 @@ import { Box, Divider, Image } from '@chakra-ui/react';
 import React from 'react';
 import ProfileLink from './ProfileLink';
 import VideoRenderer from './VideoRenderer'; // Import the VideoRenderer
+import DecryptedText from "@/components/DecryptedText";
 
 type MarkdownProps = {
   node?: any;
@@ -32,11 +33,11 @@ const MentionRenderer = ({ children }: { children: React.ReactNode }) => {
                   href={`/skater/${username}`}
                   style={{ color: 'limegreen', fontWeight: 'bold' }}
                 >
-                  {subPart}
+                  <DecryptedText text={subPart} />
                 </a>
               );
             }
-            return subPart;
+            return <DecryptedText key={`${index}-${subIndex}`} text={subPart} />;
           });
         }
         return part;

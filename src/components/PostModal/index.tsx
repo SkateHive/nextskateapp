@@ -30,6 +30,8 @@ import TipButton from "../PostCard/TipButton";
 import MarkdownRenderer from "../ReactMarkdown/page";
 import CommandPrompt from "./commentPrompt";
 import CommentsSection from "./commentSection";
+import DecryptedText from "../DecryptedText";
+
 interface PostModalInterface {
   isOpen: boolean;
   onClose(): void;
@@ -42,7 +44,7 @@ export function PostModal({ isOpen, onClose, username }: PostModalInterface) {
   const postBody = transform3SpeakContent(post.body);
   const transformedPostBody = useMemo(() => transformEcencyImages(postBody), [postBody]);
   const [isValueTooltipOpen, setIsValueTooltipOpen] = useState(false);
-  const { hiveUser, voteValue } = useHiveUser()
+  const { hiveUser, voteValue } = useHiveUser();
 
   const usernameString = username
     ? typeof username === "string"
@@ -55,7 +57,7 @@ export function PostModal({ isOpen, onClose, username }: PostModalInterface) {
   const [translatedPost, setTranslatedPost] = useState("");
   const [translationsCache, setTranslationsCache] = useState<{ [key: string]: string }>({});
   const [isLoadingTranslation, setIsLoadingTranslation] = useState(false);
-  const [postEarnings, setPostEarnings] = useState(Number(post.getEarnings().toFixed(2)))
+  const [postEarnings, setPostEarnings] = useState(Number(post.getEarnings().toFixed(2)));
 
   const translate = useCallback(
     debounce(async (language: string) => {
@@ -76,7 +78,7 @@ export function PostModal({ isOpen, onClose, username }: PostModalInterface) {
     const fetchPosts = async (username: string) => {
       try {
         const query = { tag: username, limit: 3 };
-        const response = await HiveClient.database.getDiscussions("blog", query);
+        await HiveClient.database.getDiscussions("blog", query);
       } catch (error) {
         console.error("Error fetching posts:", error);
       }
@@ -101,7 +103,9 @@ export function PostModal({ isOpen, onClose, username }: PostModalInterface) {
     <Modal isOpen={isOpen} onClose={onClose} size={{ base: "lg", md: "2xl", lg: "6xl" }}>
       <ModalOverlay style={{ backdropFilter: "blur(5px)" }} />
       <ModalContent color={"white"} bg="black" border="1.4px solid #A5D6A7" borderRadius={0} p={4} w="100%">
-        <ModalHeader><Header variant="open" /></ModalHeader>
+        <ModalHeader>
+          <Header variant="open" />
+        </ModalHeader>
         <ModalCloseButton mr={4} mt={2} color="red" />
         <ModalBody display="flex" flexDir={{ base: "column", lg: "row" }} minH="60vh" gap={6}>
           <Box bg="black" flex={0} p={0} border="0px solid #A5D6A7" borderRadius={0} minW="50%" key={post.post_id}>
@@ -119,21 +123,17 @@ export function PostModal({ isOpen, onClose, username }: PostModalInterface) {
             {isLoadingTranslation ? (
               <Center>
                 <VStack>
-
                   <Text> Translation Loading </Text>
-
                   <Spinner size="xl" color="white" />
                 </VStack>
-
               </Center>
             ) : (
-
               <MarkdownRenderer content={isTranslated ? translatedPost : transformedPostBody} />
             )}
           </Box>
           <Box minW="50%">
             <HStack ml={"10px"} mr={"35px"} justifyContent={"space-between"}>
-              <Box mr={5} mt={1} >
+              <Box mr={5} mt={1}>
                 <TipButton author={post.author} permlink={post.permlink} />
               </Box>
               <VotingButton comment={post} username={usernameString} />
@@ -143,12 +143,7 @@ export function PostModal({ isOpen, onClose, username }: PostModalInterface) {
                 isOpen={isValueTooltipOpen}
                 hasArrow
               >
-                <Text
-                  fontWeight={"bold"}
-                  color={"green.400"}
-                  cursor={"pointer"}
-                  mt={2}
-                >
+                <Text fontWeight={"bold"} color={"green.400"} cursor={"pointer"} mt={2}>
                   ${postEarnings.toFixed(2)}
                 </Text>
               </Tooltip>
