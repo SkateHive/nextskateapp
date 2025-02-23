@@ -22,7 +22,6 @@ import {
 import { Discussion } from "@hiveio/dhive";
 import { useEffect, useRef } from "react";
 import HTMLFlipBook from "react-pageflip";
-import { Comment } from "../../app/mainFeed/page";
 import { FullMagazineRenderers } from "./FullMagazineRenderers";
 
 const pageStyles = {
@@ -168,7 +167,7 @@ export default function FullMag({ tag, query }: FullMagProps) {
           </Flex>
         </Box>
         {filteredPosts
-          .sort((a, b) => Number(getTotalPayout(b as Comment)) - Number(getTotalPayout(a as Comment)))
+          .sort((a, b) => Number(getTotalPayout(b as any)) - Number(getTotalPayout(a as any)))
           .map((post: Discussion) => (
             <Box key={post.id} sx={pageStyles}>
               <HStack spacing={2}>
@@ -201,7 +200,7 @@ export default function FullMag({ tag, query }: FullMagProps) {
                   zIndex={10}
                 >
                   <Center>
-                    <Text fontSize={'22px'}> ${Number(getTotalPayout(post as Comment)).toFixed(2)}</Text>
+                    <Text fontSize={'22px'}> ${Number(getTotalPayout(post as any)).toFixed(2)}</Text>
                   </Center>
                 </Badge>
               </HStack>
@@ -212,7 +211,7 @@ export default function FullMag({ tag, query }: FullMagProps) {
               <Flex justifyContent={"space-between"}>
                 <Badge colorScheme="green" variant={"outline"} h={"30px"} width={"20%"}>
                   <Center>
-                    <Text fontSize={'22px'}> ${Number(getTotalPayout(post as Comment)).toFixed(2)}</Text>
+                    <Text fontSize={'22px'}> ${Number(getTotalPayout(post as any)).toFixed(2)}</Text>
                   </Center>
                 </Badge>
                 <Badge colorScheme="green" variant={"outline"} mt={2}>

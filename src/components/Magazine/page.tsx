@@ -23,7 +23,6 @@ import {
 import { Discussion } from "@hiveio/dhive";
 import { memo, useEffect, useRef, useState } from "react";
 import HTMLFlipBook from "react-pageflip";
-import { Comment } from "../../app/mainFeed/page";
 import { MagazineRenderers } from "./MagazineRenderers";
 
 interface Post extends Discussion {
@@ -224,7 +223,7 @@ export default memo(function Zine({ tag, query }: TestPageProps) {
                   {post.author}
                 </Text>
                 <Text color="yellow" mt={2}>
-                  ${Number(getTotalPayout(post as Comment)).toFixed(2)} USD
+                  ${Number(getTotalPayout(post)).toFixed(2)} USD
                 </Text>
                 <TipButton author={post.author} permlink={post.permlink} />
               </HStack>

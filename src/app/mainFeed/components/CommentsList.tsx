@@ -4,13 +4,13 @@ import { Box, Flex } from "@chakra-ui/react";
 import { useEffect, useRef } from "react";
 import { BeatLoader } from "react-spinners";
 import CommentItem from "./CommentItem";
+import { Comment } from "@hiveio/dhive";
 
 interface CommentListProps {
-  comments: any[];
+  comments: Comment[];
   visiblePosts: number;
   setVisiblePosts: React.Dispatch<React.SetStateAction<number>>;
   username?: string;
-  handleVote: (author: string, permlink: string) => void;
 }
 
 const CommentList = ({
@@ -18,7 +18,6 @@ const CommentList = ({
   visiblePosts,
   setVisiblePosts,
   username,
-  handleVote,
 }: CommentListProps) => {
   const observerRef = useRef<HTMLDivElement>(null);
 
@@ -57,7 +56,6 @@ const CommentList = ({
               key={comment.id}
               comment={comment}
               username={username || ""}
-              handleVote={handleVote}
             />
           ))}
 

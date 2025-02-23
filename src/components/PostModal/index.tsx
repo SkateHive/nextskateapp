@@ -154,7 +154,6 @@ export function PostModal({ isOpen, onClose, username }: PostModalInterface) {
               </Tooltip>
             </HStack>
             <CommandPrompt
-              post={post}
               addComment={addComment}
               onClose={onClose}
               author={post.author}

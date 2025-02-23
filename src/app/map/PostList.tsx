@@ -7,7 +7,6 @@ export interface PostListProps {
   visiblePosts: number;
   username?: string;
   parentPermlink: string;
-  handleVote: (author: string, permlink: string) => void;
 }
 
 const PostList: React.FC<PostListProps> = ({
@@ -15,7 +14,6 @@ const PostList: React.FC<PostListProps> = ({
   visiblePosts,
   parentPermlink,
   username,
-  handleVote,
 }) => {
   const [loadedPosts, setLoadedPosts] = useState<any[]>([]);
   const [loadedCount, setLoadedCount] = useState<number>(5);
@@ -52,7 +50,6 @@ const PostList: React.FC<PostListProps> = ({
           <CommentItem
             comment={comment}
             username={username || ""}
-            handleVote={handleVote}
             onClick={() => toggleCommentVisibility(comment.id)}
           />
           {expandedComments[comment.id] && (
@@ -62,7 +59,6 @@ const PostList: React.FC<PostListProps> = ({
                   key={childComment.id}
                   comment={childComment}
                   username={username || ""}
-                  handleVote={handleVote}
                 />
               ))}
             </Box>

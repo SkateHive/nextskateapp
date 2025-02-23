@@ -5,7 +5,7 @@ import TipButton from "@/components/PostCard/TipButton";
 import MarkdownRenderer from "@/components/ReactMarkdown/page";
 import { useHiveUser } from "@/contexts/UserContext";
 import { useComments } from "@/hooks/comments";
-import { changeFollow, checkFollow } from "@/lib/hive/client-functions";
+import { changeFollow, checkFollow, vote } from "@/lib/hive/client-functions";
 import { changeFollowWithPassword } from "@/lib/hive/server-functions";
 import { extractMediaItems, formatDate, getTotalPayout } from "@/lib/utils";
 import {
@@ -30,7 +30,6 @@ import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
 interface CommentItemProps {
   comment: any;
   username: string;
-  handleVote: (author: string, permlink: string) => void;
   onClick?: () => void;
   onNewComment?: (comment: any) => void;
   onClose?: () => void;
@@ -44,7 +43,6 @@ interface MediaItem {
 const CommentItem = ({
   comment,
   username,
-  handleVote,
   onNewComment,
   onClose = () => { },
 }: CommentItemProps) => {
@@ -63,11 +61,18 @@ const CommentItem = ({
   const [isFollowing, setIsFollowing] = useState<boolean | null>(null);
   const loginMethod = localStorage.getItem("LoginMethod");
 
-  const toggleValueTooltip = () => {
-    setIsValueTooltipOpen(true);
-    setTimeout(() => {
-      setIsValueTooltipOpen(false);
-    }, 3000);
+
+  const handleVote = async (author: string, permlink: string) => {
+    if (!username) {
+      console.error("Username is missing");
+      return;
+    }
+    vote({
+      username: username,
+      permlink: permlink,
+      author: author,
+      weight: 10000,
+    });
   };
 
   useEffect(() => {

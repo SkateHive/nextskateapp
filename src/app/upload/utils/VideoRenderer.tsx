@@ -7,6 +7,7 @@ import LoadingComponent from '../../mainFeed/components/loadingComponent'; // ad
 
 type RendererProps = {
     src?: string;
+    loop?: boolean;
     onCommentIconClick?: () => void;
     [key: string]: any;
 };
@@ -137,7 +138,7 @@ const VideoRenderer = ({ src, onCommentIconClick, ...props }: RendererProps) => 
                     src={src}
                     muted={volume === 0}
                     controls={false}
-                    playsInline={true}
+                    playsInline={props.loop ? false : true}
                     autoPlay={true}
                     preload="metadata"
                     onLoadedData={handleLoadedData}

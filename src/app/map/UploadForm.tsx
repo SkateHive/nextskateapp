@@ -145,7 +145,7 @@ export default function UploadForm() {
       });
     } else {
       return comments?.slice().sort((a, b) => {
-        return getTotalPayout(b as Comment) - getTotalPayout(a as Comment);
+        return getTotalPayout(b as dhive.Discussion) - getTotalPayout(a as dhive.Discussion);
       });
     }
   }, [comments, sortMethod]);

@@ -44,9 +44,9 @@ const ToggleComments = ({
         }
       },
       {
-        root: null, 
+        root: null,
         rootMargin: "0px",
-        threshold: 1.0, 
+        threshold: 1.0,
       }
     );
 
@@ -70,7 +70,6 @@ const ToggleComments = ({
             visiblePosts={visiblePosts}
             setVisiblePosts={setVisiblePosts}
             username={username}
-            handleVote={handleVote}
           />
 
           {visiblePosts < commentReplies.length && (

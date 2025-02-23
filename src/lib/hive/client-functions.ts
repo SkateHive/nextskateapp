@@ -425,7 +425,7 @@ export async function uploadImage(
   }
   if (uploadStates.get(fileKey) === "completed") {
     console.log(`Upload for ${file.name} is already completed.`);
-    return Promise.reject(new Error("Upload already completed"));
+    uploadStates.delete(fileKey); // Clear the state for the file
   }
 
   // Mark as in progress
@@ -458,7 +458,7 @@ export async function uploadImage(
           uploadStates.set(fileKey, "completed"); // Update state
           resolve(response.url);
         } catch (error) {
-          uploadStates.set(fileKey, "error"); /// Update state
+          uploadStates.set(fileKey, "error"); // Update state
           reject(new Error("Failed to parse response from server."));
         }
       } else {

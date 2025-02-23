@@ -1,25 +1,36 @@
+"use client";
 import { uploadFileToIPFS } from "@/app/upload/utils/uploadToIPFS";
 import { useHiveUser } from "@/contexts/UserContext";
-import { Comment, useComments } from "@/hooks/comments";
+import { useComments } from "@/hooks/comments";
 import { commentWithPrivateKey } from "@/lib/hive/server-functions";
 import PostModel from "@/lib/models/post";
-import { Box, Button, Center, Flex, Spinner, Text, Tooltip, useToast } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Center,
+  Flex,
+  Spinner,
+  Text,
+  Tooltip,
+  useToast
+} from "@chakra-ui/react";
 import * as dhive from "@hiveio/dhive";
+import MDEditor, { commands } from "@uiw/react-md-editor";
+import { add } from "lodash";
 import { useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { FaImage, FaSave } from "react-icons/fa";
-import MentionComment from "../Mention/MentionUserComment";
+import rehypeSanitize from "rehype-sanitize";
 
 interface CommandPromptProps {
-  post: PostModel | Comment;
   onClose: () => void;
   author: string;
   permlink: string;
-  onNewComment: (comment: any) => void;
-  addComment?: (comment: Comment) => void;
+  onNewComment: (comment: dhive.Discussion) => void;
+  addComment?: (comment: dhive.Discussion) => void;
 }
 
-const CommandPrompt = ({ post, onClose, author, permlink, onNewComment }: CommandPromptProps) => {
+const CommandPrompt = ({ onClose, author, permlink, onNewComment }: CommandPromptProps) => {
   const [isUploading, setIsUploading] = useState(false);
   const [value, setValue] = useState("");
 
@@ -27,7 +38,7 @@ const CommandPrompt = ({ post, onClose, author, permlink, onNewComment }: Comman
   const [error, setError] = useState<string | null>(null);
   const toast = useToast();
 
-  const { addComment, } = useComments(author, permlink);
+  const { addComment } = useComments(author, permlink);
 
   const submitComment = async (commentBody: string) => {
     const loginMethod = localStorage.getItem("LoginMethod");
@@ -36,7 +47,7 @@ const CommandPrompt = ({ post, onClose, author, permlink, onNewComment }: Comman
     try {
       if (!user.hiveUser?.name) throw new Error("Username is missing");
 
-      const postData: Comment = {
+      const postData: any = {
         parent_author: author,
         parent_permlink: permlink,
         author: user.hiveUser.name,
@@ -112,7 +123,7 @@ const CommandPrompt = ({ post, onClose, author, permlink, onNewComment }: Comman
           },
         ];
         await commentWithPrivateKey(localStorage.getItem("EncPrivateKey")!, postOperation, commentOptions);
-        onNewComment({
+        addComment({
           ...postOperation[1],
           id: newPermLink,
         });
@@ -155,34 +166,100 @@ const CommandPrompt = ({ post, onClose, author, permlink, onNewComment }: Comman
     multiple: false,
   });
 
+  const extraCommands = [
+    {
+      name: "uploadImage",
+      keyCommand: "uploadImage",
+      buttonProps: { "aria-label": "Upload image" },
+      icon: (
+        <Tooltip label="Upload Image or Video">
+          <span>
+            <FaImage color="yellow" />
+          </span>
+        </Tooltip>
+      ),
+      execute: () => {
+        const element = document.getElementById("md-image-upload");
+        if (element) {
+          element.click();
+        }
+      },
+    },
+    {
+      name: "saveDraftInTxt",
+      keyCommand: "saveDraftInTxt",
+      buttonProps: { "aria-label": "Save Draft" },
+      icon: (
+        <Tooltip label="Save Draft">
+          <span>
+            <FaSave color="#A5D6A7" />
+          </span>
+        </Tooltip>
+      ),
+      execute: () => {
+        const element = document.createElement("a");
+        const file = new Blob([value], { type: "text/plain" });
+        element.href = URL.createObjectURL(file);
+        element.download = "draft.txt";
+        document.body.appendChild(element);
+        element.click();
+      },
+    },
+  ];
 
   return (
-    <Box borderRadius="md" color="white" {...getRootProps()}>
-      <Box p={2} bg="blackAlpha.800" borderRadius="md" boxShadow="sm">
-
+    <Box p={4} borderRadius="md" boxShadow="lg" color="white" {...getRootProps()}>
+      <Box p={4} bg="blackAlpha.800" borderRadius="md" boxShadow="sm" mb={4}>
         {isUploading && (
           <Center>
             <Spinner />
           </Center>
         )}
-        <MentionComment
-          onCommentChange={(comment) => setValue(comment)}
-          onCommentSubmit={() => submitComment(value)}
+        <MDEditor
           value={value}
-          placeholder="Write your comment ..."
-          isLoading={isUploading}
-          bg="blackAlpha.800"
-          border="1px solid #2D3748"
-          borderRadius="8px"
-          minHeight="150px"
+          onChange={(value) => {
+            setValue(value || "");
+          }}
+          commands={[
+            commands.bold,
+            commands.italic,
+            commands.strikethrough,
+            commands.hr,
+            commands.code,
+            commands.table,
+            commands.link,
+            commands.quote,
+            commands.unorderedListCommand,
+            commands.orderedListCommand,
+            commands.codeBlock,
+          ]}
+          extraCommands={extraCommands}
+          previewOptions={{ rehypePlugins: [[rehypeSanitize]] }}
+          height="200px"
+          preview="edit"
+          style={{
+            border: "1px solid #2D3748",
+            borderRadius: "8px",
+            padding: "15px",
+            backgroundColor: "#1A202C",
+            color: "white",
+            minHeight: "150px",
+            fontSize: "16px",
+            lineHeight: "1.5",
+          }}
         />
 
       </Box>
+      <input
+        type="file"
+        id="md-image-upload"
+        {...getInputProps()}
+        style={{ display: "none" }}
+      />
       <Flex justify="flex-end">
         <Button
-          colorScheme="green"
-          size="md"
-          variant={"outline"}
+          colorScheme="teal"
+          size="lg"
           onClick={() => submitComment(value)}
           isDisabled={!value.trim() || !localStorage.getItem("LoginMethod")}
         >
@@ -190,6 +267,7 @@ const CommandPrompt = ({ post, onClose, author, permlink, onNewComment }: Comman
         </Button>
       </Flex>
       {error && <Text color="red.500">{error}</Text>}
+
     </Box>
   );
 };

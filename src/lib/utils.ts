@@ -1,7 +1,7 @@
-import { Comment } from "@/app/mainFeed/page"
 import { isNaN } from "lodash"
 import HiveClient from "./hive/hiveclient"
 import * as url from "url"
+
 
 export function getWebsiteURL() {
   return process.env.NEXT_PUBLIC_WEBSITE_URL || ""
@@ -9,10 +9,49 @@ export function getWebsiteURL() {
 export function getCommunityTag() {
   return process.env.NEXT_PUBLIC_HIVE_COMMUNITY_TAG
 }
-export const getTotalPayout = (comment: Comment): number => {
-  const payout = parseFloat(comment.total_payout_value?.split(" ")[0] || "0");
-  const pendingPayout = parseFloat(comment.pending_payout_value?.split(" ")[0] || "0");
-  const curatorPayout = parseFloat(comment.curator_payout_value?.split(" ")[0] || "0");
+
+import { uploadFileToIPFS } from "@/app/upload/utils/uploadToIPFS";
+import { Discussion } from "@hiveio/dhive"
+
+interface IPFSData {
+  IpfsHash: string;
+}
+
+export const handlePaste = async (
+  event: React.ClipboardEvent<HTMLTextAreaElement>,
+  setIsUploading: React.Dispatch<React.SetStateAction<boolean>>,
+  setImageList: React.Dispatch<React.SetStateAction<string[]>>
+) => {
+  const clipboardItems = event.clipboardData.items;
+  const newImageList: string[] = [];
+
+  for (const item of clipboardItems) {
+    if (item.type.startsWith("image/")) {
+      const blob = item.getAsFile();
+      if (blob) {
+        const file = new File([blob], "pasted-image.png", { type: blob.type });
+        setIsUploading(true);
+        const ipfsData: IPFSData | undefined = await uploadFileToIPFS(file);
+        if (ipfsData !== undefined) {
+          const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}`;
+          const markdownLink = `![Image](${ipfsUrl})`;
+          newImageList.push(markdownLink);
+        }
+      }
+    }
+  }
+
+  if (newImageList.length > 0) {
+    setImageList((prevList) => [...prevList, ...newImageList]);
+    setIsUploading(false);
+  }
+};
+
+
+export const getTotalPayout = (comment: Discussion): number => {
+  const payout = parseFloat((comment.total_payout_value as string)?.split(" ")[0] || "0");
+  const pendingPayout = parseFloat((comment.pending_payout_value as string)?.split(" ")[0] || "0");
+  const curatorPayout = parseFloat((comment.curator_payout_value as string)?.split(" ")[0] || "0");
   return payout + pendingPayout + curatorPayout;
 };
 export function calculateTimeAgo(date: string): string {

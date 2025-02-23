@@ -21,7 +21,6 @@ export function PropDates({ author, permlink }: PropDatesProps) {
                 visiblePosts={visiblePosts}
                 setVisiblePosts={setVisiblePosts}
                 username={author}
-                handleVote={() => { }}
             />
         </div>
     );

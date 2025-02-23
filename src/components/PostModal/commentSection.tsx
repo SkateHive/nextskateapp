@@ -1,9 +1,9 @@
-import { Comment } from '@/hooks/comments';
 import { Box, Stack, Text } from '@chakra-ui/react';
 import PostComment from '../PostCard/Comment';
+import { Discussion } from '@hiveio/dhive';
 
 interface CommentsSectionProps {
-    comments: Comment[] | undefined;
+    comments: Discussion[] | undefined;
     isCommentReply?: boolean;
 }
 

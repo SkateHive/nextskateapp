@@ -2,7 +2,6 @@
 import { handleVote } from "@/app/mainFeed/utils/handleFeedVote"
 import CommentsSection from "@/components/PostModal/commentSection"
 import { useHiveUser } from "@/contexts/UserContext"
-import { Comment } from "@/hooks/comments"
 import useHiveAccount from "@/hooks/useHiveAccount"
 import { Flex, Text } from "@chakra-ui/react"
 import moment from "moment-timezone"
@@ -12,23 +11,21 @@ import CommandPrompt from "../PostModal/commentPrompt"
 import MarkdownRenderer from "../ReactMarkdown/page"
 import UserAvatar from "../UserAvatar"
 import { voting_value } from "./calculateHiveVotingValue"
+import { Discussion } from "@hiveio/dhive"
 
-interface PostCommentProps {
-  comment: Comment
-}
 
-export default function PostComment({ comment }: PostCommentProps) {
+export default function PostComment({ comment }: { comment: Discussion }) {
   const { hiveAccount, isLoading } = useHiveAccount(comment.author)
   const user = useHiveUser()
   const [hasVoted, setHasVoted] = useState(false)
-  const [replies, setReplies] = useState<Comment[] | undefined>(comment.replies)
+  const [replies, setReplies] = useState<Discussion[] | undefined>(comment.replies as unknown as Discussion[] | undefined)
   const [isVoting, setIsVoting] = useState(false)
 
-  const calculateTotalPayout = (comment: Comment) => {
+  const calculateTotalPayout = (comment: Discussion) => {
     return (
-      Number(comment.pending_payout_value?.split(" ")[0]) +
-      Number(comment.total_payout_value?.split(" ")[0]) +
-      Number(comment.curator_payout_value?.split(" ")[0])
+      Number(typeof comment.pending_payout_value === 'string' ? comment.pending_payout_value.split(" ")[0] : 0) +
+      Number(typeof comment.total_payout_value === 'string' ? comment.total_payout_value.split(" ")[0] : 0) +
+      Number(typeof comment.curator_payout_value === 'string' ? comment.curator_payout_value.split(" ")[0] : 0)
     )
   }
   const [newTotalPayout, setNewTotalPayout] = useState(
@@ -118,8 +115,7 @@ export default function PostComment({ comment }: PostCommentProps) {
         </Flex>
         {commentsOpen ? (
           <CommandPrompt
-            post={comment}
-            addComment={(comment: Comment) => {
+            addComment={(comment: Discussion) => {
               setReplies((replies) => replies ? [...replies, comment] : replies)
               setCommentsOpen(false)
             }}

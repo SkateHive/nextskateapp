@@ -41,7 +41,6 @@ const CommentsComponent = (props: CommentsProps) => {
     <Box color={"white"}>
       {hiveUser.hiveUser?.name && (
         <CommandPrompt
-          post={post}
           onClose={onClose}
           author={author}
           permlink={permlink}

@@ -245,7 +245,6 @@ const EmbeddedMap: React.FC = () => {
           visiblePosts={visiblePosts}
           parentPermlink={parent_permlink}
           username={username}
-          handleVote={handleVote}
         />
         <Divider mt={12} />
 

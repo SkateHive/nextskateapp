@@ -20,8 +20,8 @@ import {
 } from "@chakra-ui/react";
 import * as dhive from "@hiveio/dhive";
 import { useState } from "react";
-import MentionComment from "../../../components/Mention/MentionUserComment";
 import CarrouselRenderer from "../utils/CarrouselRenderer";
+import MainInput from "../../../components/MainFeed/MainInput";
 
 interface ReplyModalProps {
     isOpen: boolean;
@@ -167,16 +167,14 @@ const ReplyModal = ({ isOpen, onClose, comment, onNewComment, content }: ReplyMo
                                         <Text ml={5} color="gray.400">
                                             replying to @{comment.author}
                                         </Text>
-                                        <MentionComment
-                                            onCommentSubmit={setReplyBody}
-                                            onCommentChange={(comment: string) => setReplyBody(comment)}
-                                            placeholder="Write your reply here"
-                                            _focus={{ border: "#A5D6A7", boxShadow: "none" }}
-                                            resize="none"
-                                            minHeight="100px"
-                                            borderRadius="xl"
-                                            border="1px solid grey"
-                                        />
+                                        {user.hiveUser && (
+                                            <MainInput
+                                                username={user.hiveUser?.name}
+                                                value={replyBody}
+                                                onCommentChange={(comment: string) => setReplyBody(comment)}
+                                                onCommentSubmit={handleReply}
+                                            />
+                                        )}
                                         {error && (
                                             <Text color="red.500" mt={2}>
                                                 {error}
