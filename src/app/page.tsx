@@ -1,14 +1,14 @@
 
 import { Box } from "@chakra-ui/react";
 import "./layout.css";
-import SkateCast from "./mainFeed/page";
 import MagLayout from "./magLayout";
+import MainFeed from "./mainFeed/page";
 
 
 export default function Home() {
   return (
     <>
-      <SkateCast />
+      <MainFeed />
       <Box className="desktop-layout">
         <MagLayout />
       </Box>

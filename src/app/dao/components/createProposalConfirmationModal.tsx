@@ -4,7 +4,6 @@ import { commentWithKeychain } from '@/lib/hive/client-functions';
 import { Button, Center, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay } from "@chakra-ui/react";
 import { Web3Provider } from '@ethersproject/providers';
 import React, { useCallback, useMemo, useState } from 'react';
-import Confetti from 'react-confetti';
 import { createProposal } from '../utils/createProposal';
 import { MarkdownRenderers } from '@/app/upload/utils/MarkdownRenderers';
 import { useBlockNumber } from 'wagmi'
@@ -38,6 +37,9 @@ const CreateProposalConfirmationModal: React.FC<CreateProposalConfirmationModalP
 
     const handleCreateProposal = useCallback(async () => {
         try {
+            if (!hiveUser?.hiveUser?.name) {
+                throw new Error('Hive username is missing');
+            }
 
             const proPostPermlink = generatePermlink(title);
             const currentTimeInSeconds = Math.floor(Date.now() / 1000);
@@ -46,7 +48,7 @@ const CreateProposalConfirmationModal: React.FC<CreateProposalConfirmationModalP
 
             const propostBody = `
             ---
-            user: ${hiveUser?.hiveUser?.name}
+            user: ${hiveUser.hiveUser.name}
             permLink: ${proPostPermlink}
             ---
             ${proposalBody}
@@ -67,33 +69,32 @@ const CreateProposalConfirmationModal: React.FC<CreateProposalConfirmationModalP
             };
 
             const hivePostMetadata = {
-                "data": {
-                    username: hiveUser?.hiveUser?.name,
-                    title: title,
-                    body: '> ProPost !' + proposalBody,
-                    parent_perm: "hive-173115",
-                    json_metadata: JSON.stringify({
-                        format: "markdown", description: "", tags: ['skatehive', 'skateboarding', 'proposal', 'dao', 'skatehive-proposal'], image: 'https://skatehive.com/images/skatehive-logo.png',
-                    }),
+                username: hiveUser.hiveUser.name,
+                title: title,
+                body: '> ProPost !' + proposalBody,
+                parent_perm: "hive-173115",
+                json_metadata: JSON.stringify({
+                    format: "markdown", description: "", tags: ['skatehive', 'skateboarding', 'proposal', 'dao', 'skatehive-proposal'], image: 'https://skatehive.com/images/skatehive-logo.png',
+                }),
+                permlink: generatePermlink(title) + "proposal",
+                comment_options: JSON.stringify({
+                    author: hiveUser.hiveUser.name,
                     permlink: generatePermlink(title) + "proposal",
-                    comment_options: JSON.stringify({
-                        author: hiveUser?.hiveUser?.name,
-                        permlink: generatePermlink(title) + "proposal",
-                        max_accepted_payout: '10000.000 HBD',
-                        percent_hbd: 10000,
-                        allow_votes: true,
-                        allow_curation_rewards: true,
-                        extensions: [
-                            [0, {
-                                beneficiaries: [{
-                                    account: 'skatehive',
-                                    weight: 5000
-                                }]
+                    max_accepted_payout: '10000.000 HBD',
+                    percent_hbd: 10000,
+                    allow_votes: true,
+                    allow_curation_rewards: true,
+                    extensions: [
+                        [0, {
+                            beneficiaries: [{
+                                account: 'skatehive',
+                                weight: 5000
                             }]
-                        ]
-                    })
-                }
+                        }]
+                    ]
+                })
             };
+
             const response = await commentWithKeychain(hivePostMetadata);
             if (response?.success) {
                 const create_proposal = await createProposal(web3, proposalData);

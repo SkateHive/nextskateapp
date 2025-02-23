@@ -5,12 +5,6 @@ import { Broadcast, Custom, KeychainKeyTypes, KeychainRequestResponse, KeychainS
 import HiveClient from "./hiveclient";
 import { signImageHash } from "./server-functions";
 
-interface HiveKeychainResponse {
-  success: boolean
-  publicKey: string
-}
-
-
 export interface VideoPart {
   videoUrl: string;
   thumbnailUrl: string;
@@ -67,22 +61,36 @@ export async function vote(props: Vote): Promise<KeychainRequestResponse> {
   } as Vote);
   return result;
 }
-export async function commentWithKeychain(formParamsAsObject: any): Promise<HiveKeychainResponse | undefined> {
-
+export async function commentWithKeychain(data: Post): Promise<{ success: boolean; error: string; data: KeychainRequestResponse; message: string; request_id: number; key: string; method: string; receiver: string; type: string; username: string; } | undefined> {
   const keychain = new KeychainSDK(window);
-  const post = await keychain.post(formParamsAsObject.data as Post);
+  const post = await keychain.post(data);
   if (post) {
     console.log('post', post);
     return {
       success: true,
-      publicKey: String(post.publicKey)
-    }
+      error: "No error, bitches",
+      data: post,
+      message: 'Post successful',
+      request_id: post.request_id,
+      key: '',
+      method: '',
+      receiver: '',
+      type: '',
+      username: ''
+    };
   } else {
     return {
       success: false,
-      publicKey: 'deu merda'
-    }
-
+      error: 'Post failed, damn it',
+      data: post,
+      message: 'Post failed',
+      request_id: -1,
+      key: '',
+      method: '',
+      receiver: '',
+      type: '',
+      username: ''
+    };
   }
 }
 export async function loginWithKeychain(username: string) {

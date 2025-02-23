@@ -31,7 +31,7 @@ const LoadingComponent = dynamic(() => import("./components/loadingComponent"), 
 const parent_author = process.env.NEXT_PUBLIC_MAINFEED_AUTHOR || "skatehacker";
 const parent_permlink = process.env.NEXT_PUBLIC_MAINFEED_PERMLINK || "test-advance-mode-post";
 
-const SkateCast = () => {
+const MainFeed = () => {
   const { comments, addComment, isLoading } = useComments(parent_author, parent_permlink) || { comments: [], addComment: () => { }, isLoading: true };
   const [visiblePosts, setVisiblePosts] = useState<number>(6);
   const postBodyRef = useRef<HTMLTextAreaElement>(null);
@@ -164,4 +164,4 @@ const SkateCast = () => {
   );
 };
 
-export default SkateCast;
+export default MainFeed;

@@ -44,7 +44,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
     const postLink = user?.name ? `${window.location.origin}/post/hive-173115/@${user.name}/${permlink}` : '';
     const characterCount = body.length;
     const [isMinCarcterCountReached, setIsMinCarcterCountReached] = useState(characterCount >= 350);
-    const parent_perm = process.env.NEXT_PUBLIC_PARENT_PERM;
+    const parent_perm = process.env.NEXT_PUBLIC_PARENT_PERM || "default-parent-perm"; // Ensure parent_perm is always a string
     let postDataForPreview = {
         post_id: Number(1),
         author: user?.name || "skatehive",
@@ -95,28 +95,26 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, title, bod
         }
 
         const formParamsAsObject = {
-            "data": {
-                username: user.name,
-                title: title,
-                body: body,
-                parent_perm: parent_perm,
-                json_metadata: JSON.stringify({ format: "markdown", description: AiSummary, tags: tags }),
+            username: user.name,
+            title: title,
+            body: body,
+            parent_perm: parent_perm,
+            json_metadata: JSON.stringify({ format: "markdown", description: AiSummary, tags: tags }),
+            permlink: permlink,
+            comment_options: JSON.stringify({
+                author: user.name,
                 permlink: permlink,
-                comment_options: JSON.stringify({
-                    author: user.name,
-                    permlink: permlink,
-                    max_accepted_payout: '10000.000 HBD',
-                    percent_hbd: 10000,
-                    allow_votes: true,
-                    allow_curation_rewards: true,
-                    extensions: [
-                        [0, {
-                            beneficiaries: finalBeneficiaries
-                        }]
-                    ]
-                })
-            }
-        }
+                max_accepted_payout: '10000.000 HBD',
+                percent_hbd: 10000,
+                allow_votes: true,
+                allow_curation_rewards: true,
+                extensions: [
+                    [0, {
+                        beneficiaries: finalBeneficiaries
+                    }]
+                ]
+            })
+        };
 
         if (loginMethod === 'keychain') {
             const response = await commentWithKeychain(formParamsAsObject);

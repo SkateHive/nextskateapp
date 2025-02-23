@@ -150,15 +150,17 @@ export function transformEcencyImages(content: string): string {
   });
 }
 export function transformShortYoutubeLinksinIframes(content: string) {
+  if (!content) return "";
   const regex = /https:\/\/youtu\.be\/([a-zA-Z0-9-_?=&]+)/g;
   return content.replace(regex, (match, videoID) => {
     return `<iframe src="https://www.youtube.com/embed/${videoID}" allowfullscreen></iframe>`;
   });
 }
 export function transformNormalYoutubeLinksinIframes(content: string) {
-  const regex = /https:\/\/www\.youtube\.com\/watch\?v=([a-zA-Z0-9-_?=&]+)/g;
+  const regex = /https:\/\/(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9-_]+)([&?][a-zA-Z0-9-_=&]*)*/g;
   return content.replace(regex, (match, videoID) => {
-    return `<iframe src="https://www.youtube.com/embed/${videoID}" allowfullscreen></iframe>`;
+    const embedUrl = `https://www.youtube.com/embed/${videoID}`;
+    return `<iframe src="${embedUrl}" allowfullscreen></iframe>`;
   });
 }
 export function autoEmbedZoraLink(content: string) {
@@ -270,6 +272,21 @@ export function extractCustomLinks(inputText: string): LinkWithDomain[] {
 
   return customLinksWithDomains
 }
+
+// Add new function to extract YouTube links
+export function extractYoutubeLinks(content: string): LinkWithDomain[] {
+  const regex = /https:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9-_]+)/g;
+  const links: LinkWithDomain[] = [];
+  let match;
+  while ((match = regex.exec(content)) !== null) {
+    const videoID = match[1];
+    // Use the nocookie domain with controls disabled to help prevent logging requests
+    const embedUrl = `https://www.youtube-nocookie.com/embed/${videoID}?controls=0`;
+    links.push({ url: embedUrl, domain: "youtube.com" });
+  }
+  return links;
+}
+
 export function extractSubtitle(markdown: string): string {
   // Remove markdown image syntax, HTML image tags, and iframes, then trim the remaining text.
   return markdown

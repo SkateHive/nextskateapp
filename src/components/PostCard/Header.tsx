@@ -1,4 +1,3 @@
-'use client';
 import { usePostContext } from "@/contexts/PostContext";
 import { useHiveUser } from "@/contexts/UserContext";
 import getSummary from "@/lib/getSummaryAI";

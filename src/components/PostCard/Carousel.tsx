@@ -11,12 +11,9 @@ import {
   extractCustomLinks,
   extractIFrameLinks,
   extractLinksFromMarkdown,
+  extractYoutubeLinks, // added new import
   LinkWithDomain
-}
-  from "@/lib/utils"
-
-
-
+} from "@/lib/utils"
 const SKATEHIVE_DISCORD_IMAGE =
   "https://ipfs.skatehive.app/ipfs/QmdTJSEE1286z1JqxKh8LtsuDjuKB1yRSBZy2AwEogzjVW?pinataGatewayToken=nxHSFa1jQsiF7IHeXWH-gXCY3LDLlZ7Run3aZXZc8DRCfQz4J4a94z9DmVftXyFE"
 const SKATEHIVE_LOGO = "https://www.skatehive.app/assets/skatehive.jpeg"
@@ -33,11 +30,12 @@ function PostCarousel() {
   const imageLinks = extractLinksFromMarkdown(post.body)
   const iframeLinks = extractIFrameLinks(post.body)
   const tSpeakLinks = extractCustomLinks(post.body)
+  const youtubeLinks = extractYoutubeLinks(post.body) // extract YouTube video links
   let videoLinks: LinkWithDomain[] = []
 
-  if (["samuelvelizsk8", "mark0318"].includes(post.author)) {
-    videoLinks = [...iframeLinks, ...tSpeakLinks]
-  }
+  videoLinks = [...iframeLinks, ...tSpeakLinks, ...youtubeLinks] // include youtube links
+
+  const thumbnail = post.getThumbnail()
 
   // Create a Set to filter out duplicate image URLs
   const uniqueImageUrls = new Set()
@@ -47,18 +45,29 @@ function PostCarousel() {
       !uniqueImageUrls.has(image.url)
     ) {
       uniqueImageUrls.add(image.url)
+      uniqueImageUrls.add(thumbnail)
       return true
     }
     return false
   })
 
   // Add a placeholder image if filteredImages is empty
-  if (filteredImages.length === 0) {
+  if (filteredImages.length === 0 && videoLinks.length === 0) {
     filteredImages.push({
       domain: "skatehive.app",
       url: "https://ipfs.skatehive.app/ipfs/QmWgkeX38hgWNh7cj2mTvk8ckgGK3HSB5VeNn2yn9BEnt7?pinataGatewayToken=nxHSFa1jQsiF7IHeXWH-gXCY3LDLlZ7Run3aZXZc8DRCfQz4J4a94z9DmVftXyFE",
     })
   }
+
+  // Order images: gifs first, then static images
+  const gifImages = filteredImages.filter(image =>
+    image.url.toLowerCase().endsWith('.gif')
+  );
+  const staticImages = filteredImages.filter(image =>
+    !image.url.toLowerCase().endsWith('.gif')
+  );
+
+
 
   const carouselRef = useRef<any>(null)
 
@@ -71,22 +80,13 @@ function PostCarousel() {
     <div style={{ justifyContent: "center" }}>
       <Box m={2} height={"auto"}>
         <Carousel ref={carouselRef} responsive={responsive}>
-          {videoLinks.map((video, i) => (
-            <iframe
-              key={i}
-              src={video.url.replace("ipfs.skatehive.app", PINATA_URL)}
-              width={"100%"}
-              height={"100%"}
-              style={{ aspectRatio: "16/9", border: "0" }}
-            />
-          ))}
-          {filteredImages.map((image, i) => (
+          {gifImages.map((image, i) => (
             <Image
-              key={i}
+              key={`gif-${i}`}
               border={"0"}
               w={"100%"}
               h={"100%"}
-              src={image.url.replace("ipfs.skatehive.app", PINATA_URL)}
+              src={image.url}
               aspectRatio={16 / 9}
               objectFit="cover"
               borderRadius="none"
@@ -95,6 +95,50 @@ function PostCarousel() {
               onClick={handleImageClick}
             />
           ))}
+          {staticImages.map((image, i) => (
+            <Image
+              key={`img-${i}`}
+              border={"0"}
+              w={"100%"}
+              h={"100%"}
+              src={image.url}
+              aspectRatio={16 / 9}
+              objectFit="cover"
+              borderRadius="none"
+              alt={post.title}
+              loading="lazy"
+              onClick={handleImageClick}
+            />
+          ))}
+          {videoLinks.map((video, i) => {
+            // If the video URL is from ipfs.skatehive and has a video file extension, use VideoRenderer.
+            if (
+              video.url.includes("ipfs.skatehive.app")
+            ) {
+              return (
+                <video
+                  key={i}
+                  src={video.url}
+                  width="100%"
+                  height="100%"
+                  style={{ aspectRatio: "16/9" }}
+                  controls
+                  autoPlay
+                  loop
+                  muted
+                />
+              );
+            }
+            return (
+              <iframe
+                key={i}
+                src={video.url}
+                width={"100%"}
+                height={"100%"}
+                style={{ aspectRatio: "16/9" }}
+              />
+            );
+          })}
         </Carousel>
       </Box>
     </div>

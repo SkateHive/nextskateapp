@@ -127,7 +127,6 @@ const VideoRenderer = ({ src, onCommentIconClick, ...props }: RendererProps) => 
             alignItems='center'
             paddingTop='10px'
             minWidth='100%'
-            minHeight='auto'
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >

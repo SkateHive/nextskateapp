@@ -129,8 +129,9 @@ export const FullMagazineRenderers = {
     iframe: ({ src, ...props }: RendererProps) => {
         const zoraRegex = /https:\/\/zora\.co\/.*/;
         const threeSpeakRegex = /https:\/\/3speak\.tv\/.*/;
+        const youtubeRegex = /https:\/\/(www\.)?youtube\.com\/.*/;
 
-        if (zoraRegex.test(String(src)) || threeSpeakRegex.test(String(src))) {
+        if (zoraRegex.test(String(src)) || threeSpeakRegex.test(String(src)) || youtubeRegex.test(String(src))) {
             return (
                 <center>
                     <iframe

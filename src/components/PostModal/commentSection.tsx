@@ -10,7 +10,7 @@ interface CommentsSectionProps {
 const CommentsSection = ({ comments, isCommentReply = false }: CommentsSectionProps) => {
     if (!comments) return null;
 
-    const blockedUsers = ['hivebuzz', 'keys-defender'];
+    const blockedUsers = ['hivebuzz', 'keys-defender', ''];
     const filteredComments = comments.filter(comment => !blockedUsers.includes(comment.author)).reverse();
 
     if (filteredComments.length === 0) {
