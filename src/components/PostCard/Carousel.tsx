@@ -121,8 +121,9 @@ function PostCarousel() {
                   src={video.url}
                   width="100%"
                   height="100%"
-                  style={{ aspectRatio: "16/9" }}
-                  controls
+                  style={{ aspectRatio: "16/9", objectFit: "cover" }}
+                  muted
+                  controls={false}
                 />
               );
             }

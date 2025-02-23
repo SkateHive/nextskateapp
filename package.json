@@ -43,6 +43,7 @@
     "exif-js": "^2.3.0",
     "framer-motion": "^12.4.3",
     "giphy": "^0.0.4",
+    "gsap": "^3.12.7",
     "hive-auth-wrapper": "^1.0.0",
     "html-to-text": "^9.0.5",
     "keychain-sdk": "^0.8.5",

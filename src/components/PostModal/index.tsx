@@ -31,6 +31,7 @@ import MarkdownRenderer from "../ReactMarkdown/page";
 import CommandPrompt from "./commentPrompt";
 import CommentsSection from "./commentSection";
 import DecryptedText from "../DecryptedText";
+import CommentsComponent from "@/app/dao/components/comments";
 
 interface PostModalInterface {
   isOpen: boolean;
@@ -148,18 +149,8 @@ export function PostModal({ isOpen, onClose, username }: PostModalInterface) {
                 </Text>
               </Tooltip>
             </HStack>
-            <CommandPrompt
-              addComment={addComment}
-              onClose={onClose}
-              author={post.author}
-              permlink={post.permlink}
-              onNewComment={(newComment) => {
-                addComment(newComment);
-              }}
-            />
-
             <Center><Text fontSize="2xl">Comments</Text></Center>
-            <CommentsSection comments={comments} />
+            <CommentsComponent author={post.author} permlink={post.permlink} onCommentPosted={() => addComment} />
           </Box>
         </ModalBody>
         <ModalFooter></ModalFooter>

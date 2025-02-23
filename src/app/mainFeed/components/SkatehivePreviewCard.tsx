@@ -17,7 +17,6 @@ export const SkateHivePreviewCard = ({ postId, username }: SkateHivePreviewProps
             setLoading(true);
             try {
                 const postData = await fetchSkateHivePostMetadata(postId, username);
-                console.log("postData", postData);
                 setPost(postData);
             } catch (error) {
                 console.error("Error fetching post metadata:", error);

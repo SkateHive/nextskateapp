@@ -32,6 +32,7 @@ import { useLastAuction } from "@/hooks/auction";
 import { FormattedAddress } from "../NNSAddress";
 import React from "react";
 import ClaimRewardsButton from "./ClaimRewardsButton";
+import SidebarLogo from "./SidebarLogo"; // Import the new component
 
 const SidebarDesktop = () => {
   const user = useHiveUser();
@@ -80,22 +81,9 @@ const SidebarDesktop = () => {
         color={"white"}
         fontSize={"20px"}
       >
-        <Image
-          width={"48px"}
-          height={"auto"}
-          src={"/SKATE_HIVE_VECTOR_FIN.svg"}
-          alt="SkateHive"
-          _hover={{
-            cursor: "pointer",
-            transform: "scale(1.03)",
-            zIndex: 1,
-            content: `url(${activeAuction?.token?.image || "/SKATE_HIVE_VECTOR_FIN_HOVER.svg"})`,
-          }}
-          transition="transform 0.3s ease-out"
-          minW={"100%"}
-          h={"auto"}
-          onClick={() => router.push(`https://nouns.build/dao/base/${activeAuction?.token?.tokenContract}`)}
-        />
+        {/* Use the new SidebarLogo component */}
+        <SidebarLogo />
+
         <Divider
           my={4}
           style={{ color: "#A5D6A7", borderColor: "#A5D6A7" }}
