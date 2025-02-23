@@ -1,4 +1,4 @@
-import { Box, Icon } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import { LucideArrowRight } from "lucide-react";
 
 interface CustomRightArrowProps {

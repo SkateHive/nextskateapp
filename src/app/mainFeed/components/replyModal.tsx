@@ -2,12 +2,10 @@ import AuthorAvatar from "@/components/AuthorAvatar";
 import UserAvatar from "@/components/UserAvatar";
 import { useHiveUser } from "@/contexts/UserContext";
 import { commentWithPrivateKey } from "@/lib/hive/server-functions";
-import { extractMediaItems } from "@/lib/utils";
 import {
     Box,
     Button,
     Flex,
-    HStack,
     Modal,
     ModalBody,
     ModalCloseButton,
@@ -16,26 +14,44 @@ import {
     ModalHeader,
     ModalOverlay,
     Text,
+    Textarea,
     VStack
 } from "@chakra-ui/react";
 import * as dhive from "@hiveio/dhive";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import CarrouselRenderer from "../utils/CarrouselRenderer";
-import MainInput from "../../../components/MainFeed/MainInput";
+import ClientMarkdownRenderer from "@/app/post/ClientMarkdownRenderer";
+
+// Assuming MediaItem is defined in your project
+type MediaItem = {
+    type: 'video' | 'image';
+    url: string;
+};
 
 interface ReplyModalProps {
     isOpen: boolean;
     onClose: () => void;
-    comment: any;
+    comment: dhive.Discussion;
     onNewComment: (comment: any) => void;
-    content: string;
+    mediaItems: MediaItem[];  // Add mediaItems prop
 }
 
-const ReplyModal = ({ isOpen, onClose, comment, onNewComment, content }: ReplyModalProps) => {
+const ReplyModal = ({ isOpen, onClose, comment, onNewComment, mediaItems }: ReplyModalProps) => {
     const user = useHiveUser();
     const [replyBody, setReplyBody] = useState("");
     const [error, setError] = useState<string | null>(null);
     const loginMethod = localStorage.getItem("LoginMethod");
+    const initialRef = useRef(null);  // add an initial focus ref
+
+    // Track media items for re-rendering
+    const [modalMediaItems, setModalMediaItems] = useState<MediaItem[]>([]);
+
+    useEffect(() => {
+        if (isOpen) {
+            console.log("Modal opened, setting media items:", mediaItems);
+            setModalMediaItems(mediaItems);
+        }
+    }, [isOpen, mediaItems]);
 
     const handleReply = async () => {
         const loginMethod = localStorage.getItem("LoginMethod");
@@ -143,23 +159,54 @@ const ReplyModal = ({ isOpen, onClose, comment, onNewComment, content }: ReplyMo
             setError(error.message);
         }
     };
+
     return (
-        <Modal isOpen={isOpen} onClose={onClose} size="lg" isCentered>
-            <ModalOverlay style={{ backdropFilter: "blur(5px)" }} />
-            <ModalContent color={"white"} w={{ base: "100%", md: "75%" }} bg="black" border="0.6px solid grey" borderRadius="20px" mx={8}>
+        <Modal
+            isOpen={isOpen}
+            onClose={onClose}
+            size="lg"
+            isCentered
+            initialFocusRef={initialRef}  // ensure focus is set to a known element
+        >
+            <ModalOverlay />
+            <ModalContent
+                color={"white"}
+                bg="black"
+                border="0.6px solid grey"
+                borderRadius="20px"
+                mx={8}
+            >
                 <ModalHeader>
-                    <ModalCloseButton />
+                    <ModalCloseButton ref={initialRef} />
                 </ModalHeader>
                 <ModalBody>
                     {loginMethod ? (
                         <VStack align="start" spacing={4} position="relative">
-                            <Flex align="start" w="100%">
+                            <Flex align="start" w="100%" zIndex={666}>
                                 <AuthorAvatar username={comment.author} borderRadius={100} />
-                                <HStack justify={"space-between"} width={"full"}>
-                                    <CarrouselRenderer mediaItems={extractMediaItems(content)} />
-                                </HStack>
+                                {modalMediaItems.length > 1 ? (
+                                    <CarrouselRenderer key={modalMediaItems.length} mediaItems={modalMediaItems} />
+                                ) : (
+                                    modalMediaItems.length === 1 ? (
+                                        modalMediaItems.map((_media, index) => (
+                                            <ClientMarkdownRenderer key={index} content={comment.body} />
+                                        ))
+                                    ) : (
+                                        <ClientMarkdownRenderer content={comment.body} />
+                                    )
+                                )}
                             </Flex>
-                            <Box position="absolute" left="24px" top="60px" bottom="120px" width="2px" bg="gray.600" />
+                            <Box
+                                position="absolute"
+                                left="48px" // Adjust alignment to better match avatars
+                                top="72px" // Start slightly lower than the author avatar
+                                bottom="24px" // Ensure it doesn't extend too far
+                                width="2px"
+                                bgGradient="linear(to-b, gray.600, gray.500)" // Subtle gradient for better integration
+                                opacity={0.8} // Slight transparency for a softer look
+                                zIndex={-1} // Ensure it stays behind avatars & text
+
+                            />
                             <Flex align="start" w="full" direction={{ base: "column", md: "row" }}>
                                 {user.hiveUser && <UserAvatar hiveAccount={user.hiveUser} borderRadius={100} boxSize={12} />}
                                 <VStack align="start" w="full">
@@ -168,11 +215,19 @@ const ReplyModal = ({ isOpen, onClose, comment, onNewComment, content }: ReplyMo
                                             replying to @{comment.author}
                                         </Text>
                                         {user.hiveUser && (
-                                            <MainInput
-                                                username={user.hiveUser?.name}
+                                            <Textarea
                                                 value={replyBody}
-                                                onCommentChange={(comment: string) => setReplyBody(comment)}
-                                                onCommentSubmit={handleReply}
+                                                onChange={(e) => setReplyBody(e.target.value)}
+                                                placeholder="What is your fucking opinion about this?"
+                                                size="lg"
+                                                bg="gray.800"
+                                                color="white"
+                                                _placeholder={{ color: "gray.500" }}
+                                                resize="none"
+                                                borderRadius="lg"
+                                                p={4}
+                                                w="full"
+                                                h="200px"
                                             />
                                         )}
                                         {error && (

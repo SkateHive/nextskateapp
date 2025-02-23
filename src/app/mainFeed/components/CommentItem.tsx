@@ -61,7 +61,6 @@ const CommentItem = ({
   const [isFollowing, setIsFollowing] = useState<boolean | null>(null);
   const loginMethod = localStorage.getItem("LoginMethod");
 
-
   const handleVote = async (author: string, permlink: string) => {
     if (!username) {
       console.error("Username is missing");
@@ -111,11 +110,6 @@ const CommentItem = ({
     }
   };
 
-  const CommentVisibility = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    window.open(`/post/test/@${comment.author}/${comment.permlink}`, "_self");
-  };
-
   const toggleCommentVisibility = () => {
     setIsCommentFormVisible((prev) => !prev);
   }
@@ -154,6 +148,8 @@ const CommentItem = ({
       .replace(/allowFullScreen={true}>/g, '');
   }, [editedCommentBody]);
 
+  console.log("Media items in CommentItem:", mediaItems);
+
   return (
     <Box key={comment.id} bg="black" color="white">
       {isReplyModalOpen && (
@@ -162,7 +158,7 @@ const CommentItem = ({
           isOpen={isReplyModalOpen}
           onClose={() => setIsReplyModalOpen(false)}
           onNewComment={handleNewComment}
-          content={editedCommentBody}
+          mediaItems={mediaItems}  // Pass media items to ReplyModal
         />
       )}
       <Flex onClick={toggleCommentVisibility} cursor="pointer">
@@ -278,7 +274,6 @@ const CommentItem = ({
         >
           <Text
             fontWeight={"bold"}
-            onClick={CommentVisibility}
             cursor={"pointer"}
             mt={2}
             color="#A5D6A7"

@@ -21,6 +21,8 @@ const randomSentences = [
   "Nobody owns Skatehive",
   "Connecting with Uganda Nodes",
   "Preserve Macba",
+  "Forget Youtube",
+  "Stop using youtube",
   "If it takes to long, your connection sucks",
 ];
 
