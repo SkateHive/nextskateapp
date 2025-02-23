@@ -123,9 +123,6 @@ function PostCarousel() {
                   height="100%"
                   style={{ aspectRatio: "16/9" }}
                   controls
-                  autoPlay
-                  loop
-                  muted
                 />
               );
             }
