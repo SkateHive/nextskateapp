@@ -15,7 +15,7 @@ import {
   Text,
   Tooltip,
 } from "@chakra-ui/react"
-import { Comment } from "@hiveio/dhive"
+import { Comment, Discussion } from "@hiveio/dhive"
 import { ExternalLink } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { getPostDetails } from "../lib/getPostDetails"
@@ -42,7 +42,7 @@ export function NotificationContent({
   notification,
   username,
 }: NotificationContentProps) {
-  const [post, setPost] = useState<Comment | null>(null);
+  const [post, setPost] = useState<Discussion | null>(null);
   const [parentPost, setParentPost] = useState<Comment | null>(null); // Store parent post details
   const [isFollowing, setIsFollowing] = useState<boolean | null>(null);
   const [loadingFollow, setLoadingFollow] = useState(false);
@@ -130,13 +130,13 @@ export function NotificationContent({
       gap={4}
       color={"white"}
     >
-      {isReplyModalOpen && (
+      {isReplyModalOpen && post && (
         <ReplyModal
           isOpen={isReplyModalOpen}
           onClose={() => setIsReplyModalOpen(false)}
           comment={post}
           onNewComment={() => { }}
-          content={post?.body || ""}
+          mediaItems={parentMetadata?.image || [] as any}
         />
       )}
       <Stack flexGrow={1} gap={1}>
@@ -180,7 +180,7 @@ export function NotificationContent({
         {/* Only show post content for reply and reply_comment */}
         {post !== null && (notification.type === "reply" || notification.type === "reply_comment") && (
           <Box mt={2}>
-             <MarkdownRenderer content={post.body} />
+            <MarkdownRenderer content={post.body} />
 
             <Flex justifyContent={"flex-start"} mt={2}>
               <Button
