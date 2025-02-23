@@ -2,21 +2,21 @@ import { useHiveUser } from '@/contexts/UserContext';
 import { IconButton } from '@chakra-ui/react';
 import { FaPencil } from 'react-icons/fa6';
 import { SlLogin } from 'react-icons/sl';
+import { CSSProperties } from 'react';
 
-const MagButton = () => {
+type MagButtonProps = {
+    styles: CSSProperties;
+    onClick: () => void;
+};
+
+const MagButton = ({ styles, onClick }: MagButtonProps) => {
     const { hiveUser } = useHiveUser();
     return (
         <IconButton
-            onClick={() => window.location.href = '/upload'}
-            border="1px solid black"
-            p={5}
-            aria-label="camera"
-            icon={hiveUser ? <FaPencil color="black" size={45} /> : <SlLogin color="black" size={45} />}
-            size="lg"
-            bg="limegreen"
-            _hover={{ bg: 'limegreen', transform: 'scale(1.1)', transition: '0.3s' }}
-            color="black"
-            isRound
+            onClick={onClick}
+            aria-label="magazine"
+            icon={hiveUser ? <FaPencil color="black" size={35} /> : <SlLogin color="black" size={35} />}
+            style={styles}
         />
     );
 }

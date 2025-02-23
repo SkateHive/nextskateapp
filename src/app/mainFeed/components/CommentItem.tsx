@@ -148,8 +148,6 @@ const CommentItem = ({
       .replace(/allowFullScreen={true}>/g, '');
   }, [editedCommentBody]);
 
-  console.log("Media items in CommentItem:", mediaItems);
-
   return (
     <Box key={comment.id} bg="black" color="white">
       {isReplyModalOpen && (

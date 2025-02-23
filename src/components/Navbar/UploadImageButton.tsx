@@ -7,7 +7,7 @@ import { GiVideoCamera } from "react-icons/gi";
 import { SlLogin } from "react-icons/sl";
 import LoginModal from "../Hive/Login/LoginModal";
 import MobileUploadModal from "./MobileUploadModal";
-
+import { CSSProperties } from 'react';
 
 const useFileUpload = () => {
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -24,7 +24,6 @@ const useFileUpload = () => {
             setSelectedFile(file);
             setIsMobileUploadModalOpen(true);
         }
-
     }, []);
 
     const closeModal = useCallback(() => {
@@ -42,7 +41,12 @@ const useFileUpload = () => {
     };
 };
 
-const UploadImageButton: React.FC = () => {
+type UploadImageButtonProps = {
+    styles: CSSProperties;
+    onClick: () => void;
+};
+
+const UploadImageButton: React.FC<UploadImageButtonProps> = ({ styles, onClick }) => {
     const { hiveUser } = useHiveUser();
     const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
     const {
@@ -67,17 +71,10 @@ const UploadImageButton: React.FC = () => {
                 onChange={handleFileChange}
             />
             <IconButton
-                border="1px solid black"
-                p={5}
                 aria-label="camera"
-                onClick={hiveUser ? handleCameraClick : () => setIsLoginModalOpen(true)}
-                icon={hiveUser ? <GiVideoCamera color="black" size={45} /> : <SlLogin color="black" size={45} />}
-                size="lg"
-                bg="limegreen"
-                _hover={{ bg: 'limegreen', transform: 'scale(1.1)', transition: '0.3s' }}
-                color="black"
-                isRound={hiveUser ? false : true}
-
+                onClick={onClick}
+                icon={hiveUser ? <GiVideoCamera color="black" size={35} /> : <SlLogin color="black" size={45} />}
+                style={styles}
             />
         </>
     );

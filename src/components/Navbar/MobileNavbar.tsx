@@ -10,9 +10,22 @@ import MagButton from "./magButton";
 import SideBarMobile from "./sideBarMobile";
 import UploadPageButton from "./uploadPageButton";
 import Dock from "@/app/mainFeed/components/Dock";
+import { useRouter, usePathname } from "next/navigation";
+
+const buttonStyles = {
+    border: "1px solid black",
+    p: 5,
+    size: "lg",
+    bg: "transparent",
+    _hover: { bg: 'limegreen', transform: 'scale(1.1)', transition: '0.3s' },
+    isRound: true,
+};
+
 const MobileNavbar = () => {
     const [isOpen, setIsOpen] = useState(false);
-    const [dynamicButton, setDynamicButton] = useState(<UploadImageButton />);
+    const [dynamicButton, setDynamicButton] = useState(<UploadImageButton styles={buttonStyles} onClick={() => router.push('/upload-image')} />);
+    const router = useRouter();
+    const pathname = usePathname();
 
     const toggleMenu = () => {
         setIsOpen(!isOpen);
@@ -24,23 +37,21 @@ const MobileNavbar = () => {
 
     useEffect(() => {
         const renderDynamicButton = () => {
-            if (window.location.pathname === '/') {
-                return <UploadImageButton />
-            } else if (window.location.pathname === '/wallet') {
-                return <WalletButton />;
-            } else if (window.location.pathname === '/mag') {
-                return <MagButton />;
-            } else if (window.location.pathname === '/upload') {
-                return <UploadPageButton />;
+            if (pathname === '/') {
+                return <UploadImageButton styles={buttonStyles} onClick={() => router.push('/upload-image')} />;
+            } else if (pathname === '/wallet') {
+                return <WalletButton styles={buttonStyles} onClick={() => router.push('/wallet')} />;
+            } else if (pathname === '/mag') {
+                return <MagButton styles={buttonStyles} onClick={() => router.push('/magazine')} />;
+            } else if (pathname === '/upload') {
+                return <UploadPageButton styles={buttonStyles} onClick={() => router.push('/upload')} />;
             }
 
-            return <UploadImageButton />;
+            return <UploadImageButton styles={buttonStyles} onClick={() => router.push('/upload-image')} />;
         };
 
-        if (typeof window !== 'undefined') {
-            setDynamicButton(renderDynamicButton());
-        }
-    }, []);
+        setDynamicButton(renderDynamicButton());
+    }, [pathname]);
 
     const dockItems = [
         {
@@ -51,22 +62,22 @@ const MobileNavbar = () => {
         {
             icon: <FaHome size={22} />,
             label: "Home",
-            onClick: () => window.location.href = '/',
+            onClick: () => router.push('/'),
         },
         {
             icon: dynamicButton,
             label: "Upload",
-            onClick: () => window.location.href = '/upload',
+            onClick: () => router.push('/upload'),
         },
         {
             icon: <FaWallet size={22} />,
             label: "Wallet",
-            onClick: () => window.location.href = '/wallet',
+            onClick: () => router.push('/wallet'),
         },
         {
             icon: <MdOutlineMenuBook size={22} />,
             label: "Magazine",
-            onClick: () => window.location.href = '/mag',
+            onClick: () => router.push('/mag'),
         },
     ];
 
