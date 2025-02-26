@@ -26,17 +26,17 @@ export async function generateMetadata(
     applicationName: 'SkateHive',
     openGraph: {
       url: `${metadataBase.origin}/post/${postId}`, // Ensure absolute URL
-      images: banner.map((img: string) => ({
+      images: Array.isArray(banner) ? banner.map((img: string) => ({
         url: new URL(img, metadataBase).toString(),
         width: 1200,
         height: 630,
-      })),
+      })) : [],
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: `${String(post.body).slice(0, 128)}...`,
-      images: banner.map((img: string) => new URL(img, metadataBase).toString()),
+      images: Array.isArray(banner) ? banner.map((img: string) => new URL(img, metadataBase).toString()) : [],
     },
   };
 }
