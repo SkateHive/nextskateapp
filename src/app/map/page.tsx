@@ -2,7 +2,7 @@
 
 import { useHiveUser } from '@/contexts/UserContext';
 import { useComments } from '@/hooks/comments';
-import { vote } from '@/lib/hive/client-functions';
+import { processVote } from "@/lib/hive/vote-utils";
 import { Box, Divider, Flex, Heading, Image, Text, useBreakpointValue } from '@chakra-ui/react';
 import { Global } from '@emotion/react';
 import Head from "next/head";
@@ -45,19 +45,6 @@ const EmbeddedMap: React.FC = () => {
   useEffect(() => {
     setFilteredComments(comments);
   }, [comments]);
-
-  const handleVote = async (author: string, permlink: string) => {
-    if (!username) {
-      console.error("Username is missing");
-      return;
-    }
-    vote({
-      username: username,
-      permlink: permlink,
-      author: author,
-      weight: 10000,
-    });
-  };
 
 
 

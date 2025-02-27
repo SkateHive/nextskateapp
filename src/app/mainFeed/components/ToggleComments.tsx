@@ -3,6 +3,7 @@
 import { Box } from "@chakra-ui/react";
 import { useCallback, useEffect, useRef } from "react";
 import CommentList from "./CommentsList";
+import { VoteParams } from "@/lib/hive/vote-utils";
 
 interface ToggleCommentsProps {
   isEyeClicked?: boolean;
@@ -10,7 +11,7 @@ interface ToggleCommentsProps {
   visiblePosts: number;
   setVisiblePosts: React.Dispatch<React.SetStateAction<number>>;
   username: string;
-  handleVote: (author: string, permlink: string) => void;
+  handleVote: (params: VoteParams | { author: string, permlink: string, username?: string, weight?: number }) => Promise<any> | void;
   shouldShowAllComments?: boolean;
   isCommentFormVisible?: boolean;
 }

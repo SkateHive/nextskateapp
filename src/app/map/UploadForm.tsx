@@ -290,19 +290,6 @@ export default function UploadForm() {
     setImageList((prevList) => prevList.filter((_, i) => i !== index));
   };
 
-  const handleVote = async (author: string, permlink: string) => {
-    if (!username) {
-      console.error("Username is missing");
-      return;
-    }
-    vote({
-      username: username,
-      permlink: permlink,
-      author: author,
-      weight: 10000,
-    });
-  };
-
   const handleSortChange = (method: string) => {
     setSortMethod(method);
   };

@@ -5,9 +5,10 @@ import TipButton from "@/components/PostCard/TipButton";
 import MarkdownRenderer from "@/components/ReactMarkdown/page";
 import { useHiveUser } from "@/contexts/UserContext";
 import { useComments } from "@/hooks/comments";
-import { changeFollow, checkFollow, vote } from "@/lib/hive/client-functions";
+import { changeFollow, checkFollow } from "@/lib/hive/client-functions";
 import { changeFollowWithPassword } from "@/lib/hive/server-functions";
 import { extractMediaItems, formatDate, getTotalPayout } from "@/lib/utils";
+import { processVote, VoteParams } from "@/lib/hive/vote-utils";
 import {
   Box,
   Button,
@@ -26,7 +27,6 @@ import { EditCommentModal } from "./EditCommentModal";
 import ReplyModal from "./replyModal";
 import ToggleComments from "./ToggleComments";
 import { MarkdownRenderers } from "@/app/upload/utils/MarkdownRenderers";
-
 interface CommentItemProps {
   comment: any;
   username: string;
@@ -57,23 +57,11 @@ const CommentItem = ({
   const [isCommentFormVisible, setIsCommentFormVisible] = useState(false);
   const [shouldShowAllComments, setShouldShowAllComments] = useState(false);
   const { comments } = useComments(comment.author, comment.permlink);
-  const { voteValue } = useHiveUser();
+  const { voteValue, hiveUser } = useHiveUser();
   const [isFollowing, setIsFollowing] = useState<boolean | null>(null);
   const loginMethod = localStorage.getItem("LoginMethod");
   const [commentEarnings, setCommentEarnings] = useState(getTotalPayout(comment));
-  console.log(voteValue);
-  const handleVote = async (author: string, permlink: string) => {
-    if (!username) {
-      console.error("Username is missing");
-      return;
-    }
-    vote({
-      username: username,
-      permlink: permlink,
-      author: author,
-      weight: 10000,
-    });
-  };
+
 
   useEffect(() => {
     setCommentReplies(comments);
@@ -149,12 +137,33 @@ const CommentItem = ({
       .replace(/allowFullScreen={true}>/g, '');
   }, [editedCommentBody]);
 
-  const handleVoteSuccess = (voteType: string, voteValue: number) => {
-    console.log("Vote success:", voteType, voteValue);
+  const handleVoteSuccess = (voteType: string, actualVoteValue: number = voteValue) => {
+    console.log("Vote success:", voteType, actualVoteValue);
     if (voteType === 'upvote') {
-      setCommentEarnings((prev) => prev + voteValue);
+      setCommentEarnings((prev) => prev + actualVoteValue);
     } else if (voteType === 'cancel') {
-      setCommentEarnings((prev) => prev - voteValue);
+      setCommentEarnings((prev) => prev - actualVoteValue);
+    }
+  };
+
+  // Create adapter function for ToggleComments
+  const handleVoteForToggleComments = async (params: VoteParams | { author: string, permlink: string }) => {
+    if ('author' in params && 'permlink' in params) {
+      // Handle legacy signature
+      return processVote({
+        username,
+        author: params.author,
+        permlink: params.permlink,
+        weight: 10000,
+        userAccount: hiveUser // Pass the user account for value calculation
+      });
+    } else {
+      // Handle VoteParams - ensure userAccount is included
+      const voteParams: VoteParams = {
+        ...(params as VoteParams),
+        userAccount: hiveUser
+      };
+      return processVote(voteParams);
     }
   };
 
@@ -308,7 +317,7 @@ const CommentItem = ({
         visiblePosts={visiblePosts}
         setVisiblePosts={setVisiblePosts}
         username={username}
-        handleVote={handleVote}
+        handleVote={handleVoteForToggleComments}
         shouldShowAllComments={shouldShowAllComments}
         isCommentFormVisible={isCommentFormVisible}
       />

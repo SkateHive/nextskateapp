@@ -1,29 +1,47 @@
-import { vote } from "@/lib/hive/client-functions";
 import LoginModal from "@/components/Hive/Login/LoginModal";
 import { HStack, Text } from "@chakra-ui/react";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { FaHeart, FaHeartBroken, FaRegHeart } from "react-icons/fa";
 import { useReward } from "react-rewards";
 import { useHiveUser } from "@/contexts/UserContext";
 import { v4 as uuidv4 } from 'uuid';
-
 import VoteButtonModal from "./VoteButtonModal";
+import { processVote } from "@/lib/hive/vote-utils";
+import { voting_value2 } from "../PostCard/calculateHiveVotingValueForHiveUser";
 
 const VotingButton = ({
   comment,
   username,
-  onVoteSuccess, // Add this prop
+  onVoteSuccess,
 }: {
   comment: any;
   username: string;
-  onVoteSuccess: (voteType: string, voteValue: number) => void; // Define the prop type
+  onVoteSuccess: (voteType: string, voteValue: number) => void;
 }) => {
-  const { voteValue } = useHiveUser(); // Get voteValue from useHiveUser
+  const { voteValue, hiveUser } = useHiveUser();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isVoteModalOpen, setIsVoteModalOpen] = useState(false);
   const [touchTimer, setTouchTimer] = useState<NodeJS.Timeout | null>(null);
   const [isVoting, setIsVoting] = useState(false);
   const [isVoteCancelled, setIsVoteCancelled] = useState(false);
+  const [calculatedVoteValue, setCalculatedVoteValue] = useState<number | null>(null);
+
+  // Fetch the actual vote value once the component loads
+  useEffect(() => {
+    const fetchVoteValue = async () => {
+      if (hiveUser) {
+        try {
+          const value = await voting_value2(hiveUser);
+          setCalculatedVoteValue(value);
+          console.log("Fetched vote value:", value);
+        } catch (error) {
+          console.error("Error fetching vote value:", error);
+        }
+      }
+    };
+
+    fetchVoteValue();
+  }, [hiveUser]);
 
   const TOUCH_TIMEOUT = 1000;
   const VOTE_TYPES = {
@@ -53,14 +71,14 @@ const VotingButton = ({
   const [upvoteCount, setUpvoteCount] = useState(initialUpvoteCount);
   const [downvoteCount, setDownvoteCount] = useState(initialDownvoteCount);
 
-  const uniqueId = uuidv4(); // Generate a unique ID for each instance
+  const uniqueId = uuidv4();
   const { reward, isAnimating } = useReward(uniqueId, "emoji", {
     emoji: ["$", "*", "#"],
     spread: 60,
   });
 
   // Utility function to update votes
-  const updateVotes = (action: string, voteValue: number) => {
+  const updateVotes = (action: string, userVoteValue: number = calculatedVoteValue || voteValue) => {
     if (action === VOTE_TYPES.UPVOTE) {
       setIsUpvoted(true);
       setIsDownvoted(false);
@@ -68,7 +86,7 @@ const VotingButton = ({
       if (isDownvoted) {
         setDownvoteCount((prev: number) => prev - 1);
       }
-      onVoteSuccess(VOTE_TYPES.UPVOTE, voteValue);
+      onVoteSuccess(VOTE_TYPES.UPVOTE, userVoteValue);
     } else if (action === VOTE_TYPES.DOWNVOTE) {
       setIsUpvoted(false);
       setIsDownvoted(true);
@@ -76,36 +94,59 @@ const VotingButton = ({
       if (isUpvoted) {
         setUpvoteCount((prev: number) => prev - 1);
       }
-      onVoteSuccess(VOTE_TYPES.DOWNVOTE, voteValue);
+      onVoteSuccess(VOTE_TYPES.DOWNVOTE, userVoteValue);
     } else if (action === VOTE_TYPES.CANCEL) {
       setIsUpvoted(false);
       setUpvoteCount((prev: number) => prev - 0);
       setDownvoteCount((prev: number) => prev - 0);
-      onVoteSuccess(VOTE_TYPES.CANCEL, voteValue);
+      onVoteSuccess(VOTE_TYPES.CANCEL, userVoteValue);
     }
   };
 
   const handleVote = async (voteType: string, voteWeight: number) => {
+    if (voteWeight === 0) {
+      console.log("Canceling vote, not allowing the vote to be registered.");
+      updateVotes(VOTE_TYPES.CANCEL);
+      return;
+    }
+
+    if (!username) {
+      console.error("Username is missing");
+      setIsLoginModalOpen(true);
+      return;
+    }
+
     try {
       setIsVoting(true);
-      const response = await vote({
+      const response = await processVote({
         username,
-        permlink: comment.permlink,
         author: comment.author,
+        permlink: comment.permlink,
         weight: voteWeight,
+        userAccount: hiveUser
       });
+
       if (response.success) {
-        updateVotes(voteType, voteValue);
-        reward(); // Call reward function here
+        // Make sure to use the voteType and voteValue from the response if available
+        const finalVoteType = response.voteType || voteType;
+        const finalVoteValue = response.voteValue || calculatedVoteValue || voteValue;
+
+        updateVotes(finalVoteType, finalVoteValue);
+        reward(); // Always trigger reward animation on successful vote
+        console.log(`Vote successful: ${finalVoteType} with value ${finalVoteValue}`);
       } else {
         console.error("Error when voting:", response.message);
-        if (voteType === VOTE_TYPES.UPVOTE) {
+        if (voteType === VOTE_TYPES.UPVOTE && isUpvoted) {
           setIsUpvoted(false);
-          setUpvoteCount((prev: number) => prev - 1);
+          setUpvoteCount((prev: number) => Math.max(0, prev - 1));
         }
       }
     } catch (error) {
-      console.error("Error when voting:", error);
+      console.error("Error during voting:", error);
+      if ((error as Error)?.message?.includes("user_cancel")) {
+        console.log("Vote was canceled by the user, updating state to reflect cancellation.");
+        updateVotes(VOTE_TYPES.CANCEL);
+      }
     } finally {
       setIsVoting(false);
     }
@@ -235,7 +276,7 @@ const VotingButton = ({
           comment={comment}
           isModal={true}
           onClose={() => setIsVoteModalOpen(false)}
-          onSuccess={(voteType) => updateVotes(voteType, voteValue)}
+          onSuccess={(voteType) => updateVotes(voteType, calculatedVoteValue || voteValue)}
           currentVoteType={isUpvoted ? 'upvote' : isDownvoted ? 'downvote' : 'none'}
         />
       )}
