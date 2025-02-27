@@ -151,7 +151,7 @@ function DisconnectedUserModal({
                 </Button>
                 <Button
                     w={"50%"}
-                    onClick={() => window.open("https://discord.gg/skateboard", '_blank', 'noopener,noreferrer')}
+                    onClick={() => window.open("https://discord.gg/SAWaRhh", '_blank', 'noopener,noreferrer')}
                     colorScheme="purple"
                     variant={"outline"}
                 >
