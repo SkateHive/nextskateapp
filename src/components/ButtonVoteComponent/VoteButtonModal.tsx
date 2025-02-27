@@ -14,7 +14,7 @@ interface VoteButtonProps {
     comment: any;
     isModal?: boolean;
     onClose?: () => void;
-    onSuccess?: (voteType: 'upvote' | 'downvote') => void;
+    onSuccess?: (voteType: 'upvote' | 'downvote', voteValue: number) => void; // Update the prop type
     currentVoteType?: 'upvote' | 'downvote' | 'none';
 }
 
@@ -49,6 +49,7 @@ const VoteButtonModal = ({ author, permlink, comment, isModal = true, onClose = 
 
     // Function that is called after the vote is successful
     const handleVoteSuccess = async (voteType: 'upvote' | 'downvote') => {
+        const voteValue = voteType === 'upvote' ? 10000 : -10000; // Define voteValue here
         if (voteType === 'upvote') {
             setIsUpvoted(true);
             setIsDownvoted(false);
@@ -60,7 +61,7 @@ const VoteButtonModal = ({ author, permlink, comment, isModal = true, onClose = 
         }
 
         if (onSuccess) {
-            onSuccess(voteType);
+            onSuccess(voteType, voteValue); // Pass voteValue to onSuccess
         }
 
         setIsLoginModalOpen(false);

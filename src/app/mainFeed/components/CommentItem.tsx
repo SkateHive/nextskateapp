@@ -60,7 +60,8 @@ const CommentItem = ({
   const { voteValue } = useHiveUser();
   const [isFollowing, setIsFollowing] = useState<boolean | null>(null);
   const loginMethod = localStorage.getItem("LoginMethod");
-
+  const [commentEarnings, setCommentEarnings] = useState(getTotalPayout(comment));
+  console.log(voteValue);
   const handleVote = async (author: string, permlink: string) => {
     if (!username) {
       console.error("Username is missing");
@@ -148,6 +149,15 @@ const CommentItem = ({
       .replace(/allowFullScreen={true}>/g, '');
   }, [editedCommentBody]);
 
+  const handleVoteSuccess = (voteType: string, voteValue: number) => {
+    console.log("Vote success:", voteType, voteValue);
+    if (voteType === 'upvote') {
+      setCommentEarnings((prev) => prev + voteValue);
+    } else if (voteType === 'cancel') {
+      setCommentEarnings((prev) => prev - voteValue);
+    }
+  };
+
   return (
     <Box key={comment.id} bg="black" color="white">
       {isReplyModalOpen && (
@@ -167,6 +177,7 @@ const CommentItem = ({
           <HStack justify={"space-between"} width={"full"} cursor="pointer" gap="2px" >
             <HStack mt={2}>
               <Text fontWeight="bold">{comment.author}</Text>
+              {/* Follow Button */}
               {username && comment.author !== username && isFollowing === false && (
                 <Button
                   id="follow"
@@ -262,6 +273,7 @@ const CommentItem = ({
         <VotingButton
           comment={comment}
           username={username}
+          onVoteSuccess={handleVoteSuccess}
         />
 
         <Tooltip
@@ -276,7 +288,7 @@ const CommentItem = ({
             mt={2}
             color="#A5D6A7"
           >
-            ${getTotalPayout(comment).toFixed(3)}
+            ${commentEarnings.toFixed(3)}
           </Text>
         </Tooltip>
       </Flex>

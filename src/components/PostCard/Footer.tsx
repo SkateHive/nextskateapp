@@ -21,12 +21,18 @@ export default function Footer({ username }: FooterProps) {
       : (username as HiveAccount)?.name || ""
     : hiveUser?.name || "";
 
-
+  const handleVoteSuccess = (voteType: string, voteValue: number) => {
+    if (voteType === 'upvote') {
+      setPostEarnings((prev) => prev + voteValue);
+    } else if (voteType === 'cancel') {
+      setPostEarnings((prev) => prev - voteValue);
+    }
+  };
 
   return (
     <CardFooter p={2} flexDirection={"column"} gap={1} key={hiveUser?.name}>
       <HStack justifyContent="space-between" width="100%">
-        <VotingButton comment={post} username={usernameString} />
+        <VotingButton comment={post} username={usernameString} onVoteSuccess={handleVoteSuccess} />
 
         <Tooltip
           label={`+$${voteValue.toFixed(6)}`}

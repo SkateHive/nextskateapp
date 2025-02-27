@@ -20,10 +20,10 @@ export const voting_value2 = async (user: any) => {
     const { reward_balance, recent_claims } = reward_fund;
     const { base, quote } = feed_history.current_median_history;
 
-    const baseNumeric = parseFloat(base.split(' ')[0]); 
-    const quoteNumeric = parseFloat(quote.split(' ')[0]); 
+    const baseNumeric = parseFloat(base.split(' ')[0]);
+    const quoteNumeric = parseFloat(quote.split(' ')[0]);
 
-    const hbdMedianPrice = baseNumeric / quoteNumeric; 
+    const hbdMedianPrice = baseNumeric / quoteNumeric;
 
     const rewardBalanceNumeric = parseFloat(reward_balance.split(' ')[0]);
     const recentClaimsNumeric = parseFloat(recent_claims);
@@ -39,6 +39,7 @@ export const voting_value2 = async (user: any) => {
     const rshares = power * final_vest / 10000;
 
     const estimate = rshares / recentClaimsNumeric * rewardBalanceNumeric * hbdMedianPrice;
+    console.log('estimate', estimate);
     return estimate;
 }
 

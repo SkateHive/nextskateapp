@@ -1,32 +1,36 @@
-import { handleVote } from "@/app/mainFeed/utils/handleFeedVote";
+import { vote } from "@/lib/hive/client-functions";
 import LoginModal from "@/components/Hive/Login/LoginModal";
 import { HStack, Text } from "@chakra-ui/react";
 import { useRef, useState } from "react";
 import { FaHeart, FaHeartBroken, FaRegHeart } from "react-icons/fa";
 import { useReward } from "react-rewards";
+import { useHiveUser } from "@/contexts/UserContext";
+import { v4 as uuidv4 } from 'uuid';
 
 import VoteButtonModal from "./VoteButtonModal";
 
 const VotingButton = ({
   comment,
   username,
+  onVoteSuccess, // Add this prop
 }: {
   comment: any;
   username: string;
+  onVoteSuccess: (voteType: string, voteValue: number) => void; // Define the prop type
 }) => {
+  const { voteValue } = useHiveUser(); // Get voteValue from useHiveUser
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isVoteModalOpen, setIsVoteModalOpen] = useState(false);
-  const [clickPosition, setClickPosition] = useState<{ x: number; y: number } | undefined>(undefined);
   const [touchTimer, setTouchTimer] = useState<NodeJS.Timeout | null>(null);
-  const [isTooltipVisible, setIsTooltipVisible] = useState(false);
   const [isVoting, setIsVoting] = useState(false);
   const [isVoteCancelled, setIsVoteCancelled] = useState(false);
 
-  const toggleValueTooltip = () => {
-    setIsTooltipVisible(prev => !prev);
-  };
-
   const TOUCH_TIMEOUT = 1000;
+  const VOTE_TYPES = {
+    UPVOTE: 'upvote',
+    DOWNVOTE: 'downvote',
+    CANCEL: 'cancel'
+  };
 
   const voteButtonRef = useRef<HTMLDivElement>(null);
   const initialUpvoted = comment.active_votes?.some(
@@ -49,38 +53,66 @@ const VotingButton = ({
   const [upvoteCount, setUpvoteCount] = useState(initialUpvoteCount);
   const [downvoteCount, setDownvoteCount] = useState(initialDownvoteCount);
 
-  const { reward, isAnimating } = useReward("heartIconReward", "emoji", {
+  const uniqueId = uuidv4(); // Generate a unique ID for each instance
+  const { reward, isAnimating } = useReward(uniqueId, "emoji", {
     emoji: ["$", "*", "#"],
     spread: 60,
   });
 
-  const updateVotes = (action: "upvote" | "downvote" | "cancel") => {
-    if (action === "upvote") {
+  // Utility function to update votes
+  const updateVotes = (action: string, voteValue: number) => {
+    if (action === VOTE_TYPES.UPVOTE) {
       setIsUpvoted(true);
       setIsDownvoted(false);
       setUpvoteCount((prev: number) => prev + 1);
       if (isDownvoted) {
         setDownvoteCount((prev: number) => prev - 1);
       }
-    } else if (action === "downvote") {
-      setIsDownvoted(true);
+      onVoteSuccess(VOTE_TYPES.UPVOTE, voteValue);
+    } else if (action === VOTE_TYPES.DOWNVOTE) {
       setIsUpvoted(false);
+      setIsDownvoted(true);
       setDownvoteCount((prev: number) => prev + 1);
       if (isUpvoted) {
         setUpvoteCount((prev: number) => prev - 1);
       }
-    } else if (action === "cancel") {
-      // Correctly reset voting states when canceling
+      onVoteSuccess(VOTE_TYPES.DOWNVOTE, voteValue);
+    } else if (action === VOTE_TYPES.CANCEL) {
       setIsUpvoted(false);
-
       setUpvoteCount((prev: number) => prev - 0);
       setDownvoteCount((prev: number) => prev - 0);
+      onVoteSuccess(VOTE_TYPES.CANCEL, voteValue);
     }
   };
 
-  const handleRightClick = (e: React.MouseEvent, voteType: 'upvote' | 'downvote') => {
+  const handleVote = async (voteType: string, voteWeight: number) => {
+    try {
+      setIsVoting(true);
+      const response = await vote({
+        username,
+        permlink: comment.permlink,
+        author: comment.author,
+        weight: voteWeight,
+      });
+      if (response.success) {
+        updateVotes(voteType, voteValue);
+        reward(); // Call reward function here
+      } else {
+        console.error("Error when voting:", response.message);
+        if (voteType === VOTE_TYPES.UPVOTE) {
+          setIsUpvoted(false);
+          setUpvoteCount((prev: number) => prev - 1);
+        }
+      }
+    } catch (error) {
+      console.error("Error when voting:", error);
+    } finally {
+      setIsVoting(false);
+    }
+  };
+
+  const handleRightClick = (e: React.MouseEvent, voteType: string) => {
     e.preventDefault();
-    // Block interaction during animation
     if (isAnimating) {
       console.log("Animation in progress, please wait.");
       return;
@@ -89,70 +121,30 @@ const VotingButton = ({
       setIsLoginModalOpen(true);
       return;
     }
-    const { clientX, clientY, button } = e;
-    setClickPosition({ x: clientX, y: clientY });
-    if (button === 2) { // Right click to open vote modal
+    if (e.button === 2) {
       setIsVoteModalOpen(true);
     }
-    toggleValueTooltip();
-    // Cleaning touchTimer if necessary
     if (touchTimer) {
       clearTimeout(touchTimer);
     }
   };
 
   const handleLeftClick = (e: React.MouseEvent) => {
-    try {
-      const { button } = e;
-
-      if (isVoting || isAnimating) {
-        console.log("Voting or animation in progress, please wait...");
-        return;
+    if (isVoting || isAnimating) {
+      console.log("Voting or animation in progress, please wait...");
+      return;
+    }
+    if (!username) {
+      console.error("Error: The user is not logged in.");
+      setIsLoginModalOpen(true);
+      return;
+    }
+    if (e.button === 0) {
+      if (isUpvoted) {
+        handleVote(VOTE_TYPES.CANCEL, 0);
+      } else {
+        handleVote(VOTE_TYPES.UPVOTE, 10000);
       }
-
-      if (!username) {
-        console.error("Error: The user is not logged in.");
-        setIsLoginModalOpen(true);
-        return;
-      }
-      if (button === 0) {
-        setIsVoting(true);
-        if (isUpvoted) {
-          // Cancel vote
-          updateVotes("cancel");
-          handleVote(comment.author, comment.permlink, username, 0, updateVotes, setIsVoting)
-            .then(() => {
-              console.log("Vote successfully cancelled.");
-              setIsVoteCancelled(true);
-              setIsUpvoted(false);
-            })
-            .catch(error => {
-              console.error("Error canceling vote:", error.message);
-              setIsVoteCancelled(false);
-              setIsUpvoted(true);
-            })
-            .finally(() => setIsVoting(false));
-        } else {
-          // Vote positively
-          updateVotes("upvote");
-          reward();
-          handleVote(comment.author, comment.permlink, username, 10000, updateVotes, setIsVoting)
-            .then(() => {
-              setIsUpvoted(true);
-              setIsVoteCancelled(false);
-            })
-            .catch(error => {
-              console.error("Error when voting:", error);
-              setIsUpvoted(false);
-              setUpvoteCount((prev: number) => prev - 1); // Revert optimistic update
-            })
-            .finally(() => setIsVoting(false));
-        }
-
-        toggleValueTooltip();
-      }
-    } catch (error) {
-      console.error("Error when manipulating the vote:", error);
     }
   };
 
@@ -176,35 +168,15 @@ const VotingButton = ({
     }
   };
 
-  const onVoteSuccess = (voteType: 'upvote' | 'downvote') => {
-    if (voteType === 'upvote') {
-      setIsUpvoted(true);
-      setIsDownvoted(false);
-      setUpvoteCount((prevUpvoteCount: number) => prevUpvoteCount + 1);
-      setDownvoteCount((prevDownvoteCount: number) =>
-        isDownvoted ? prevDownvoteCount - 1 : prevDownvoteCount
-      );
-      reward();
-    } else if (voteType === 'downvote') {
-      setIsDownvoted(true);
-      setIsUpvoted(false);
-      setDownvoteCount((prevDownvoteCount: number) => prevDownvoteCount + 1);
-      setUpvoteCount((prevUpvoteCount: number) =>
-        isUpvoted ? prevUpvoteCount - 1 : prevUpvoteCount
-      );
-    }
-    setIsVoteModalOpen(false);
-  };
-
   // Icon control
   const renderUpvoteIcon = () => {
     if (isVoteCancelled) {
-      return <span id="heartIconReward"><FaRegHeart /></span>;
+      return <span id={uniqueId}><FaRegHeart /></span>;
     }
     if (isUpvoted) {
-      return <span id="heartIconReward"><FaHeart /></span>;
+      return <span id={uniqueId}><FaHeart /></span>;
     }
-    return <span id="heartIconReward"><FaRegHeart /></span>;
+    return <span id={uniqueId}><FaRegHeart /></span>;
   };
 
   return (
@@ -212,7 +184,6 @@ const VotingButton = ({
       {isLoginModalOpen && <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />}
       <HStack spacing={4} cursor="pointer" color="#A5D6A7">
         <HStack
-          id="voteButtonReward"
           spacing={1}
           cursor={isUpvoted ? "not-allowed" : "pointer"} // Cursor disabled for repeated votes
           style={{
@@ -231,6 +202,7 @@ const VotingButton = ({
             fontWeight={"bold"}
             color={"green.200"}
             cursor={"pointer"}
+            id="voteButtonReward"
           >
             {upvoteCount}
           </Text>
@@ -243,7 +215,6 @@ const VotingButton = ({
             spacing={1}
             cursor="pointer"
             style={{ userSelect: 'none' }}
-            onMouseLeave={toggleValueTooltip}
           >
             <Text fontSize="18px" color="#ff0000">
               {isDownvoted ? <FaHeartBroken /> : ""}
@@ -255,18 +226,18 @@ const VotingButton = ({
         )}
       </HStack>
 
-      {isVoteModalOpen && (
+      <div id={uniqueId} />
 
+      {isVoteModalOpen && (
         <VoteButtonModal
           author={comment.author}
           permlink={comment.permlink}
           comment={comment}
           isModal={true}
           onClose={() => setIsVoteModalOpen(false)}
-          onSuccess={onVoteSuccess}
+          onSuccess={(voteType) => updateVotes(voteType, voteValue)}
           currentVoteType={isUpvoted ? 'upvote' : isDownvoted ? 'downvote' : 'none'}
         />
-
       )}
     </>
   );
