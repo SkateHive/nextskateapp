@@ -87,7 +87,9 @@ function PostContent({ user, postId }: { user: string, postId: string }) {
                             </Text>
                             <HStack spacing={4} alignItems="center">
                                 {connectedUser?.hiveUser && (
-                                    <VotingButton comment={post} username={String(connectedUser.hiveUser.name)} />
+                                    <VotingButton comment={post} username={String(connectedUser.hiveUser.name)} onVoteSuccess={function (voteType: string, voteValue: number): void {
+                                        throw new Error("Function not implemented.");
+                                    }} />
                                 )}
                                 <Button
                                     aria-label="Open Comments"
