@@ -7,7 +7,7 @@ const randomSentences = [
   "skate or don't",
   "F-u-c-k instagram!",
   "Ready to grind on chain?",
-  "Praise whoever made skatevideosite",
+  "Praise skatevideosite",
   "Loading Stokenomics...",
   "Initiating Proof of Stoke...",
   "We will load as fast as Daryl Rolls",
@@ -15,15 +15,16 @@ const randomSentences = [
   "take back the internet!",
   "Never lose your bros clips",
   "support your local skateshops!",
-  "Peoples Thrasher",
+  "The Peoples Thrasher",
   "Stack HP, buy with HBD",
   "Drop hills not bombs!",
   "Nobody owns Skatehive",
   "Connecting with Uganda Nodes",
-  "Preserve Macba",
   "Forget Youtube",
   "Stop using youtube",
   "If it takes to long, your connection sucks",
+  "Macba Lives",
+  "Skate till you tired, then skate more"
 ];
 
 function getRandomChar() {
@@ -86,7 +87,7 @@ const LoadingComponent = () => {
           position="relative"
           zIndex={1}
           color="#00FF00"
-          fontSize="44px"
+          fontSize="40px"
           textAlign="center"
           fontFamily="Joystix"
           p={4}
