@@ -205,7 +205,7 @@ const CommentItem = ({
             </Text>
           </HStack>
           <Box w="100%">
-            <MarkdownRenderer content={markdownWithoutMedia} renderers={MarkdownRenderers} />
+            <MarkdownRenderer content={markdownWithoutMedia} renderers={MarkdownRenderers} useDecryptedText />
           </Box>
         </VStack>
       </Flex>

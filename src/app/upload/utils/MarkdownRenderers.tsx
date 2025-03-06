@@ -18,7 +18,7 @@ type RendererProps = MarkdownProps & {
   href?: string;
 };
 
-const MentionRenderer = ({ children }: { children: React.ReactNode }) => {
+const MentionRenderer = ({ children, useDecryptedText }: { children: React.ReactNode, useDecryptedText: boolean }) => {
   const parts = React.Children.toArray(children);
   return (
     <>
@@ -33,20 +33,20 @@ const MentionRenderer = ({ children }: { children: React.ReactNode }) => {
                   href={`/skater/${username}`}
                   style={{ color: 'limegreen', fontWeight: 'bold' }}
                 >
-                  <DecryptedText text={subPart} />
+                  {useDecryptedText ? <DecryptedText text={subPart} /> : subPart}
                 </a>
               );
             }
-            return <DecryptedText key={`${index}-${subIndex}`} text={subPart} />;
+            return useDecryptedText ? <DecryptedText key={`${index}-${subIndex}`} text={subPart} /> : subPart;
           });
         }
-        return part;
+        return <React.Fragment key={index}>{part}</React.Fragment>; // Ensure non-string parts are rendered correctly
       })}
     </>
   );
 };
 
-export const MarkdownRenderers = {
+export const MarkdownRenderers = (useDecryptedText: boolean) => ({
   img: ({ alt, src, title, ...props }: RendererProps) => (
     <span style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <Image
@@ -69,7 +69,7 @@ export const MarkdownRenderers = {
 
   p: ({ children, ...props }: RendererProps) => (
     <div {...props} style={{ color: 'white', fontSize: '18px', paddingBottom: '15px' }}>
-      <MentionRenderer>{children}</MentionRenderer>
+      <MentionRenderer useDecryptedText={useDecryptedText}>{children}</MentionRenderer>
     </div>
   ),
   a: ({ href, children, ...props }: RendererProps) => {
@@ -258,4 +258,4 @@ export const MarkdownRenderers = {
   code: ({ children, ...props }: RendererProps) => (
     <code {...props} style={{ color: '#A6E22E', backgroundColor: '#001a09', padding: '2px', borderRadius: '4px' }}>{children}</code>
   )
-};
+});

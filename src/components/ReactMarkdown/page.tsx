@@ -10,9 +10,16 @@ interface MarkdownRendererProps {
     content: string;
     className?: string;
     renderers?: any;
+    useDecryptedText?: boolean; // Add new prop
 }
 
-const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ key, content, className, renderers = MarkdownRenderers }) => {
+const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
+    key,
+    content,
+    className,
+    renderers = MarkdownRenderers,
+    useDecryptedText = false // Default to false
+}) => {
     const transformedContent = React.useMemo(() => {
         return autoEmbedZoraLink(
             transform3SpeakContent(
@@ -29,7 +36,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ key, content, class
         <div className={className}>
             <ReactMarkdown
                 key={key ? key : "markdown-renderer"}
-                components={renderers}
+                components={renderers(useDecryptedText)} // Pass the prop to renderers
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeRaw]}
             >

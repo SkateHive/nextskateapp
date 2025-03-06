@@ -4,12 +4,10 @@ import usePosts from "@/hooks/usePosts";
 import { blockedUsers } from "@/lib/constants";
 import PostModel from "@/lib/models/post";
 import { Box, Button, ButtonGroup, Flex, Grid, Image, Text, useMediaQuery, VStack } from "@chakra-ui/react";
-
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FaBook, FaBookOpen } from "react-icons/fa";
 import { BeatLoader } from "react-spinners";
 import "../../styles/fonts.css";
-import LoginModal from "../Hive/Login/LoginModal";
 import Post from "../PostCard";
 import PostSkeleton from "../PostCard/Skeleton";
 
