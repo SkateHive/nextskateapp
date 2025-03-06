@@ -10,9 +10,9 @@ type ClientMarkdownRendererProps = {
 const ClientMarkdownRenderer: React.FC<ClientMarkdownRendererProps> = ({ content }) => {
 
     return (
-        <>
-            <MarkdownRenderer content={content} />
-        </>
+
+        <MarkdownRenderer content={content} />
+
     );
 };
 

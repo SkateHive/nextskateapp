@@ -1,4 +1,3 @@
-
 import React, { useEffect, useMemo, useState } from 'react';
 import { HiveAccount } from '@/lib/useHiveAuth';
 import {
@@ -38,10 +37,10 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
 
     // check if the connected user is already following the user
     useEffect(() => {
-        if (!canEditProfile) {
+        if (connectedUser && connectedUser !== user.name) {
             fetchFollowState();
         }
-    }, [canEditProfile]);
+    }, [connectedUser, user.name]);
 
     useEffect(() => {
         // if the user is ranked between 1 and 10 they are the max level and goes on
@@ -193,16 +192,16 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                         >
                             <HStack justifyContent="space-between">
                                 <HStack justifyContent="flex-start">
-                                    <Text fontWeight="bold" fontSize="18px"
+                                    <Box fontWeight="bold" fontSize="18px"
                                         textShadow="2px 2px 1px rgba(0,0,0,1)">
                                         {isLoading ? <Skeleton height="20px" width="100px" /> : user.name}
-                                    </Text>
+                                    </Box>
                                 </HStack>
 
-                                <Text fontWeight="bold" fontSize="18px"
+                                <Box fontWeight="bold" fontSize="18px"
                                     textShadow="2px 2px 1px rgba(0,0,0,1)">
                                     {isLoading ? <Skeleton height="20px" width="50px" /> : `Rank ${userRanking}`}
-                                </Text>
+                                </Box>
                             </HStack>
                         </CardHeader>
 
@@ -228,25 +227,25 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                                             <Image src="/logos/hp_logo.png" alt="Logo" boxSize="20px" />
                                             <Text>Power:</Text>
                                         </HStack>
-                                        <Text>{isLoading ? <Skeleton height="20px" width="50px" /> : `${userInfo?.hp_balance.toFixed(0)} HP`}</Text>
+                                        <Box>{isLoading ? <Skeleton height="20px" width="50px" /> : `${userInfo?.hp_balance.toFixed(0)} HP`}</Box>
                                     </HStack>
                                     <HStack justify="space-between">
                                         <HStack>
                                             <Image src="/logos/gnars_logo.png" alt="Logo" boxSize="18px" />
                                             <Text cursor="pointer">Gnars:</Text>
                                         </HStack>
-                                        <Text cursor="pointer">{isLoading ? <Skeleton height="20px" width="50px" /> : `${String(userInfo?.gnars_balance) || 0}`}</Text>
+                                        <Box cursor="pointer">{isLoading ? <Skeleton height="20px" width="50px" /> : `${String(userInfo?.gnars_balance) || 0}`}</Box>
                                     </HStack>
                                     <HStack justify="space-between">
                                         <HStack>
                                             <Image src="/skatehive_square_green.png" alt="Logo" boxSize="20px" />
                                             <Text cursor="pointer">Exp:</Text>
                                         </HStack>
-                                        <Text cursor="pointer">{isLoading ? <Skeleton height="20px" width="50px" /> : `${Math.ceil(userInfo?.points || 0)} XP`}</Text>
+                                        <Box cursor="pointer">{isLoading ? <Skeleton height="20px" width="50px" /> : `${Math.ceil(userInfo?.points || 0)} XP`}</Box>
                                     </HStack>
                                     <HStack justify="space-between">
                                         <Text cursor="pointer">📹 VideoParts:</Text>
-                                        <Text cursor="pointer">{isLoading ? <Skeleton height="20px" width="50px" /> : `${userVideoParts || 0}`}</Text>
+                                        <Box cursor="pointer">{isLoading ? <Skeleton height="20px" width="50px" /> : `${userVideoParts || 0}`}</Box>
                                     </HStack>
                                 </Box>
                             </VStack>
@@ -361,15 +360,15 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                         >
                             <HStack justifyContent="space-between">
                                 <HStack justifyContent="flex-start">
-                                    <Text fontWeight="bold" fontSize="18px"
+                                    <Box fontWeight="bold" fontSize="18px"
                                         textShadow="2px 2px 1px rgba(0,0,0,1)">
                                         {isLoading ? <Skeleton height="20px" width="100px" /> : user.name}
-                                    </Text>
+                                    </Box>
                                 </HStack>
-                                <Text fontWeight="bold" fontSize="18px"
+                                <Box fontWeight="bold" fontSize="18px"
                                     textShadow="2px 2px 1px rgba(0,0,0,1)">
                                     {isLoading ? <Skeleton height="20px" width="50px" /> : `Rank ${userRanking}`}
-                                </Text>
+                                </Box>
                             </HStack>
                         </CardHeader>
                         <CardBody id='backSideBody'
@@ -395,7 +394,6 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                                 }}>
                                 <HStack justify="center">
                                     {isLoading ? <SkeletonCircle size="20" /> : <UserAvatar hiveAccount={user} borderRadius={100} boxSize={20} />}
-                                    <Text size="md" color="white"></Text>
                                 </HStack>
                             </CardHeader>
                             <HStack justify="center">

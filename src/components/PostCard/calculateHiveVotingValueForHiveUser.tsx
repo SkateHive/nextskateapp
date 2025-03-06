@@ -39,7 +39,6 @@ export const voting_value2 = async (user: any) => {
     const rshares = power * final_vest / 10000;
 
     const estimate = rshares / recentClaimsNumeric * rewardBalanceNumeric * hbdMedianPrice;
-    console.log('estimate', estimate);
     return estimate;
 }
 

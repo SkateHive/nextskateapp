@@ -21,7 +21,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     useDecryptedText = false // Default to false
 }) => {
     const transformedContent = React.useMemo(() => {
-        return autoEmbedZoraLink(
+        return (
             transform3SpeakContent(
                 transformEcencyImages(
                     transformNormalYoutubeLinksinIframes(
@@ -36,7 +36,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
         <div className={className}>
             <ReactMarkdown
                 key={key ? key : "markdown-renderer"}
-                components={renderers(useDecryptedText)} // Pass the prop to renderers
+                components={renderers}
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeRaw]}
             >

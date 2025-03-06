@@ -22,7 +22,7 @@ const SidebarLogo = () => {
             }
             secondContent={
                 <Image
-                    src={activeAuction?.token?.image || "/SKATE_HIVE_VECTOR_FIN_HOVER.svg"}
+                    src={activeAuction?.token?.image || "/SKATE_HIVE_VECTOR_FIN.svg"}
                     alt="SkateHive Hover Logo"
                     style={{ width: "100%", height: "100%", objectFit: "cover" }}
                     onClick={() => router.push(`https://nouns.build/dao/base/${activeAuction?.token?.tokenContract}`)}
