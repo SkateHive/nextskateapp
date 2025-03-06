@@ -31,7 +31,6 @@ function LoginModal({
       await loginWithHive(username, useLoginAs, privateKey)
       refreshUser()
       setIsLogginIn(false)
-      console.log(hiveUser)
     } catch (error) {
       console.error(error)
       setErrorMessage(error ? error.toString() : "Unknown error")
@@ -57,8 +56,6 @@ function LoginModal({
             onClose={onClose}
             username={username}
             setUsername={setUsername}
-            privateKey={privateKey}
-            setPrivateKey={setPrivateKey}
             doLogin={doLogin}
             isLogginIn={isLogginIn}
             errorMessage={errorMessage}
