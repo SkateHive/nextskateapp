@@ -30,10 +30,10 @@ function PostCarousel() {
   const imageLinks = extractLinksFromMarkdown(post.body)
   const iframeLinks = extractIFrameLinks(post.body)
   const tSpeakLinks = extractCustomLinks(post.body)
-  const youtubeLinks = extractYoutubeLinks(post.body) // extract YouTube video links
+  const youtubeLinks = extractYoutubeLinks(post.body)
   let videoLinks: LinkWithDomain[] = []
 
-  videoLinks = [...iframeLinks, ...tSpeakLinks, ...youtubeLinks] // include youtube links
+  videoLinks = [...iframeLinks, ...tSpeakLinks, ...youtubeLinks]
 
   const thumbnail = post.getThumbnail()
 
@@ -44,12 +44,20 @@ function PostCarousel() {
       ![SKATEHIVE_DISCORD_IMAGE, SKATEHIVE_LOGO].includes(image.url) &&
       !uniqueImageUrls.has(image.url)
     ) {
-      uniqueImageUrls.add(image.url)
       uniqueImageUrls.add(thumbnail)
+      uniqueImageUrls.add(image.url)
       return true
     }
     return false
   })
+
+  // Add the thumbnail to the beginning of the filteredImages array if it exists
+  if (thumbnail) {
+    filteredImages.unshift({
+      domain: "thumbnail",
+      url: thumbnail,
+    })
+  }
 
   // Add a placeholder image if filteredImages is empty
   if (filteredImages.length === 0 && videoLinks.length === 0) {
