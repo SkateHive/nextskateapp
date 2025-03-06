@@ -33,7 +33,6 @@ const VotingButton = ({
         try {
           const value = await voting_value2(hiveUser);
           setCalculatedVoteValue(value);
-          console.log("Fetched vote value:", value);
         } catch (error) {
           console.error("Error fetching vote value:", error);
         }
