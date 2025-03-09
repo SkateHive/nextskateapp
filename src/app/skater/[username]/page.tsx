@@ -14,7 +14,6 @@ interface ProfilePageProps {
 
 export default function SkaterPage({ params }: ProfilePageProps) {
   const { hiveAccount } = useHiveAccount(params.username);
-  if (!hiveAccount) return <Box w={"100%"}><LoadingComponent /></Box>;
   return (
     <Box
       color={"white"}
@@ -24,8 +23,12 @@ export default function SkaterPage({ params }: ProfilePageProps) {
       id="SkaterPage"
       mt={4}
     >
-      <SkaterHeader user={hiveAccount} />
-      <SkaterTabs user={hiveAccount} />
+      {!hiveAccount ? (<Box w={"100%"}><LoadingComponent /></Box>) : (
+        <>
+          <SkaterHeader user={hiveAccount} />
+          <SkaterTabs user={hiveAccount} />
+        </>
+      )}
     </Box>
   );
 }
