@@ -24,7 +24,16 @@ export default function ProfilePosts({ user }: ProfilePageProps) {
     100,
   ]);
   if (!hiveAccount || !posts) return <div>Loading...</div>;
-
+  // filter posts by category and original_permlink in one step
+  const final_posts = posts.filter((post) => {
+    if (post.category !== "hive-173115") return false;
+    try {
+      const metadata = JSON.parse(post.json_metadata);
+      return !metadata.original_permlink;
+    } catch (e) {
+      return true;
+    }
+  });
   return (
     <Box width="100%">
       <InfiniteScroll
@@ -48,8 +57,8 @@ export default function ProfilePosts({ user }: ProfilePageProps) {
           }}
           gap={0}
         >
-          {posts.length > 0 &&
-            posts.slice(0, visiblePosts).map((post, i) => {
+          {final_posts.length > 0 &&
+            final_posts.slice(0, visiblePosts).map((post, i) => {
               return (
                 <Post
                   key={`${queryCategory}-${post.url}`}

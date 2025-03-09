@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import ProfilePosts from "../Profile/ProfilePosts";
 import VideoParts from "../Profile/profileVideos";
 import ProfileCard from "../Profile/profileCard";
-import { useComments } from "@/hooks/comments";
 import SkaterFeed from "./SkaterFeed";
 
 interface ProfilePageProps {
@@ -14,15 +13,9 @@ interface ProfilePageProps {
 
 const tabNames = ["feed", "card", "pages", "videoparts"];
 
-const parent_author = process.env.NEXT_PUBLIC_MAINFEED_AUTHOR || "skatehacker";
-const parent_permlink = process.env.NEXT_PUBLIC_MAINFEED_PERMLINK || "test-advance-mode-post";
-
-
 export default function SkaterTabs({ user }: ProfilePageProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const filteredComments = useComments(parent_author, parent_permlink, false, user.name);
-  console.log("filteredComments", filteredComments);
   // Converting ReadonlyURLSearchParams to URLSearchParams
   const params = new URLSearchParams(searchParams?.toString() || "");
 

@@ -51,6 +51,17 @@ export default function ProfileBlog({ user }: ProfilePageProps) {
       </Box>
     )
 
+  // Reuse the filtering logic from ProfilePosts.tsx
+  const final_posts = posts.filter((post) => {
+    if (post.category !== "hive-173115") return false;
+    try {
+      const metadata = JSON.parse(post.json_metadata);
+      return !metadata.original_permlink;
+    } catch (e) {
+      return true;
+    }
+  });
+
   return (
     <Box width="100%" minHeight="100vh">
       <InfiniteScroll
@@ -75,8 +86,8 @@ export default function ProfileBlog({ user }: ProfilePageProps) {
           minHeight="100vh"
         >
 
-          {posts.length > 0 &&
-            posts.slice(0, visiblePosts).map((post, i) => {
+          {final_posts.length > 0 &&
+            final_posts.slice(0, visiblePosts).map((post, i) => {
               return (
                 <Post
                   key={`${queryCategory}-${post.url}`}
