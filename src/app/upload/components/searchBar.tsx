@@ -107,6 +107,8 @@ const AuthorSearchBar: React.FC<AuthorSearchBarProps> = ({ onSearch }) => {
                     </InputLeftElement>
                 )}
                 <Input
+                    id="author-search-input" // Added id attribute
+                    name="authorSearch" // Added name attribute
                     placeholder="Find a Skater/Photographer..."
                     value={username}
                     onChange={(e) => {
