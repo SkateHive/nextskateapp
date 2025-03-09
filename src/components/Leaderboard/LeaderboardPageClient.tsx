@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Box, Text, Button, Th, VStack, Image, Center } from '@chakra-ui/react';
+import { Box, Text, Button, Th, VStack, Image, Center, Container } from '@chakra-ui/react';
 import LeaderboardTable from '@/components/Leaderboard/LeaderboardTable';
 import useLeaderboardData from '@/hooks/useLeaderboardData';
 import LoginModal from '../Hive/Login/LoginModal';
@@ -67,50 +67,53 @@ const LeaderboardPageClient = () => {
     }
 
     return (
-        <Box
-            p={2}
-            w={['100%']}
-            bg="black"
-            borderRadius="md"
-            boxShadow="lg"
-            overflowX="auto"
-        >
-            {connectedUser && userRanking !== undefined ? (
-                <ConnectedUserBanner
-                    connectedUser={connectedUser}
-                    userRanking={userRanking}
-                    userData={leaderboardData && leaderboardData[userRanking - 1] ? leaderboardData[userRanking - 1] as DataBaseAuthor : { hive_author: '' }}
-                    openModal={openModal}
-                />
-            ) : (
-                <Box textAlign="center" m={10}>
-                    <Button onClick={handleLoginModal} colorScheme="red" variant="solid">
-                        Log in to see your stats
+        <Container maxW="container.lg" mx="auto">
+            <Box
+                p={2}
+                w="full"
+                bg="black"
+                borderRadius="md"
+                boxShadow="lg"
+                overflowX="hidden"
+            >
+
+                {connectedUser && userRanking !== undefined ? (
+                    <ConnectedUserBanner
+                        connectedUser={connectedUser}
+                        userRanking={userRanking}
+                        userData={leaderboardData && leaderboardData[userRanking - 1] ? leaderboardData[userRanking - 1] as DataBaseAuthor : { hive_author: '' }}
+                        openModal={openModal}
+                    />
+                ) : (
+                    <Box textAlign="center" m={10}>
+                        <Button onClick={handleLoginModal} colorScheme="red" variant="solid">
+                            Log in to see your stats
+                        </Button>
+                    </Box>
+                )}
+                {isOpen && (
+                    <LoginModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
+                )}
+                <Text textAlign="center" fontSize="xl" color="lightgreen" textShadow="0 0 10px green">
+                    We are {leaderboardData ? leaderboardData.length : 0} skaters supporting ourselves. 🛹
+                </Text>
+                <LeaderboardTable data={leaderboardData || []} />
+                <Center>
+                    <Button onClick={handleNavigate} colorScheme="green" variant="solid" mt={5}>
+                        Check the Complete List
                     </Button>
-                </Box>
-            )}
-            {isOpen && (
-                <LoginModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
-            )}
-            <Text textAlign="center" fontSize="xl" color="lightgreen" textShadow="0 0 10px green">
-                We are {leaderboardData ? leaderboardData.length : 0} skaters supporting ourselves. 🛹
-            </Text>
-            <LeaderboardTable data={leaderboardData || []} />
-            <Center>
-                <Button onClick={handleNavigate} colorScheme="green" variant="solid" mt={5}>
-                    Check the Complete List
-                </Button>
-            </Center>
-            <LeaderboardModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                title={modalProps.title}
-                content={modalProps.content}
-                actionText={modalProps.actionText}
-                onAction={modalProps.onAction}
-                data={{ ...modalProps.data, hive_author: modalProps.data.hive_author || '' }}
-            />
-        </Box>
+                </Center>
+                <LeaderboardModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    title={modalProps.title}
+                    content={modalProps.content}
+                    actionText={modalProps.actionText}
+                    onAction={modalProps.onAction}
+                    data={{ ...modalProps.data, hive_author: modalProps.data.hive_author || '' }}
+                />
+            </Box>
+        </Container>
     );
 };
 
