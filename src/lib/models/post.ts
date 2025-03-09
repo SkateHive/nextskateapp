@@ -64,11 +64,11 @@ export default class PostModel {
     return totalPayout + curatorPayout + pendingPayout
   }
 
-  getThumbnail(): string {
+  getThumbnail(): string | undefined {
     return (
       (this.metadata().image && this.metadata().image[0]) ||
       (this.body && extractFirstLink(this.body)) ||
-      ""
+      undefined
     )
   }
 

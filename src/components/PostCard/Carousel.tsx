@@ -26,33 +26,39 @@ const responsive = {
 }
 
 function PostCarousel() {
-  let { post } = usePostContext()
+  const { post } = usePostContext()
   const imageLinks = extractLinksFromMarkdown(post.body)
   const iframeLinks = extractIFrameLinks(post.body)
   const tSpeakLinks = extractCustomLinks(post.body)
   const youtubeLinks = extractYoutubeLinks(post.body)
   let videoLinks: LinkWithDomain[] = []
-
   videoLinks = [...iframeLinks, ...tSpeakLinks, ...youtubeLinks]
 
-  const thumbnail = post.getThumbnail()
+  const thumbnail: string | undefined = post.getThumbnail()
 
   // Create a Set to filter out duplicate image URLs
-  const uniqueImageUrls = new Set()
+  const uniqueImageUrls = new Set<string>()
   const filteredImages = imageLinks.filter((image) => {
     if (
       ![SKATEHIVE_DISCORD_IMAGE, SKATEHIVE_LOGO].includes(image.url) &&
       !uniqueImageUrls.has(image.url)
     ) {
-      uniqueImageUrls.add(thumbnail)
+      if (typeof thumbnail === 'string') {
+        uniqueImageUrls.add(thumbnail)
+      }
       uniqueImageUrls.add(image.url)
+      const metadataImage: string[] | undefined = post.metadata()?.image
+      console.log("Metadata Image:", metadataImage)
+      if (Array.isArray(metadataImage) && metadataImage[0].startsWith("http")) {
+        uniqueImageUrls.add(metadataImage[0])
+      }
       return true
     }
     return false
   })
 
   // Add the thumbnail to the beginning of the filteredImages array if it exists
-  if (thumbnail) {
+  if (typeof thumbnail === 'string' && thumbnail.startsWith("http")) {
     filteredImages.unshift({
       domain: "thumbnail",
       url: thumbnail,
@@ -75,7 +81,7 @@ function PostCarousel() {
     !image.url.toLowerCase().endsWith('.gif')
   );
 
-
+  console.log("Filtered Images Before Rendering:", filteredImages)
 
   const carouselRef = useRef<any>(null)
 

@@ -206,15 +206,35 @@ export const extractMediaItems = (markdown: string): MediaItem[] => {
   const mediaItems: MediaItem[] = [];
 
   let match;
+
+  // Extract normal images
   while ((match = imageMarkdownRegex.exec(markdown))) {
-    mediaItems.push({ type: 'image', url: match[1] });
+    if (!match[1].includes("ipfs-3speak.b-cdn.net")) {
+      mediaItems.push({ type: "image", url: match[1] });
+    }
   }
+
+  // Extract HTML images
   while ((match = imageHtmlRegex.exec(markdown))) {
-    mediaItems.push({ type: 'image', url: match[1] });
+    mediaItems.push({ type: "image", url: match[1] });
   }
+
+  // Extract embedded iframes
   while ((match = iframeRegex.exec(markdown))) {
-    mediaItems.push({ type: 'video', url: match[1] });
+    mediaItems.push({ type: "video", url: match[1] });
   }
+
+  // Extract 3Speak videos properly
+  const speakRegex = /\[!\[\]\((https:\/\/ipfs-3speak\.b-cdn\.net\/ipfs\/[a-zA-Z0-9]+\/)\)\]\((https:\/\/3speak\.tv\/watch\?v=([a-zA-Z0-9-_]+\/[a-zA-Z0-9]+))\)/;
+  const speakMatch = markdown.match(speakRegex);
+  if (speakMatch) {
+    const videoID = speakMatch[3];
+    mediaItems.push({
+      type: "video",
+      url: `https://3speak.tv/embed?v=${videoID}`,
+    });
+  }
+
   return mediaItems;
 };
 export interface LinkWithDomain {
@@ -227,13 +247,21 @@ export function extractLinksFromMarkdown(
   const linkRegex = /!\[.*?\]\((.*?)\)/g
   const links = markdownContent.match(linkRegex) || []
 
-  const linksWithDomains: LinkWithDomain[] = links.map((link) => {
-    const urlMatch = link.match(/\[.*?\]\((.*?)\)/)
-    const fullUrl = urlMatch ? urlMatch[1] : ""
-    const parsedUrl = url.parse(fullUrl)
-    const domain = parsedUrl.hostname || ""
-    return { url: fullUrl, domain }
-  })
+  const linksWithDomains: LinkWithDomain[] = links
+    .map((link) => {
+      const urlMatch = link.match(/\[.*?\]\((.*?)\)/)
+      const fullUrl = urlMatch ? urlMatch[1] : ""
+      const parsedUrl = url.parse(fullUrl)
+      const domain = parsedUrl.hostname || ""
+
+      // Exclude 3Speak video preview images
+      if (fullUrl.includes("ipfs-3speak.b-cdn.net")) {
+        return null // Skip these broken images
+      }
+
+      return { url: fullUrl, domain }
+    })
+    .filter(Boolean) as LinkWithDomain[] // Remove null values
 
   return linksWithDomains
 }
