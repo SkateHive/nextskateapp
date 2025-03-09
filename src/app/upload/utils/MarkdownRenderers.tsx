@@ -1,5 +1,5 @@
 import { SkateHivePreviewCard } from '@/app/mainFeed/components/SkatehivePreviewCard';
-import { Box, Divider, Image } from '@chakra-ui/react';
+import { Box, Center, Divider, Image } from '@chakra-ui/react';
 import React from 'react';
 import ProfileLink from './ProfileLink';
 import VideoRenderer from './VideoRenderer'; // Import the VideoRenderer
@@ -47,31 +47,40 @@ const MentionRenderer = ({ children, useDecryptedText }: { children: React.React
 };
 
 export const MarkdownRenderers = (useDecryptedText: boolean) => ({
+  // Custom handler for images
   img: ({ alt, src, title, ...props }: RendererProps) => (
-    <span style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-      <Image
-        {...props}
-        alt={alt}
-        src={src}
-        title={title}
-        width="100%"
-        height="auto"
-        loading="lazy"
-        style={{
-          display: 'inline-block',
-          maxWidth: '100%',
-          marginTop: '20px',
-          marginBottom: '20px',
-        }}
-      />
+    <span style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+      <Center>
+        <Image
+          {...props}
+          alt={alt}
+          src={src}
+          title={title}
+          width="100%"
+          height="auto"
+          loading="lazy"
+          style={{
+            display: "inline-block",
+            maxWidth: "100%",
+            marginTop: "20px",
+            marginBottom: "20px",
+          }}
+        />
+
+      </Center>
+
     </span>
   ),
-
-  p: ({ children, ...props }: RendererProps) => (
-    <div {...props} style={{ color: 'white', fontSize: '18px', paddingBottom: '15px' }}>
-      <MentionRenderer useDecryptedText={useDecryptedText}>{children}</MentionRenderer>
-    </div>
-  ),
+  div: ({ children, node, ...props }: RendererProps) => {
+    if (node?.properties?.className?.includes("centered-image")) {
+      return (
+        <div style={{ justifyContent: "center", alignItems: "center", width: "100%" }}>
+          {children}
+        </div>
+      );
+    }
+    return <div {...props}>{children}</div>;
+  },
   a: ({ href, children, ...props }: RendererProps) => {
     const skateHivePostRegex = /https:\/\/www\.skatehive\.app\/post\/([^/]+)\/@([^/]+)\/([^/]+)/;
     const match = skateHivePostRegex.exec(String(href));
@@ -257,5 +266,6 @@ export const MarkdownRenderers = (useDecryptedText: boolean) => ({
   ),
   code: ({ children, ...props }: RendererProps) => (
     <code {...props} style={{ color: '#A6E22E', backgroundColor: '#001a09', padding: '2px', borderRadius: '4px' }}>{children}</code>
-  )
+  ),
+
 });

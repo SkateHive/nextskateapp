@@ -28,9 +28,6 @@ import { FaGlobe } from "react-icons/fa";
 import Header from "../PostCard/Header";
 import TipButton from "../PostCard/TipButton";
 import MarkdownRenderer from "../ReactMarkdown/page";
-import CommandPrompt from "./commentPrompt";
-import CommentsSection from "./commentSection";
-import DecryptedText from "../DecryptedText";
 import CommentsComponent from "@/app/dao/components/comments";
 
 interface PostModalInterface {
@@ -42,8 +39,6 @@ interface PostModalInterface {
 export function PostModal({ isOpen, onClose, username }: PostModalInterface) {
   const { post } = usePostContext();
   const { comments, addComment } = useComments(post.author, post.permlink, true);
-  const postBody = transform3SpeakContent(post.body);
-  const transformedPostBody = useMemo(() => transformEcencyImages(postBody), [postBody]);
   const [isValueTooltipOpen, setIsValueTooltipOpen] = useState(false);
   const { hiveUser, voteValue } = useHiveUser();
 
@@ -99,7 +94,6 @@ export function PostModal({ isOpen, onClose, username }: PostModalInterface) {
       setIsValueTooltipOpen(false);
     }, 3000);
   };
-
   return (
     <Modal isOpen={isOpen} onClose={onClose} size={{ base: "lg", md: "2xl", lg: "6xl" }}>
       <ModalOverlay style={{ backdropFilter: "blur(5px)" }} />
@@ -129,7 +123,7 @@ export function PostModal({ isOpen, onClose, username }: PostModalInterface) {
                 </VStack>
               </Center>
             ) : (
-              <MarkdownRenderer content={isTranslated ? translatedPost : transformedPostBody} />
+              <MarkdownRenderer content={isTranslated ? translatedPost : post.body} />
             )}
           </Box>
           <Box minW="50%">
