@@ -68,7 +68,18 @@ const TransactionHistory = () => {
                     <HStack key={index} p={4} borderBottom="1px solid gray">
                         <Image src={CLAIM_REWARDS_IMAGE} boxSize={10} />
                         <Text fontSize="lg">
-                            Claim Reward: {details.reward_hbd} and {details.reward_vests}
+                            <HStack>
+                                <Text>Claim Reward:</Text>
+                                {details.reward_hive && (
+                                    <Text>{`${details.reward_hive} HIVE`}</Text>
+                                )}
+                                {details.reward_hbd && (
+                                    <Text>{`${details.reward_hbd} HBD`}</Text>
+                                )}
+                                {details.reward_vests && (
+                                    <Text>{`${details.reward_vests} VESTS`}</Text>
+                                )}
+                            </HStack>
                         </Text>
                     </HStack>
                 );
