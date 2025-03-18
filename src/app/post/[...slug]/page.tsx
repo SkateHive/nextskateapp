@@ -18,7 +18,21 @@ export async function generateMetadata(
   // Get metadataBase from parent if available
   const parentMetadata = await parent;
   const metadataBase = parentMetadata.metadataBase || new URL('https://skatehive.app');
-
+  //TODO: fix tested code
+  const frame = {
+    version: "next",
+    imageUrl: `https://skatehive.app/frames/hello/opengraph-image`,
+    button: {
+      title: "Open post",
+      action: {
+        type: "launch_frame",
+        name: "Farcaster Frames Hive v2 Demo",
+        url: `https://skatehive.app/frames/hello/opengraph-image`,
+        splashImageUrl: `https://skatehive.app/frames/hello/opengraph-image`,
+        splashBackgroundColor: "#f7f7f7",
+      },
+    },
+  };
   return {
     title: post.title,
     description: `${String(post.body).slice(0, 128)}...`,
@@ -37,6 +51,9 @@ export async function generateMetadata(
       title: post.title,
       description: `${String(post.body).slice(0, 128)}...`,
       images: Array.isArray(banner) ? banner.map((img: string) => new URL(img, metadataBase).toString()) : [],
+    },
+    other: {
+      "fc:frame": JSON.stringify(frame),
     },
   };
 }
