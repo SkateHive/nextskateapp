@@ -21,14 +21,14 @@ export async function generateMetadata(
   //TODO: fix tested code
   const frame = {
     version: "next",
-    imageUrl: `https://skatehive.app/frames/hello/opengraph-image`,
+    imageUrl: banner[0] || 'https://www.skatehive.app/default-image.png', // Use the first image from the banner or a default image
     button: {
       title: "Open post",
       action: {
         type: "launch_frame",
         name: "Farcaster Frames Hive v2 Demo",
-        url: `https://skatehive.app/frames/hello/opengraph-image`,
-        splashImageUrl: `https://skatehive.app/frames/hello/opengraph-image`,
+        url: `${metadataBase.origin}/post/${postId}`,
+        splashImageUrl: 'https://www.skatehive.app/SKATE_HIVE_VECTOR_FIN.svg',
         splashBackgroundColor: "#f7f7f7",
       },
     },
