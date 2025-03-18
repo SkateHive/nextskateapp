@@ -21,7 +21,7 @@ export async function generateMetadata(
   //TODO: fix tested code
   const frame = {
     version: "next",
-    imageUrl: banner[0] || 'https://www.skatehive.app/default-image.png', // Use the first image from the banner or a default image
+    imageUrl: banner && banner.length > 0 ? new URL(banner[0], metadataBase).toString() : 'https://www.skatehive.app/default-image.png', // Ensure imageUrl is a valid URL
     button: {
       title: "Open post",
       action: {
