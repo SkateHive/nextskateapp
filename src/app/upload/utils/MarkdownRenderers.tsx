@@ -190,8 +190,31 @@ export const MarkdownRenderers = (useDecryptedText: boolean) => ({
     const zoraRegex = /https:\/\/zora\.co\/.*/;
     const threeSpeakRegex = /https:\/\/3speak\.tv\/.*/;
     const youtubeRegex = /https:\/\/(www\.)?youtube\.com\/.*/;
+    const ipfsSkateHiveRegex = /https:\/\/ipfs\.skatehive\.app\/ipfs\/.*/;
+    console.log("iframe src", src);
 
-    if (zoraRegex.test(String(src)) || threeSpeakRegex.test(String(src)) || youtubeRegex.test(String(src))) {
+    // Only IPFS sources should be rendered as iframes
+    if (ipfsSkateHiveRegex.test(String(src))) {
+      console.log("iframe src for direct rendering", src);
+      return (
+        <center>
+          <iframe
+            {...props}
+            src={src}
+            style={{ marginBottom: '10px', maxWidth: '100%', minWidth: '100%', aspectRatio: '16/9', height: '100%', border: '2px grey solid' }}
+            allowFullScreen
+          />
+        </center>
+      );
+    }
+    // Video sources that should be handled by VideoRenderer
+    else if (zoraRegex.test(String(src)) || threeSpeakRegex.test(String(src)) || youtubeRegex.test(String(src))) {
+      console.log("iframe src for VideoRenderer", src);
+      return <VideoRenderer src={src} {...props} />;
+    }
+    // All other iframes should be rendered directly
+    else {
+      console.log("other iframe src", src);
       return (
         <center>
           <iframe
@@ -201,8 +224,6 @@ export const MarkdownRenderers = (useDecryptedText: boolean) => ({
           />
         </center>
       );
-    } else {
-      return <VideoRenderer src={src} {...props} />;
     }
   },
   video: VideoRenderer,

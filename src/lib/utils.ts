@@ -153,14 +153,15 @@ export function transformShortYoutubeLinksinIframes(content: string) {
   if (!content) return "";
   const regex = /https:\/\/youtu\.be\/([a-zA-Z0-9-_?=&]+)/g;
   return content.replace(regex, (match, videoID) => {
-    return `<iframe src="https://www.youtube.com/embed/${videoID}" width="560" height="315" allowfullscreen></iframe>`;
+    return `<iframe src="https://www.youtube.com/embed/${videoID}" width="100%" height="445px" allowfullscreen></iframe>`;
   });
 }
 export function transformNormalYoutubeLinksinIframes(content: string) {
+  console.log("Transforming normal YouTube links into iframes");
   const regex = /https:\/\/(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9-_]+)([&?][a-zA-Z0-9-_=&]*)*/g;
   return content.replace(regex, (match, videoID) => {
     const embedUrl = `https://www.youtube.com/embed/${videoID}`;
-    return `<iframe src="https://www.youtube.com/embed/${videoID}" width="560" height="315" allowfullscreen></iframe>`;
+    return `<iframe src="https://www.youtube.com/embed/${videoID}" width="100%" height="445px"></iframe>`;
   });
 }
 export function autoEmbedZoraLink(content: string) {
