@@ -153,7 +153,7 @@ export function transformShortYoutubeLinksinIframes(content: string) {
   if (!content) return "";
   const regex = /https:\/\/youtu\.be\/([a-zA-Z0-9-_?=&]+)/g;
   return content.replace(regex, (match, videoID) => {
-    return `<iframe src="https://www.youtube.com/embed/${videoID}" width="100%" height="445px" allowfullscreen></iframe>`;
+    return `<iframe src="https://www.youtube.com/embed/${videoID}" width="100%" height="315" style="border:0; border-radius:8px; box-shadow:0 4px 8px rgba(0, 0, 0, 0.1); max-width: 560px;" allowfullscreen></iframe>`;
   });
 }
 export function transformNormalYoutubeLinksinIframes(content: string) {
@@ -161,7 +161,7 @@ export function transformNormalYoutubeLinksinIframes(content: string) {
   const regex = /https:\/\/(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9-_]+)([&?][a-zA-Z0-9-_=&]*)*/g;
   return content.replace(regex, (match, videoID) => {
     const embedUrl = `https://www.youtube.com/embed/${videoID}`;
-    return `<iframe src="https://www.youtube.com/embed/${videoID}" width="100%" height="445px"></iframe>`;
+    return `<iframe src="https://www.youtube.com/embed/${videoID}" width="100%" height="315" style="border:0; border-radius:8px; box-shadow:0 4px 8px rgba(0, 0, 0, 0.1); max-width: 560px;" allowfullscreen></iframe>`;
   });
 }
 export function autoEmbedZoraLink(content: string) {
