@@ -41,7 +41,6 @@ export function PostModal({ isOpen, onClose, username }: PostModalInterface) {
   const { comments, addComment } = useComments(post.author, post.permlink, true);
   const [isValueTooltipOpen, setIsValueTooltipOpen] = useState(false);
   const { hiveUser, voteValue } = useHiveUser();
-  console.log(post);
   const usernameString = username
     ? typeof username === "string"
       ? username
@@ -123,7 +122,9 @@ export function PostModal({ isOpen, onClose, username }: PostModalInterface) {
                 </VStack>
               </Center>
             ) : (
-              <MarkdownRenderer content={isTranslated ? translatedPost : post.body} />
+              <>
+                <MarkdownRenderer content={isTranslated ? translatedPost : post.body} />
+              </>
             )}
           </Box>
           <Box minW="50%">

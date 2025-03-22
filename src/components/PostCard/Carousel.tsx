@@ -48,7 +48,6 @@ function PostCarousel() {
       }
       uniqueImageUrls.add(image.url)
       const metadataImage: string[] | undefined = post.metadata()?.image
-      console.log("Metadata Image:", metadataImage)
       if (Array.isArray(metadataImage) && metadataImage[0].startsWith("http")) {
         uniqueImageUrls.add(metadataImage[0])
       }
@@ -81,7 +80,6 @@ function PostCarousel() {
     !image.url.toLowerCase().endsWith('.gif')
   );
 
-  console.log("Filtered Images Before Rendering:", filteredImages)
 
   const carouselRef = useRef<any>(null)
 

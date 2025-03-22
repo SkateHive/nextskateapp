@@ -31,22 +31,22 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
 }) => {
     const transformedContent = React.useMemo(() => {
         let preprocessedContent = preprocessMarkdown(content);
-        return (
-            transform3SpeakContent(
-                transformEcencyImages(
-                    transformNormalYoutubeLinksinIframes(
-                        transformShortYoutubeLinksinIframes(preprocessedContent)
-                    )
+
+        const transformed = transform3SpeakContent(
+            transformEcencyImages(
+                transformNormalYoutubeLinksinIframes(
+                    transformShortYoutubeLinksinIframes(preprocessedContent)
                 )
             )
         );
+        return transformed;
     }, [content]);
 
     return (
         <div className={className}>
             <ReactMarkdown
                 key={key ? key : "markdown-renderer"}
-                components={renderers}
+                components={renderers(useDecryptedText)} // Ensure MarkdownRenderers is passed here
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeRaw]}
             >

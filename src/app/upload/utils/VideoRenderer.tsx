@@ -8,12 +8,11 @@ import LoadingComponent from '../../mainFeed/components/loadingComponent'; // ad
 type RendererProps = {
     src?: string;
     loop?: boolean;
-    onCommentIconClick?: () => void;
+    onCommentIconClick?: () => void; // Ensure this prop is optional
     [key: string]: any;
 };
 
-const VideoRenderer = ({ src, onCommentIconClick, ...props }: RendererProps) => {
-
+const VideoRenderer = ({ src, onCommentIconClick = () => { }, ...props }: RendererProps) => {
     const videoRef = useRef<HTMLVideoElement>(null);
     // Removed poster state
     const [isPlaying, setIsPlaying] = useState(false);
@@ -206,7 +205,7 @@ const VideoRenderer = ({ src, onCommentIconClick, ...props }: RendererProps) => 
                             aria-label='Toggle comments'
                             icon={<FaRegComment />}
                             colorScheme='teal'
-                            onClick={(e) => { e.stopPropagation(); if (onCommentIconClick) { onCommentIconClick(); } }} // Prevent page flip
+                            onClick={(e) => { e.stopPropagation(); onCommentIconClick(); }} // Use the prop safely
                             p={2}
                             variant={'ghost'}
                             color={'white'}

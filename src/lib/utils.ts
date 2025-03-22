@@ -157,32 +157,14 @@ export function transformShortYoutubeLinksinIframes(content: string) {
   });
 }
 export function transformNormalYoutubeLinksinIframes(content: string) {
-  console.log("Transforming normal YouTube links into iframes");
   const regex = /https:\/\/(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9-_]+)([&?][a-zA-Z0-9-_=&]*)*/g;
-  return content.replace(regex, (match, videoID) => {
+  const transformed = content.replace(regex, (match, videoID) => {
     const embedUrl = `https://www.youtube.com/embed/${videoID}`;
-    return `<iframe src="https://www.youtube.com/embed/${videoID}" width="100%" height="315" style="border:0; border-radius:8px; box-shadow:0 4px 8px rgba(0, 0, 0, 0.1); max-width: 560px;" allowfullscreen></iframe>`;
+    return `<iframe src="${embedUrl}" width="100%" height="315" style="border:0; border-radius:8px; box-shadow:0 4px 8px rgba(0, 0, 0, 0.1); max-width: 560px;" allowfullscreen></iframe>`;
   });
+  return transformed;
 }
-export function autoEmbedZoraLink(content: string) {
-  const regex = /https:\/\/zora\.co\/collect\/([^\/\s?]+)(?:\/([^\/\s?]+))?(?:\?referrer=([^\/\s]+))?/g;
-  const iframeRegex = /<iframe.*?src=["']https:\/\/zora\.co\/collect\/.*?["']/g;
 
-  // Check if the content already contains the correct iframe
-  if (iframeRegex.test(content)) {
-    return content;
-  }
-
-  return content.replace(regex, (fullMatch, tokenId, extraPath, referrer) => {
-    // Construct embed URL dynamically
-    const embedUrl = `https://zora.co/collect/${tokenId}${extraPath ? `/${extraPath}` : ''}/embed${referrer ? `?referrer=${referrer}` : ''}`;
-
-    console.log("Constructed Embed URL:", embedUrl);
-
-    // Return iframe embed code
-    return `<iframe src="${embedUrl}" style="border:0;background-color:black;position:relative;inset:0" width="100%" height="300px" allowtransparency="true" allowfullscreen="true" sandbox="allow-pointer-lock allow-same-origin allow-scripts allow-popups"></iframe>`;
-  });
-}
 export async function fetchSkateHivePostMetadata(postId: string, username: string) {
   try {
     const post = await HiveClient.database.call('get_content', [
