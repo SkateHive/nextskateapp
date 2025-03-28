@@ -70,7 +70,6 @@ const CreateProposalModal = ({ connectedUserAddress }: CreateProposalModalProps)
                     title={title}
                     setTitle={setTitle}
                     setIsUploading={setIsUploading}
-                    PINATA_GATEWAY_TOKEN={PINATA_GATEWAY_TOKEN}
                 />
                 <Button
                     width={"auto"}
