@@ -42,11 +42,13 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
         return transformed;
     }, [content]);
 
+    const resolvedRenderers = typeof renderers === "function" ? renderers(useDecryptedText) : renderers;
+
     return (
         <div className={className}>
             <ReactMarkdown
                 key={key ? key : "markdown-renderer"}
-                components={renderers(useDecryptedText)} // Ensure MarkdownRenderers is passed here
+                components={resolvedRenderers} // Use resolvedRenderers here
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeRaw]}
             >

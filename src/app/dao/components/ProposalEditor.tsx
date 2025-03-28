@@ -13,10 +13,9 @@ interface ProposalEditorProps {
     title: string;
     setTitle: React.Dispatch<React.SetStateAction<string>>;
     setIsUploading: React.Dispatch<React.SetStateAction<boolean>>;
-    PINATA_GATEWAY_TOKEN: string | undefined;
 }
 
-const ProposalEditor: React.FC<ProposalEditorProps> = ({ value, setValue, title, setTitle, PINATA_GATEWAY_TOKEN }) => {
+const ProposalEditor: React.FC<ProposalEditorProps> = ({ value, setValue, title, setTitle }) => {
     const [isUploading, setIsUploading] = useState(false);
 
     const { getRootProps, getInputProps } = useDropzone({
