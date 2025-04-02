@@ -48,7 +48,7 @@ function PostCarousel() {
       }
       uniqueImageUrls.add(image.url)
       const metadataImage: string[] | undefined = post.metadata()?.image
-      if (Array.isArray(metadataImage) && metadataImage[0].startsWith("http")) {
+      if (Array.isArray(metadataImage) && metadataImage.length > 0 && metadataImage[0].startsWith("http")) {
         uniqueImageUrls.add(metadataImage[0])
       }
       return true
