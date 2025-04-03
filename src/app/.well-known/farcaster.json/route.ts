@@ -17,8 +17,8 @@ export async function GET() {
       homeUrl: appUrl,
       imageUrl: `${appUrl}/opengraph-image`,
       webhookUrl: `${appUrl}/api/webhook`,
-      iconUrl: `${appUrl}/icon.png`,
-      splashImageUrl: `${appUrl}/images/frames/splash.png`,
+      iconUrl: `${appUrl}/SKATE_HIVE_VECTOR_FIN.svg`,
+      splashImageUrl: `${appUrl}/images/frames/SKATE_HIVE_VECTOR_FIN.svg`,
       splashBackgroundColor: '#1C1C1C',
     },
   };
