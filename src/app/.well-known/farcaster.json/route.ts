@@ -13,7 +13,7 @@ export async function GET() {
     frame: {
       version: '1',
       name: 'SkateHive',
-      buttonTitle: 'Open Post',
+      buttonTitle: 'Open post',
       homeUrl: appUrl,
       imageUrl: `${appUrl}/opengraph-image`,
       webhookUrl: `${appUrl}/api/webhook`,

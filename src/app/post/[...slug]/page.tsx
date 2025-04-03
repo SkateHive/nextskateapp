@@ -5,6 +5,7 @@ import type { Metadata, ResolvingMetadata } from 'next';
 import dynamic from 'next/dynamic';
 import { Box } from "@chakra-ui/react";
 import InitFrameSDK from "@/hooks/init-frame-sdk";
+
 const PostContent = dynamic(() => import('./PostContent'), { ssr: false });
 
 export async function generateMetadata(
@@ -47,10 +48,9 @@ export async function generateMetadata(
     button: {
       title: "Open post",
       action: {
+        type: "launch_frame", // Simplified action type
         name: "launch_frame",
         url: postUrl,
-        type: "launch_frame", // Simplified action type
-        target: postUrl
       }
     },
     postUrl: postUrl
