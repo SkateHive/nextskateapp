@@ -47,7 +47,7 @@ export async function generateMetadata(
     button: {
       title: "Open post",
       action: {
-        name: "open_post", // Simplified action name
+        name: "launch_frame",
         url: postUrl,
         type: "launch_frame", // Simplified action type
         target: postUrl
