@@ -9,22 +9,29 @@ import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import SidebarDesktop from "@/components/Navbar/sidebarDesktop";
 import "@/app/layout.css"; // Import the CSS file
+import InitFrameSDK from "@/hooks/init-frame-sdk";
 
 const share_tech_mono = Share_Tech_Mono({ subsets: ["latin"], weight: "400" });
 
 const ColorModeScriptWrapper = dynamic(() => import('./ColorModeScriptWrapper'), { ssr: false });
 
-export type Metadata = {
-  metadataBase: URL;
-  title: string;
-  description: string;
-  manifest: string;
-  openGraph: {
-    images: string;
-  };
+
+
+const frameObject = {
+  version: "next",
+  imageUrl: 'https://www.skatehive.app/SKATE_HIVE_VECTOR_FIN.svg',
+  button: {
+    title: "Be brave",
+    action: {
+      type: "launch_frame", // Simplified action type
+      name: "launch_frame",
+      url: "https://www.skatehive.app",
+    }
+  },
+  postUrl: "https://www.skatehive.app",
 };
 
-export const metadata: Metadata = {
+export const metadata = {
   metadataBase: new URL('https://skatehive.app'), // Defina seu domínio aqui
   title: "Skatehive App",
   description: "The infinity skateboard maganize",
@@ -32,7 +39,21 @@ export const metadata: Metadata = {
   openGraph: {
     images: "/ogimage.png",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Skatehive App",
+    description: "The infinity skateboard maganize",
+    images: "/ogimage.png",
+  },
+  other: {
+    // Use compliant image URL
+    "fc:frame": JSON.stringify(frameObject),
+    "fc:frame:image": 'https://www.skatehive.app/SKATE_HIVE_VECTOR_FIN.svg', // Use the skatehive.app domain image
+    "fc:frame:post_url": 'https://www.skatehive.app',
+  },
 };
+
+
 
 interface RootLayoutProps {
   children: ReactNode;
@@ -88,6 +109,7 @@ export default function RootLayout({
       <body className={share_tech_mono.className}>
         <ColorModeScriptWrapper />
         <Providers>
+          <InitFrameSDK />
           <Flex w={"100%"}
             justifyContent={"center"} id="layout" className="mobile-layout-padding">
             <div className="hide-on-mobile">

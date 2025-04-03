@@ -28,7 +28,6 @@ export async function generateMetadata(
   // Hard-code the domain to skatehive.app to match account association payload
   const domainUrl = 'https://skatehive.app';
 
-  console.log("Original banner:", originalBanner);
 
   // Decode the user to remove URL encoding (e.g., %40 -> @)
   const decodedUser = decodeURIComponent(user);
