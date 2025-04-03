@@ -7,26 +7,10 @@ module.exports = {
                 headers: [
                     {
                         key: 'Content-Security-Policy',
-                        // Override with a very permissive policy
-                        value: "default-src * 'unsafe-inline' 'unsafe-eval'; frame-ancestors * 'self';",
-                    },
-                    {
-                        key: 'X-Frame-Options',
-                        // Remove this header which can conflict with frame embedding
-                        value: 'ALLOWALL',
+                        value: "frame-ancestors *;",
                     },
                 ],
             },
         ];
-    },
-    // Ensure images from external sources can be optimized
-    images: {
-        domains: ['images.hive.blog', 'cdn.discordapp.com', 'ipfs.skatehive.app'],
-        remotePatterns: [
-            {
-                protocol: 'https',
-                hostname: '**',
-            },
-        ],
     },
 };
