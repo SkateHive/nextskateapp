@@ -20,7 +20,7 @@ const ColorModeScriptWrapper = dynamic(() => import('./ColorModeScriptWrapper'),
 
 const frameObject = {
   version: "next",
-  imageUrl: 'https://www.skatehive.app/SKATE_HIVE_VECTOR_FIN.svg',
+  imageUrl: `https://www.skatehive.app/opengraph-image`,
   button: {
     title: "Be brave",
     action: {
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
   other: {
     // Use compliant image URL
     "fc:frame": JSON.stringify(frameObject),
-    "fc:frame:image": 'https://www.skatehive.app/SKATE_HIVE_VECTOR_FIN.svg', // Use the skatehive.app domain image
+    "fc:frame:image": 'https://www.skatehive.app/Sogimage.png', // Use the skatehive.app domain image
     "fc:frame:post_url": 'https://www.skatehive.app',
   },
 };
