@@ -34,7 +34,7 @@
     "@wagmi/core": "^2.16.4",
     "@zoralabs/zdk": "^2.4.0",
     "alchemy-sdk": "^3.5.3",
-    "axios": "^1.7.9",
+    "axios": "^1.8.2",
     "browser-image-compression": "^2.0.2",
     "crypto-js": "^4.2.0",
     "diff-match-patch": "^1.0.5",
