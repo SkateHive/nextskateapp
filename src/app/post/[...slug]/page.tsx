@@ -38,8 +38,6 @@ export async function generateMetadata(
     domainUrl
   ).toString();
 
-  console.log("Post URL:", postUrl);
-
   // Create frame object with compliant image URL
   const frameObject = {
     version: "next",
@@ -72,7 +70,7 @@ export async function generateMetadata(
       card: "summary_large_image",
       title: post.title,
       description: `${String(post.body).slice(0, 128)}...`,
-      images: Array.isArray(originalBanner) ? originalBanner.map((img: string) => new URL(img, domainUrl).toString()) : [],
+      images: imageUrls[0] || 'https://www.skatehive.app/SKATE_HIVE_VECTOR_FIN.svg'
     },
     other: {
       // Use compliant image URL

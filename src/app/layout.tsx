@@ -10,6 +10,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 import SidebarDesktop from "@/components/Navbar/sidebarDesktop";
 import "@/app/layout.css"; // Import the CSS file
 import InitFrameSDK from "@/hooks/init-frame-sdk";
+import { Metadata } from "next";
 
 const share_tech_mono = Share_Tech_Mono({ subsets: ["latin"], weight: "400" });
 
@@ -31,7 +32,7 @@ const frameObject = {
   postUrl: "https://www.skatehive.app",
 };
 
-export const metadata = {
+export const metadata: Metadata = {
   metadataBase: new URL('https://skatehive.app'), // Defina seu domínio aqui
   title: "Skatehive App",
   description: "The infinity skateboard maganize",
