@@ -4,7 +4,7 @@ import PostModel from "@/lib/models/post";
 import type { Metadata, ResolvingMetadata } from 'next';
 import dynamic from 'next/dynamic';
 import { Box } from "@chakra-ui/react";
-import InitFrameSDK from "@/hooks/init-frame-sdk";
+const InitFrameSDK = dynamic(() => import('@/hooks/init-frame-sdk'), { ssr: false });
 
 const PostContent = dynamic(() => import('./PostContent'), { ssr: false });
 
