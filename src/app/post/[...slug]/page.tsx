@@ -14,7 +14,7 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   let [tag, user, postId] = params.slug;
   const post = await getData(user, postId);
-
+  console.log(post);
   // extract the images from the markdown file 
   const images = post.body.match(/!\[.*?\]\((.*?)\)/g);
   const imageUrls = images ? images.map((img: string) => {
@@ -100,7 +100,7 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
     <>
       <InitFrameSDK />
       <PostProvider postData={postData}>
-        <Box w="container.md" color="white" p={4}>
+        <Box w={{ base: "100%", md: "container.md" }} maxW="100%" bg="black" color="white" >
           <PostContent user={user} postId={postId} />
         </Box>
       </PostProvider>

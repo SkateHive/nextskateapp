@@ -243,6 +243,7 @@ const VotingButton = ({
             color={"green.200"}
             cursor={"pointer"}
             id="voteButtonReward"
+            fontSize={"14px"}
           >
             {upvoteCount}
           </Text>
@@ -256,10 +257,8 @@ const VotingButton = ({
             cursor="pointer"
             style={{ userSelect: 'none' }}
           >
-            <Text fontSize="18px" color="#ff0000">
-              {isDownvoted ? <FaHeartBroken /> : ""}
-            </Text>
-            <Text fontSize="18px" color="#ad4848">
+            {isDownvoted && <FaHeartBroken color="#ff0000" />}
+            <Text as="span" fontSize="14px" color="#ad4848">
               {downvoteCount}
             </Text>
           </HStack>
