@@ -19,7 +19,7 @@ export async function GET() {
       webhookUrl: `${appUrl}/api/webhook`,
       iconUrl: `https://ipfs.skatehive.app/ipfs/QmXTZqirogp735AaPFcpzAjmwS57mPYsJhktJMuRuSV5Rm`,
       splashImageUrl: `https://ipfs.skatehive.app/ipfs/QmXTZqirogp735AaPFcpzAjmwS57mPYsJhktJMuRuSV5Rm`,
-      splashBackgroundColor: '#1C1C1C',
+      splashBackgroundColor: '#000000',
     },
   };
 
