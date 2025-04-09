@@ -17,8 +17,8 @@ export async function GET() {
       homeUrl: appUrl,
       imageUrl: `${appUrl}/opengraph-image`,
       webhookUrl: `${appUrl}/api/webhook`,
-      iconUrl: `${appUrl}/images/frames/splash.png`,
-      splashImageUrl: `${appUrl}/images/frames/splash.png`,
+      iconUrl: `https://ipfs.skatehive.app/ipfs/QmXTZqirogp735AaPFcpzAjmwS57mPYsJhktJMuRuSV5Rm`,
+      splashImageUrl: `https://ipfs.skatehive.app/ipfs/QmXTZqirogp735AaPFcpzAjmwS57mPYsJhktJMuRuSV5Rm`,
       splashBackgroundColor: '#1C1C1C',
     },
   };
