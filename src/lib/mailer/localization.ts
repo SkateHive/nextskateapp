@@ -41,6 +41,7 @@ export function getLocalizedStrings(language: string) {
       readyStep: string;
       ctaAltText: string;
       ctaHelpText: string;
+      ctaLink: string; // Added CTA link property
       warningMessage: string;
       keysExplanationTitle: string;
       footerLinkText: string;
@@ -85,6 +86,7 @@ export function getLocalizedStrings(language: string) {
       readyStep: "<strong>You're ready to go!</strong> You can now log in to <a href=\"https://skatehive.app/\" style=\"color: #4caf50;\">Skatehive.app</a> and other Hive apps securely.",
       ctaAltText: "Watch Tutorial",
       ctaHelpText: "Need help? Watch the tutorial above ☝️",
+      ctaLink: "https://docs.skatehive.app/docs/create-account", // Correct English link
       warningMessage: "NEVER share your keys. NEVER lose your keys. Keep them safe.",
       keysExplanationTitle: "What are these keys?",
       postingKeyDescription: "<strong>Posting:</strong> Post, comment, follow, reblog.",
@@ -130,6 +132,7 @@ export function getLocalizedStrings(language: string) {
       readyStep: "<strong>Pronto!</strong> Agora você pode fazer login no <a href=\"https://skatehive.app/\" style=\"color: #4caf50;\">Skatehive.app</a> e outros apps Hive com segurança.",
       ctaAltText: "Assistir Tutorial",
       ctaHelpText: "Precisa de ajuda? Assista ao tutorial acima ☝️",
+      ctaLink: "https://docs.skatehive.app/pt-br/docs/create-account", // Correct Portuguese link
       warningMessage: "NUNCA compartilhe suas chaves. NUNCA perca suas chaves. Mantenha-as seguras.",
       keysExplanationTitle: "O que são essas chaves?",
       postingKeyDescription: "<strong>Posting:</strong> Postar, comentar, seguir, reblogar.",
@@ -175,6 +178,7 @@ export function getLocalizedStrings(language: string) {
       readyStep: "<strong>¡Listo!</strong> Ahora puedes iniciar sesión en <a href=\"https://skatehive.app/\" style=\"color: #4caf50;\">Skatehive.app</a> y otras apps de Hive de forma segura.",
       ctaAltText: "Ver Tutorial",
       ctaHelpText: "¿Necesitas ayuda? Mira el tutorial de arriba ☝️",
+      ctaLink: "https://docs.skatehive.app/es/docs/create-account", // Correct Spanish link
       warningMessage: "NUNCA compartas tus claves. NUNCA pierdas tus claves. Mantenlas seguras.",
       keysExplanationTitle: "¿Qué son estas claves?",
       postingKeyDescription: "<strong>Posting:</strong> Publicar, comentar, seguir, rebloguear.",

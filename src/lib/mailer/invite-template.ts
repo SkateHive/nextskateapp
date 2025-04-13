@@ -50,7 +50,7 @@ export default function getMailTemplate_Invite(
 
       <!-- Image Button (CTA) -->
       <div style="text-align: center; margin: 30px 0;">
-        <a href="https://docs.skatehive.app/docs/create-account" target="_blank">
+        <a href="${localizedStrings.ctaLink}" target="_blank">
           <img src="https://i.ibb.co/ccvgmQyH/image.png" alt="${localizedStrings.ctaAltText}" style="max-width: 100%; border-radius: 10px; box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);">
         </a>
         <p style="font-size: 14px; color: ${localizedStrings.colors.helpText}; margin-top: 10px;">${localizedStrings.ctaHelpText}</p>
