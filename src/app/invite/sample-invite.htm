@@ -6,98 +6,67 @@ this DO NOT reflect the html file located at:
 src/lib/mailer/invite-template.ts
 -->
 
-<div style="font-family: Arial, sans-serif; background-color: #1e1e1e; margin: 0; padding: 0; color: #e0e0e0;">
-    <div style="max-width: 600px; margin: 30px auto; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); padding: 20px;">
-      <div style="background-color: #333; padding: 20px; border-radius: 8px 8px 0 0; text-align: center;">
-        <img src="${MAIL_COMMUNITY_LOGO}" alt="Skate Hive" style="max-width: 80px; vertical-align: middle;">
-        <h1 style="display: inline-block; margin: 0; font-size: 24px; color: #4caf50; vertical-align: middle;">
-          Welcome to Skate Hive</h1>
-      </div>
-      <div style="padding: 20px;">
-        <h2 style="color: #4caf50; font-size: 20px; margin-top: 0;">
-          @vaipraonde onboarded you into Skate Hive Community.</h2>
-          <p>Here is your user details and keys. Remember to not share your keys and always Keep them safe!</p>
-        <div style="background-color: #2c2c2c; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-          <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px;">
-            <tr>
-              <td style="padding: 10px; border: 1px solid #4caf50; font-size: 14px; font-weight: bold; color: #4caf50;">
-                Username:</td>
-              <td style="padding: 10px; border: 1px solid #4caf50; font-size: 14px; color: #fff;">
-                skatehive.new.user</td>
-            </tr>
-            <tr>
-              <td style="padding: 10px; border: 1px solid #4caf50; font-size: 14px; font-weight: bold; color: #4caf50;">
-                Master Password:</td>
-              <td style="padding: 10px; border: 1px solid #4caf50; font-size: 14px;  color: #fff;">
-                SKATE00000000000000000000</td>
-            </tr>
-          </table>
-  
-        </div>
-  
-        <p>When you login using the <b>Master Password</b> it will import your Post, Active and Memo keys.</p>
-        <div style="background-color: #2c2c2c; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-          <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px;">
-            <tr>
-              <td style="padding: 10px; border: 1px solid #4caf50; font-size: 14px; font-weight: bold; color: #4caf50;">
-                Owner Private Key:</td>
-              <td style="padding: 10px; border: 1px solid #4caf50; font-size: 14px; color: #fff;">
-                5J000000000000000000000000000000000000000000000000T</td>
-            </tr>
-            <tr>
-              <td style="padding: 10px; border: 1px solid #4caf50; font-size: 14px; font-weight: bold; color: #4caf50;">
-                Active Private Key:</td>
-                <td style="padding: 10px; border: 1px solid #4caf50; font-size: 14px; color: #fff;">
-                5J0000000000000000000000000000000000000000000000009</td>
-            </tr>
-            <tr>
-              <td style="padding: 10px; border: 1px solid #4caf50; font-size: 14px; font-weight: bold; color: #4caf50;">
-                Posting Private Key:</td>
-                <td style="padding: 10px; border: 1px solid #4caf50; font-size: 14px; color: #fff;">
-                5J0000000000000000000000000000000000000000000000007</td>
-            </tr>
-            <tr>
-              <td style="padding: 10px; border: 1px solid #4caf50; font-size: 14px; font-weight: bold; color: #4caf50;">
-                Memo Private Key:</td>
-                <td style="padding: 10px; border: 1px solid #4caf50; font-size: 14px; color: #fff;">
-                5J000000000000000000000000000000000000000000000000p</td>
-            </tr>
-          </table>
-        </div>
-  
-        <div style="background-color: #d32f2f; color: #fff; padding: 10px; border-radius: 8px; margin-bottom: 20px; font-size: 16px; text-align: center; font-weight: bold;">
-          IMPORTANT: Be very careful using your keys on any other website or application not using a keychain!
-        </div>
-  
-        <div style="background-color: #2e7d32; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 16px; color: #e0e0e0;">
-          <h3 style="margin-top: 0; color: #fff;">
-            KEYS DESCRIPTION</h3>
-          <p><strong>Posting:</strong> Post, Comment, Vote, Reblog, Follow, Profile</p>
-          <p><strong>Active:</strong> Wallet and Funds Management. Also the posting key atributes.</p>
-          <p><strong>Memo:</strong> Send/View encrypted messages on transfers</p>
-          <p><strong>Owner:</strong> Change Password, Change Keys, Recover Account</p>
-        </div>
-  
-  
-        <p>Keys 5 rules:</p>
-        <div style="background-color: #d32f2f; color: #fff; padding: 10px; border-radius: 8px; margin-bottom: 20px; font-size: 16px; text-align: center; font-weight: bold;">
-          - DO NOT LOSE YOUR KEYS<br>
-          - DO NOT LOSE YOUR KEYS<br>
-          - DO NOT LOSE YOUR KEYS<br>
-          - DO NOT SHARE YOUR KEYS<br>
-          - KEEP YOUR KEYS SAFE<br>
-        </div>
-      </div>
-  
-      <div style="background-color: #333; color: #fff; padding: 10px; border-radius: 0 0 8px 8px; text-align: center; font-size: 14px;">
-        <p style="margin: 0;">We recommends using the Hive Keychain on ALL Hive sites and applications.</p>
-        <p style="margin: 0;">https://hive-keychain.com/</p>
-        <br>
-        <br>
-        <p style="margin: 0;"><br> https://skatehive.app/</p>
-      </div>
-  
+<div style="font-family: 'Segoe UI', sans-serif; background-color: #121212; color: #e0e0e0; margin: 0; padding: 0;">
+  <div style="max-width: 600px; margin: 30px auto; border-radius: 12px; overflow: hidden; box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);">
+
+    <!-- Header -->
+    <div style="background: linear-gradient(135deg, #4caf50, #2e7d32); padding: 30px; text-align: center;">
+      <img src="${MAIL_COMMUNITY_LOGO}" alt="Skate Hive" style="max-width: 80px;">
+      <h1 style="margin: 10px 0 0; font-size: 26px;">Welcome to Skate Hive</h1>
     </div>
-  
+
+    <!-- Body -->
+    <div style="padding: 25px 30px;">
+      <h2 style="color: #4caf50;">@${inviterUsername} just invite you to skatehive!</h2>
+      <p>You're now part of the Skate Hive community. Below are your login details. Keep your <strong>Master Password</strong> safe — it’s your key to everything.</p>
+
+      <!-- Essentials -->
+      <div style="background-color: #1e1e1e; border: 2px solid #4caf50; border-radius: 8px; padding: 15px; margin: 20px 0;">
+        <p style="margin: 0; font-weight: bold; color: #4caf50;">Username:</p>
+        <p style="margin: 5px 0 15px; font-size: 14px;">${desiredUsername}</p>
+        <p style="margin: 0; font-weight: bold; color: #4caf50;">Master Password:</p>
+        <p style="margin: 5px 0; font-size: 14px;">${masterPassword}</p>
+      </div>
+
+      <!-- Step-by-step instructions -->
+      <div style="background-color: #1e1e1e; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+        <h3 style="color: #4caf50; margin-top: 0;">How to log in for the first time:</h3>
+        <ol style="padding-left: 20px; line-height: 1.6;">
+          <li><strong>Install Hive Keychain:</strong><br>
+            👉 <a href="https://hive-keychain.com/" target="_blank" style="color: #4caf50;">https://hive-keychain.com/</a></li>
+          <li><strong>Open the extension or app</strong> and click on "Import Account".</li>
+          <li><strong>Enter your username</strong> (<code style="color:#ccc;">${desiredUsername}</code>) and paste your Master Password.</li>
+          <li><strong>You're ready to go!</strong> You can now log in to <a href="https://skatehive.app/" style="color: #4caf50;">Skatehive.app</a> and other Hive apps securely.</li>
+        </ol>
+      </div>
+
+      <!-- Image Button (CTA) -->
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="https://docs.skatehive.app/docs/create-account" target="_blank">
+          <img src="https://i.ibb.co/ccvgmQyH/image.png" alt="Watch Tutorial" style="max-width: 100%; border-radius: 10px; box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);">
+        </a>
+        <p style="font-size: 14px; color: #aaa; margin-top: 10px;">Need help? Watch the tutorial above ☝️</p>
+      </div>
+    </div>
+
+    <!-- Warning -->
+    <div style="background-color: #d32f2f; padding: 10px; border-radius: 8px; text-align: center; font-weight: bold;">
+      NEVER share your keys. NEVER lose your keys. Keep them safe.
+    </div>
+
+    <!-- Key Explanation -->
+    <div style="background-color: #2e7d32; padding: 15px; border-radius: 8px; color: #e0e0e0; margin-top: 20px;">
+      <h3 style="margin-top: 0; color: #fff;">What are these keys?</h3>
+      <p><strong>Posting:</strong> Post, comment, follow, reblog.</p>
+      <p><strong>Active:</strong> Wallet and funds.</p>
+      <p><strong>Memo:</strong> Encrypted messages in transfers.</p>
+      <p><strong>Owner:</strong> Recover/change your account.</p>
+    </div>
+
+    <!-- Footer -->
+    <div style="background-color: #333; color: #bbb; text-align: center; padding: 20px; font-size: 14px;">
+      <p style="margin: 20px 0 0;"><a href="https://skatehive.app/" style="color: #4caf50;">Visit Skatehive.app</a></p>
+    </div>
   </div>
-  
+</div>
+
