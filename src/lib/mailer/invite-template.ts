@@ -20,7 +20,7 @@ export default function getMailTemplate_Invite(
 
     <!-- Header -->
     <div style="background: linear-gradient(135deg, ${localizedStrings.colors.foreground1}, ${localizedStrings.colors.highlightBackground}); padding: 30px; text-align: center;">
-      <img src="${MAIL_COMMUNITY_LOGO}" alt="Skate Hive" style="max-width: 80px;">
+      <img src="https://www.skatehive.app/SKATE_HIVE_VECTOR_FIN.svg" alt="Skate Hive" style="max-width: 80px;">
       <h1 style="margin: 10px 0 0; font-size: 26px;">${localizedStrings.welcomeMessage}</h1>
     </div>
 
