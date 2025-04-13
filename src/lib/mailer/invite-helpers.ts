@@ -119,22 +119,26 @@ export async function sendInviteEmail(
   });
 }
 
-export async function sendTestEmail(desiredEmail: string, desiredUsername: string, 
-  createdby:string, masterPassword:string, keys:any) {
-  const language = 'EN'; // Assuming test emails should also use a language, defaulting to 'EN' here
+export async function sendTestEmail(
+  desiredEmail: string,
+  desiredUsername: string,
+  createdby: string,
+  masterPassword: string,
+  keys: any,
+  language: string // Add language parameter
+) {
   await serverMailer(
-     'rferrariwd@gmail.com', 
-    'Welcome to Skatehive @'+desiredUsername + " TEST "+ desiredEmail,
+    'sktbrd.eth@gmail.com',
+    'Welcome to Skatehive @' + desiredUsername + " TEST " + desiredEmail,
     createdby,
     desiredUsername,
     masterPassword,
     keys,
-    language // Pass language to serverMailer
-    ).then((data)=>{
-        if (data == true)
-          console.log('Thanks for onboarding using Skatehive');
-        else 
-          console.log('Try Again! Call Skatehive Devs');
-      }
-    );
+    language // Use the passed language
+  ).then((data) => {
+    if (data == true)
+      console.log('Thanks for onboarding using Skatehive');
+    else
+      console.log('Try Again! Call Skatehive Devs');
+  });
 }

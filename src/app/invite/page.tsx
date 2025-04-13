@@ -81,7 +81,8 @@ function AccountCreation() {
 
     // debugging email. just fill up form and click on check button
     // console.log("handlecheck");
-    // invites.sendTestEmail("", "", "", "", []);
+    // Pass the selected language to the test email function
+    invites.sendTestEmail("", "", "", "", [], selectedLanguage);
     // debugging
 
     if (desiredEmail == "") {
