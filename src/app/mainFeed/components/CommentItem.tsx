@@ -9,6 +9,7 @@ import { changeFollow, checkFollow } from "@/lib/hive/client-functions";
 import { changeFollowWithPassword } from "@/lib/hive/server-functions";
 import { extractMediaItems, formatDate, getTotalPayout } from "@/lib/utils";
 import { processVote, VoteParams } from "@/lib/hive/vote-utils";
+import { getDownvoteCount } from "@/lib/voteUtils";
 import {
   Box,
   Button,
@@ -36,7 +37,7 @@ interface CommentItemProps {
 }
 
 interface MediaItem {
-  type: 'image' | 'video';
+  type: "image" | "video";
   url: string;
 }
 
@@ -44,7 +45,7 @@ const CommentItem = ({
   comment,
   username,
   onNewComment,
-  onClose = () => { },
+  onClose = () => {},
 }: CommentItemProps) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isReplyModalOpen, setIsReplyModalOpen] = useState(false);
@@ -60,8 +61,12 @@ const CommentItem = ({
   const { voteValue, hiveUser } = useHiveUser();
   const [isFollowing, setIsFollowing] = useState<boolean | null>(null);
   const loginMethod = localStorage.getItem("LoginMethod");
-  const [commentEarnings, setCommentEarnings] = useState(getTotalPayout(comment));
-
+  const [commentEarnings, setCommentEarnings] = useState(
+    getTotalPayout(comment)
+  );
+  const downvotes = useMemo(() => {
+    return getDownvoteCount(comment.active_votes);
+  }, [comment.active_votes]);
 
   useEffect(() => {
     setCommentReplies(comments);
@@ -77,8 +82,8 @@ const CommentItem = ({
   useEffect(() => {
     if (username && comment.author !== username) {
       checkFollow(username, comment.author)
-        .then(result => setIsFollowing(result))
-        .catch(error => {
+        .then((result) => setIsFollowing(result))
+        .catch((error) => {
           console.error("Failed to check follow status:", error);
           setIsFollowing(false);
         });
@@ -101,7 +106,7 @@ const CommentItem = ({
 
   const toggleCommentVisibility = () => {
     setIsCommentFormVisible((prev) => !prev);
-  }
+  };
 
   const handleFollow = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -109,7 +114,7 @@ const CommentItem = ({
     if (loginMethod === "keychain") {
       try {
         const result = await changeFollow(username, comment.author);
-        setIsFollowing(result === 'blog');
+        setIsFollowing(result === "blog");
       } catch (error) {
         console.error("Failed to change follow:", error);
       }
@@ -127,41 +132,49 @@ const CommentItem = ({
     }
   };
 
-  const mediaItems = useMemo(() => extractMediaItems(editedCommentBody), [editedCommentBody]);
+  const mediaItems = useMemo(
+    () => extractMediaItems(editedCommentBody),
+    [editedCommentBody]
+  );
 
   const markdownWithoutMedia = useMemo(() => {
     return editedCommentBody
-      .replace(/!\[.*?\]\((.*?)\)/g, '')
-      .replace(/<iframe[^>]*>/g, '')
-      .replace(/allowFullScreen>/g, '')
-      .replace(/allowFullScreen={true}>/g, '');
+      .replace(/!\[.*?\]\((.*?)\)/g, "")
+      .replace(/<iframe[^>]*>/g, "")
+      .replace(/allowFullScreen>/g, "")
+      .replace(/allowFullScreen={true}>/g, "");
   }, [editedCommentBody]);
 
-  const handleVoteSuccess = (voteType: string, actualVoteValue: number = voteValue) => {
+  const handleVoteSuccess = (
+    voteType: string,
+    actualVoteValue: number = voteValue
+  ) => {
     console.log("Vote success:", voteType, actualVoteValue);
-    if (voteType === 'upvote') {
+    if (voteType === "upvote") {
       setCommentEarnings((prev) => prev + actualVoteValue);
-    } else if (voteType === 'cancel') {
+    } else if (voteType === "cancel") {
       setCommentEarnings((prev) => prev - actualVoteValue);
     }
   };
 
   // Create adapter function for ToggleComments
-  const handleVoteForToggleComments = async (params: VoteParams | { author: string, permlink: string }) => {
-    if ('author' in params && 'permlink' in params) {
+  const handleVoteForToggleComments = async (
+    params: VoteParams | { author: string; permlink: string }
+  ) => {
+    if ("author" in params && "permlink" in params) {
       // Handle legacy signature
       return processVote({
         username,
         author: params.author,
         permlink: params.permlink,
         weight: 10000,
-        userAccount: hiveUser // Pass the user account for value calculation
+        userAccount: hiveUser, // Pass the user account for value calculation
       });
     } else {
       // Handle VoteParams - ensure userAccount is included
       const voteParams: VoteParams = {
         ...(params as VoteParams),
-        userAccount: hiveUser
+        userAccount: hiveUser,
       };
       return processVote(voteParams);
     }
@@ -175,7 +188,7 @@ const CommentItem = ({
           isOpen={isReplyModalOpen}
           onClose={() => setIsReplyModalOpen(false)}
           onNewComment={handleNewComment}
-          mediaItems={mediaItems}  // Pass media items to ReplyModal
+          mediaItems={mediaItems} // Pass media items to ReplyModal
         />
       )}
       <Flex onClick={toggleCommentVisibility} cursor="pointer">
@@ -183,29 +196,40 @@ const CommentItem = ({
           <AuthorAvatar username={comment.author} />
         </Box>
         <VStack w={"100%"} ml={4} alignItems={"start"} marginRight={"16px"}>
-          <HStack justify={"space-between"} width={"full"} cursor="pointer" gap="2px" >
+          <HStack
+            justify={"space-between"}
+            width={"full"}
+            cursor="pointer"
+            gap="2px"
+          >
             <HStack mt={2}>
               <Text fontWeight="bold">{comment.author}</Text>
               {/* Follow Button */}
-              {username && comment.author !== username && isFollowing === false && (
-                <Button
-                  id="follow"
-                  height={6}
-                  variant="outline"
-                  size="sm"
-                  colorScheme="green"
-                  onClick={handleFollow}
-                >
-                  <RiUserFollowLine />
-                </Button>
-              )}
+              {username &&
+                comment.author !== username &&
+                isFollowing === false && (
+                  <Button
+                    id="follow"
+                    height={6}
+                    variant="outline"
+                    size="sm"
+                    colorScheme="green"
+                    onClick={handleFollow}
+                  >
+                    <RiUserFollowLine />
+                  </Button>
+                )}
             </HStack>
             <Text ml={2} color="gray.400" fontSize="14px">
               {formatDate(String(comment.created))}
             </Text>
           </HStack>
           <Box w="100%">
-            <MarkdownRenderer content={markdownWithoutMedia} renderers={MarkdownRenderers} useDecryptedText />
+            <MarkdownRenderer
+              content={markdownWithoutMedia}
+              renderers={MarkdownRenderers}
+              useDecryptedText
+            />
           </Box>
         </VStack>
       </Flex>
@@ -244,7 +268,10 @@ const CommentItem = ({
             as="button"
             onClick={(e: any) => {
               e.stopPropagation();
-              console.log("Opening ReplyModal with content:", editedCommentBody);
+              console.log(
+                "Opening ReplyModal with content:",
+                editedCommentBody
+              );
               setIsReplyModalOpen(true);
             }}
             _hover={{
@@ -291,12 +318,7 @@ const CommentItem = ({
           isOpen={isValueTooltipOpen}
           hasArrow
         >
-          <Text
-            fontWeight={"bold"}
-            cursor={"pointer"}
-            mt={2}
-            color="#A5D6A7"
-          >
+          <Text fontWeight={"bold"} cursor={"pointer"} mt={2} color="#A5D6A7">
             ${commentEarnings.toFixed(3)}
           </Text>
         </Tooltip>

@@ -3,6 +3,7 @@ import UserAvatar from "@/components/UserAvatar";
 import { useHiveUser } from "@/contexts/UserContext";
 import { useComments } from "@/hooks/comments";
 import { getTotalPayout } from "@/lib/utils";
+import { exceedsDownvoteThreshold } from "@/lib/voteUtils";
 import {
   Box,
   Divider,
@@ -14,7 +15,7 @@ import {
   MenuList,
   Text,
   useToast,
-  VStack
+  VStack,
 } from "@chakra-ui/react";
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -26,13 +27,20 @@ import CommentList from "./components/CommentsList";
 import TopMenu from "./components/TopMenu";
 import { Discussion } from "@hiveio/dhive";
 
-const LoadingComponent = dynamic(() => import("./components/loadingComponent"), { ssr: false });
+const LoadingComponent = dynamic(
+  () => import("./components/loadingComponent"),
+  { ssr: false }
+);
 
 const parent_author = process.env.NEXT_PUBLIC_MAINFEED_AUTHOR || "skatehacker";
-const parent_permlink = process.env.NEXT_PUBLIC_MAINFEED_PERMLINK || "test-advance-mode-post";
+const parent_permlink =
+  process.env.NEXT_PUBLIC_MAINFEED_PERMLINK || "test-advance-mode-post";
 
 const MainFeed = () => {
-  const { comments, addComment, isLoading } = useComments(parent_author, parent_permlink) || { comments: [], addComment: () => { }, isLoading: true };
+  const { comments, addComment, isLoading } = useComments(
+    parent_author,
+    parent_permlink
+  ) || { comments: [], addComment: () => {}, isLoading: true };
   const [visiblePosts, setVisiblePosts] = useState<number>(6);
   const postBodyRef = useRef<HTMLTextAreaElement>(null);
   const user = useHiveUser();
@@ -52,32 +60,42 @@ const MainFeed = () => {
   };
 
   const sortedComments = useMemo(() => {
-    if (sortMethod === "chronological") {
-      return comments?.slice().reverse();
-    } else if (sortMethod === "engagement") {
-      return comments?.slice().sort((a, b) => {
-        return (b?.children ?? 0) - (a?.children ?? 0);
-      });
-    } else {
-      return comments?.slice().sort((a, b) => {
-        return getTotalPayout(b as Discussion) - getTotalPayout(a as Discussion);
-      });
+    if (!comments?.length) return [];
+
+    const filteredComments = comments.filter(
+      (comment) => !exceedsDownvoteThreshold(comment.active_votes, 2)
+    );
+
+    switch (sortMethod) {
+      case "engagement":
+        return filteredComments.sort(
+          (a, b) => (b?.children ?? 0) - (a?.children ?? 0)
+        );
+      case "payout":
+        return filteredComments.sort(
+          (a, b) =>
+            getTotalPayout(b as Discussion) - getTotalPayout(a as Discussion)
+        );
+      default: // "chronological"
+        return filteredComments.reverse();
     }
   }, [comments, sortMethod]);
 
-  const handleSortChange = (method: string) => {
-    setSortMethod(method);
-  };
+  const handleSortChange = (method: string) => setSortMethod(method);
 
   useEffect(() => {
-    const scrollDiv = document.getElementById('scrollableDiv');
+    const scrollDiv = document.getElementById("scrollableDiv");
     const handleScroll = () => {
-      if (scrollDiv && (scrollDiv.scrollTop + scrollDiv.clientHeight >= scrollDiv.scrollHeight - 100)) {
+      if (
+        scrollDiv &&
+        scrollDiv.scrollTop + scrollDiv.clientHeight >=
+          scrollDiv.scrollHeight - 100
+      ) {
         setVisiblePosts((prev) => prev + 6);
       }
     };
-    scrollDiv?.addEventListener('scroll', handleScroll);
-    return () => scrollDiv?.removeEventListener('scroll', handleScroll);
+    scrollDiv?.addEventListener("scroll", handleScroll);
+    return () => scrollDiv?.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
@@ -95,7 +113,7 @@ const MainFeed = () => {
       overflowX="hidden"
       position="relative"
     >
-      <TopMenu sortedComments={sortedComments || []} />
+      <TopMenu sortedComments={sortedComments} />
       {isLoading && (
         <Box
           position="absolute"
@@ -111,13 +129,17 @@ const MainFeed = () => {
       )}
       {user.hiveUser && (
         <>
-          <Flex width="full" p={2} >
-            <UserAvatar hiveAccount={user.hiveUser || {}} boxSize={12} borderRadius={5} />
+          <Flex width="full" p={2}>
+            <UserAvatar
+              hiveAccount={user.hiveUser || {}}
+              boxSize={12}
+              borderRadius={5}
+            />
             <MainInput
               username={user.hiveUser.name}
               ref={postBodyRef}
               isLoading={isLoading}
-              onCommentSubmit={handleCommentSubmit} // Use handleCommentSubmit for user feedback
+              onCommentSubmit={handleCommentSubmit}
             />
           </Flex>
           <Divider />
@@ -128,21 +150,27 @@ const MainFeed = () => {
           <MenuButton>
             <IoFilter color="#9AE6B4" />
           </MenuButton>
-          <MenuList color={'white'} bg={"black"} border={"1px solid #A5D6A7"}>
-            <MenuItem bg={"black"} onClick={() => handleSortChange("chronological")}>
+          <MenuList color={"white"} bg={"black"} border={"1px solid #A5D6A7"}>
+            <MenuItem
+              bg={"black"}
+              onClick={() => handleSortChange("chronological")}
+            >
               <FaHistory /> <Text ml={2}> Latest</Text>
             </MenuItem>
             <MenuItem bg={"black"} onClick={() => handleSortChange("payout")}>
               <FaMoneyBill /> <Text ml={2}>Payout</Text>
             </MenuItem>
-            <MenuItem bg={"black"} onClick={() => handleSortChange("engagement")}>
+            <MenuItem
+              bg={"black"}
+              onClick={() => handleSortChange("engagement")}
+            >
               <FaArrowRightArrowLeft /> <Text ml={2}>Engagement</Text>
             </MenuItem>
           </MenuList>
         </Menu>
       </HStack>
       <CommentList
-        comments={sortedComments || []}
+        comments={sortedComments}
         visiblePosts={visiblePosts}
         setVisiblePosts={setVisiblePosts}
         username={username}
