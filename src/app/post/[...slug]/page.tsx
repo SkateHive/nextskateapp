@@ -1,12 +1,14 @@
 import { PostProvider } from "@/contexts/PostContext";
 import HiveClient from "@/lib/hive/hiveclient";
 import PostModel from "@/lib/models/post";
-import type { Metadata, ResolvingMetadata } from 'next';
-import dynamic from 'next/dynamic';
+import type { Metadata, ResolvingMetadata } from "next";
+import dynamic from "next/dynamic";
 import { Box } from "@chakra-ui/react";
-const InitFrameSDK = dynamic(() => import('@/hooks/init-frame-sdk'), { ssr: false });
+const InitFrameSDK = dynamic(() => import("@/hooks/init-frame-sdk"), {
+  ssr: false,
+});
 
-const PostContent = dynamic(() => import('./PostContent'), { ssr: false });
+const PostContent = dynamic(() => import("./PostContent"), { ssr: false });
 
 export async function generateMetadata(
   { params }: { params: { slug: [tag: string, user: string, postId: string] } },
@@ -15,19 +17,20 @@ export async function generateMetadata(
   let [tag, user, postId] = params.slug;
   const post = await getData(user, postId);
   console.log(post);
-  // extract the images from the markdown file 
+  // extract the images from the markdown file
   const images = post.body.match(/!\[.*?\]\((.*?)\)/g);
-  const imageUrls = images ? images.map((img: string) => {
-    const match = img.match(/\((.*?)\)/);
-    return match ? match[1] : '';
-  }) : [];
+  const imageUrls = images
+    ? images.map((img: string) => {
+        const match = img.match(/\((.*?)\)/);
+        return match ? match[1] : "";
+      })
+    : [];
 
   // Get banner image
   let originalBanner = post.json_metadata?.image || imageUrls[0] || [];
 
   // Hard-code the domain to skatehive.app to match account association payload
-  const domainUrl = 'https://skatehive.app';
-
+  const domainUrl = "https://skatehive.app";
 
   // Decode the user to remove URL encoding (e.g., %40 -> @)
   const decodedUser = decodeURIComponent(user);
@@ -41,42 +44,47 @@ export async function generateMetadata(
   // Create frame object with compliant image URL
   const frameObject = {
     version: "next",
-    imageUrl: imageUrls[0] || 'https://www.skatehive.app/SKATE_HIVE_VECTOR_FIN.svg', // Use the skatehive.app domain image
+    imageUrl:
+      imageUrls[0] || "https://www.skatehive.app/SKATE_HIVE_VECTOR_FIN.svg", // Use the skatehive.app domain image
     button: {
       title: "Open post",
       action: {
         type: "launch_frame", // Simplified action type
-        name: "launch_frame",
+        name: "Skatehive",
         url: postUrl,
-      }
+      },
     },
-    postUrl: postUrl
+    postUrl: postUrl,
   };
 
   return {
     title: post.title,
     description: `${String(post.body).slice(0, 128)}...`,
     authors: [{ name: post.author }],
-    applicationName: 'SkateHive',
+    applicationName: "SkateHive",
     openGraph: {
       url: postUrl,
-      images: Array.isArray(originalBanner) ? originalBanner.map((img: string) => ({
-        url: new URL(img, domainUrl).toString(),
-        width: 1200,
-        height: 630,
-      })) : [],
+      images: Array.isArray(originalBanner)
+        ? originalBanner.map((img: string) => ({
+            url: new URL(img, domainUrl).toString(),
+            width: 1200,
+            height: 630,
+          }))
+        : [],
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: `${String(post.body).slice(0, 128)}...`,
-      images: imageUrls[0] || 'https://www.skatehive.app/SKATE_HIVE_VECTOR_FIN.svg'
+      images:
+        imageUrls[0] || "https://www.skatehive.app/SKATE_HIVE_VECTOR_FIN.svg",
     },
     other: {
       // Use compliant image URL
       "fc:frame": JSON.stringify(frameObject),
-      "fc:frame:image": images[0] || 'https://www.skatehive.app/SKATE_HIVE_VECTOR_FIN.svg', // Use the skatehive.app domain image
-      "fc:frame:post_url": postUrl
+      "fc:frame:image":
+        images[0] || "https://www.skatehive.app/SKATE_HIVE_VECTOR_FIN.svg", // Use the skatehive.app domain image
+      "fc:frame:post_url": postUrl,
     },
   };
 }
@@ -100,7 +108,12 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
     <>
       <InitFrameSDK />
       <PostProvider postData={postData}>
-        <Box w={{ base: "100%", md: "container.md" }} maxW="100%" bg="black" color="white" >
+        <Box
+          w={{ base: "100%", md: "container.md" }}
+          maxW="100%"
+          bg="black"
+          color="white"
+        >
           <PostContent user={user} postId={postId} />
         </Box>
       </PostProvider>

@@ -1,12 +1,12 @@
 import Favicon from "@/components/FaviconLinks";
 import MobileNavbar from "@/components/Navbar/MobileNavbar";
 import { Flex } from "@chakra-ui/react";
-import dynamic from 'next/dynamic';
+import dynamic from "next/dynamic";
 import { Share_Tech_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 import { Providers } from "./providers";
-import { Analytics } from '@vercel/analytics/react';
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import SidebarDesktop from "@/components/Navbar/sidebarDesktop";
 import "@/app/layout.css"; // Import the CSS file
 import InitFrameSDK from "@/hooks/init-frame-sdk";
@@ -14,9 +14,10 @@ import { Metadata } from "next";
 
 const share_tech_mono = Share_Tech_Mono({ subsets: ["latin"], weight: "400" });
 
-const ColorModeScriptWrapper = dynamic(() => import('./ColorModeScriptWrapper'), { ssr: false });
-
-
+const ColorModeScriptWrapper = dynamic(
+  () => import("./ColorModeScriptWrapper"),
+  { ssr: false }
+);
 
 const frameObject = {
   version: "next",
@@ -25,15 +26,15 @@ const frameObject = {
     title: "Be brave",
     action: {
       type: "launch_frame", // Simplified action type
-      name: "launch_frame",
+      name: "Skatehive",
       url: "https://www.skatehive.app",
-    }
+    },
   },
   postUrl: "https://www.skatehive.app",
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://skatehive.app'), // Defina seu domínio aqui
+  metadataBase: new URL("https://skatehive.app"), // Defina seu domínio aqui
   title: "Skatehive App",
   description: "The infinity skateboard maganize",
   manifest: "/manifest.json",
@@ -49,20 +50,16 @@ export const metadata: Metadata = {
   other: {
     // Use compliant image URL
     "fc:frame": JSON.stringify(frameObject),
-    "fc:frame:image": 'https://www.skatehive.app/Sogimage.png', // Use the skatehive.app domain image
-    "fc:frame:post_url": 'https://www.skatehive.app',
+    "fc:frame:image": "https://www.skatehive.app/Sogimage.png", // Use the skatehive.app domain image
+    "fc:frame:post_url": "https://www.skatehive.app",
   },
 };
-
-
 
 interface RootLayoutProps {
   children: ReactNode;
 }
 
-export default function RootLayout({
-  children,
-}: RootLayoutProps) {
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
       <head>
@@ -71,8 +68,16 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="//va.vercel-scripts.com" />
 
         {/* Preconnect to speed up TLS and handshake */}
-        <link rel="preconnect" href="https://vercel-scripts.com" crossOrigin="" />
-        <link rel="preconnect" href="https://va.vercel-scripts.com" crossOrigin="" />
+        <link
+          rel="preconnect"
+          href="https://vercel-scripts.com"
+          crossOrigin=""
+        />
+        <link
+          rel="preconnect"
+          href="https://va.vercel-scripts.com"
+          crossOrigin=""
+        />
 
         <link rel="manifest" href="/manifest.json"></link>
         <meta name="theme-color" content="#000000" />
@@ -111,8 +116,12 @@ export default function RootLayout({
         <ColorModeScriptWrapper />
         <Providers>
           <InitFrameSDK />
-          <Flex w={"100%"}
-            justifyContent={"center"} id="layout" className="mobile-layout-padding">
+          <Flex
+            w={"100%"}
+            justifyContent={"center"}
+            id="layout"
+            className="mobile-layout-padding"
+          >
             <div className="hide-on-mobile">
               <SidebarDesktop />
             </div>
