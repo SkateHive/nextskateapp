@@ -62,30 +62,57 @@ const CommentContent = React.memo(
             {`Reply to @${comment.author}`}
           </Text>
         </Flex>
-        <Box
-          w="100%"
-          maxHeight="300px" // Limit the height of the media
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-        >
-          {mediaItems.length > 0 &&
-            (mediaItems[0].type === "video" ? (
-              <VideoRenderer
-                src={mediaItems[0].url} // Render video if the media type is video
-              />
+
+        {/* Media container - updated for better video display */}
+        {mediaItems.length > 0 && (
+          <Box
+            width="100%"
+            minHeight={mediaItems[0].type === "video" ? "300px" : "250px"}
+            bg="black"
+            borderRadius="md"
+            padding={mediaItems[0].type === "video" ? "0 0 40px 0" : "0"}
+            overflow="visible"
+            position="relative"
+          >
+            {mediaItems[0].type === "video" ? (
+              <Box
+                position="relative"
+                width="100%"
+                height="100%"
+                paddingBottom="20px"
+              >
+                <VideoRenderer
+                  src={mediaItems[0].url}
+                  loop={false}
+                  width="100%"
+                  autoPlay={false} // Prevent autoplay in modal
+                  muted={false} // Allow sound
+                  style={{
+                    width: "100%",
+                    margin: "0 auto",
+                  }}
+                />
+              </Box>
             ) : (
               <Box
                 as="img"
-                src={mediaItems[0].url} // Render image if the media type is image
+                src={mediaItems[0].url}
                 alt="Media content"
-                maxHeight="300px"
                 maxWidth="100%"
-                objectFit="contain" // Shrink the media while maintaining aspect ratio
+                maxHeight="250px"
+                objectFit="contain"
+                margin="0 auto"
               />
-            ))}
-          {carrousel}
-        </Box>
+            )}
+          </Box>
+        )}
+
+        {/* Render carousel if there are multiple media items */}
+        {carrousel && (
+          <Box width="100%" overflow="hidden">
+            {carrousel}
+          </Box>
+        )}
       </Flex>
     );
   }

@@ -2,7 +2,8 @@ import { Box, Text, VStack } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import "../../../styles/fonts.css";
 
-const matrixCharacters = "FUCKアイウエオカキクケコサシスセソタチツテトナニFUCKヌネノ";
+const matrixCharacters =
+  "FUCKアイウエオカキクケコサシスセソタチツテトナニFUCKヌネノ";
 const randomSentences = [
   "skate or don't",
   "F-u-c-k instagram!",
@@ -24,7 +25,7 @@ const randomSentences = [
   "Stop using youtube",
   "If it takes to long, your connection sucks",
   "Macba Lives",
-  "Skate till you tired, then skate more"
+  "Skate till you tired, then skate more",
 ];
 
 function getRandomChar() {
@@ -45,8 +46,11 @@ const LoadingComponent = () => {
 
   useEffect(() => {
     // Generate consistent random content on the client
-    const newSentence = randomSentences[Math.floor(Math.random() * randomSentences.length)];
-    const newColumns = Array.from({ length: 20 }, () => generateColumnLines(50));
+    const newSentence =
+      randomSentences[Math.floor(Math.random() * randomSentences.length)];
+    const newColumns = Array.from({ length: 20 }, () =>
+      generateColumnLines(50)
+    );
     setRandomSentence(newSentence);
     setColumns(newColumns);
   }, []);
@@ -56,7 +60,7 @@ const LoadingComponent = () => {
       <VStack
         bg="transparent"
         blur={5}
-        overflowY="auto"
+        overflowY="hidden"
         css={{ "&::-webkit-scrollbar": { display: "none" } }}
         width="100%"
         height="100vh"
