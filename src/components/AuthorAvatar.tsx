@@ -1,94 +1,109 @@
-'use client';
+"use client";
+import React from "react";
 import HiveClient from "@/lib/hive/hiveclient";
 import { Avatar, SystemStyleObject } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { useIsClient } from "@/hooks/useIsClient"; // Add this import
 
-type Quality = 'small' | 'medium' | 'large';
+type Quality = "small" | "medium" | "large";
 
 interface AuthorAvatarProps {
-    username: string;
-    borderRadius?: number;
-    hover?: SystemStyleObject;
-    boxSize?: number;
-    quality?: Quality
+  username: string;
+  borderRadius?: number;
+  hover?: SystemStyleObject;
+  boxSize?: number;
+  quality?: Quality;
 }
 
 // cache in memory
 const profileImageCache: Map<string, string> = new Map();
 
 function checkImageExists(url: string): Promise<boolean> {
-    return fetch(url, { method: 'HEAD' })
-        .then(response => response.ok)
-        .catch(() => false); // Retorna falso em caso de erro
+  return fetch(url, { method: "HEAD" })
+    .then((response) => response.ok)
+    .catch(() => false); // Retorna falso em caso de erro
 }
 
-export default function AuthorAvatar({ username, borderRadius, hover, boxSize, quality }: AuthorAvatarProps) {
-    const [profileImage, setProfileImage] = useState("/loading.gif");
-    const [isLoading, setIsLoading] = useState(true);
-    const isClient = useIsClient(); // Add this line
+const AuthorAvatar = React.memo(function AuthorAvatar({
+  username,
+  borderRadius,
+  hover,
+  boxSize,
+  quality,
+}: AuthorAvatarProps) {
+  console.log("AuthorAvatar rendering for:", username); // Debug re-renders
 
-    const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
+  const [profileImage, setProfileImage] = useState("/loading.gif");
+  const [isLoading, setIsLoading] = useState(true);
+  const isClient = useIsClient(); // Add this line
 
-    const fetchProfileImage = useCallback(async () => {
-        // If the image is already cached, return it
-        if (profileImageCache.has(username)) {
-            setProfileImage(profileImageCache.get(username)!);
-            setIsLoading(false);
-            return;
-        }
+  const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
 
-        // Use HiveClient to get user data
-        const hiveClient = HiveClient;
-        const userData = await hiveClient.database.getAccounts([String(username)]);
-        if (userData.length > 0) {
-            const user = userData[0];
+  const fetchProfileImage = useCallback(async () => {
+    // If the image is already cached, return it
+    if (profileImageCache.has(username)) {
+      setProfileImage(profileImageCache.get(username)!);
+      setIsLoading(false);
+      return;
+    }
 
-            let profileImageUrl = "";
+    // Use HiveClient to get user data
+    const hiveClient = HiveClient;
+    const userData = await hiveClient.database.getAccounts([String(username)]);
+    if (userData.length > 0) {
+      const user = userData[0];
 
-            // Check if the metadata has the profile image
-            if (user.posting_json_metadata) {
-                const metadata = JSON.parse(user.posting_json_metadata);
-                profileImageUrl = metadata.profile?.profile_image || "";
-            }
+      let profileImageUrl = "";
 
-            if (!profileImageUrl && user.json_metadata) {
-                const metadata = JSON.parse(user.json_metadata);
-                profileImageUrl = metadata.profile?.profile_image || "";
-            }
+      // Check if the metadata has the profile image
+      if (user.posting_json_metadata) {
+        const metadata = JSON.parse(user.posting_json_metadata);
+        profileImageUrl = metadata.profile?.profile_image || "";
+      }
 
-            const defaultAvatarUrl = `https://images.ecency.com/webp/u/${username}/avatar/${quality || 'small'}`;
+      if (!profileImageUrl && user.json_metadata) {
+        const metadata = JSON.parse(user.json_metadata);
+        profileImageUrl = metadata.profile?.profile_image || "";
+      }
 
-            const ecencyAvatarExists = await checkImageExists(defaultAvatarUrl);
+      const defaultAvatarUrl = `https://images.ecency.com/webp/u/${username}/avatar/${quality || "small"}`;
 
-            const finalImageUrl = ecencyAvatarExists ? defaultAvatarUrl : profileImageUrl || defaultAvatarUrl;
+      const ecencyAvatarExists = await checkImageExists(defaultAvatarUrl);
 
-            profileImageCache.set(username, finalImageUrl);
+      const finalImageUrl = ecencyAvatarExists
+        ? defaultAvatarUrl
+        : profileImageUrl || defaultAvatarUrl;
 
-            setProfileImage(finalImageUrl);
-            setIsLoading(false);
-        }
-    }, [username, quality]);
+      profileImageCache.set(username, finalImageUrl);
 
-    useEffect(() => {
-        if (inView) {
-            fetchProfileImage();
-        }
-    }, [inView, fetchProfileImage]);
+      setProfileImage(finalImageUrl);
+      setIsLoading(false);
+    }
+  }, [username, quality]);
 
-    return (
-        <Avatar
-            ref={ref}
-            onClick={() => window.open(`/skater/${username}`, "_blank", "noreferrer noopener")}
-            name={username}
-            src={isLoading ? "/loading.gif" : profileImage}
-            boxSize={boxSize || 12}
-            bg="transparent"
-            loading="lazy"
-            borderRadius={borderRadius || 5}
-            cursor="pointer"
-            _hover={hover || { transform: "scale(1.05)", cursor: "pointer" }}
-        />
-    );
-}
+  useEffect(() => {
+    if (inView) {
+      fetchProfileImage();
+    }
+  }, [inView, fetchProfileImage]);
+
+  return (
+    <Avatar
+      ref={ref}
+      onClick={() =>
+        window.open(`/skater/${username}`, "_blank", "noreferrer noopener")
+      }
+      name={username}
+      src={isLoading ? "/loading.gif" : profileImage}
+      boxSize={boxSize || 12}
+      bg="transparent"
+      loading="lazy"
+      borderRadius={borderRadius || 5}
+      cursor="pointer"
+      _hover={hover || { transform: "scale(1.05)", cursor: "pointer" }}
+    />
+  );
+});
+
+export default AuthorAvatar;
