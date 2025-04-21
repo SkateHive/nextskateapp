@@ -50,7 +50,10 @@ const CommentItem = React.memo(
     onNewComment,
     onClose = () => {},
   }: CommentItemProps) => {
-    console.log("CommentItem rendering for:", comment.author); // Debug re-renders
+    // Prevent rendering if the comment is not yet available in the RPC
+    if (!comment || !comment.id) {
+      return null; // Return null to avoid rendering
+    }
 
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isReplyModalOpen, setIsReplyModalOpen] = useState(false);

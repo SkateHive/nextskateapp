@@ -27,6 +27,32 @@ export async function fetchComments(
   }
 
   try {
+    let response = await HiveClient.database.call("get_content", [
+      author,
+      permlink,
+    ]);
+
+    // Retry logic if the comment is not yet available
+    let retries = 3;
+    while ((!response || response.id === 0) && retries > 0) {
+      console.warn(
+        `Comment not available on RPC. Retrying... (${3 - retries + 1})`
+      );
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1 second
+      response = await HiveClient.database.call("get_content", [
+        author,
+        permlink,
+      ]);
+      retries--;
+    }
+
+    if (!response || response.id === 0) {
+      console.warn(
+        `Post or comment with author "${author}" and permlink "${permlink}" does not exist on the RPC.`
+      );
+      return []; // Return an empty array if the post/comment does not exist
+    }
+
     const comments = (await HiveClient.database.call("get_content_replies", [
       author,
       permlink,

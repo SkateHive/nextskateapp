@@ -49,15 +49,13 @@ const CommentList = ({
   return (
     <Box width={"full"}>
       <Box>
-        {comments
-          ?.slice(0, visiblePosts)
-          .map((comment) => (
-            <CommentItem
-              key={comment.id}
-              comment={comment}
-              username={username || ""}
-            />
-          ))}
+        {comments?.slice(0, visiblePosts).map((comment, index) => (
+          <CommentItem
+            key={comment.id || `placeholder-${index}`} // Use a fallback key if comment.id is missing
+            comment={comment}
+            username={username || ""}
+          />
+        ))}
 
         {visiblePosts === 0 && comments.length === 0 && (
           <Flex justify="center">

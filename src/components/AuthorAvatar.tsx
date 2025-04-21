@@ -4,7 +4,6 @@ import HiveClient from "@/lib/hive/hiveclient";
 import { Avatar, SystemStyleObject } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
-import { useIsClient } from "@/hooks/useIsClient"; // Add this import
 
 type Quality = "small" | "medium" | "large";
 
@@ -32,11 +31,8 @@ const AuthorAvatar = React.memo(function AuthorAvatar({
   boxSize,
   quality,
 }: AuthorAvatarProps) {
-  console.log("AuthorAvatar rendering for:", username); // Debug re-renders
-
   const [profileImage, setProfileImage] = useState("/loading.gif");
   const [isLoading, setIsLoading] = useState(true);
-  const isClient = useIsClient(); // Add this line
 
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
 
