@@ -168,8 +168,7 @@ const CommentItem = React.memo(
 
     const handleVoteSuccess = (
       voteType: string,
-      actualVoteValue: number = voteValue,
-      updatedComment?: any
+      actualVoteValue: number = voteValue
     ) => {
       console.log("Vote success:", voteType, actualVoteValue);
       if (voteType === "upvote") {
