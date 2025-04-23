@@ -51,9 +51,13 @@ const CommentList = ({
       <Box>
         {comments?.slice(0, visiblePosts).map((comment, index) => (
           <CommentItem
-            key={comment.id || `placeholder-${index}`} // Use a fallback key if comment.id is missing
+            key={comment.id || `placeholder-${index}`}
             comment={comment}
             username={username || ""}
+            onNewComment={(newComment) => {
+              setVisiblePosts((prev) => prev + 1); // Adjust visible posts if needed
+              comments.unshift(newComment); // Add the new comment to the top of the list
+            }}
           />
         ))}
 

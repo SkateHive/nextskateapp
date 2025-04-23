@@ -91,9 +91,9 @@ export function useComments(
   recursive: boolean = false,
   filteredCommenter?: string
 ) {
-  const [comments, setComments] = useState<Discussion[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [comments, setComments] = useState<Discussion[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchAndUpdateComments = useCallback(async () => {
     setIsLoading(true);
@@ -112,8 +112,9 @@ export function useComments(
     fetchAndUpdateComments();
   }, [fetchAndUpdateComments]);
 
-  const addComment = useCallback((newComment: any) => {
-    setComments((existingComments) => [...existingComments, newComment]);
+  const addComment = useCallback((newComment: Discussion) => {
+    // Optimistically add the new comment to the state
+    setComments((existingComments) => [newComment, ...existingComments]);
   }, []);
 
   const updateComments = useCallback(async () => {

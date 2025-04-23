@@ -17,7 +17,11 @@ const VotingButton = ({
 }: {
   comment: any;
   username: string;
-  onVoteSuccess: (voteType: string, voteValue: number) => void;
+  onVoteSuccess: (
+    voteType: string,
+    voteValue: number,
+    updatedComment?: any
+  ) => void;
 }) => {
   const { voteValue, hiveUser } = useHiveUser();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -139,6 +143,18 @@ const VotingButton = ({
         console.log(
           `Vote successful: ${finalVoteType} with value ${finalVoteValue}`
         );
+
+        // Notify parent component of the new comment
+        if (onVoteSuccess) {
+          const updatedComment = {
+            ...comment,
+            active_votes: [
+              ...comment.active_votes,
+              { voter: username, percent: voteWeight },
+            ],
+          };
+          onVoteSuccess(finalVoteType, finalVoteValue, updatedComment);
+        }
       } else {
         console.error("Error when voting:", response.message);
         if (voteType === VOTE_TYPES.UPVOTE && isUpvoted) {

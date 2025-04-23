@@ -55,6 +55,7 @@ const CommentItem = React.memo(
       return null; // Return null to avoid rendering
     }
 
+    const { addComment } = useComments(comment.author, comment.permlink); // Access addComment from useComments
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isReplyModalOpen, setIsReplyModalOpen] = useState(false);
     const [isValueTooltipOpen, setIsValueTooltipOpen] = useState(false);
@@ -101,6 +102,14 @@ const CommentItem = React.memo(
     const handleNewComment = (newComment: any) => {
       setCommentReplies((prevComments) => [newComment, ...prevComments]);
       setNumberOfComments((prevCount: number) => prevCount + 1);
+
+      // Optimistically add the comment to the parent list
+      if (onNewComment) {
+        onNewComment(newComment);
+      }
+
+      // Add the comment to the global comments state
+      addComment(newComment);
     };
 
     const handleEditSave = async (editedBody: string) => {
@@ -159,13 +168,19 @@ const CommentItem = React.memo(
 
     const handleVoteSuccess = (
       voteType: string,
-      actualVoteValue: number = voteValue
+      actualVoteValue: number = voteValue,
+      updatedComment?: any
     ) => {
       console.log("Vote success:", voteType, actualVoteValue);
       if (voteType === "upvote") {
         setCommentEarnings((prev) => prev + actualVoteValue);
       } else if (voteType === "cancel") {
         setCommentEarnings((prev) => prev - actualVoteValue);
+      }
+
+      // Optimistically update the parent comment list with the updated comment
+      if (updatedComment && onNewComment) {
+        onNewComment(updatedComment);
       }
     };
 
