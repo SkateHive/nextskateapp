@@ -15,14 +15,15 @@ import {
   Input,
   Textarea,
   useBreakpointValue,
-  VStack
+  VStack,
 } from "@chakra-ui/react";
 import * as dhive from "@hiveio/dhive";
-import piexif from 'piexifjs';
+import piexif from "piexifjs";
 import { useMemo, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { FaImage, FaTimes } from "react-icons/fa";
 import { uploadFileToIPFS } from "../upload/utils/uploadToIPFS";
+import { HiveAccount } from "@/lib/useHiveAuth";
 
 export interface Comment {
   id: number;
@@ -40,16 +41,15 @@ interface Coordinates {
   lng: number | null;
 }
 
-
 export default function UploadForm() {
   const parent_author = "web-gnar";
   const parent_permlink = "about-the-skatehive-spotbook";
-  const [visiblePosts, setVisiblePosts] = useState<number>(6);
 
   const { comments, addComment, isLoading } = useComments(
     parent_author,
     parent_permlink
-  ); const postBodyRef = useRef<HTMLTextAreaElement>(null);
+  );
+  const postBodyRef = useRef<HTMLTextAreaElement>(null);
   const user = useHiveUser();
   const username = user?.hiveUser?.name;
   const [hasPosted, setHasPosted] = useState<boolean>(false);
@@ -66,7 +66,7 @@ export default function UploadForm() {
     const minutes = dms[1] || 0;
     const seconds = dms[2] || 0;
     let dd = degrees + minutes / 60 + seconds / 3600;
-    if (ref === 'S' || ref === 'W') {
+    if (ref === "S" || ref === "W") {
       dd = dd * -1;
     }
     return dd;
@@ -84,13 +84,13 @@ export default function UploadForm() {
 
         img.onload = () => {
           const exifData = piexif.load(img.src);
-          console.log('EXIF Data:', exifData);
+          console.log("EXIF Data:", exifData);
 
           const gpsData = exifData.GPS || {};
-          const latitude = gpsData['GPSLatitude'];
-          const longitude = gpsData['GPSLongitude'];
-          const latitudeRef = gpsData['GPSLatitudeRef'] || 'N';
-          const longitudeRef = gpsData['GPSLongitudeRef'] || 'E';
+          const latitude = gpsData["GPSLatitude"];
+          const longitude = gpsData["GPSLongitude"];
+          const latitudeRef = gpsData["GPSLatitudeRef"] || "N";
+          const longitudeRef = gpsData["GPSLongitudeRef"] || "E";
 
           if (latitude && longitude) {
             const lat = convertDMSToDD(latitude, latitudeRef);
@@ -105,7 +105,6 @@ export default function UploadForm() {
 
     reader.readAsDataURL(file);
   };
-
 
   const { getRootProps, getInputProps } = useDropzone({
     noClick: true,
@@ -145,22 +144,27 @@ export default function UploadForm() {
       });
     } else {
       return comments?.slice().sort((a, b) => {
-        return getTotalPayout(b as dhive.Discussion) - getTotalPayout(a as dhive.Discussion);
+        return (
+          getTotalPayout(b as dhive.Discussion) -
+          getTotalPayout(a as dhive.Discussion)
+        );
       });
     }
   }, [comments, sortMethod]);
 
   const handlePostClick = () => {
-    const markdownString = (postBodyRef.current?.value + "\n" + imageList.join("\n")).trim();
+    const markdownString = (
+      postBodyRef.current?.value +
+      "\n" +
+      imageList.join("\n")
+    ).trim();
     if (markdownString === "") {
       alert("Please write something before posting");
       return;
-    }
-    else if (markdownString.length > 2000) {
+    } else if (markdownString.length > 2000) {
       alert("Post is too long. To make longform content use our /mag section");
       return;
-    }
-    else {
+    } else {
       handlePost(markdownString);
     }
   };
@@ -218,7 +222,7 @@ export default function UploadForm() {
             if (postBodyRef.current) {
               postBodyRef.current.value = "";
             }
-            addComment(postData);
+            addComment(postData as dhive.Discussion);
             setImageList([]);
           }
         } catch (error) {
@@ -277,7 +281,7 @@ export default function UploadForm() {
         if (postBodyRef.current) {
           postBodyRef.current.value = "";
         }
-        addComment(postData);
+        addComment(postData as dhive.Discussion);
         setHasPosted(true);
         setImageList([]);
       } catch (error) {
@@ -290,15 +294,10 @@ export default function UploadForm() {
     setImageList((prevList) => prevList.filter((_, i) => i !== index));
   };
 
-  const handleSortChange = (method: string) => {
-    setSortMethod(method);
-  };
-
   return (
-
-    <VStack
-    >
-      <Box p={4}
+    <VStack>
+      <Box
+        p={4}
         width={"100%"}
         maxWidth={{ base: "100vh", md: "100vw" }}
         bg="#484848"
@@ -310,17 +309,21 @@ export default function UploadForm() {
           boxShadow: "none",
         }}
         padding={"15px"}
-        overflowY="auto">
+        overflowY="auto"
+      >
         <div>
           <Flex>
             {/* @ts-ignore */}
-            <UserAvatar hiveAccount={user.hiveUser || {}} boxSize={12} borderRadius={5} />
+            <UserAvatar
+              hiveAccount={user.hiveUser || ({} as HiveAccount)}
+              boxSize={12}
+              borderRadius={5}
+            />
             <Flex flexDir="column" w="100%">
               <Textarea
                 border="1px solid gray"
                 background={"black"}
                 _focus={{
-
                   border: "2px solid gray",
                   boxShadow: "none",
                 }}
@@ -341,7 +344,9 @@ export default function UploadForm() {
                   <Box key={index} position="relative" maxW={100} maxH={100}>
                     <IconButton
                       aria-label="Remove image"
-                      icon={<FaTimes style={{ color: "black", strokeWidth: 1 }} />}
+                      icon={
+                        <FaTimes style={{ color: "black", strokeWidth: 1 }} />
+                      }
                       size="base"
                       color="white"
                       bg="white"
@@ -364,18 +369,24 @@ export default function UploadForm() {
                       />
                     ) : (
                       <video
-                        src={item.match(/<iframe src="(.*?)" allowFullScreen={true}><\/iframe>/)?.[1]}
+                        src={
+                          item.match(
+                            /<iframe src="(.*?)" allowFullScreen={true}><\/iframe>/
+                          )?.[1]
+                        }
                         controls
                         muted
                         width="100%"
                       />
                     )}
-                    {coordinates && coordinates.lat !== null && coordinates.lng !== null && (
-                      <div>
-                        <p>Latitude: {coordinates.lat}</p>
-                        <p>Longitude: {coordinates.lng}</p>
-                      </div>
-                    )}
+                    {coordinates &&
+                      coordinates.lat !== null &&
+                      coordinates.lng !== null && (
+                        <div>
+                          <p>Latitude: {coordinates.lat}</p>
+                          <p>Longitude: {coordinates.lng}</p>
+                        </div>
+                      )}
                   </Box>
                 ))}
               </HStack>
@@ -403,17 +414,19 @@ export default function UploadForm() {
             >
               Image/video
             </Button>
-            <Button onClick={handlePostClick} isLoading={hasPosted}
+            <Button
+              onClick={handlePostClick}
+              isLoading={hasPosted}
               bg="green.500"
               color="white"
               _hover={{ bg: "green.600" }}
-              _active={{ bg: "green.700" }}  >
+              _active={{ bg: "green.700" }}
+            >
               {hasPosted ? "Published" : "Send It"}
             </Button>
           </HStack>
         </div>
       </Box>
-
     </VStack>
   );
 }

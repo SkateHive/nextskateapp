@@ -12,7 +12,7 @@ import {
   Spinner,
   Text,
   Tooltip,
-  useToast
+  useToast,
 } from "@chakra-ui/react";
 import * as dhive from "@hiveio/dhive";
 import MDEditor, { commands } from "@uiw/react-md-editor";
@@ -30,7 +30,12 @@ interface CommandPromptProps {
   addComment?: (comment: dhive.Discussion) => void;
 }
 
-const CommandPrompt = ({ onClose, author, permlink, onNewComment }: CommandPromptProps) => {
+const CommandPrompt = ({
+  onClose,
+  author,
+  permlink,
+  onNewComment,
+}: CommandPromptProps) => {
   const [isUploading, setIsUploading] = useState(false);
   const [value, setValue] = useState("");
 
@@ -60,9 +65,9 @@ const CommandPrompt = ({ onClose, author, permlink, onNewComment }: CommandPromp
         }),
       };
 
-
       if (loginMethod === "keychain") {
-        if (!window.hive_keychain) throw new Error("Hive Keychain extension not found!");
+        if (!window.hive_keychain)
+          throw new Error("Hive Keychain extension not found!");
 
         const operations = [["comment", postData]];
 
@@ -122,10 +127,13 @@ const CommandPrompt = ({ onClose, author, permlink, onNewComment }: CommandPromp
             }),
           },
         ];
-        await commentWithPrivateKey(localStorage.getItem("EncPrivateKey")!, postOperation, commentOptions);
+        await commentWithPrivateKey(
+          localStorage.getItem("EncPrivateKey")!,
+          postOperation,
+          commentOptions
+        );
         addComment({
-          ...postOperation[1],
-          id: newPermLink,
+          ...(postOperation[1] as dhive.Discussion),
         });
       }
     } catch (err: any) {
@@ -208,7 +216,13 @@ const CommandPrompt = ({ onClose, author, permlink, onNewComment }: CommandPromp
   ];
 
   return (
-    <Box p={4} borderRadius="md" boxShadow="lg" color="white" {...getRootProps()}>
+    <Box
+      p={4}
+      borderRadius="md"
+      boxShadow="lg"
+      color="white"
+      {...getRootProps()}
+    >
       <Box p={4} bg="blackAlpha.800" borderRadius="md" boxShadow="sm" mb={4}>
         {isUploading && (
           <Center>
@@ -248,7 +262,6 @@ const CommandPrompt = ({ onClose, author, permlink, onNewComment }: CommandPromp
             lineHeight: "1.5",
           }}
         />
-
       </Box>
       <input
         type="file"
@@ -267,7 +280,6 @@ const CommandPrompt = ({ onClose, author, permlink, onNewComment }: CommandPromp
         </Button>
       </Flex>
       {error && <Text color="red.500">{error}</Text>}
-
     </Box>
   );
 };
