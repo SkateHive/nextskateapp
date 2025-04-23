@@ -55,8 +55,10 @@ const CommentList = ({
             comment={comment}
             username={username || ""}
             onNewComment={(newComment) => {
-              setVisiblePosts((prev) => prev + 1); // Adjust visible posts if needed
-              comments.unshift(newComment); // Add the new comment to the top of the list
+              if (!comments.some((c) => c.id === newComment.id)) {
+                comments.unshift(newComment);
+                setVisiblePosts((prev) => prev + 1);
+              }
             }}
           />
         ))}

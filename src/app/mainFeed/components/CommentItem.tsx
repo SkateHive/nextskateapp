@@ -35,7 +35,6 @@ interface CommentItemProps {
   username: string;
   onClick?: () => void;
   onNewComment?: (comment: any) => void;
-  onClose?: () => void;
 }
 
 interface MediaItem {
@@ -44,12 +43,7 @@ interface MediaItem {
 }
 
 const CommentItem = React.memo(
-  ({
-    comment,
-    username,
-    onNewComment,
-    onClose = () => {},
-  }: CommentItemProps) => {
+  ({ comment, username, onNewComment }: CommentItemProps) => {
     // Prevent rendering if the comment is not yet available in the RPC
     if (!comment || !comment.id) {
       return null; // Return null to avoid rendering
@@ -166,16 +160,26 @@ const CommentItem = React.memo(
         .replace(/allowFullScreen={true}>/g, "");
     }, [editedCommentBody]);
 
-    const handleVoteSuccess = (
-      voteType: string,
-      actualVoteValue: number = voteValue
-    ) => {
-      console.log("Vote success:", voteType, actualVoteValue);
-      if (voteType === "upvote") {
-        setCommentEarnings((prev) => prev + actualVoteValue);
-      } else if (voteType === "cancel") {
-        setCommentEarnings((prev) => prev - actualVoteValue);
-      }
+    const handleVoteSuccess = (voteType: string, actualVoteValue: number) => {
+      console.log("CommentItem: handleVoteSuccess triggered:", {
+        voteType,
+        actualVoteValue,
+      });
+
+      setCommentEarnings((prev) => {
+        const newEarnings =
+          voteType === "upvote"
+            ? Math.max(prev + actualVoteValue, 0)
+            : voteType === "cancel"
+              ? Math.max(prev - actualVoteValue, 0)
+              : prev;
+
+        console.log("CommentItem: Updating commentEarnings:", {
+          prev,
+          newEarnings,
+        });
+        return newEarnings;
+      });
     };
 
     // Create adapter function for ToggleComments
@@ -340,7 +344,13 @@ const CommentItem = React.memo(
           <VotingButton
             comment={comment}
             username={username}
-            onVoteSuccess={handleVoteSuccess}
+            onVoteSuccess={(voteType, actualVoteValue) => {
+              console.log("CommentItem: VotingButton onVoteSuccess called:", {
+                voteType,
+                actualVoteValue,
+              });
+              handleVoteSuccess(voteType, actualVoteValue); // Only update earnings here
+            }}
           />
 
           <Tooltip

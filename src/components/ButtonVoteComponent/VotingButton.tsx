@@ -92,7 +92,6 @@ const VotingButton = ({
       if (isDownvoted) {
         setDownvoteCount((prev: number) => prev - 1);
       }
-      onVoteSuccess(VOTE_TYPES.UPVOTE, userVoteValue);
     } else if (action === VOTE_TYPES.DOWNVOTE) {
       setIsUpvoted(false);
       setIsDownvoted(true);
@@ -100,24 +99,21 @@ const VotingButton = ({
       if (isUpvoted) {
         setUpvoteCount((prev: number) => prev - 1);
       }
-      onVoteSuccess(VOTE_TYPES.DOWNVOTE, userVoteValue);
     } else if (action === VOTE_TYPES.CANCEL) {
       setIsUpvoted(false);
-      setUpvoteCount((prev: number) => prev - 0);
-      setDownvoteCount((prev: number) => prev - 0);
-      onVoteSuccess(VOTE_TYPES.CANCEL, userVoteValue);
+      setUpvoteCount((prev: number) => Math.max(prev - 1, 0));
+      setDownvoteCount((prev: number) => Math.max(prev - 1, 0));
     }
   };
 
   const handleVote = async (voteType: string, voteWeight: number) => {
     if (voteWeight === 0) {
-      console.log("Canceling vote, not allowing the vote to be registered.");
       updateVotes(VOTE_TYPES.CANCEL);
+      onVoteSuccess(VOTE_TYPES.CANCEL, 0); // Notify parent only once
       return;
     }
 
     if (!username) {
-      console.error("Username is missing");
       setIsLoginModalOpen(true);
       return;
     }
@@ -133,43 +129,18 @@ const VotingButton = ({
       });
 
       if (response.success) {
-        // Make sure to use the voteType and voteValue from the response if available
         const finalVoteType = response.voteType || voteType;
         const finalVoteValue =
           response.voteValue || calculatedVoteValue || voteValue;
 
         updateVotes(finalVoteType, finalVoteValue);
-        reward(); // Always trigger reward animation on successful vote
-        console.log(
-          `Vote successful: ${finalVoteType} with value ${finalVoteValue}`
-        );
+        reward();
 
-        // Notify parent component of the new comment
-        if (onVoteSuccess) {
-          const updatedComment = {
-            ...comment,
-            active_votes: [
-              ...comment.active_votes,
-              { voter: username, percent: voteWeight },
-            ],
-          };
-          onVoteSuccess(finalVoteType, finalVoteValue, updatedComment);
-        }
-      } else {
-        console.error("Error when voting:", response.message);
-        if (voteType === VOTE_TYPES.UPVOTE && isUpvoted) {
-          setIsUpvoted(false);
-          setUpvoteCount((prev: number) => Math.max(0, prev - 1));
-        }
+        // Notify parent only once after successful vote
+        onVoteSuccess(finalVoteType, finalVoteValue);
       }
     } catch (error) {
-      console.error("Error during voting:", error);
-      if ((error as Error)?.message?.includes("user_cancel")) {
-        console.log(
-          "Vote was canceled by the user, updating state to reflect cancellation."
-        );
-        updateVotes(VOTE_TYPES.CANCEL);
-      }
+      // Handle error
     } finally {
       setIsVoting(false);
     }
@@ -178,7 +149,6 @@ const VotingButton = ({
   const handleRightClick = (e: React.MouseEvent, voteType: string) => {
     e.preventDefault();
     if (isAnimating) {
-      console.log("Animation in progress, please wait.");
       return;
     }
     if (!username) {
@@ -195,11 +165,9 @@ const VotingButton = ({
 
   const handleLeftClick = (e: React.MouseEvent) => {
     if (isVoting || isAnimating) {
-      console.log("Voting or animation in progress, please wait...");
       return;
     }
     if (!username) {
-      console.error("Error: The user is not logged in.");
       setIsLoginModalOpen(true);
       return;
     }
