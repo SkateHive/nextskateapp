@@ -177,11 +177,6 @@ const CommentItem = React.memo(
       } else if (voteType === "cancel") {
         setCommentEarnings((prev) => prev - actualVoteValue);
       }
-
-      // Optimistically update the parent comment list with the updated comment
-      if (updatedComment && onNewComment) {
-        onNewComment(updatedComment);
-      }
     };
 
     // Create adapter function for ToggleComments
