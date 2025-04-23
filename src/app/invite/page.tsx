@@ -11,6 +11,7 @@ import {
   KeychainKeyTypes,
 } from "keychain-sdk";
 import * as dhive from "@hiveio/dhive";
+import { useRouter } from "next/navigation"; // Add this import
 
 //import serverMailer from '../../lib/mailer/route';
 import * as invites from "../../lib/mailer/invite-helpers";
@@ -40,6 +41,7 @@ import {
 import { useHiveUser } from "@/contexts/UserContext";
 
 function AccountCreation() {
+  const router = useRouter(); // Add this line
   const [isLoading, setIsLoading] = useState(true);
   const [desiredUsername, setDesiredUsername] = useState("");
   const [desiredEmail, setDesiredEmail] = useState("");
@@ -79,17 +81,9 @@ function AccountCreation() {
     setBroadcastResult(false);
     setBMessage("");
 
-    // debugging email. just fill up form and click on check button
-    // console.log("handlecheck");
-    // Pass the selected language to the test email function
-    // invites.sendTestEmail("", "", "", "", [], selectedLanguage);
-    // debugging
-
     if (desiredEmail == "") {
       setBroadcastResult(true);
       setBMessage("You forgot the fill up the email");
-      // isEmailOk = false;
-      // return
     } else {
       setBroadcastResult(false);
       setBMessage("");
@@ -97,10 +91,8 @@ function AccountCreation() {
     }
 
     if (desiredUsername) {
-      // console.log("desiredUsername: "+desiredUsername);
       isValidAccountName = invites.validateAccountName(desiredUsername);
       if (isValidAccountName !== null) {
-        // account is invalid, return error string
         setAccountInvalid(String(isValidAccountName));
       } else {
         setAccountInvalid("");
@@ -114,25 +106,10 @@ function AccountCreation() {
         setIsCheckedOnce(true);
       }
 
-      // console.log("isValidAccountName: "+isValidAccountName);
-      // console.log("isAvailable: "+isAvailable);
       if (isAvailable && isValidAccountName === null) {
-        // console.log("Is Available");
-        // console.log("isValidAccountName: "+isValidAccountName);
-        // console.log("isAvailable: "+isAvailable);
-        //setShowSecondForm(true);
         setAccountAvailable(true);
-        // setAreKeysDownloaded(true);
-        // handleGenerateKeys();
       } else {
-        // console.log("Not Available");
-        // console.log("isValidAccountName :"+isValidAccountName);
-        // console.log("isAvailable :"+isAvailable);
-        // console.log('Account already exists. Please choose a different desiredUsername.');
-        //setShowSecondForm(false);
-
         setAccountAvailable(false);
-        // setAreKeysDownloaded(false);
       }
 
       if (isEmailOk && isAvailable && isValidAccountName === null) {
@@ -140,7 +117,6 @@ function AccountCreation() {
         handleGenerateKeys();
       }
     } else {
-      // console.log('Please enter a username.');
       setAccountAvailable(false);
     }
   };
@@ -386,268 +362,191 @@ function AccountCreation() {
     // user is in
     return (
       <Flex
+        direction="column"
+        align="center"
+        justify="flex-start"
         style={{
           backgroundImage: "url('/nft-unscreen.gif')",
           backgroundSize: "20%",
           backgroundPosition: "top center",
           backgroundRepeat: "no-repeat",
-          alignItems: "center",
-          justifyContent: "center",
-          flexWrap: "wrap",
           width: "100%",
           height: "100vh",
           color: "white",
+          overflowY: "auto", // Allow scrolling
+          padding: "20px", // Add padding for better spacing
         }}
       >
-        <VStack spacing={3}>
-          <Center>
-            <Text
-              align={"center"}
-              fontFamily="Creepster"
-              fontSize="44px"
-              color="white"
-            >
-              Invite a Shredder to Skatehive
-            </Text>
-          </Center>
-          <Text fontFamily="Creepster" fontSize="32px" color={"yellow"}>
-            Your buddy nickname. Choose wisely!
-          </Text>
+        <Button
+          onClick={() => router.back()}
+          colorScheme="yellow"
+          border={"2px solid black"}
+          marginBottom="20px"
+          alignSelf="flex-start" // Align the button to the top-left
+        >
+          Go Back
+        </Button>
 
-          <Input
-            type="login"
-            placeholder="Friend's desired Hive Nickname"
-            backdropBlur={4}
+        <Text
+          align="center"
+          fontFamily="Creepster"
+          fontSize="36px"
+          color="white"
+          marginBottom="20px"
+          textShadow="2px 2px black" // Add text shadow for better readability
+        >
+          Invite a Shredder to Skatehive
+        </Text>
+
+        <Text
+          fontFamily="Creepster"
+          fontSize="24px"
+          color="yellow"
+          marginBottom="10px"
+          textAlign="center" // Center-align the text
+        >
+          Your buddy nickname. Choose wisely!
+        </Text>
+        <Input
+          type="login"
+          placeholder="Friend's desired Hive Nickname"
+          backdropBlur={4}
+          bg={"black"}
+          maxW={"375px"}
+          value={desiredUsername}
+          onChange={(e) => setDesiredUsername(e.target.value)}
+          marginBottom="20px"
+        />
+
+        <Text
+          fontFamily="Creepster"
+          fontSize="24px"
+          color="yellow"
+          marginBottom="10px"
+          textAlign="center" // Center-align the text
+        >
+          Your buddy email
+        </Text>
+        <Input
+          type="email"
+          placeholder="Friend's email"
+          backdropBlur={4}
+          bg={"black"}
+          maxW={"375px"}
+          value={desiredEmail}
+          onChange={(e) => setDesiredEmail(e.target.value)}
+          marginBottom="20px"
+        />
+
+        <Text
+          fontFamily="Creepster"
+          fontSize="24px"
+          color="yellow"
+          marginBottom="10px"
+          textAlign="center" // Center-align the text
+        >
+          Choose Account Creation Method
+        </Text>
+        <Switch
+          isChecked={useAccountToken}
+          onChange={() => setUseAccountToken(!useAccountToken)}
+          marginBottom="10px"
+        />
+        <Text
+          fontFamily="Creepster"
+          fontSize="18px"
+          color="yellow"
+          marginBottom="20px"
+          textAlign="center" // Center-align the text
+        >
+          {useAccountToken ? "Using Account Creation Token" : "Paying 3 HIVE"}
+        </Text>
+
+        <Text
+          fontFamily="Creepster"
+          fontSize="24px"
+          color="yellow"
+          marginBottom="10px"
+          textAlign="center" // Center-align the text
+        >
+          Choose Email Language
+        </Text>
+        <Select
+          maxW={"375px"}
+          bg={"black"}
+          color={"white"}
+          value={selectedLanguage}
+          onChange={(e) => setSelectedLanguage(e.target.value)}
+          marginBottom="20px"
+        >
+          <option value="EN">English</option>
+          <option value="PT-BR">Português (Brasil)</option>
+          <option value="ES">Español</option>
+        </Select>
+
+        <Button
+          colorScheme="yellow"
+          border={"2px solid black"}
+          onClick={handleCheck}
+          marginBottom="20px"
+          isDisabled={!desiredUsername || !desiredEmail}
+        >
+          Check if @{desiredUsername} is available!
+        </Button>
+
+        {isCheckedOnce && (
+          <Flex
+            border={"2px solid yellow"}
+            borderRadius="5px"
             bg={"black"}
-            maxW={"375px"}
-            value={desiredUsername}
-            onChange={(e) => setDesiredUsername(e.target.value)}
-            onKeyDown={handleKeyDown}
-          />
-
-          <Text fontFamily="Creepster" fontSize="32px" color={"yellow"}>
-            Your buddy email
-          </Text>
-          <Input
-            type="email"
-            placeholder="Friend's email"
-            backdropBlur={4}
-            bg={"black"}
-            maxW={"375px"}
-            value={desiredEmail}
-            onChange={(e) => setDesiredEmail(e.target.value)}
-            onKeyDown={handleKeyDown}
-          />
-
-          <Text fontFamily="Creepster" fontSize="32px" color={"yellow"}>
-            Choose Account Creation Method
-          </Text>
-          <Switch
-            isChecked={useAccountToken}
-            onChange={() => setUseAccountToken(!useAccountToken)}
-          />
-          <Text fontFamily="Creepster" fontSize="20px" color={"yellow"}>
-            {useAccountToken ? "Using Account Creation Token" : "Paying 3 HIVE"}
-          </Text>
-
-          <Text fontFamily="Creepster" fontSize="32px" color={"yellow"}>
-            Choose Email Language
-          </Text>
-          <Select
-            maxW={"375px"}
-            bg={"black"}
-            color={"white"}
-            value={selectedLanguage}
-            onChange={(e) => setSelectedLanguage(e.target.value)}
+            p={"10px"}
+            align="center"
+            marginBottom="20px"
           >
-            <option value="EN">English</option>
-            <option value="PT-BR">Português (Brasil)</option>
-            <option value="ES">Español</option>
-          </Select>
-
-          <VStack>
-            <Flex
-              border={"2px solid yellow"}
-              borderRadius="5px"
-              bg={"black"}
-              p={"5px"}
-              align="center"
-              display={isCheckedOnce ? "flex" : "none"}
-            >
-              {accountAvailable ? (
-                <Icon as={FaCheck} color="green" />
-              ) : (
-                <Icon as={FaTimes} color="red" />
-              )}
-
-              <Text color={accountAvailable ? "yellow" : "white"} ml={2}>
-                {accountAvailable
-                  ? "Yeah!! Account available. Drop it!"
-                  : "Please choose other nickname! " + accountInvalid}
-              </Text>
-            </Flex>
-
-            <Center>
-              {desiredUsername && (
-                <Button
-                  display={"block"}
-                  colorScheme="yellow"
-                  border={"2px solid black"}
-                  onClick={handleCheck}
-                >
-                  Check if @{desiredUsername} is available!
-                </Button>
-              )}
-            </Center>
-          </VStack>
-
-          <VStack>
-            {desiredUsername != "" && (
-              <Text>
-                Create Account and Send keys to {desiredUsername} at{" "}
-                {desiredEmail}.
-              </Text>
+            {accountAvailable ? (
+              <Icon as={FaCheck} color="green" />
+            ) : (
+              <Icon as={FaTimes} color="red" />
             )}
-          </VStack>
-          <VStack>
-            <FormControl>
-              <Center>
-                <Button
-                  w={"100%"}
-                  p="20px"
-                  alignContent={"center"}
-                  colorScheme="green"
-                  border={"2px solid black"}
-                  onClick={handleCreateAccount}
-                  margin="10px"
-                  isDisabled={areKeysDownloaded ? false : true}
-                >
-                  Looks Good, Lets go for it!
-                </Button>
-              </Center>
-            </FormControl>
-          </VStack>
+            <Text
+              color={accountAvailable ? "yellow" : "white"}
+              ml={2}
+              textAlign="center" // Center-align the text
+            >
+              {accountAvailable
+                ? "Yeah!! Account available. Drop it!"
+                : "Please choose another nickname! " + accountInvalid}
+            </Text>
+          </Flex>
+        )}
 
-          {broadcast_success && (
-            <VStack>
-              <Text
-                id="BroadcastResults"
-                borderRadius="15"
-                borderColor={"yellow"}
-                padding={5}
-                background="#252525"
-                fontSize={"14px"}
-                whiteSpace="pre"
-              >
-                {broadcast_message}
-              </Text>
-            </VStack>
-          )}
+        <Button
+          w={"100%"}
+          p="20px"
+          colorScheme="green"
+          border={"2px solid black"}
+          onClick={handleCreateAccount}
+          isDisabled={!areKeysDownloaded}
+          marginBottom="20px"
+        >
+          Looks Good, Let's Go For It!
+        </Button>
 
-          {showSecondForm && (
-            <FormControl>
-              <Button
-                leftIcon={<FaKey />}
-                colorScheme="yellow"
-                border={"2px solid black"}
-                onClick={handleGenerateKeys}
-                marginTop={5}
-              >
-                Generate Keys
-              </Button>
-              <Flex
-                display={keys ? "flex" : "none"}
-                direction="column"
-                align="center"
-                justify="center"
-                marginTop={5}
-              >
-                <Box w={"90%"}>
-                  <Text
-                    id="hiddenSecretKeys"
-                    borderRadius="15"
-                    display="none"
-                    borderColor={"yellow"}
-                    padding={5}
-                    background="#252525"
-                    fontSize={"14px"}
-                    whiteSpace="pre"
-                  >
-                    {textToDisplay.slice(0, charactersToShow)}
-                  </Text>
-                </Box>
-                <Flex
-                  mt={4}
-                  width="100%"
-                  gap={2}
-                  justifyContent="center"
-                  marginBottom={5}
-                >
-                  <Button
-                    leftIcon={<FaKey />}
-                    colorScheme="yellow"
-                    border={"2px solid black"}
-                    onClick={() => invites.copyToClipboard(downloadText)}
-                  >
-                    Copy Keys
-                  </Button>
-                  <Button
-                    leftIcon={<FaDownload />}
-                    colorScheme="yellow"
-                    border={"2px solid black"}
-                    onClick={() => {
-                      const element = document.createElement("a");
-                      const file = new Blob([downloadText], {
-                        type: "text/plain",
-                      });
-                      element.href = URL.createObjectURL(file);
-                      element.download = `KEYS BACKUP - @${desiredUsername.toUpperCase()}.txt`;
-                      document.body.appendChild(element);
-                      element.click();
-                      setAreKeysDownloaded(true);
-                    }}
-                  >
-                    Download Keys
-                  </Button>
-                  <Button
-                    leftIcon={<FaMailBulk />}
-                    colorScheme="yellow"
-                    border={"2px solid black"}
-                    onClick={() => invites.copyToClipboard(downloadText)}
-                  >
-                    Send via e-mail
-                  </Button>
-                </Flex>
-              </Flex>
-              <Flex>
-                <Checkbox
-                  display={"none"}
-                  marginLeft={"15px"}
-                  colorScheme="teal"
-                  size="lg"
-                  isChecked={areKeysDownloaded}
-                  onChange={(e) => setAreKeysDownloaded(e.target.checked)}
-                >
-                  I have downloaded that shit and I wont lose it.
-                </Checkbox>
-              </Flex>
-              <Center>
-                <Button
-                  w={"100%"}
-                  p="20px"
-                  alignContent={"center"}
-                  colorScheme="green"
-                  border={"2px solid black"}
-                  onClick={handleCreateAccount}
-                  margin="10px"
-                  isDisabled={areKeysDownloaded ? false : true}
-                >
-                  Create Account and Send Keys via Email
-                </Button>
-              </Center>
-            </FormControl>
-          )}
-        </VStack>
+        {broadcast_success && (
+          <Text
+            id="BroadcastResults"
+            borderRadius="15"
+            borderColor={"yellow"}
+            padding={5}
+            background="#252525"
+            fontSize={"14px"}
+            whiteSpace="pre"
+            marginBottom="20px"
+            textAlign="center" // Center-align the text
+          >
+            {broadcast_message}
+          </Text>
+        )}
       </Flex>
     );
 }
