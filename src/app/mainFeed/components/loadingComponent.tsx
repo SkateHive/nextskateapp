@@ -26,6 +26,7 @@ const randomSentences = [
   "If it takes to long, your connection sucks",
   "Macba Lives",
   "Skate till you tired, then skate more",
+  "Bless Skateshop aceita HBD, USDC e BTC",
 ];
 
 function getRandomChar() {
