@@ -16,7 +16,6 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   let [tag, user, postId] = params.slug;
   const post = await getData(user, postId);
-  console.log(post);
   // extract the images from the markdown file
   const images = post.body ? post.body.match(/!\[.*?\]\((.*?)\)/g) : [];
   const imageUrls = images
