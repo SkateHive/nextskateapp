@@ -3,12 +3,15 @@ import nodemailer from 'nodemailer';
 import { htmlToText } from 'html-to-text';
 import getMailTemplate_Invite from './invite-template';
 
-export default async function serverMailer(to:string, 
-                                            subject:string, 
-                                            createdby:string, 
-                                            desiredUsername:string,
-                                            masterPassword:string,
-                                            keys:any) {
+export default async function serverMailer(
+  to: string,
+  subject: string,
+  createdby: string,
+  desiredUsername: string,
+  masterPassword: string,
+  keys: any,
+  language: string // Add language parameter
+) {
 
   // Create transporter object using nodemailer
   const transporter = nodemailer.createTransport({
@@ -24,7 +27,7 @@ export default async function serverMailer(to:string,
   // Try sending the email
   try {
     // Get HTML template and Convert HTML to plain text
-    const html = getMailTemplate_Invite(createdby, desiredUsername, masterPassword, keys);
+    const html = getMailTemplate_Invite(createdby, desiredUsername, masterPassword, keys, language); // Pass language
     const text = htmlToText(html, {
       preserveNewlines: true, // Optional: Preserve newlines
       //wordwrap: 130,   // Optional: Set a word wrap length (e.g., 130 characters)

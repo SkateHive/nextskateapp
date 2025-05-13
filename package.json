@@ -15,6 +15,7 @@
     "@emotion/react": "11",
     "@emotion/styled": "11",
     "@ethersproject/providers": "^5.7.2",
+    "@farcaster/frame-sdk": "^0.0.32",
     "@fontsource/creepster": "^5.1.1",
     "@giphy/js-fetch-api": "^5.6.0",
     "@giphy/js-types": "^5.1.0",

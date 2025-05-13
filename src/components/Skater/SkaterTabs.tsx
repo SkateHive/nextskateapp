@@ -1,6 +1,15 @@
 import { QueryProvider } from "@/contexts/QueryContext";
 import { HiveAccount } from "@/lib/useHiveAuth";
-import { Box, Center, Tab, TabList, TabPanel, TabPanels, Tabs, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Center,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  VStack,
+} from "@chakra-ui/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import ProfilePosts from "../Profile/ProfilePosts";
 import VideoParts from "../Profile/profileVideos";
@@ -19,11 +28,11 @@ export default function SkaterTabs({ user }: ProfilePageProps) {
   // Converting ReadonlyURLSearchParams to URLSearchParams
   const params = new URLSearchParams(searchParams?.toString() || "");
 
-  const tab = params.get('tab');
+  const tab = params.get("tab");
   const tabIndex = tabNames.indexOf(tab || "feed");
 
   const handleTabChange = (index: number) => {
-    params.set('tab', tabNames[index]);
+    params.set("tab", tabNames[index]);
     // Updating the URL without reloading the page
     router.replace(`?${params.toString()}`);
   };
@@ -39,10 +48,18 @@ export default function SkaterTabs({ user }: ProfilePageProps) {
           onChange={handleTabChange}
         >
           <TabList color={"white"} mb="1em">
-            <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Feed</Tab>
-            <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Card</Tab>
-            <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>Pages</Tab>
-            <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>VideoParts</Tab>
+            <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>
+              Feed
+            </Tab>
+            <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>
+              Card
+            </Tab>
+            <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>
+              Pages
+            </Tab>
+            <Tab bg={"black"} _selected={{ bg: "limegreen", color: "black" }}>
+              VideoParts
+            </Tab>
           </TabList>
           <TabPanels>
             <TabPanel>

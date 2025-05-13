@@ -1,8 +1,8 @@
-import { SkateHivePreviewCard } from '@/app/mainFeed/components/SkatehivePreviewCard';
-import { Box, Center, Divider, Image } from '@chakra-ui/react';
-import React from 'react';
-import ProfileLink from './ProfileLink';
-import VideoRenderer from './VideoRenderer'; // Import the VideoRenderer
+import { SkateHivePreviewCard } from "@/app/mainFeed/components/SkatehivePreviewCard";
+import { Box, Center, Divider, Image } from "@chakra-ui/react";
+import React from "react";
+import ProfileLink from "./ProfileLink";
+import VideoRenderer from "./VideoRenderer"; // Import the VideoRenderer
 import DecryptedText from "@/components/DecryptedText";
 
 type MarkdownProps = {
@@ -18,26 +18,40 @@ type RendererProps = MarkdownProps & {
   href?: string;
 };
 
-const MentionRenderer = ({ children, useDecryptedText }: { children: React.ReactNode, useDecryptedText: boolean }) => {
+const MentionRenderer = ({
+  children,
+  useDecryptedText,
+}: {
+  children: React.ReactNode;
+  useDecryptedText: boolean;
+}) => {
   const parts = React.Children.toArray(children);
   return (
     <>
       {parts.map((part, index) => {
-        if (typeof part === 'string') {
+        if (typeof part === "string") {
           return part.split(/(@[a-zA-Z0-9!_\-]+)/g).map((subPart, subIndex) => {
-            if (subPart.startsWith('@')) {
+            if (subPart.startsWith("@")) {
               const username = subPart.slice(1);
               return (
                 <a
                   key={`${index}-${subIndex}`}
                   href={`/skater/${username}`}
-                  style={{ color: 'limegreen', fontWeight: 'bold' }}
+                  style={{ color: "limegreen", fontWeight: "bold" }}
                 >
-                  {useDecryptedText ? <DecryptedText text={subPart} /> : subPart}
+                  {useDecryptedText ? (
+                    <DecryptedText text={subPart} />
+                  ) : (
+                    subPart
+                  )}
                 </a>
               );
             }
-            return useDecryptedText ? <DecryptedText key={`${index}-${subIndex}`} text={subPart} /> : subPart;
+            return useDecryptedText ? (
+              <DecryptedText key={`${index}-${subIndex}`} text={subPart} />
+            ) : (
+              subPart
+            );
           });
         }
         return <React.Fragment key={index}>{part}</React.Fragment>; // Ensure non-string parts are rendered correctly
@@ -49,7 +63,13 @@ const MentionRenderer = ({ children, useDecryptedText }: { children: React.React
 export const MarkdownRenderers = (useDecryptedText: boolean) => ({
   // Custom handler for images
   img: ({ alt, src, title, ...props }: RendererProps) => (
-    <span style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+    <span
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
       <Center>
         <Image
           {...props}
@@ -66,15 +86,19 @@ export const MarkdownRenderers = (useDecryptedText: boolean) => ({
             marginBottom: "20px",
           }}
         />
-
       </Center>
-
     </span>
   ),
   div: ({ children, node, ...props }: RendererProps) => {
     if (node?.properties?.className?.includes("centered-image")) {
       return (
-        <div style={{ justifyContent: "center", alignItems: "center", width: "100%" }}>
+        <div
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            width: "100%",
+          }}
+        >
           {children}
         </div>
       );
@@ -82,10 +106,12 @@ export const MarkdownRenderers = (useDecryptedText: boolean) => ({
     return <div {...props}>{children}</div>;
   },
   a: ({ href, children, ...props }: RendererProps) => {
-    const skateHivePostRegex = /https:\/\/www\.skatehive\.app\/post\/([^/]+)\/@([^/]+)\/([^/]+)/;
+    const skateHivePostRegex =
+      /https:\/\/www\.skatehive\.app\/post\/([^/]+)\/@([^/]+)\/([^/]+)/;
     const match = skateHivePostRegex.exec(String(href));
 
-    const skatehiveProfileRegex = /https:\/\/(www\.)?(skatehive\.app|beta\.skatehive\.app)\/(profile|skater)\/([^/]+)/;
+    const skatehiveProfileRegex =
+      /https:\/\/(www\.)?(skatehive\.app|beta\.skatehive\.app)\/(profile|skater)\/([^/]+)/;
     const profileMatch = skatehiveProfileRegex.exec(String(href));
 
     if (match) {
@@ -95,15 +121,15 @@ export const MarkdownRenderers = (useDecryptedText: boolean) => ({
       const [, , , , username] = profileMatch;
 
       return (
-        <Box>
+        <Center m={4}>
           <ProfileLink username={username} />
-        </Box>
+        </Center>
       );
     }
 
     return (
       <a
-        style={{ color: 'yellow', wordBreak: 'break-all' }}
+        style={{ color: "yellow", wordBreak: "break-all" }}
         href={href}
         target="_blank"
         rel="noopener noreferrer"
@@ -114,71 +140,133 @@ export const MarkdownRenderers = (useDecryptedText: boolean) => ({
     );
   },
   h1: ({ children, ...props }: RendererProps) => (
-    <h1 {...props} style={{ fontWeight: 'bold', color: '#A5D6A7', fontSize: '28px', padding: '10px 0 10px 8px' }}>{children}</h1>
+    <h1
+      {...props}
+      style={{
+        fontWeight: "bold",
+        color: "#A5D6A7",
+        fontSize: "28px",
+        padding: "10px 0 10px 8px",
+      }}
+    >
+      {children}
+    </h1>
   ),
   h3: ({ children, ...props }: RendererProps) => (
-    <h3 {...props} style={{ fontWeight: 'bold', color: '#A5D6A7', fontSize: '24px', padding: '12px 0 6px 8px' }}>{children}</h3>
+    <h3
+      {...props}
+      style={{
+        fontWeight: "bold",
+        color: "#A5D6A7",
+        fontSize: "24px",
+        padding: "12px 0 6px 8px",
+      }}
+    >
+      {children}
+    </h3>
   ),
   h2: ({ children, ...props }: RendererProps) => (
-    <h2 {...props} style={{ fontWeight: 'bold', color: '#A5D6A7', fontSize: '26px', padding: '10px 0 8px 8px' }}>{children}</h2>
+    <h2
+      {...props}
+      style={{
+        fontWeight: "bold",
+        color: "#A5D6A7",
+        fontSize: "26px",
+        padding: "10px 0 8px 8px",
+      }}
+    >
+      {children}
+    </h2>
   ),
   h4: ({ children, ...props }: RendererProps) => (
-    <h4 {...props} style={{ fontWeight: 'bold', color: '#A5D6A7', fontSize: '22px', padding: '12px 0 6px 8px' }}>{children}</h4>
+    <h4
+      {...props}
+      style={{
+        fontWeight: "bold",
+        color: "#A5D6A7",
+        fontSize: "22px",
+        padding: "12px 0 6px 8px",
+      }}
+    >
+      {children}
+    </h4>
   ),
   em: ({ children, ...props }: RendererProps) => (
-    <em {...props} style={{ color: '#A5D6A7' }}>{children}</em>
+    <em {...props} style={{ color: "#A5D6A7" }}>
+      {children}
+    </em>
   ),
   blockquote: ({ children, ...props }: RendererProps) => (
     <div
       style={{
-        backgroundColor: '#004d1a',
-        padding: '10px',
-        borderLeft: '4px solid  #A5D6A7',
-        margin: '10px',
-        borderRadius: '8px',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.2)',
-        fontStyle: 'italic',
-        fontWeight: 'bold',
-        fontSize: '18px',
-        lineHeight: '1',
+        backgroundColor: "#004d1a",
+        padding: "10px",
+        borderLeft: "4px solid  #A5D6A7",
+        margin: "10px",
+        borderRadius: "8px",
+        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.2)",
+        fontStyle: "italic",
+        fontWeight: "bold",
+        fontSize: "18px",
+        lineHeight: "1",
       }}
     >
       {children}
     </div>
   ),
   ol: ({ ordered, children, ...props }: RendererProps) => (
-    <ol {...props} style={{ listStyleType: ordered ? "1" : "decimal", paddingLeft: '10%' }}>{children}</ol>
+    <ol
+      {...props}
+      style={{ listStyleType: ordered ? "1" : "decimal", paddingLeft: "10%" }}
+    >
+      {children}
+    </ol>
   ),
   ul: ({ ordered, children, ...props }: RendererProps) => (
-    <ul {...props} data-ordered={ordered ? "1" : "decimal"} style={{ padding: '5%', paddingLeft: '10%', color: 'white' }}>{children}</ul>
+    <ul
+      {...props}
+      data-ordered={ordered ? "1" : "decimal"}
+      style={{ padding: "5%", paddingLeft: "10%", color: "white" }}
+    >
+      {children}
+    </ul>
   ),
   sub: ({ children, ...props }: RendererProps) => (
-    <sub {...props} style={{ color: 'gray' }}>{children}</sub>
+    <sub {...props} style={{ color: "gray" }}>
+      {children}
+    </sub>
   ),
   hr: ({ children, ...props }: RendererProps) => (
-    <Divider {...props} style={{ paddingBottom: '20px', color: '#A5D6A7', marginBottom: '5px' }}>{children}</Divider>
+    <Divider
+      {...props}
+      style={{ paddingBottom: "20px", color: "#A5D6A7", marginBottom: "5px" }}
+    >
+      {children}
+    </Divider>
   ),
   br: ({ children, ...props }: RendererProps) => (
-    <br {...props} style={{ paddingBottom: '20px' }}>{children}</br>
+    <br {...props} style={{ paddingBottom: "20px" }}>
+      {children}
+    </br>
   ),
   pre: ({ children, ...props }: RendererProps) => (
     <div
       style={{
-        backgroundColor: '#1E1E1E',
-        padding: '16px',
-        borderRadius: '8px',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.2)',
-        overflowX: 'auto',
+        backgroundColor: "#1E1E1E",
+        padding: "16px",
+        borderRadius: "8px",
+        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.2)",
+        overflowX: "auto",
       }}
     >
       <center>
         <code
           {...props}
           style={{
-            color: 'red',
-            fontFamily: 'monospace',
-            fontSize: '14px',
-            lineHeight: '1.5',
+            color: "red",
+            fontFamily: "monospace",
+            fontSize: "14px",
+            lineHeight: "1.5",
           }}
         >
           {children}
@@ -187,39 +275,48 @@ export const MarkdownRenderers = (useDecryptedText: boolean) => ({
     </div>
   ),
   iframe: ({ src, ...props }: RendererProps) => {
-    const zoraRegex = /https:\/\/zora\.co\/.*/;
-    const threeSpeakRegex = /https:\/\/3speak\.tv\/.*/;
-    const youtubeRegex = /https:\/\/(www\.)?youtube\.com\/.*/;
+    const ipfsRegex = /https:\/\/ipfs\.skatehive\.app\/ipfs\/.*/;
 
-    if (zoraRegex.test(String(src)) || threeSpeakRegex.test(String(src)) || youtubeRegex.test(String(src))) {
-      return (
-        <center>
-          <iframe
-            {...props}
-            src={src}
-            style={{ marginBottom: '10px', maxWidth: '100%', minWidth: '100%', aspectRatio: '16/9', height: '100%', border: '2px grey solid' }}
-          />
-        </center>
-      );
-    } else {
+    // If the iframe source is from IPFS, render using VideoRenderer
+    if (ipfsRegex.test(String(src))) {
       return <VideoRenderer src={src} {...props} />;
     }
+
+    // For all other iframe sources, render as-is
+    return (
+      <iframe
+        {...props}
+        src={src}
+        style={{
+          marginBottom: "10px",
+          maxWidth: "100%",
+          minWidth: "100%",
+          aspectRatio: "16/9",
+          height: "100%",
+          border: "2px grey solid",
+        }}
+        allowFullScreen
+      />
+    );
   },
   video: VideoRenderer,
   table: ({ children, ...props }: RendererProps) => (
-    <div style={{
-      display: 'flex', justifyContent: 'center',
-      borderRadius: '10px',
-      padding: '10px',
-      overflowX: 'auto',
-    }}>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        borderRadius: "10px",
+        padding: "10px",
+        overflowX: "auto",
+      }}
+    >
       <table
         {...props}
         style={{
-          borderCollapse: 'collapse',
-          margin: '0 auto',
-          width: '100%',
-          maxWidth: '100%',
+          borderCollapse: "collapse",
+          margin: "0 auto",
+          width: "100%",
+          maxWidth: "100%",
         }}
       >
         {children}
@@ -229,19 +326,17 @@ export const MarkdownRenderers = (useDecryptedText: boolean) => ({
   tbody: ({ children, ...props }: RendererProps) => (
     <tbody {...props}>{children}</tbody>
   ),
-  tr: ({ children, ...props }: RendererProps) => (
-    <tr {...props}>{children}</tr>
-  ),
+  tr: ({ children, ...props }: RendererProps) => <tr {...props}>{children}</tr>,
   th: ({ children, ...props }: RendererProps) => (
     <th
       {...props}
       style={{
-        border: '1px solid black',
-        backgroundColor: '#009933',
-        padding: '8px',
-        fontWeight: 'bold',
-        textAlign: 'left',
-        color: '#004d1a',
+        border: "1px solid black",
+        backgroundColor: "#009933",
+        padding: "8px",
+        fontWeight: "bold",
+        textAlign: "left",
+        color: "#004d1a",
       }}
     >
       {children}
@@ -251,21 +346,32 @@ export const MarkdownRenderers = (useDecryptedText: boolean) => ({
     <td
       {...props}
       style={{
-        border: '1px solid #A6E22E',
-        backgroundColor: '#001a09',
-        padding: '8px',
-        textAlign: 'left',
-        color: '#A5D6A7',
+        border: "1px solid #A6E22E",
+        backgroundColor: "#001a09",
+        padding: "8px",
+        textAlign: "left",
+        color: "#A5D6A7",
       }}
     >
       {children}
     </td>
   ),
   strong: ({ children, ...props }: RendererProps) => (
-    <strong {...props} style={{ color: '#A5D6A7' }}>{children}</strong>
+    <strong {...props} style={{ color: "#A5D6A7" }}>
+      {children}
+    </strong>
   ),
   code: ({ children, ...props }: RendererProps) => (
-    <code {...props} style={{ color: '#A6E22E', backgroundColor: '#001a09', padding: '2px', borderRadius: '4px' }}>{children}</code>
+    <code
+      {...props}
+      style={{
+        color: "#A6E22E",
+        backgroundColor: "#001a09",
+        padding: "2px",
+        borderRadius: "4px",
+      }}
+    >
+      {children}
+    </code>
   ),
-
 });

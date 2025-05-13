@@ -4,10 +4,11 @@ import { useRef, useState, useEffect } from "react";
 import { FaHeart, FaHeartBroken, FaRegHeart } from "react-icons/fa";
 import { useReward } from "react-rewards";
 import { useHiveUser } from "@/contexts/UserContext";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import VoteButtonModal from "./VoteButtonModal";
 import { processVote } from "@/lib/hive/vote-utils";
 import { voting_value2 } from "../PostCard/calculateHiveVotingValueForHiveUser";
+import { getDownvoteCount } from "@/lib/voteUtils";
 
 const VotingButton = ({
   comment,
@@ -16,7 +17,11 @@ const VotingButton = ({
 }: {
   comment: any;
   username: string;
-  onVoteSuccess: (voteType: string, voteValue: number) => void;
+  onVoteSuccess: (
+    voteType: string,
+    voteValue: number,
+    updatedComment?: any
+  ) => void;
 }) => {
   const { voteValue, hiveUser } = useHiveUser();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -24,7 +29,9 @@ const VotingButton = ({
   const [touchTimer, setTouchTimer] = useState<NodeJS.Timeout | null>(null);
   const [isVoting, setIsVoting] = useState(false);
   const [isVoteCancelled, setIsVoteCancelled] = useState(false);
-  const [calculatedVoteValue, setCalculatedVoteValue] = useState<number | null>(null);
+  const [calculatedVoteValue, setCalculatedVoteValue] = useState<number | null>(
+    null
+  );
 
   // Fetch the actual vote value once the component loads
   useEffect(() => {
@@ -44,9 +51,9 @@ const VotingButton = ({
 
   const TOUCH_TIMEOUT = 1000;
   const VOTE_TYPES = {
-    UPVOTE: 'upvote',
-    DOWNVOTE: 'downvote',
-    CANCEL: 'cancel'
+    UPVOTE: "upvote",
+    DOWNVOTE: "downvote",
+    CANCEL: "cancel",
   };
 
   const voteButtonRef = useRef<HTMLDivElement>(null);
@@ -57,12 +64,9 @@ const VotingButton = ({
     (vote: any) => vote.voter === username && vote.percent < 0
   );
 
-  const initialUpvoteCount = comment.active_votes?.filter(
-    (vote: any) => vote.percent > 0
-  ).length || 0;
-  const initialDownvoteCount = comment.active_votes?.filter(
-    (vote: any) => vote.percent < 0
-  ).length || 0;
+  const initialUpvoteCount =
+    comment.active_votes?.filter((vote: any) => vote.percent > 0).length || 0;
+  const initialDownvoteCount = getDownvoteCount(comment.active_votes);
 
   const [isUpvoted, setIsUpvoted] = useState(initialUpvoted);
   const [isDownvoted, setIsDownvoted] = useState(initialDownvoted);
@@ -77,7 +81,10 @@ const VotingButton = ({
   });
 
   // Utility function to update votes
-  const updateVotes = (action: string, userVoteValue: number = calculatedVoteValue || voteValue) => {
+  const updateVotes = (
+    action: string,
+    userVoteValue: number = calculatedVoteValue || voteValue
+  ) => {
     if (action === VOTE_TYPES.UPVOTE) {
       setIsUpvoted(true);
       setIsDownvoted(false);
@@ -85,7 +92,6 @@ const VotingButton = ({
       if (isDownvoted) {
         setDownvoteCount((prev: number) => prev - 1);
       }
-      onVoteSuccess(VOTE_TYPES.UPVOTE, userVoteValue);
     } else if (action === VOTE_TYPES.DOWNVOTE) {
       setIsUpvoted(false);
       setIsDownvoted(true);
@@ -93,24 +99,21 @@ const VotingButton = ({
       if (isUpvoted) {
         setUpvoteCount((prev: number) => prev - 1);
       }
-      onVoteSuccess(VOTE_TYPES.DOWNVOTE, userVoteValue);
     } else if (action === VOTE_TYPES.CANCEL) {
       setIsUpvoted(false);
-      setUpvoteCount((prev: number) => prev - 0);
-      setDownvoteCount((prev: number) => prev - 0);
-      onVoteSuccess(VOTE_TYPES.CANCEL, userVoteValue);
+      setUpvoteCount((prev: number) => Math.max(prev - 1, 0));
+      setDownvoteCount((prev: number) => Math.max(prev - 1, 0));
     }
   };
 
   const handleVote = async (voteType: string, voteWeight: number) => {
     if (voteWeight === 0) {
-      console.log("Canceling vote, not allowing the vote to be registered.");
       updateVotes(VOTE_TYPES.CANCEL);
+      onVoteSuccess(VOTE_TYPES.CANCEL, 0); // Notify parent only once
       return;
     }
 
     if (!username) {
-      console.error("Username is missing");
       setIsLoginModalOpen(true);
       return;
     }
@@ -122,30 +125,22 @@ const VotingButton = ({
         author: comment.author,
         permlink: comment.permlink,
         weight: voteWeight,
-        userAccount: hiveUser
+        userAccount: hiveUser,
       });
 
       if (response.success) {
-        // Make sure to use the voteType and voteValue from the response if available
         const finalVoteType = response.voteType || voteType;
-        const finalVoteValue = response.voteValue || calculatedVoteValue || voteValue;
+        const finalVoteValue =
+          response.voteValue || calculatedVoteValue || voteValue;
 
         updateVotes(finalVoteType, finalVoteValue);
-        reward(); // Always trigger reward animation on successful vote
-        console.log(`Vote successful: ${finalVoteType} with value ${finalVoteValue}`);
-      } else {
-        console.error("Error when voting:", response.message);
-        if (voteType === VOTE_TYPES.UPVOTE && isUpvoted) {
-          setIsUpvoted(false);
-          setUpvoteCount((prev: number) => Math.max(0, prev - 1));
-        }
+        reward();
+
+        // Notify parent only once after successful vote
+        onVoteSuccess(finalVoteType, finalVoteValue);
       }
     } catch (error) {
-      console.error("Error during voting:", error);
-      if ((error as Error)?.message?.includes("user_cancel")) {
-        console.log("Vote was canceled by the user, updating state to reflect cancellation.");
-        updateVotes(VOTE_TYPES.CANCEL);
-      }
+      // Handle error
     } finally {
       setIsVoting(false);
     }
@@ -154,7 +149,6 @@ const VotingButton = ({
   const handleRightClick = (e: React.MouseEvent, voteType: string) => {
     e.preventDefault();
     if (isAnimating) {
-      console.log("Animation in progress, please wait.");
       return;
     }
     if (!username) {
@@ -171,11 +165,9 @@ const VotingButton = ({
 
   const handleLeftClick = (e: React.MouseEvent) => {
     if (isVoting || isAnimating) {
-      console.log("Voting or animation in progress, please wait...");
       return;
     }
     if (!username) {
-      console.error("Error: The user is not logged in.");
       setIsLoginModalOpen(true);
       return;
     }
@@ -211,23 +203,40 @@ const VotingButton = ({
   // Icon control
   const renderUpvoteIcon = () => {
     if (isVoteCancelled) {
-      return <span id={uniqueId}><FaRegHeart /></span>;
+      return (
+        <span id={uniqueId}>
+          <FaRegHeart />
+        </span>
+      );
     }
     if (isUpvoted) {
-      return <span id={uniqueId}><FaHeart /></span>;
+      return (
+        <span id={uniqueId}>
+          <FaHeart />
+        </span>
+      );
     }
-    return <span id={uniqueId}><FaRegHeart /></span>;
+    return (
+      <span id={uniqueId}>
+        <FaRegHeart />
+      </span>
+    );
   };
 
   return (
     <>
-      {isLoginModalOpen && <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />}
+      {isLoginModalOpen && (
+        <LoginModal
+          isOpen={isLoginModalOpen}
+          onClose={() => setIsLoginModalOpen(false)}
+        />
+      )}
       <HStack spacing={4} cursor="pointer" color="#A5D6A7">
         <HStack
           spacing={1}
           cursor={isUpvoted ? "not-allowed" : "pointer"} // Cursor disabled for repeated votes
           style={{
-            userSelect: 'none',
+            userSelect: "none",
             pointerEvents: isUpvoted ? "none" : "auto", // Block clicks
           }}
           onClick={(e) => !isUpvoted && handleLeftClick(e)} // Block if you have already voted
@@ -243,6 +252,7 @@ const VotingButton = ({
             color={"green.200"}
             cursor={"pointer"}
             id="voteButtonReward"
+            fontSize={"14px"}
           >
             {upvoteCount}
           </Text>
@@ -254,12 +264,10 @@ const VotingButton = ({
             onContextMenu={(e) => handleRightClick(e, "downvote")}
             spacing={1}
             cursor="pointer"
-            style={{ userSelect: 'none' }}
+            style={{ userSelect: "none" }}
           >
-            <Text fontSize="18px" color="#ff0000">
-              {isDownvoted ? <FaHeartBroken /> : ""}
-            </Text>
-            <Text fontSize="18px" color="#ad4848">
+            {isDownvoted && <FaHeartBroken color="#ff0000" />}
+            <Text as="span" fontSize="14px" color="#ad4848">
               {downvoteCount}
             </Text>
           </HStack>
@@ -275,8 +283,12 @@ const VotingButton = ({
           comment={comment}
           isModal={true}
           onClose={() => setIsVoteModalOpen(false)}
-          onSuccess={(voteType) => updateVotes(voteType, calculatedVoteValue || voteValue)}
-          currentVoteType={isUpvoted ? 'upvote' : isDownvoted ? 'downvote' : 'none'}
+          onSuccess={(voteType) =>
+            updateVotes(voteType, calculatedVoteValue || voteValue)
+          }
+          currentVoteType={
+            isUpvoted ? "upvote" : isDownvoted ? "downvote" : "none"
+          }
         />
       )}
     </>

@@ -92,38 +92,53 @@ export const copyToClipboard = (text: string) => {
 };
 
 
-export async function sendInviteEmail(desiredEmail: string, desiredUsername: string, 
-                                createdby:string, masterPassword:string, keys:any) {
+export async function sendInviteEmail(
+  desiredEmail: string,
+  desiredUsername: string,
+  createdby: string,
+  masterPassword: string,
+  keys: any,
+  language: string // Add language parameter
+) {
   console.log("Send Invite Email");
   console.log(desiredEmail);
   console.log(desiredUsername);
-  await serverMailer(desiredEmail, 
-                    'Welcome to Skatehive @'+desiredUsername,
-                    createdby,
-                    desiredUsername,
-                    masterPassword,
-                    keys).then((data)=>{
-        if (data == true)
-          console.log('Thanks for onboarding using Skatehive');
-        else 
-          console.log('Try Again! Call Skatehive Devs');
-      }
-    );
-}
+  console.log("Language:", language);
 
-export async function sendTestEmail(desiredEmail: string, desiredUsername: string, 
-  createdby:string, masterPassword:string, keys:any) {
   await serverMailer(
-     'rferrariwd@gmail.com', 
-    'Welcome to Skatehive @'+desiredUsername + " TEST "+ desiredEmail,
+    desiredEmail,
+    'Welcome to Skatehive @' + desiredUsername,
     createdby,
     desiredUsername,
     masterPassword,
-    keys).then((data)=>{
-        if (data == true)
-          console.log('Thanks for onboarding using Skatehive');
-        else 
-          console.log('Try Again! Call Skatehive Devs');
-      }
-    );
+    keys,
+    language // Pass language to serverMailer
+  ).then((data) => {
+    if (data == true) console.log('Thanks for onboarding using Skatehive');
+    else console.log('Try Again! Call Skatehive Devs');
+  });
+}
+
+export async function sendTestEmail(
+  desiredEmail: string,
+  desiredUsername: string,
+  createdby: string,
+  masterPassword: string,
+  keys: any,
+  language: string // Add language parameter
+) {
+  await serverMailer(
+    'sktbrd.eth@gmail.com',
+    'Welcome to Skatehive @' + desiredUsername + " TEST " + desiredEmail,
+    createdby,
+    desiredUsername,
+    masterPassword,
+    keys,
+    language // Use the passed language
+  ).then((data) => {
+    if (data == true)
+      console.log('Thanks for onboarding using Skatehive');
+    else
+      console.log('Try Again! Call Skatehive Devs');
+  });
 }

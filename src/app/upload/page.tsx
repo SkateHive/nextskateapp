@@ -12,8 +12,6 @@ import AuthorSearchBar from "./components/searchBar";
 import { extractImageUrls } from "./utils/extractImages";
 import { uploadFileToIPFS } from "./utils/uploadToIPFS";
 
-const PINATA_GATEWAY_TOKEN = process.env.NEXT_PUBLIC_PINATA_GATEWAY_TOKEN;
-
 interface Beneficiary {
     name: string;
     percentage: number;
