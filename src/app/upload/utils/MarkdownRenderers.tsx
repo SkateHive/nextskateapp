@@ -116,7 +116,12 @@ export const MarkdownRenderers = (useDecryptedText: boolean) => ({
 
     if (match) {
       const [, , username, postPermlink] = match;
-      return <SkateHivePreviewCard postId={postPermlink} username={username} />;
+      // Prevent hydration error: render block element outside <a>/<p>
+      return (
+        <Box my={4}>
+          <SkateHivePreviewCard postId={postPermlink} username={username} />
+        </Box>
+      );
     } else if (profileMatch) {
       const [, , , , username] = profileMatch;
 
@@ -373,5 +378,10 @@ export const MarkdownRenderers = (useDecryptedText: boolean) => ({
     >
       {children}
     </code>
+  ),
+  p: ({ children, ...props }: RendererProps) => (
+    <div {...props} style={{ marginBottom: "1em" }}>
+      {children}
+    </div>
   ),
 });

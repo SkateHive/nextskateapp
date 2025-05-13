@@ -51,7 +51,8 @@ export const SkateHivePreviewCard = ({
   const imagesFromMetadata = Array.isArray(metadata.image)
     ? metadata.image
     : [];
-  const thumbnail = imagesFromBody[0] || imagesFromMetadata[0];
+  const fallbackImage = "/SKATE_HIVE_VECTOR_FIN.svg";
+  const thumbnail = imagesFromBody[0] || imagesFromMetadata[0] || fallbackImage;
 
   return (
     <Link
@@ -77,13 +78,13 @@ export const SkateHivePreviewCard = ({
           objectFit="cover"
           border={"1px solid #A5D6A7"}
         />
-        <Box ml={4}>
-          <Text color={"#A5D6A7"} fontSize="lg" fontWeight="bold">
+        <Box ml={4} as="div">
+          <Box color="#A5D6A7" fontSize="lg" fontWeight="bold" display="block">
             {post.title}
-          </Text>
-          <Text mt={0} fontSize="sm" color="gray.400">
+          </Box>
+          <Box mt={0} fontSize="sm" color="gray.400" display="block">
             By {username} | {new Date(post.created).toLocaleDateString()}
-          </Text>
+          </Box>
         </Box>
       </Box>
     </Link>

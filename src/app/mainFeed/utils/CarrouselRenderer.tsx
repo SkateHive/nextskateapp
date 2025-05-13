@@ -54,10 +54,7 @@ const CarrouselRenderer: React.FC<CarrouselRendererProps> = ({
       width="100%"
     >
       {media.type === "video" ? (
-        <VideoRenderer
-          src={media.url}
-          onCommentIconClick={onCommentIconClick}
-        />
+        <VideoRenderer src={media.url} />
       ) : (
         <Center>
           <Image

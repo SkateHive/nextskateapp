@@ -26,6 +26,7 @@ import MainInput from "@/components/MainFeed/MainInput";
 import CommentList from "./components/CommentsList";
 import TopMenu from "./components/TopMenu";
 import { Discussion } from "@hiveio/dhive";
+import EditInfoModal from "@/components/Profile/EditInfoModal";
 
 const LoadingComponent = dynamic(
   () => import("./components/loadingComponent"),
@@ -47,8 +48,40 @@ const MainFeed = () => {
   const username = user?.hiveUser?.name;
   const [sortMethod, setSortMethod] = useState<string>("chronological");
   const toast = useToast();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const getProfileImage = () => {
+    const postingMetadata = (() => {
+      try {
+        return JSON.parse(user?.hiveUser?.posting_json_metadata || "{}");
+      } catch {
+        return {};
+      }
+    })();
+    const jsonMetadata = (() => {
+      try {
+        return JSON.parse(user?.hiveUser?.json_metadata || "{}");
+      } catch {
+        return {};
+      }
+    })();
+    return (
+      postingMetadata?.profile?.profile_image ||
+      jsonMetadata?.profile?.profile_image ||
+      ""
+    );
+  };
+
+  const hasProfilePic = !!getProfileImage();
+
+  const handleRequireProfilePic = () => {
+    console.debug("DEBUG user object on require profile pic:", user);
+    alert("You must set a profile picture before posting.");
+    setIsEditModalOpen(true);
+  };
 
   const handleCommentSubmit = (newComment: Discussion) => {
+    console.debug("DEBUG user object on comment submit:", user);
     addComment(newComment);
     toast({
       title: "Success",
@@ -140,6 +173,8 @@ const MainFeed = () => {
               ref={postBodyRef}
               isLoading={isLoading}
               onCommentSubmit={handleCommentSubmit}
+              canPost={hasProfilePic}
+              onRequireProfilePic={handleRequireProfilePic}
             />
           </Flex>
           <Divider />
@@ -187,6 +222,14 @@ const MainFeed = () => {
         >
           <LoadingComponent />
         </Box>
+      )}
+      {user.hiveUser && (
+        <EditInfoModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          user={user.hiveUser}
+          onUpdate={() => setIsEditModalOpen(false)}
+        />
       )}
     </VStack>
   );
