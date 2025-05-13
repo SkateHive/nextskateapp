@@ -18,7 +18,7 @@ export async function generateMetadata(
   const post = await getData(user, postId);
   console.log(post);
   // extract the images from the markdown file
-  const images = post.body.match(/!\[.*?\]\((.*?)\)/g);
+  const images = post.body ? post.body.match(/!\[.*?\]\((.*?)\)/g) : [];
   const imageUrls = images
     ? images.map((img: string) => {
         const match = img.match(/\((.*?)\)/);
@@ -41,11 +41,17 @@ export async function generateMetadata(
     domainUrl
   ).toString();
 
+  // Fallback image for frames and metadata
+  const fallbackImage = "https://www.skatehive.app/SKATE_HIVE_VECTOR_FIN.svg";
+  const frameImage =
+    (Array.isArray(imageUrls) && imageUrls[0]) ||
+    (Array.isArray(originalBanner) && originalBanner[0]) ||
+    fallbackImage;
+
   // Create frame object with compliant image URL
   const frameObject = {
     version: "next",
-    imageUrl:
-      imageUrls[0] || "https://www.skatehive.app/SKATE_HIVE_VECTOR_FIN.svg", // Use the skatehive.app domain image
+    imageUrl: frameImage,
     button: {
       title: "Open post",
       action: {
@@ -76,14 +82,12 @@ export async function generateMetadata(
       card: "summary_large_image",
       title: post.title,
       description: `${String(post.body).slice(0, 128)}...`,
-      images:
-        imageUrls[0] || "https://www.skatehive.app/SKATE_HIVE_VECTOR_FIN.svg",
+      images: frameImage,
     },
     other: {
       // Use compliant image URL
       "fc:frame": JSON.stringify(frameObject),
-      "fc:frame:image":
-        images[0] || "https://www.skatehive.app/SKATE_HIVE_VECTOR_FIN.svg", // Use the skatehive.app domain image
+      "fc:frame:image": frameImage,
       "fc:frame:post_url": postUrl,
     },
   };
