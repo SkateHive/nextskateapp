@@ -86,8 +86,8 @@ const MainFeed = () => {
 
   const handleRequireProfilePic = () => {
     console.debug("DEBUG user object on require profile pic:", user);
-    alert("You must set a profile picture before posting.");
-    setIsEditModalOpen(true);
+    // alert("You must set a profile picture before posting.");
+    // setIsEditModalOpen(true);
   };
 
   const handleCommentSubmit = (newComment: Discussion) => {
@@ -183,7 +183,8 @@ const MainFeed = () => {
               ref={postBodyRef}
               isLoading={isLoading}
               onCommentSubmit={handleCommentSubmit}
-              canPost={hasProfilePic}
+              // canPost={hasProfilePic}
+              canPost={true}
               onRequireProfilePic={handleRequireProfilePic}
             />
           </Flex>
