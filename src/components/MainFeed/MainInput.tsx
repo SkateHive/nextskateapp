@@ -97,6 +97,9 @@ const MainInput = forwardRef<HTMLTextAreaElement, MainInputProps>(
     });
 
     const handlePost = async () => {
+      console.debug("DEBUG MainInput handlePost canPost:", canPost);
+      console.debug("DEBUG MainInput handlePost username:", username);
+      // Optionally, log more user/profile info if available via props/context
       if (!canPost) {
         if (onRequireProfilePic) onRequireProfilePic();
         else alert("You must set a profile picture before posting.");

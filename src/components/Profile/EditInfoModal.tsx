@@ -5,6 +5,7 @@ import { updateProfile } from "@/lib/hive/client-functions";
 import { updateProfileWithPrivateKey } from "@/lib/hive/server-functions";
 import { HiveAccount } from "@/lib/useHiveAuth";
 import { VideoPart } from "@/lib/hive/client-functions";
+import HiveClient from "@/lib/hive/hiveclient";
 import {
   Badge,
   Button,
@@ -35,6 +36,7 @@ import { FaUpload } from "react-icons/fa";
 import Select from "react-select";
 import countryList from "react-select-country-list";
 import { useAccount } from "wagmi";
+import { useHiveUser } from "@/contexts/UserContext";
 
 interface EditModalProps {
   isOpen: boolean;
@@ -51,6 +53,8 @@ export default function EditInfoModal({
   user,
   onUpdate,
 }: EditModalProps) {
+  const { refreshUser } = useHiveUser();
+
   const safeParse = (jsonString: string) => {
     try {
       return JSON.parse(jsonString);
@@ -148,11 +152,25 @@ export default function EditInfoModal({
         staticXp,
         cumulativeXp
       );
-      if (window) {
-        window.location.reload();
+      // Fetch latest user data from blockchain and update localStorage
+      const accounts = await HiveClient.database.getAccounts([user.name]);
+      if (accounts && accounts[0]) {
+        const freshUser = accounts[0] as any;
+        // Merge metadata for easier access
+        try {
+          freshUser.metadata = JSON.parse(
+            freshUser.posting_json_metadata || freshUser.json_metadata || "{}"
+          );
+        } catch (e) {
+          freshUser.metadata = {};
+        }
+        localStorage.setItem("hiveuser", JSON.stringify(freshUser));
       }
+      refreshUser();
       onClose();
       onUpdate();
+      // refreshpage
+      window.location.reload();
     } else if (loginMethod === "privateKey") {
       const encryptedPrivateKey = localStorage.getItem("EncPrivateKey");
       await updateProfileWithPrivateKey(
@@ -169,11 +187,24 @@ export default function EditInfoModal({
         level,
         staticXp
       );
-      if (window) {
-        window.location.reload();
+      // Fetch latest user data from blockchain and update localStorage
+      const accounts = await HiveClient.database.getAccounts([user.name]);
+      if (accounts && accounts[0]) {
+        const freshUser = accounts[0] as any;
+        try {
+          freshUser.metadata = JSON.parse(
+            freshUser.posting_json_metadata || freshUser.json_metadata || "{}"
+          );
+        } catch (e) {
+          freshUser.metadata = {};
+        }
+        localStorage.setItem("hiveuser", JSON.stringify(freshUser));
       }
+      refreshUser();
       onClose();
       onUpdate();
+      // refreshpage
+      window.location.reload();
     }
   }
 

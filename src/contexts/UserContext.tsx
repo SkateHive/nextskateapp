@@ -11,7 +11,7 @@ export interface HiveUserContextProps {
 }
 
 const HiveUserContext = createContext<HiveUserContextProps | undefined>(
-  undefined,
+  undefined
 );
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
@@ -28,6 +28,10 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   const refreshUser = () => {
     const userData = localStorage.getItem("hiveuser");
+    console.debug(
+      "[UserContext] refreshUser: localStorage.hiveuser =",
+      userData
+    );
     if (userData) {
       setUser(JSON.parse(userData));
     }
@@ -41,9 +45,9 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     if (user) {
-      loadVoteValue()
+      loadVoteValue();
     }
-  }, [user])
+  }, [user]);
 
   return (
     <HiveUserContext.Provider

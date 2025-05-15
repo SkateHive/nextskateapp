@@ -53,26 +53,36 @@ const MainFeed = () => {
   const getProfileImage = () => {
     const postingMetadata = (() => {
       try {
-        return JSON.parse(user?.hiveUser?.posting_json_metadata || "{}");
-      } catch {
+        const parsed = JSON.parse(
+          user?.hiveUser?.posting_json_metadata || "{}"
+        );
+        console.debug("[MainFeed] posting_json_metadata:", parsed);
+        return parsed;
+      } catch (e) {
+        console.debug("[MainFeed] posting_json_metadata parse error", e);
         return {};
       }
     })();
     const jsonMetadata = (() => {
       try {
-        return JSON.parse(user?.hiveUser?.json_metadata || "{}");
-      } catch {
+        const parsed = JSON.parse(user?.hiveUser?.json_metadata || "{}");
+        console.debug("[MainFeed] json_metadata:", parsed);
+        return parsed;
+      } catch (e) {
+        console.debug("[MainFeed] json_metadata parse error", e);
         return {};
       }
     })();
-    return (
+    const profileImage =
       postingMetadata?.profile?.profile_image ||
       jsonMetadata?.profile?.profile_image ||
-      ""
-    );
+      "";
+    console.debug("[MainFeed] getProfileImage result:", profileImage);
+    return profileImage;
   };
 
   const hasProfilePic = !!getProfileImage();
+  console.debug("[MainFeed] hasProfilePic:", hasProfilePic);
 
   const handleRequireProfilePic = () => {
     console.debug("DEBUG user object on require profile pic:", user);
