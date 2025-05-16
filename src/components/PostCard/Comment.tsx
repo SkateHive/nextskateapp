@@ -1,37 +1,51 @@
-"use client"
-import { handleVote } from "@/app/mainFeed/utils/handleFeedVote"
-import CommentsSection from "@/components/PostModal/commentSection"
-import { useHiveUser } from "@/contexts/UserContext"
-import useHiveAccount from "@/hooks/useHiveAccount"
-import { Flex, Text } from "@chakra-ui/react"
-import moment from "moment-timezone"
-import { useEffect, useState } from "react"
-import { FaFire } from "react-icons/fa"
-import CommandPrompt from "../PostModal/commentPrompt"
-import MarkdownRenderer from "../ReactMarkdown/page"
-import UserAvatar from "../UserAvatar"
-import { voting_value } from "./calculateHiveVotingValue"
-import { Discussion } from "@hiveio/dhive"
-
+"use client";
+import { handleVote } from "@/app/mainFeed/utils/handleFeedVote";
+import CommentsSection from "@/components/PostModal/commentSection";
+import { useHiveUser } from "@/contexts/UserContext";
+import useHiveAccount from "@/hooks/useHiveAccount";
+import { Flex, Text } from "@chakra-ui/react";
+import moment from "moment-timezone";
+import { useEffect, useState } from "react";
+import { FaFire } from "react-icons/fa";
+import CommandPrompt from "../PostModal/commentPrompt";
+import MarkdownRenderer from "../ReactMarkdown/page";
+import UserAvatar from "../UserAvatar";
+import { voting_value } from "./calculateHiveVotingValue";
+import { Discussion } from "@hiveio/dhive";
+import AuthorAvatar from "../AuthorAvatar";
 
 export default function PostComment({ comment }: { comment: Discussion }) {
-  const { hiveAccount, isLoading } = useHiveAccount(comment.author)
-  const user = useHiveUser()
-  const [hasVoted, setHasVoted] = useState(false)
-  const [replies, setReplies] = useState<Discussion[] | undefined>(comment.replies as unknown as Discussion[] | undefined)
-  const [isVoting, setIsVoting] = useState(false)
+  const { hiveAccount, isLoading } = useHiveAccount(comment.author);
+  const user = useHiveUser();
+  const [hasVoted, setHasVoted] = useState(false);
+  const [replies, setReplies] = useState<Discussion[] | undefined>(
+    comment.replies as unknown as Discussion[] | undefined
+  );
+  const [isVoting, setIsVoting] = useState(false);
 
   const calculateTotalPayout = (comment: Discussion) => {
     return (
-      Number(typeof comment.pending_payout_value === 'string' ? comment.pending_payout_value.split(" ")[0] : 0) +
-      Number(typeof comment.total_payout_value === 'string' ? comment.total_payout_value.split(" ")[0] : 0) +
-      Number(typeof comment.curator_payout_value === 'string' ? comment.curator_payout_value.split(" ")[0] : 0)
-    )
-  }
+      Number(
+        typeof comment.pending_payout_value === "string"
+          ? comment.pending_payout_value.split(" ")[0]
+          : 0
+      ) +
+      Number(
+        typeof comment.total_payout_value === "string"
+          ? comment.total_payout_value.split(" ")[0]
+          : 0
+      ) +
+      Number(
+        typeof comment.curator_payout_value === "string"
+          ? comment.curator_payout_value.split(" ")[0]
+          : 0
+      )
+    );
+  };
   const [newTotalPayout, setNewTotalPayout] = useState(
     calculateTotalPayout(comment)
-  )
-  const [commentsOpen, setCommentsOpen] = useState(false)
+  );
+  const [commentsOpen, setCommentsOpen] = useState(false);
 
   const handleVoteClick = async () => {
     try {
@@ -70,14 +84,18 @@ export default function PostComment({ comment }: { comment: Discussion }) {
       comment?.active_votes?.some(
         (vote) => vote.voter === user.hiveUser?.name
       ) ?? false
-    )
-  }, [comment, user.hiveUser?.name])
+    );
+  }, [comment, user.hiveUser?.name]);
 
-  if (isLoading || !hiveAccount) return <div>Loading...</div>
+  if (isLoading || !hiveAccount) return <div>Loading...</div>;
   return (
     <Flex gap={2} direction={"column"}>
       <Flex gap={1} alignItems="center" border={"1px solid grey"} mb={-2}>
-        <UserAvatar hiveAccount={hiveAccount} borderRadius={5} boxSize={12} />
+        <AuthorAvatar
+          username={hiveAccount.name}
+          borderRadius={5}
+          boxSize={12}
+        />
         <Text fontSize="14px" as="b">
           {comment.author}
         </Text>
@@ -93,7 +111,6 @@ export default function PostComment({ comment }: { comment: Discussion }) {
         <br />
         <Flex justifyContent="flex-end">
           {" "}
-
           <Text
             fontSize="12px"
             color="darkgray"
@@ -116,18 +133,19 @@ export default function PostComment({ comment }: { comment: Discussion }) {
         {commentsOpen ? (
           <CommandPrompt
             addComment={(comment: Discussion) => {
-              setReplies((replies) => replies ? [...replies, comment] : replies)
-              setCommentsOpen(false)
+              setReplies((replies) =>
+                replies ? [...replies, comment] : replies
+              );
+              setCommentsOpen(false);
             }}
-            onNewComment={() => { }}
-            onClose={() => { }}
+            onNewComment={() => {}}
+            onClose={() => {}}
             author={comment.author}
             permlink={comment.permlink}
           />
-
         ) : null}
       </Flex>
       <CommentsSection comments={replies} isCommentReply={true} />
     </Flex>
-  )
+  );
 }
