@@ -46,7 +46,7 @@ const TokenSelector = ({
   setShowConfetti,
 }: TokenSelectorProps) => {
   const user = useHiveUser();
-  const [token, setToken] = useState("USDC");
+  const [token, setToken] = useState("HIGHER");
   const [isCustomToken, setIsCustomToken] = useState(false);
   const [customTokenContract, setCustomTokenContract] = useState("");
   const account = useAccount();
@@ -299,6 +299,25 @@ const TokenSelector = ({
                     loading="lazy"
                   />
                   $SPACE
+                </MenuItem>
+                <MenuItem
+                  bg="black"
+                  _hover={{ bg: "blue.500" }}
+                  onClick={() => {
+                    setToken("HIGHER");
+                    setIsCustomToken(false);
+                  }}
+                >
+                  <Image
+                    alt="higher"
+                    mr={3}
+                    src="/higher.png"
+                    width="20px"
+                    height="20px"
+                    objectFit="contain"
+                    loading="lazy"
+                  />
+                  $HIGHER
                 </MenuItem>
                 {/* <MenuItem
                   bg="black"

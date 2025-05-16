@@ -24,6 +24,11 @@ export const tokenDictionary: { [key: string]: TokenInfo } = {
         abi: memberABI as unknown as any[],
         tokenLogo: "/logos/degen.png"
     },
+    HIGHER: {
+        address: '0x0578d8A44db98B23BF096A382e016e29a5Ce0ffe',
+        abi: memberABI as unknown as any[],
+        tokenLogo: "/higher.png"
+    },
     SPACE: {
         address: '0x48c6740bcf807d6c47c864faeea15ed4da3910ab',
         abi: memberABI as unknown as any[],
