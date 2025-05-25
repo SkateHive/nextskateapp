@@ -34,7 +34,7 @@ const frameObject = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://skatehive.app"), // Defina seu domínio aqui
+  metadataBase: new URL("https://skatehive.app"),
   title: "Skatehive App",
   description: "The infinity skateboard maganize",
   manifest: "/manifest.json",
@@ -47,10 +47,13 @@ export const metadata: Metadata = {
     description: "The infinity skateboard maganize",
     images: "/ogimage.png",
   },
+  alternates: {
+    canonical: "/", // This will be automatically resolved relative to metadataBase
+  },
   other: {
     // Use compliant image URL
     "fc:frame": JSON.stringify(frameObject),
-    "fc:frame:image": "https://www.skatehive.app/Sogimage.png", // Use the skatehive.app domain image
+    "fc:frame:image": "https://www.skatehive.app/Sogimage.png",
     "fc:frame:post_url": "https://www.skatehive.app",
   },
 };
@@ -63,6 +66,15 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
       <head>
+        {/* Canonical tag for SEO */}
+        <link
+          rel="canonical"
+          href={
+            typeof window !== "undefined"
+              ? `${process.env.NEXT_PUBLIC_WEBSITE_URL}${window.location.pathname}`
+              : process.env.NEXT_PUBLIC_WEBSITE_URL || "https://skatehive.app"
+          }
+        />
         {/* DNS Prefetch for domains */}
         <link rel="dns-prefetch" href="//vercel-scripts.com" />
         <link rel="dns-prefetch" href="//va.vercel-scripts.com" />
