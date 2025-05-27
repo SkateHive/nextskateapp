@@ -121,17 +121,25 @@ const TokenSelector = ({
       console.error("Username is missing");
       return;
     }
+    
+    // Validate amount before proceeding
+    const numericAmount = parseFloat(amount);
+    if (isNaN(numericAmount) || numericAmount <= 0) {
+      console.error("Invalid amount. Please enter a positive number.");
+      return;
+    }
+    
     try {
       const operations: Operation[] = [];
       const currency = token === "HBD" ? "HBD" : "HIVE";
-      const amount = String(dividedAmount.toFixed(3)) + ` ${currency}`;
+      const transferAmount = String(dividedAmount.toFixed(3)) + ` ${currency}`;
       addressDict.forEach((element: any) => {
         const operation: Operation = [
           "transfer",
           {
             from: user.hiveUser?.name,
             to: element.author,
-            amount: amount,
+            amount: transferAmount,
             memo:
               customMessage ||
               `you just got a skatehive airdrop triggered by ${user.hiveUser?.name}`,
@@ -490,8 +498,15 @@ const TokenSelector = ({
         w={"100%"}
         colorScheme="green"
         variant={"outline"}
+        isDisabled={parseFloat(amount) <= 0 || !amount.trim()}
         onClick={() => {
-          if (token === "HIVE") {
+          const numericAmount = parseFloat(amount);
+          if (numericAmount <= 0 || isNaN(numericAmount)) {
+            console.error("Please enter a valid positive amount");
+            return;
+          }
+          
+          if (token === "HIVE" || token === "HBD") {
             handleHiveBulkTransfer();
           } else {
             if (account.isConnected) {
