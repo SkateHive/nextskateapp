@@ -20,7 +20,7 @@ import {
   VStack
 } from "@chakra-ui/react";
 import { Discussion } from "@hiveio/dhive";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import HTMLFlipBook from "react-pageflip";
 import { FullMagazineRenderers } from "./FullMagazineRenderers";
 
@@ -73,24 +73,8 @@ export interface FullMagProps {
 export default function FullMag({ tag, query }: FullMagProps) {
   const { posts, error, isLoading } = usePosts(query, tag);
   const flipBookRef = useRef<any>(null);
+  const flipBookInstanceRef = useRef<any>(null); // Store the real flipbook instance
   const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (flipBookRef.current) {
-        if (event.key === "ArrowRight") {
-          flipBookRef.current.pageFlip().flipNext();
-        } else if (event.key === "ArrowLeft") {
-          flipBookRef.current.pageFlip().flipPrev();
-        }
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []);
 
   const playSound = () => {
     if (audioRef.current) {
@@ -102,7 +86,7 @@ export default function FullMag({ tag, query }: FullMagProps) {
   if (isLoading) {
     return (
       <Flex justify="center" align="center" w="100vw" h="100vh" p={5}>
-        <Text color={"white"}>Use your keyboard to navigate and the mouse scroll to read</Text>
+        <Text color={"white"}>Use your mouse to flip pages and scroll the pages</Text>
       </Flex>
     );
   }
@@ -126,6 +110,7 @@ export default function FullMag({ tag, query }: FullMagProps) {
 
   return (
     <VStack justify="center" align="center" w="100%" p={5}>
+      {/* Debug: Show ref content */}
       <audio ref={audioRef} src="/pageflip.mp3" preload="auto" />
 
       <HTMLFlipBook
@@ -154,6 +139,11 @@ export default function FullMag({ tag, query }: FullMagProps) {
         className="flipbook"
         style={flipbookStyles}
         ref={flipBookRef}
+        onInit={(instance) => {
+          console.log('onInit instance:', instance);
+          console.log('onInit instance keys:', Object.keys(instance));
+          flipBookInstanceRef.current = instance;
+        }}
         onFlip={(e) => {
           playSound();
         }}
@@ -168,8 +158,8 @@ export default function FullMag({ tag, query }: FullMagProps) {
         </Box>
         {filteredPosts
           .sort((a, b) => Number(getTotalPayout(b as any)) - Number(getTotalPayout(a as any)))
-          .map((post: Discussion) => (
-            <Box key={post.id} sx={pageStyles}>
+          .map((post: Discussion, index) => (
+            <Box key={`${post.id}-${index}`} sx={pageStyles}>
               <HStack spacing={2}>
                 <VStack p={1} borderRadius={5} width={"20%"} >
                   <AuthorAvatar username={post.author} boxSize={30} borderRadius={100} />

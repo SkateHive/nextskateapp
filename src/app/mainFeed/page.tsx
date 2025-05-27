@@ -26,7 +26,6 @@ import MainInput from "@/components/MainFeed/MainInput";
 import CommentList from "./components/CommentsList";
 import TopMenu from "./components/TopMenu";
 import { Discussion } from "@hiveio/dhive";
-import EditInfoModal from "@/components/Profile/EditInfoModal";
 
 const LoadingComponent = dynamic(
   () => import("./components/loadingComponent"),
@@ -50,45 +49,7 @@ const MainFeed = () => {
   const toast = useToast();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-  const getProfileImage = () => {
-    const postingMetadata = (() => {
-      try {
-        const parsed = JSON.parse(
-          user?.hiveUser?.posting_json_metadata || "{}"
-        );
-        console.debug("[MainFeed] posting_json_metadata:", parsed);
-        return parsed;
-      } catch (e) {
-        console.debug("[MainFeed] posting_json_metadata parse error", e);
-        return {};
-      }
-    })();
-    const jsonMetadata = (() => {
-      try {
-        const parsed = JSON.parse(user?.hiveUser?.json_metadata || "{}");
-        console.debug("[MainFeed] json_metadata:", parsed);
-        return parsed;
-      } catch (e) {
-        console.debug("[MainFeed] json_metadata parse error", e);
-        return {};
-      }
-    })();
-    const profileImage =
-      postingMetadata?.profile?.profile_image ||
-      jsonMetadata?.profile?.profile_image ||
-      "";
-    console.debug("[MainFeed] getProfileImage result:", profileImage);
-    return profileImage;
-  };
 
-  const hasProfilePic = !!getProfileImage();
-  console.debug("[MainFeed] hasProfilePic:", hasProfilePic);
-
-  const handleRequireProfilePic = () => {
-    console.debug("DEBUG user object on require profile pic:", user);
-    // alert("You must set a profile picture before posting.");
-    // setIsEditModalOpen(true);
-  };
 
   const handleCommentSubmit = (newComment: Discussion) => {
     console.debug("DEBUG user object on comment submit:", user);
@@ -183,9 +144,6 @@ const MainFeed = () => {
               ref={postBodyRef}
               isLoading={isLoading}
               onCommentSubmit={handleCommentSubmit}
-              // canPost={hasProfilePic}
-              canPost={true}
-              onRequireProfilePic={handleRequireProfilePic}
             />
           </Flex>
           <Divider />
@@ -233,14 +191,6 @@ const MainFeed = () => {
         >
           <LoadingComponent />
         </Box>
-      )}
-      {user.hiveUser && (
-        <EditInfoModal
-          isOpen={isEditModalOpen}
-          onClose={() => setIsEditModalOpen(false)}
-          user={user.hiveUser}
-          onUpdate={() => setIsEditModalOpen(false)}
-        />
       )}
     </VStack>
   );
