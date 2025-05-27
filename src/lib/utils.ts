@@ -220,6 +220,29 @@ export const extractMediaItems = (markdown: string): MediaItem[] => {
 
   return mediaItems;
 };
+// Media extraction cache
+const mediaCache = new Map<string, MediaItem[]>();
+
+// Optimized version with caching
+export const extractMediaItemsCached = (markdown: string): MediaItem[] => {
+  if (mediaCache.has(markdown)) {
+    return mediaCache.get(markdown)!;
+  }
+  
+  const result = extractMediaItems(markdown);
+  mediaCache.set(markdown, result);
+  
+  // Limit cache size to prevent memory issues
+  if (mediaCache.size > 1000) {
+    const firstKey = mediaCache.keys().next().value;
+    if (firstKey) {
+      mediaCache.delete(firstKey);
+    }
+  }
+  
+  return result;
+};
+
 export interface LinkWithDomain {
   url: string
   domain: string

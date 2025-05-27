@@ -9,16 +9,19 @@ import {
   Button,
 } from "@chakra-ui/react";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { useComments } from "@/hooks/comments";
-import { extractMediaItems, extractSubtitle, MediaItem } from "@/lib/utils";
+import { useOptimizedComments } from "@/hooks/useOptimizedComments";
+import { extractMediaItemsCached, extractSubtitle, MediaItem } from "@/lib/utils";
 import { HiveAccount } from "@/lib/useHiveAuth";
 import { memo } from "react";
 import MediaModal from "./MediaModal"; // direct import
+import { LazyMediaItem } from "./LazyMediaItem";
+import { Discussion } from "@hiveio/dhive";
+import { PerformanceMonitor } from "./PerformanceMonitor";
 
 // Define extended media type with comment attached.
-type ExtendedMediaItem = MediaItem & { comment: any };
+type ExtendedMediaItem = MediaItem & { comment: Discussion };
 
 interface SkaterFeedProps {
   user: HiveAccount;
@@ -30,58 +33,84 @@ const PARENT_PERMLINK =
   process.env.NEXT_PUBLIC_MAINFEED_PERMLINK || "test-advance-mode-post";
 
 function SkaterFeed({ user }: SkaterFeedProps) {
-  const defaultItemsPerPage = useBreakpointValue({ base: 15, md: 12 }) || 12; // Increase items per page for smoother scrolling
+  const defaultItemsPerPage = useBreakpointValue({ base: 15, md: 12 }) || 12;
   const [visibleCount, setVisibleCount] = useState(defaultItemsPerPage);
 
-  const { comments, isLoading, error } = useComments(
+  const { comments, isLoading, error } = useOptimizedComments(
     PARENT_AUTHOR,
     PARENT_PERMLINK,
     false,
     user.name
   );
 
-  // Extract media items from comments
-  const mediaItems: ExtendedMediaItem[] = comments
-    .flatMap((comment) =>
-      extractMediaItems(comment.body)
-        .filter(
-          (item) =>
-            (item.type === "image" || (item.type === "video" && item.url)) &&
-            !item.url.includes("zora.co") &&
-            !item.url.includes("spotify.com")
-        )
-        .map((item) => ({
-          ...item,
-          comment,
-          subtitle: extractSubtitle(comment.body),
-        }))
-    )
-    .sort(
-      (a, b) =>
-        new Date(b.comment.created).getTime() -
-        new Date(a.comment.created).getTime()
-    );
+  // Memoize media extraction to prevent recalculating on every render
+  const mediaItems: ExtendedMediaItem[] = useMemo(() => {
+    if (!comments.length) return [];
 
-  const loadMore = () => {
+    return comments
+      .reduce<ExtendedMediaItem[]>((acc: ExtendedMediaItem[], comment: Discussion) => {
+        try {
+          const extractedItems = extractMediaItemsCached(comment.body);
+          const filteredItems = extractedItems
+            .filter(
+              (item: MediaItem) =>
+                (item.type === "image" || (item.type === "video" && item.url)) &&
+                !item.url.includes("zora.co") &&
+                !item.url.includes("spotify.com")
+            )
+            .map((item: MediaItem) => ({
+              ...item,
+              comment,
+              subtitle: extractSubtitle(comment.body),
+            }));
+          
+          return [...acc, ...filteredItems];
+        } catch (error) {
+          console.warn("Error extracting media from comment:", comment.permlink, error);
+          return acc;
+        }
+      }, [])
+      .sort(
+        (a: ExtendedMediaItem, b: ExtendedMediaItem) =>
+          new Date(b.comment.created).getTime() -
+          new Date(a.comment.created).getTime()
+      );
+  }, [comments]);
+
+  const loadMore = useCallback(() => {
     setVisibleCount((prev) =>
       Math.min(prev + defaultItemsPerPage, mediaItems.length)
     );
-  };
+  }, [defaultItemsPerPage, mediaItems.length]);
+
+  const forceLoadMore = useCallback(() => {
+    // Use requestIdleCallback for better performance
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      window.requestIdleCallback(() => {
+        setVisibleCount(mediaItems.length);
+      });
+    } else {
+      // Fallback for browsers without requestIdleCallback
+      setTimeout(() => {
+        setVisibleCount(mediaItems.length);
+      }, 0);
+    }
+  }, [mediaItems.length]);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedItem, setSelectedItem] = useState<ExtendedMediaItem | null>(
     null
   );
 
-  const handleOpenModal = (item: ExtendedMediaItem) => {
+  const handleOpenModal = useCallback((item: ExtendedMediaItem) => {
     setSelectedItem(item);
     onOpen();
-  };
+  }, [onOpen]);
 
-  const handleNewComment = (newComment: any) => {
+  const handleNewComment = useCallback((newComment: any) => {
     console.log("New comment added:", newComment);
     // Additional logic for handling new comments can be added here
-  };
+  }, []);
 
   if (isLoading) {
     return (
@@ -103,14 +132,15 @@ function SkaterFeed({ user }: SkaterFeedProps) {
 
   return (
     <Box>
+      <PerformanceMonitor itemCount={visibleCount} />
       <InfiniteScroll
         dataLength={visibleCount}
         next={loadMore}
         hasMore={visibleCount < mediaItems.length}
-        scrollThreshold={0.6} // Lower threshold to trigger earlier
+        scrollThreshold={0.8}
         loader={
           <Grid templateColumns="repeat(3, 1fr)" gap={1} mt={1}>
-            {Array.from({ length: defaultItemsPerPage }).map((_, i) => (
+            {Array.from({ length: Math.min(6, defaultItemsPerPage) }).map((_, i) => (
               <GridItem key={`inf-skel-${i}`}>
                 <AspectRatio ratio={1}>
                   <Skeleton
@@ -118,51 +148,21 @@ function SkaterFeed({ user }: SkaterFeedProps) {
                     h="100%"
                     startColor="gray.700"
                     endColor="gray.900"
-                    speed={1.2} // Faster skeleton animation
+                    speed={1.5}
                   />
                 </AspectRatio>
               </GridItem>
             ))}
           </Grid>
-        }
-      >
+        }        >
         <Grid templateColumns="repeat(3, 1fr)" gap={1}>
           {mediaItems.slice(0, visibleCount).map((item, idx) => (
-            <GridItem
-              key={`media-${item.comment.permlink}-${idx}`} // unique key per item
-              overflow="hidden"
-              bg="gray.800"
+            <LazyMediaItem
+              key={`media-${item.comment.permlink}-${idx}`}
+              item={item}
+              idx={idx}
               onClick={() => handleOpenModal(item)}
-              cursor="pointer"
-            >
-              {item.type === "image" ? (
-                <AspectRatio ratio={1}>
-                  <Image
-                    src={item.url}
-                    alt={`media-${idx}`}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                    style={{ objectFit: "cover" }}
-                  />
-                </AspectRatio>
-              ) : (
-                <AspectRatio ratio={1}>
-                  <video
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    style={{
-                      objectFit: "cover",
-                      width: "100%",
-                      height: "100%",
-                    }}
-                  >
-                    <source src={item.url} type="video/mp4" />
-                  </video>
-                </AspectRatio>
-              )}
-            </GridItem>
+            />
           ))}
         </Grid>
       </InfiniteScroll>
@@ -178,11 +178,13 @@ function SkaterFeed({ user }: SkaterFeedProps) {
         />
       )}
 
-      <Box textAlign="center" mt={4}>
-        <Button onClick={loadMore} colorScheme="teal">
-          Force Load
-        </Button>
-      </Box>
+      {visibleCount < mediaItems.length && (
+        <Box textAlign="center" mt={4}>
+          <Button onClick={forceLoadMore} colorScheme="teal">
+            Force Load All ({mediaItems.length - visibleCount} remaining)
+          </Button>
+        </Box>
+      )}
     </Box>
   );
 }
