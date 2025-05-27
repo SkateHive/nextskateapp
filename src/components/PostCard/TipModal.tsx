@@ -9,8 +9,8 @@ import React from "react";
 import { parseUnits } from "viem";
 import { useAccount, useWriteContract } from "wagmi";
 import { SenditABI } from "../../lib/abi/senditABI";
-import { TokenInfo } from "@/app/mainFeed/utils/types";
-import { tokenDictionary } from "@/app/mainFeed/utils/tokenDictionary";
+import { TokenInfo } from "@/components/MainFeed/utils/types";
+import { tokenDictionary } from "@/components/MainFeed/utils/tokenDictionary";
 
 interface TipModalProps {
     isOpen: boolean;

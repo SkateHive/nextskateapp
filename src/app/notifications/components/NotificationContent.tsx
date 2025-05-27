@@ -1,4 +1,4 @@
-import ReplyModal from "@/app/mainFeed/components/replyModal"
+import ReplyModal from "@/components/MainFeed/components/replyModal"
 import MarkdownRenderer from "@/components/ReactMarkdown/page"
 import { changeFollow, checkFollow } from "@/lib/hive/client-functions"
 import { calculateTimeAgo } from "@/lib/utils"

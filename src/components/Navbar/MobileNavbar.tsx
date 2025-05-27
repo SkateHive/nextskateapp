@@ -9,7 +9,7 @@ import WalletButton from "./WalletButton";
 import MagButton from "./magButton";
 import SideBarMobile from "./sideBarMobile";
 import UploadPageButton from "./uploadPageButton";
-import Dock from "@/app/mainFeed/components/Dock";
+import Dock from "@/components/MainFeed/components/Dock";
 import { useRouter, usePathname } from "next/navigation";
 
 const buttonStyles = {

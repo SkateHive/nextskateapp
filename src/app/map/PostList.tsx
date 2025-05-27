@@ -1,4 +1,4 @@
-import CommentItem from '@/app/mainFeed/components/CommentItem';
+import CommentItem from '@/components/MainFeed/components/CommentItem';
 import { Box, Button, Flex, Text } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 

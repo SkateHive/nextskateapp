@@ -1,5 +1,5 @@
 'use client';
-import LoadingComponent from "@/app/mainFeed/components/loadingComponent";
+import LoadingComponent from "@/components/MainFeed/components/loadingComponent";
 import ETHprofile from "@/components/Profile/ETHprofile";
 import ProfileHeader from "@/components/Profile/ProfileHeader";
 import ProfileTabs from "@/components/Profile/profileTabs";

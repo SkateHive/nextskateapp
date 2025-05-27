@@ -1,5 +1,5 @@
 "use client";
-import { handleVote } from "@/app/mainFeed/utils/handleFeedVote";
+import { handleVote } from "@/components/MainFeed/utils/handleFeedVote";
 import CommentsSection from "@/components/PostModal/commentSection";
 import { useHiveUser } from "@/contexts/UserContext";
 import useHiveAccount from "@/hooks/useHiveAccount";

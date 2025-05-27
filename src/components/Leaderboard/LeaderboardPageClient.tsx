@@ -8,7 +8,7 @@ import LoginModal from '../Hive/Login/LoginModal';
 import ConnectedUserBanner from './ConnectedUserBanner';
 import { useRouter } from 'next/navigation';
 import LeaderboardModal from '../ModalComponent';
-import AirdropModal from '@/app/mainFeed/components/airdropModal';
+import AirdropModal from "@/components/MainFeed/components/airdropModal";
 import AirdropFilterModal from './AirdropFilterModal';
 import { DataBaseAuthor } from './LeaderboardTable';
 import { useAirdropManager } from './AirdropManager';

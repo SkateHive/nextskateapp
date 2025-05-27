@@ -1,5 +1,4 @@
-import CommentList from "@/app/mainFeed/components/CommentsList";
-import { fetchComments } from "@/hooks/casts";
+import CommentsList from "@/components/MainFeed/components/CommentsList";
 import { useComments } from "@/hooks/comments";
 import usePosts from "@/hooks/usePosts";
 import React, { useState } from "react"
@@ -16,7 +15,7 @@ export function PropDates({ author, permlink }: PropDatesProps) {
 
     return (
         <div>
-            <CommentList
+            <CommentsList
                 comments={filteredComments}
                 visiblePosts={visiblePosts}
                 setVisiblePosts={setVisiblePosts}
