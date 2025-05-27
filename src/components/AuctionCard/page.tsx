@@ -41,8 +41,6 @@ const AuctionCard: React.FC<AuctionCardProps> = ({ isOpen, onClose, defaultAucti
   const { data: activeAuction, refetch } = useLastAuction(defaultAuction);
   useWatchAuctionAuctionBidEvent({
     onLogs(logs) {
-      // @todo: remove logs
-      console.log('AuctionBidEvent', logs);
       refetch();
       revalidatePath('/');
     },
@@ -50,8 +48,6 @@ const AuctionCard: React.FC<AuctionCardProps> = ({ isOpen, onClose, defaultAucti
 
   useWatchAuctionAuctionSettledEvent({
     onLogs(logs) {
-      // @todo: remove logs
-      console.log('AuctionSettledEvent', logs);
       refetch();
       revalidatePath('/');
     },
@@ -132,16 +128,11 @@ const AuctionCard: React.FC<AuctionCardProps> = ({ isOpen, onClose, defaultAucti
 
             maxW={{ base: "100%", lg: "100%" }}
             mx="auto"
-            height="full"
-          
-
-           
+            height="full"        
             backdropFilter="blur(10px)"
-            border="1px solid"
-         
+            border="1px solid"         
             position="relative"
             overflow="hidden"
-
           >
             <Stack
               direction="column"

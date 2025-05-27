@@ -7,7 +7,7 @@ import { FaServer } from 'react-icons/fa';
 import { FaPencil } from 'react-icons/fa6';
 import { formatDate } from '@/lib/utils';
 import AuthorAvatar from '../AuthorAvatar';
-import { witnessVoteWithKeychain, witnessVoteWithPrivateKey } from "@/lib/hive/client-functions";
+import { handleWitnessVote } from '@/lib/voteUtils';
 
 interface ConnectedUserBannerProps {
     connectedUser: string;
@@ -27,19 +27,6 @@ const ThComponent: React.FC<{ title: string; icon?: JSX.Element; imageSrc?: stri
         </VStack>
     </Th>
 );
-
-// TODO: send all references to this fucntion to utils 
-const handleWitnessVote = (connectedUser: string) => {
-    // lets check which loginmethod the user used 
-    const loginMethod = localStorage.getItem("LoginMethod");
-    if (loginMethod === "keychain") {
-        witnessVoteWithKeychain(connectedUser, "skatehive");
-    }
-    else if (loginMethod === "privateKey") {
-        witnessVoteWithPrivateKey(connectedUser, "skatehive", true);
-    }
-}
-
 
 const ConnectedUserBanner: React.FC<ConnectedUserBannerProps> = ({ connectedUser, userRanking, userData, openModal }) => {
     return (
