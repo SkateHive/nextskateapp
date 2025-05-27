@@ -1,6 +1,7 @@
 'use client'
 import MarkdownRenderer from "@/components/ReactMarkdown/page";
 import useAuthHiveUser from "@/lib/useHiveAuth";
+import { handlePasteForMarkdown } from "@/lib/utils";
 import { Avatar, Badge, Box, Button, Center, Checkbox, Divider, Flex, HStack, Image, Input, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Spinner, Text, Tooltip, VStack } from "@chakra-ui/react";
 import MDEditor, { commands } from '@uiw/react-md-editor';
 import { ArrowRightIcon } from "lucide-react";
@@ -97,34 +98,13 @@ export default function Upload() {
         },
         multiple: false
     });
-    // TODO: We are using the same function in mainFeed.tsx we probably want to move that to utils
-    const handlePaste = async (event: React.ClipboardEvent<HTMLDivElement>) => {
-        const clipboardItems = event.clipboardData.items;
-        const newImageList: string[] = [];
-
-        for (const item of clipboardItems) {
-            if (item.type.startsWith("image/")) {
-                const blob = item.getAsFile();
-
-                if (blob) {
-                    // Convert Blob to File
-                    const file = new File([blob], "pasted-image.png", { type: blob.type });
-
-                    setIsUploading(true);
-                    const ipfsData = await uploadFileToIPFS(file);
-                    if (ipfsData !== undefined) {
-                        const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}`;
-                        const markdownLink = `![Image](${ipfsUrl})`;
-                        newImageList.push(markdownLink);
-                    }
-                }
-            }
-        }
-
-        if (newImageList.length > 0) {
-            setValue((prevMarkdown) => `${prevMarkdown}\n${newImageList.join("\n")}\n`);
-            setIsUploading(false);
-        }
+    // Use the utility function for handling paste operations
+    const handlePaste = (event: React.ClipboardEvent<HTMLDivElement>) => {
+        return handlePasteForMarkdown(event, {
+            setIsUploading,
+            setValue,
+            uploadFileToIPFS
+        });
     };
 
     const extraCommands = [
