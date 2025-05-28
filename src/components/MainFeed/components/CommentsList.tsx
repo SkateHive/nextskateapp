@@ -1,7 +1,7 @@
 "use client";
 
 import { Box, Flex } from "@chakra-ui/react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, memo } from "react";
 import { BeatLoader } from "react-spinners";
 import CommentItem from "./CommentItem";
 import { Comment } from "@hiveio/dhive";
@@ -77,4 +77,4 @@ const CommentList = ({
   );
 };
 
-export default CommentList;
+export default memo(CommentList);

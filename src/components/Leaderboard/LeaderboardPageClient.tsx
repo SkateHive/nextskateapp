@@ -1,14 +1,18 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Box, Text, Button, Th, VStack, Image, Center, Container } from '@chakra-ui/react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Box, Text, Button, Th, VStack, Image, Center, Container, HStack, Select } from '@chakra-ui/react';
 import LeaderboardTable from '@/components/Leaderboard/LeaderboardTable';
 import useLeaderboardData from '@/hooks/useLeaderboardData';
 import LoginModal from '../Hive/Login/LoginModal';
 import ConnectedUserBanner from './ConnectedUserBanner';
 import { useRouter } from 'next/navigation';
 import LeaderboardModal from '../ModalComponent';
+import AirdropModal from "@/components/MainFeed/components/airdropModal";
+import AirdropFilterModal from './AirdropFilterModal';
 import { DataBaseAuthor } from './LeaderboardTable';
+import { useAirdropManager } from './AirdropManager';
+import { AirdropDebugStats } from './AirdropDebugStats';
 
 interface ThComponentProps {
     title: string;
@@ -29,6 +33,10 @@ const LeaderboardPageClient = () => {
     });
     const [isOpen, setIsOpen] = useState(false);
     const [isHPPowerModalOpened, setIsHPPowerModalOpened] = useState(false);
+    const [isAirdropFilterModalOpen, setIsAirdropFilterModalOpen] = useState(false);
+    const [isAirdropModalOpen, setIsAirdropModalOpen] = useState(false);
+    const [airdropSortOption, setAirdropSortOption] = useState<string>('points');
+    const [airdropLimit, setAirdropLimit] = useState<number>(50);
 
     const openModal = (title: string, content: string, actionText: string, onAction: () => void, data: any) => {
         setModalProps({ title, content, actionText, onAction, data });
@@ -36,9 +44,40 @@ const LeaderboardPageClient = () => {
     };
 
     const router = useRouter();
-    const handleNavigate = () => {
+    const handleNavigate = useCallback(() => {
         router.push('https://api.skatehive.app');
-    };
+    }, [router]);
+
+    const handleLoginModal = useCallback(() => {
+        setIsOpen(true);
+    }, []);
+
+    const handleAirdropConfirm = useCallback(() => {
+        setIsAirdropFilterModalOpen(false);
+        setIsAirdropModalOpen(true);
+    }, []);
+
+    const handleSetSortOption = useCallback((value: string) => {
+        setAirdropSortOption(value);
+    }, []);
+
+    const handleSetLimit = useCallback((value: number) => {
+        setAirdropLimit(value);
+    }, []);
+
+    const handleCloseFilterModal = useCallback(() => {
+        setIsAirdropFilterModalOpen(false);
+    }, []);
+
+    // Only calculate airdrop data when filter modal is open or airdrop modal is open
+    const shouldCalculateAirdrop = isAirdropFilterModalOpen || isAirdropModalOpen;
+    
+    // Use the new AirdropManager hook - MUST be called before any conditional returns
+    const { airdropUsers, airdropStats, userCount } = useAirdropManager({
+        leaderboardData: shouldCalculateAirdrop ? (leaderboardData || []) : [],
+        sortOption: airdropSortOption,
+        limit: airdropLimit
+    });
 
     useEffect(() => {
         if (error) {
@@ -60,10 +99,6 @@ const LeaderboardPageClient = () => {
                 <Text color="red.500">Failed to load leaderboard data.</Text>
             </Box>
         );
-    }
-
-    const handleLoginModal = () => {
-        setIsOpen(true);
     }
 
     return (
@@ -97,12 +132,27 @@ const LeaderboardPageClient = () => {
                 <Text textAlign="center" fontSize="xl" color="lightgreen" textShadow="0 0 10px green">
                     We are {leaderboardData ? leaderboardData.length : 0} skaters supporting ourselves. 🛹
                 </Text>
-                <LeaderboardTable data={leaderboardData || []} />
                 <Center>
-                    <Button onClick={handleNavigate} colorScheme="green" variant="solid" mt={5}>
-                        Check the Complete List
+                    <Button
+                        onClick={() => setIsAirdropFilterModalOpen(true)}
+                        colorScheme="green"
+                        variant="solid"
+                        size="lg"
+                        disabled={!leaderboardData}
+                    >
+                        🎯 Create Airdrop
                     </Button>
                 </Center>
+
+                {/* Uncomment the line below to see detailed airdrop processing stats */}
+                {/* <AirdropDebugStats stats={airdropStats} sortOption={airdropSortOption} limit={airdropLimit} /> */}
+
+                <LeaderboardTable data={leaderboardData || []} />
+
+                <Button onClick={handleNavigate} colorScheme="green" variant="solid" size="lg">
+                    Check the Complete List
+                </Button>
+
                 <LeaderboardModal
                     isOpen={isModalOpen}
                     onClose={() => setIsModalOpen(false)}
@@ -111,6 +161,23 @@ const LeaderboardPageClient = () => {
                     actionText={modalProps.actionText}
                     onAction={modalProps.onAction}
                     data={{ ...modalProps.data, hive_author: modalProps.data.hive_author || '' }}
+                />
+
+                <AirdropFilterModal
+                    isOpen={isAirdropFilterModalOpen}
+                    onClose={handleCloseFilterModal}
+                    sortOption={airdropSortOption}
+                    setSortOption={handleSetSortOption}
+                    limit={airdropLimit}
+                    setLimit={handleSetLimit}
+                    userCount={userCount}
+                    onConfirm={handleAirdropConfirm}
+                />
+
+                <AirdropModal
+                    isOpen={isAirdropModalOpen}
+                    onClose={() => setIsAirdropModalOpen(false)}
+                    sortedComments={airdropUsers}
                 />
             </Box>
         </Container>

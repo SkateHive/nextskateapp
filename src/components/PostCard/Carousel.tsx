@@ -1,7 +1,6 @@
 "use client"
 
 import { usePostContext } from "@/contexts/PostContext"
-import { PINATA_URL } from "@/utils/constants"
 import { Box, Image } from "@chakra-ui/react"
 import { useRef } from "react"
 import Carousel from "react-multi-carousel"
@@ -35,48 +34,48 @@ function PostCarousel() {
   videoLinks = [...iframeLinks, ...tSpeakLinks, ...youtubeLinks]
 
   const thumbnail: string | undefined = post.getThumbnail()
+  const metadataImage: string[] | undefined = post.metadata()?.image
 
-  // Create a Set to filter out duplicate image URLs
+  // Build a single ordered array of image objects, avoiding duplicates
   const uniqueImageUrls = new Set<string>()
-  const filteredImages = imageLinks.filter((image) => {
+  const imagesToAdd: LinkWithDomain[] = []
+
+  // Add thumbnail if valid and not already added
+  if (typeof thumbnail === 'string' && thumbnail.startsWith('http') && !uniqueImageUrls.has(thumbnail)) {
+    imagesToAdd.push({ domain: 'thumbnail', url: thumbnail })
+    uniqueImageUrls.add(thumbnail)
+  }
+
+  // Add metadata image if valid and not already added
+  if (Array.isArray(metadataImage) && metadataImage.length > 0 && metadataImage[0].startsWith('http') && !uniqueImageUrls.has(metadataImage[0])) {
+    imagesToAdd.push({ domain: 'metadata', url: metadataImage[0] })
+    uniqueImageUrls.add(metadataImage[0])
+  }
+
+  // Add markdown images, skipping duplicates and unwanted images
+  imageLinks.forEach((image) => {
     if (
       ![SKATEHIVE_DISCORD_IMAGE, SKATEHIVE_LOGO].includes(image.url) &&
       !uniqueImageUrls.has(image.url)
     ) {
-      if (typeof thumbnail === 'string') {
-        uniqueImageUrls.add(thumbnail)
-      }
+      imagesToAdd.push(image)
       uniqueImageUrls.add(image.url)
-      const metadataImage: string[] | undefined = post.metadata()?.image
-      if (Array.isArray(metadataImage) && metadataImage.length > 0 && metadataImage[0].startsWith("http")) {
-        uniqueImageUrls.add(metadataImage[0])
-      }
-      return true
     }
-    return false
   })
 
-  // Add the thumbnail to the beginning of the filteredImages array if it exists
-  if (typeof thumbnail === 'string' && thumbnail.startsWith("http")) {
-    filteredImages.unshift({
-      domain: "thumbnail",
-      url: thumbnail,
-    })
-  }
-
-  // Add a placeholder image if filteredImages is empty
-  if (filteredImages.length === 0 && videoLinks.length === 0) {
-    filteredImages.push({
-      domain: "skatehive.app",
-      url: "https://ipfs.skatehive.app/ipfs/QmWgkeX38hgWNh7cj2mTvk8ckgGK3HSB5VeNn2yn9BEnt7?pinataGatewayToken=nxHSFa1jQsiF7IHeXWH-gXCY3LDLlZ7Run3aZXZc8DRCfQz4J4a94z9DmVftXyFE",
+  // Add a placeholder image if no images or videos
+  if (imagesToAdd.length === 0 && videoLinks.length === 0) {
+    imagesToAdd.push({
+      domain: 'skatehive.app',
+      url: 'https://ipfs.skatehive.app/ipfs/QmWgkeX38hgWNh7cj2mTvk8ckgGK3HSB5VeNn2yn9BEnt7?pinataGatewayToken=nxHSFa1jQsiF7IHeXWH-gXCY3LDLlZ7Run3aZXZc8DRCfQz4J4a94z9DmVftXyFE',
     })
   }
 
   // Order images: gifs first, then static images
-  const gifImages = filteredImages.filter(image =>
+  const gifImages = imagesToAdd.filter(image =>
     image.url.toLowerCase().endsWith('.gif')
   );
-  const staticImages = filteredImages.filter(image =>
+  const staticImages = imagesToAdd.filter(image =>
     !image.url.toLowerCase().endsWith('.gif')
   );
 

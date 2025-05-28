@@ -17,6 +17,7 @@ interface IPFSData {
   IpfsHash: string;
 }
 
+// Legacy function for backward compatibility
 export const handlePaste = async (
   event: React.ClipboardEvent<HTMLTextAreaElement>,
   setIsUploading: React.Dispatch<React.SetStateAction<boolean>>,
@@ -44,6 +45,43 @@ export const handlePaste = async (
   if (newImageList.length > 0) {
     setImageList((prevList) => [...prevList, ...newImageList]);
     setIsUploading(false);
+  }
+};
+
+// Generic handlePaste function for markdown content (like upload page)
+export const handlePasteForMarkdown = async <T extends HTMLElement>(
+  event: React.ClipboardEvent<T>,
+  options: {
+    setIsUploading: React.Dispatch<React.SetStateAction<boolean>>;
+    setValue: React.Dispatch<React.SetStateAction<string>>;
+    uploadFileToIPFS: (file: File) => Promise<any>;
+  }
+) => {
+  const clipboardItems = event.clipboardData.items;
+  const newImageList: string[] = [];
+
+  for (const item of clipboardItems) {
+    if (item.type.startsWith("image/")) {
+      const blob = item.getAsFile();
+
+      if (blob) {
+        // Convert Blob to File
+        const file = new File([blob], "pasted-image.png", { type: blob.type });
+
+        options.setIsUploading(true);
+        const ipfsData: any = await options.uploadFileToIPFS(file);
+        if (ipfsData !== undefined) {
+          const ipfsUrl = `https://ipfs.skatehive.app/ipfs/${ipfsData.IpfsHash}`;
+          const markdownLink = `![Image](${ipfsUrl})`;
+          newImageList.push(markdownLink);
+        }
+      }
+    }
+  }
+
+  if (newImageList.length > 0) {
+    options.setValue((prevMarkdown) => `${prevMarkdown}\n${newImageList.join("\n")}\n`);
+    options.setIsUploading(false);
   }
 };
 
@@ -220,6 +258,29 @@ export const extractMediaItems = (markdown: string): MediaItem[] => {
 
   return mediaItems;
 };
+// Media extraction cache
+const mediaCache = new Map<string, MediaItem[]>();
+
+// Optimized version with caching
+export const extractMediaItemsCached = (markdown: string): MediaItem[] => {
+  if (mediaCache.has(markdown)) {
+    return mediaCache.get(markdown)!;
+  }
+  
+  const result = extractMediaItems(markdown);
+  mediaCache.set(markdown, result);
+  
+  // Limit cache size to prevent memory issues
+  if (mediaCache.size > 1000) {
+    const firstKey = mediaCache.keys().next().value;
+    if (firstKey) {
+      mediaCache.delete(firstKey);
+    }
+  }
+  
+  return result;
+};
+
 export interface LinkWithDomain {
   url: string
   domain: string

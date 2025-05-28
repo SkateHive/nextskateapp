@@ -25,8 +25,6 @@ interface MainInputProps {
   onCommentChange?: (comment: string) => void;
   onCommentSubmit?: (newComment: any) => void;
   isLoading?: boolean;
-  canPost?: boolean; // add this
-  onRequireProfilePic?: () => void; // add this
 }
 
 interface IPFSData {
@@ -50,8 +48,6 @@ const MainInput = forwardRef<HTMLTextAreaElement, MainInputProps>(
       onCommentChange,
       onCommentSubmit,
       isLoading,
-      canPost = true, // default true
-      onRequireProfilePic,
     },
     ref
   ) => {
@@ -97,14 +93,6 @@ const MainInput = forwardRef<HTMLTextAreaElement, MainInputProps>(
     });
 
     const handlePost = async () => {
-      console.debug("DEBUG MainInput handlePost canPost:", canPost);
-      console.debug("DEBUG MainInput handlePost username:", username);
-      // Optionally, log more user/profile info if available via props/context
-      if (!canPost) {
-        if (onRequireProfilePic) onRequireProfilePic();
-        else alert("You must set a profile picture before posting.");
-        return;
-      }
 
       const markdownString = comment.trim();
       if (!markdownString) {

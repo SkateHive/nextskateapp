@@ -11,7 +11,7 @@ import React, {
 } from "react";
 import { FiMaximize, FiMinimize, FiVolume2, FiVolumeX } from "react-icons/fi";
 import { LuPause, LuPlay, LuRotateCw } from "react-icons/lu";
-import LoadingComponent from "../../mainFeed/components/loadingComponent";
+import LoadingComponent from "@/components/MainFeed/components/loadingComponent";
 
 // Add useInView hook for detecting visibility
 interface IntersectionOptions {

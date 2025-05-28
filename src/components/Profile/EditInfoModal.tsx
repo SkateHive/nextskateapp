@@ -284,6 +284,8 @@ export default function EditInfoModal({
             placeholder="Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            id="name-input"
+            name="name"
           />
           <Text>About</Text>
           <Textarea

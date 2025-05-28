@@ -17,6 +17,7 @@ import { toogleFollowWithPassword } from "@/lib/hive/server-functions";
 import useLeaderboardData from '@/hooks/useLeaderboardData';
 import { MagModal } from '../Magazine/MagModal';
 import { RiUserFollowLine, RiUserUnfollowLine } from 'react-icons/ri';
+import AuthorAvatar from '../AuthorAvatar';
 
 interface ProfileCardProps {
     user: HiveAccount
@@ -212,7 +213,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                             <VStack>
                                 <Center>
                                     <Box borderRadius={14} border="3px solid white">
-                                        {isLoading ? <SkeletonCircle size="150px" /> : <UserAvatar hiveAccount={user} borderRadius={14} boxSize={150} size="" />}
+                                        {isLoading ? <SkeletonCircle size="150px" /> : <AuthorAvatar username={user.name} borderRadius={14} boxSize={150} quality="medium" />}
                                     </Box>
                                 </Center>
                             </VStack>

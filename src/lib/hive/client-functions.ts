@@ -348,7 +348,6 @@ export async function witnessVoteWithKeychain(username: string, witness: string)
 
 }
 
-// TODO: Review and test this function with privatekey login 
 export async function witnessVoteWithPrivateKey(username: string, witness: string, vote: boolean) {
   const client = HiveClient
   const privateKey = process.env.NEXT_PUBLIC_HIVE_ACTIVE_KEY

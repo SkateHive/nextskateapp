@@ -1,4 +1,4 @@
-import { SkateHivePreviewCard } from "@/app/mainFeed/components/SkatehivePreviewCard";
+import { SkateHivePreviewCard } from "@/components/MainFeed/components/SkatehivePreviewCard";
 import { Box, Center, Divider, Image } from "@chakra-ui/react";
 import React from "react";
 import ProfileLink from "./ProfileLink";

@@ -27,11 +27,14 @@ export const FullMagazineRenderers = {
                 width="100%"
                 height="auto"
                 loading="lazy"
+                //avoid streching 
+                objectFit="contain"
                 style={{
                     display: 'inline-block',
                     maxWidth: '100%',
                     marginTop: '20px',
                     marginBottom: '20px',
+                    maxHeight: '500px',
                 }}
             />
         </span>

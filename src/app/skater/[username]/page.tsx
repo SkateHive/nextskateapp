@@ -1,6 +1,6 @@
 "use client";
 
-import LoadingComponent from "@/app/mainFeed/components/loadingComponent";
+import LoadingComponent from "@/components/MainFeed/components/loadingComponent";
 import SkaterHeader from "@/components/Skater/SkaterHeader";
 import SkaterTabs from "@/components/Skater/SkaterTabs";
 import useHiveAccount from "@/hooks/useHiveAccount";
