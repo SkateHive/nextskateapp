@@ -14,4 +14,4 @@ SkateHive Accont:
 
 [📟 How to join us on Discord](https://docs.skatehive.app/docs/Level%20-%203/discord)
 
-[📝 How to create a Fork - Skatehive Docs](https://docs.skatehive.app/docs/Level%20-%201/fork-skatehive)
+[📝 How to create a Fork - Skatehive Docs](https://docs.skatehive.app/docs/projects/fork-skatehive)
