@@ -1,6 +1,6 @@
 "use client";
 import { uploadFileToIPFS } from "@/app/upload/utils/uploadToIPFS";
-import { useHiveUser } from "@/contexts/UserContext";
+import { useUserData } from "@/contexts/UserContext";
 import { useComments } from "@/hooks/comments";
 import { commentWithPrivateKey } from "@/lib/hive/server-functions";
 import PostModel from "@/lib/models/post";
@@ -39,7 +39,7 @@ const CommandPrompt = ({
   const [isUploading, setIsUploading] = useState(false);
   const [value, setValue] = useState("");
 
-  const user = useHiveUser();
+  const user = useUserData();
   const [error, setError] = useState<string | null>(null);
   const toast = useToast();
 
@@ -50,12 +50,12 @@ const CommandPrompt = ({
     const newPermLink = `comment-${Math.random().toString(36).substr(2, 9)}`;
 
     try {
-      if (!user.hiveUser?.name) throw new Error("Username is missing");
+      if (!user?.name) throw new Error("Username is missing");
 
       const postData: any = {
         parent_author: author,
         parent_permlink: permlink,
-        author: user.hiveUser.name,
+        author: user.name,
         permlink: newPermLink,
         body: commentBody,
         title: "Comment",
@@ -72,7 +72,7 @@ const CommandPrompt = ({
         const operations = [["comment", postData]];
 
         window.hive_keychain.requestBroadcast(
-          user.hiveUser.name,
+          user.name,
           operations,
           "posting",
           (response: any) => {
@@ -95,7 +95,7 @@ const CommandPrompt = ({
         const commentOptions: dhive.CommentOptionsOperation = [
           "comment_options",
           {
-            author: String(user.hiveUser?.name),
+            author: String(user?.name),
             permlink: newPermLink,
             max_accepted_payout: "10000.000 HBD",
             percent_hbd: 10000,
@@ -116,7 +116,7 @@ const CommandPrompt = ({
           {
             parent_author: author,
             parent_permlink: permlink,
-            author: String(user.hiveUser?.name),
+            author: String(user?.name),
             permlink: newPermLink,
             title: `Reply to ${author}`,
             body: commentBody,

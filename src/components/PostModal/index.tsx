@@ -1,7 +1,7 @@
 'use client'
 import VotingButton from "@/components/ButtonVoteComponent/VotingButton";
 import { usePostContext } from "@/contexts/PostContext";
-import { useHiveUser } from "@/contexts/UserContext";
+import { useUserData, useVoteValue } from "@/contexts/UserContext";
 import { useComments } from "@/hooks/comments";
 import getTranslation from "@/lib/getTranslation";
 import HiveClient from "@/lib/hive/hiveclient";
@@ -40,7 +40,8 @@ export function PostModal({ isOpen, onClose, username }: PostModalInterface) {
   const { post } = usePostContext();
   const { comments, addComment } = useComments(post.author, post.permlink, true);
   const [isValueTooltipOpen, setIsValueTooltipOpen] = useState(false);
-  const { hiveUser, voteValue } = useHiveUser();
+  const hiveUser = useUserData();
+  const voteValue = useVoteValue();
   const usernameString = username
     ? typeof username === "string"
       ? username

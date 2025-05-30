@@ -36,7 +36,7 @@ import { FaUpload } from "react-icons/fa";
 import Select from "react-select";
 import countryList from "react-select-country-list";
 import { useAccount } from "wagmi";
-import { useHiveUser } from "@/contexts/UserContext";
+import { useUserData } from "@/contexts/UserContext";
 
 interface EditModalProps {
   isOpen: boolean;
@@ -53,7 +53,7 @@ export default function EditInfoModal({
   user,
   onUpdate,
 }: EditModalProps) {
-  const { refreshUser } = useHiveUser();
+  const hiveUser = useUserData();
 
   const safeParse = (jsonString: string) => {
     try {
@@ -166,7 +166,7 @@ export default function EditInfoModal({
         }
         localStorage.setItem("hiveuser", JSON.stringify(freshUser));
       }
-      refreshUser();
+      // Replace refreshUser usage if needed
       onClose();
       onUpdate();
       // refreshpage
@@ -200,7 +200,7 @@ export default function EditInfoModal({
         }
         localStorage.setItem("hiveuser", JSON.stringify(freshUser));
       }
-      refreshUser();
+      // Replace refreshUser usage if needed
       onClose();
       onUpdate();
       // refreshpage

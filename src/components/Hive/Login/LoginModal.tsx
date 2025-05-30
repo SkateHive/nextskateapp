@@ -1,6 +1,6 @@
 "use client"
 
-import { useHiveUser } from "@/contexts/UserContext"
+import { useUserData } from "@/contexts/UserContext"
 import useAuthHiveUser from "@/lib/useHiveAuth"
 import {
   Modal,
@@ -23,13 +23,12 @@ function LoginModal({
   const [username, setUsername] = useState("")
   const [privateKey, setPrivateKey] = useState("")
   const { loginWithHive } = useAuthHiveUser()
-  const { hiveUser, refreshUser } = useHiveUser()
+  const hiveUser = useUserData()
 
   async function doLogin(useLoginAs: boolean = false) {
     try {
       setIsLogginIn(true)
       await loginWithHive(username, useLoginAs, privateKey)
-      refreshUser()
       setIsLogginIn(false)
     } catch (error) {
       console.error(error)

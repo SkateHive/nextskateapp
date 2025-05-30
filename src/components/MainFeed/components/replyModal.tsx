@@ -1,6 +1,6 @@
 import AuthorAvatar from "@/components/AuthorAvatar";
 import UserAvatar from "@/components/UserAvatar";
-import { useHiveUser } from "@/contexts/UserContext";
+import { useUserData } from "@/contexts/UserContext";
 import { commentWithPrivateKey } from "@/lib/hive/server-functions";
 import {
   Box,
@@ -161,7 +161,7 @@ const ReplyModal = React.memo(
   ({ isOpen, onClose, comment, onNewComment, mediaItems }: ReplyModalProps) => {
     console.log("ReplyModal rendering for:", comment.author); // Debug re-renders
 
-    const user = useHiveUser();
+    const user = useUserData();
     const [replyBody, setReplyBody] = useState("");
     const [error, setError] = useState<string | null>(null);
     const loginMethod = localStorage.getItem("LoginMethod");
@@ -179,7 +179,7 @@ const ReplyModal = React.memo(
     // Memoize the handleReply function to avoid recreating it on every render
     const handleReplyCallback = useCallback(async () => {
       const loginMethod = localStorage.getItem("LoginMethod");
-      const username = user.hiveUser?.name;
+      const username = user?.name;
 
       if (!loginMethod || !username) {
         setError("You must be logged in to respond.");
@@ -192,7 +192,7 @@ const ReplyModal = React.memo(
           if (!window.hive_keychain) {
             throw new Error("Hive Keychain extension not found!");
           }
-          const username = user.hiveUser?.name;
+          const username = user?.name;
           if (!username) {
             throw new Error("Username is missing");
           }
@@ -232,7 +232,7 @@ const ReplyModal = React.memo(
           const commentOptions: dhive.CommentOptionsOperation = [
             "comment_options",
             {
-              author: String(user.hiveUser?.name),
+              author: String(user?.name),
               permlink: newPermLink,
               max_accepted_payout: "10000.000 HBD",
               percent_hbd: 10000,
@@ -254,7 +254,7 @@ const ReplyModal = React.memo(
             {
               parent_author: comment.author,
               parent_permlink: comment.permlink,
-              author: String(user.hiveUser?.name),
+              author: String(user?.name),
               permlink: newPermLink,
               title: `Reply to ${comment.author}`,
               body: replyBody,
@@ -281,7 +281,7 @@ const ReplyModal = React.memo(
       } catch (error: any) {
         setError(error.message);
       }
-    }, [user.hiveUser, replyBody, comment, onNewComment, onClose]);
+    }, [user, replyBody, comment, onNewComment, onClose]);
 
     const handleTextChange = useCallback(
       (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -325,15 +325,15 @@ const ReplyModal = React.memo(
                   direction={{ base: "column", md: "row" }}
                   gap={4}
                 >
-                  {user.hiveUser && (
+                  {user && (
                     <UserAvatar
-                      hiveAccount={user.hiveUser}
+                      hiveAccount={user}
                       borderRadius={100}
                       boxSize={12}
                     />
                   )}
                   <VStack align="start" w="full">
-                    {user.hiveUser && (
+                    {user && (
                       <ReplyInput
                         value={replyBody}
                         onChange={handleTextChange}

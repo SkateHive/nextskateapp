@@ -1,6 +1,6 @@
 "use client";
 import AuthorAvatar from "@/components/AuthorAvatar";
-import { useHiveUser } from "@/contexts/UserContext";
+import { useUserData } from "@/contexts/UserContext";
 import HiveClient from "@/lib/hive/hiveclient";
 import {
   Button,
@@ -58,7 +58,7 @@ const AirdropModal = ({
   isOpen,
   onClose,
 }: AirdropModalProps) => {
-  const { hiveUser } = useHiveUser();
+  const hiveUser = useUserData();
   const toast = useToast();
   const client = HiveClient;
   const [walletDict, setWalletDict] = useState<AuthorWallets[]>([]);

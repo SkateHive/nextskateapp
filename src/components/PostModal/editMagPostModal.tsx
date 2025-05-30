@@ -8,7 +8,7 @@ import { diff_match_patch } from 'diff-match-patch';
 import { Fragment, useEffect, useState } from 'react';
 import { FaEye } from 'react-icons/fa';
 import MarkdownRenderer from '../ReactMarkdown/page';
-import { useHiveUser } from '@/contexts/UserContext';
+import { useUserData } from "@/contexts/UserContext";
 
 interface editModalProps {
     isOpen: boolean;
@@ -38,8 +38,8 @@ export const EditModal = ({ isOpen, onClose, post }: editModalProps) => {
     const [selectedThumbnail, setSelectedThumbnail] = useState<string | null>(null);
     const [postImages, setPostImages] = useState<string[]>([]);
     const [isEditing, setIsEditing] = useState(true);
-    const user = useHiveUser();
-    const username = user?.hiveUser?.name || '';
+    const user = useUserData();
+    const username = user?.name || '';
     useEffect(() => {
         const parsedMetadata = JSON.parse(post.json_metadata);
         const postImagesFromMetadata = parsedMetadata.images || [];

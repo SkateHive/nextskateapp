@@ -3,7 +3,7 @@ import { HStack, Text } from "@chakra-ui/react";
 import { useRef, useState, useEffect } from "react";
 import { FaHeart, FaHeartBroken, FaRegHeart } from "react-icons/fa";
 import { useReward } from "react-rewards";
-import { useHiveUser } from "@/contexts/UserContext";
+import { useUserData, useVoteValue } from "@/contexts/UserContext";
 import { v4 as uuidv4 } from "uuid";
 import VoteButtonModal from "./VoteButtonModal";
 import { processVote } from "@/lib/hive/vote-utils";
@@ -23,7 +23,8 @@ const VotingButton = ({
     updatedComment?: any
   ) => void;
 }) => {
-  const { voteValue, hiveUser } = useHiveUser();
+  const hiveUser = useUserData();
+  const voteValue = useVoteValue();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isVoteModalOpen, setIsVoteModalOpen] = useState(false);
   const [touchTimer, setTouchTimer] = useState<NodeJS.Timeout | null>(null);

@@ -1,5 +1,5 @@
 import { usePostContext } from "@/contexts/PostContext";
-import { useHiveUser } from "@/contexts/UserContext";
+import { useUserData } from "@/contexts/UserContext";
 import getSummary from "@/lib/getSummaryAI";
 import {
   Button,
@@ -56,7 +56,7 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
   const router = useRouter();
   const postFullUrl = `${window.location.origin}/post${post.url}`;
 
-  const user = useHiveUser();
+  const user = useUserData();
   const [isEditing, setIsEditing] = useState(false);
 
   const handleCopyPostLink = () => {
@@ -171,7 +171,7 @@ export default function Header({ variant = "preview" }: HeaderInterface) {
               <IoIosArrowDown />
             </MenuButton>
             <MenuList bg={"black"} fontSize={"sm"} color={"white"}>
-              {user.hiveUser?.name === post.author && (
+              {user?.name === post.author && (
                 <CustomMenuItem
                   icon={<FaEye size={18} />}
                   onClick={() => setIsEditing(true)}

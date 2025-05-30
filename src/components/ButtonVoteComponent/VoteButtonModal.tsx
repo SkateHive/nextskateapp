@@ -1,5 +1,5 @@
 import LoginModal from "@/components/Hive/Login/LoginModal";
-import { useHiveUser } from "@/contexts/UserContext";
+import { useUserData } from "@/contexts/UserContext";
 import {
   Box,
   Button,
@@ -42,7 +42,7 @@ const VoteButtonModal = ({
   onSuccess,
   currentVoteType = "none",
 }: VoteButtonProps) => {
-  const user = useHiveUser();
+  const user = useUserData();
   const [voteWeight, setVoteWeight] = useState(5000);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isUpvoted, setIsUpvoted] = useState<boolean>(false);
@@ -64,7 +64,7 @@ const VoteButtonModal = ({
   // Function to fetch data from Hive
   const { rshares, estimatedPayout, error } = useHiveData(
     voteWeight,
-    user?.hiveUser?.name ?? ""
+    user?.name ?? ""
   );
 
   if (!user) {
@@ -100,7 +100,7 @@ const VoteButtonModal = ({
   const handleVoteClick = async () => {
     const loginMethod = localStorage.getItem("LoginMethod");
 
-    if (!user?.hiveUser?.name) {
+    if (!user?.name) {
       setIsLoginModalOpen(true);
       return;
     }
@@ -110,12 +110,12 @@ const VoteButtonModal = ({
     if (loginMethod === "keychain") {
       if (window.hive_keychain) {
         window.hive_keychain.requestBroadcast(
-          user.hiveUser.name,
+          user.name,
           [
             [
               "vote",
               {
-                voter: user.hiveUser.name,
+                voter: user.name,
                 author: author,
                 permlink: permlink,
                 weight: weight,
@@ -147,7 +147,7 @@ const VoteButtonModal = ({
         {
           author,
           permlink,
-          voter: user.hiveUser.name,
+          voter: user.name,
           weight,
         },
       ];

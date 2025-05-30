@@ -1,6 +1,6 @@
 'use client'
 
-import { useHiveUser } from "@/contexts/UserContext"
+import { useUserData } from "@/contexts/UserContext"
 import { HiveAccount } from "@/lib/useHiveAuth"
 import { Center, HStack, Image, Text, VStack, useDisclosure } from "@chakra-ui/react"
 import { FaPencil } from "react-icons/fa6"
@@ -13,7 +13,7 @@ interface ProfileProps {
 
 export default function ProfileHeader({ user }: ProfileProps) {
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const hiveUser = useHiveUser()
+  const hiveUser = useUserData()
 
   const safeParse = (jsonString: string): any => {
     try {
@@ -63,7 +63,7 @@ export default function ProfileHeader({ user }: ProfileProps) {
         <Text mb={3} fontSize={{ base: "sm", lg: "xl" }} fontWeight={"bold"}>
           {profileName}
         </Text>
-        {user.name === hiveUser.hiveUser?.name && (
+        {user.name === hiveUser?.name && (
           <FaPencil color="white" size="1em" />
         )}
       </HStack>

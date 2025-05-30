@@ -1,4 +1,4 @@
-import { useHiveUser } from '@/contexts/UserContext';
+import { useUserData } from "@/contexts/UserContext";
 import { transferWithKeychain } from '@/lib/hive/client-functions';
 import PostModel from '@/lib/models/post';
 import {
@@ -16,7 +16,7 @@ interface HiveTipModalProps {
 }
 
 const HiveTipModal: React.FC<HiveTipModalProps> = ({ isOpen, onClose, author, post }) => {
-    const user = useHiveUser();
+    const user = useUserData();
     const [amount, setAmount] = useState<string>("0.000");
     const [currency, setCurrency] = useState<string>("HIVE");
 
@@ -45,7 +45,7 @@ const HiveTipModal: React.FC<HiveTipModalProps> = ({ isOpen, onClose, author, po
     
         try {
             await transferWithKeychain(
-                String(user.hiveUser?.name),
+                String(user?.name),
                 author,
                 fixedAmount.toFixed(3),
                 randomMessage,

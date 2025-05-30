@@ -3,7 +3,7 @@ import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody,
 import { formatDate } from '@/lib/utils';
 import { DataBaseAuthor } from '@/components/Leaderboard/LeaderboardTable';
 import useHiveBalance from '@/hooks/useHiveBalance';
-import { useHiveUser } from '@/contexts/UserContext';
+import { useUserData } from "@/contexts/UserContext";
 import { sendPowerUp } from '@/lib/hive/client-functions';
 import { sendPowerUpWithPrivateKey } from '@/lib/hive/server-functions';
 import { useRouter } from 'next/navigation';
@@ -58,23 +58,23 @@ const getEmojiByValue = (value: number, max: number): string => {
 };
 
 const LeaderboardModal: React.FC<ModalProps> = ({ isOpen, onClose, title, content, actionText, onAction, data }) => {
-    const hiveUser = useHiveUser();
-    const { hiveUsdValue, totalHP } = useHiveBalance(hiveUser.hiveUser);
+    const hiveUser = useUserData();
+    const { hiveUsdValue, totalHP } = useHiveBalance(hiveUser);
     const [powerUpAmount, setPowerUpAmount] = React.useState(0);
     const router = useRouter();
     const handleActionClick = async () => {
         if (title === 'Power' && actionText === 'Power UP') {
             const loginMethod = localStorage.getItem("LoginMethod");
             if (loginMethod === "keychain") {
-                if (hiveUser.hiveUser) {
-                    await sendPowerUp(hiveUser.hiveUser.name, powerUpAmount);
+                if (hiveUser) {
+                    await sendPowerUp(hiveUser.name, powerUpAmount);
                 } else {
                     console.error("Hive user is not available.");
                 }
             } else if (loginMethod === "privateKey") {
                 const privateKey = process.env.NEXT_PUBLIC_HIVE_ACTIVE_KEY;
-                if (hiveUser.hiveUser && privateKey) {
-                    await sendPowerUpWithPrivateKey(hiveUser.hiveUser.name, powerUpAmount, privateKey);
+                if (hiveUser && privateKey) {
+                    await sendPowerUpWithPrivateKey(hiveUser.name, powerUpAmount, privateKey);
                 } else {
                     console.error("Hive user or private key is not available.");
                 }

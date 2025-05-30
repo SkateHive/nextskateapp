@@ -1,4 +1,4 @@
-import { useHiveUser } from "@/contexts/UserContext"
+import { useHiveUser, useSetUser } from "@/contexts/UserContext"
 import * as dhive from "@hiveio/dhive"
 import { checkCommunitySubscription, communitySubscribeKeyChain } from "./hive/client-functions"
 import HiveClient from "./hive/hiveclient"
@@ -32,7 +32,8 @@ export type AuthUser = {
 
 function useAuthHiveUser(): AuthUser {
   const hiveClient = HiveClient
-  const { hiveUser, setHiveUser } = useHiveUser()
+  const { hiveUser } = useHiveUser()
+  const setUser = useSetUser()
 
   const storeAccountForUsername = async (username: string) => {
     const userData = await hiveClient.database.getAccounts([username])
@@ -63,7 +64,7 @@ function useAuthHiveUser(): AuthUser {
       }
     }
 
-    setHiveUser(userAccount)
+    setUser(userAccount)
     localStorage.setItem("hiveuser", JSON.stringify(userAccount))
   }
   const loginWithHive = (
@@ -98,7 +99,7 @@ function useAuthHiveUser(): AuthUser {
             ...val2[0],
           }
           localStorage.setItem("hiveuser", JSON.stringify(userAccount))
-          setHiveUser(userAccount)
+          setUser(userAccount)
           const isSubscribed = await checkCommunitySubscription(username)
           if (!isSubscribed && key) {
             //console.log("not subscribed!!")
@@ -151,7 +152,7 @@ function useAuthHiveUser(): AuthUser {
                           userAccount.posting_json_metadata
                         )
                     }
-                    setHiveUser(userAccount)
+                    setUser(userAccount)
                     localStorage.setItem("hiveuser", JSON.stringify(userAccount))
                     localStorage.setItem("LoginMethod", "keychain")
                     const isSubscribed = await checkCommunitySubscription(username)
@@ -179,7 +180,7 @@ function useAuthHiveUser(): AuthUser {
   }
 
   const logout = () => {
-    setHiveUser(null)
+    setUser(null)
     localStorage.removeItem("hiveuser")
     localStorage.removeItem("postingKey")
     localStorage.removeItem("username")

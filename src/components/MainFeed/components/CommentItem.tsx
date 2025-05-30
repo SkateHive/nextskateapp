@@ -4,7 +4,7 @@ import AuthorAvatar from "@/components/AuthorAvatar";
 import VotingButton from "@/components/ButtonVoteComponent/VotingButton";
 import TipButton from "@/components/PostCard/TipButton";
 import MarkdownRenderer from "@/components/ReactMarkdown/page";
-import { useHiveUser } from "@/contexts/UserContext";
+import { useUserData, useVoteValue } from "@/contexts/UserContext";
 import { useComments } from "@/hooks/comments";
 import { changeFollow, checkFollow } from "@/lib/hive/client-functions";
 import { changeFollowWithPassword } from "@/lib/hive/server-functions";
@@ -61,7 +61,8 @@ const CommentItem = React.memo(
     const [isCommentFormVisible, setIsCommentFormVisible] = useState(false);
     const [shouldShowAllComments, setShouldShowAllComments] = useState(false);
     const { comments } = useComments(comment.author, comment.permlink);
-    const { voteValue, hiveUser } = useHiveUser();
+    const hiveUser = useUserData();
+    const voteValue = useVoteValue();
     const [isFollowing, setIsFollowing] = useState<boolean | null>(null);
     const loginMethod = localStorage.getItem("LoginMethod");
     const [commentEarnings, setCommentEarnings] = useState(

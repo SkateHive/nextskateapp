@@ -1,6 +1,6 @@
 'use client';
 
-import { useHiveUser } from "@/contexts/UserContext";
+import { useUserData } from "@/contexts/UserContext";
 import { IconButton, Input } from "@chakra-ui/react";
 import { useCallback, useRef, useState } from "react";
 import { GiVideoCamera } from "react-icons/gi";
@@ -47,7 +47,7 @@ type UploadImageButtonProps = {
 };
 
 const UploadImageButton: React.FC<UploadImageButtonProps> = ({ styles, onClick }) => {
-    const { hiveUser } = useHiveUser();
+    const hiveUser = useUserData();
     const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
     const {
         fileInputRef,

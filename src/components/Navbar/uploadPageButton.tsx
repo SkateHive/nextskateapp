@@ -1,4 +1,4 @@
-import { useHiveUser } from '@/contexts/UserContext';
+import { useUserData } from '@/contexts/UserContext';
 import { IconButton } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { FaRobot } from 'react-icons/fa';
@@ -13,7 +13,7 @@ type UploadPageButtonProps = {
 };
 
 const UploadPageButton: React.FC<UploadPageButtonProps> = ({ styles, onClick }) => {
-    const { hiveUser } = useHiveUser();
+    const hiveUser = useUserData();
     const [isOpen, setIsOpen] = useState(false);
 
     return (

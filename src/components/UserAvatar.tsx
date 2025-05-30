@@ -2,7 +2,7 @@
 import { HiveAccount } from "@/lib/useHiveAuth";
 import { Avatar } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { useHiveUser } from "@/contexts/UserContext";
+import { useUserData } from "@/contexts/UserContext";
 
 type UserAvatarProps = {
   hiveAccount: HiveAccount;
@@ -17,7 +17,7 @@ export default function UserAvatar({
   boxSize,
   size = "small",
 }: UserAvatarProps) {
-  const { hiveUser } = useHiveUser();
+  const hiveUser = useUserData();
   const [userAvatar, setUserAvatar] = useState<string>("");
   const account = hiveUser || hiveAccount;
   const metadata = JSON.parse(

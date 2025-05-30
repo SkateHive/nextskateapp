@@ -1,5 +1,5 @@
 'use client'
-import { useHiveUser } from "@/contexts/UserContext";
+import { useUserData } from "@/contexts/UserContext";
 import { updateProfile } from "@/lib/hive/client-functions";
 import { HiveAccount } from "@/lib/useHiveAuth";
 import { Box, Button, SimpleGrid, Text, useDisclosure, VStack } from "@chakra-ui/react";
@@ -35,7 +35,7 @@ const VideoParts = ({ skater }: VideoPartsProps) => {
     );
 
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const user = useHiveUser();
+    const user = useUserData();
     const handleNewVideoPart = (videoPart: VideoPart) => {
         const newExtensions = {
             ...extensions,
@@ -87,7 +87,7 @@ const VideoParts = ({ skater }: VideoPartsProps) => {
                         <VideoCard key={index} videoPart={videoPart} onRemove={() => handleRemoveVideoPart(index)} />
                     )) : <Text>No video parts available</Text>}
                 </SimpleGrid>
-                {skater.name === user.hiveUser?.name && (
+                {skater.name === user?.name && (
                     <Button
                         colorScheme="green"
                         variant="outline"

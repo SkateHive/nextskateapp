@@ -1,6 +1,6 @@
 import VotingButton from "@/components/ButtonVoteComponent/VotingButton";
 import { usePostContext } from "@/contexts/PostContext";
-import { useHiveUser } from "@/contexts/UserContext";
+import { useUserData, useVoteValue } from "@/contexts/UserContext";
 import { HiveAccount } from "@/lib/useHiveAuth";
 import { Badge, CardFooter, HStack, Text, Tooltip } from "@chakra-ui/react";
 import { useState } from "react";
@@ -13,7 +13,8 @@ export default function Footer({ username }: FooterProps) {
   const { post } = usePostContext();
   const [postEarnings, setPostEarnings] = useState(Number(post.getEarnings().toFixed(2)));
   const [isValueTooltipOpen, setIsValueTooltipOpen] = useState(false);
-  const { hiveUser, voteValue } = useHiveUser();
+  const hiveUser = useUserData();
+  const voteValue = useVoteValue();
 
   const usernameString = username
     ? typeof username === "string"

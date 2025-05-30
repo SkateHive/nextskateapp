@@ -1,5 +1,5 @@
 "use client";
-import { useHiveUser } from "@/contexts/UserContext";
+import { useUserData } from "@/contexts/UserContext";
 import { airdropABI } from "@/lib/abi/airdropABI";
 import { sendHiveOperation } from "@/lib/hive/server-functions";
 import {
@@ -73,7 +73,7 @@ const TokenSelector = ({
   addressDict,
   setShowConfetti,
 }: TokenSelectorProps) => {
-  const user = useHiveUser();
+  const user = useUserData();
   const toast = useToast();
   const [token, setToken] = useState("HIGHER");
   const [isCustomToken, setIsCustomToken] = useState(false);
@@ -223,7 +223,7 @@ const TokenSelector = ({
   }, [amount, tokenPrices, token]);
 
   const handleHiveBulkTransfer = async () => {
-    if (!user.hiveUser?.name) {
+    if (!user?.name) {
       toast({
         title: "Authentication Required",
         description: "Please login to perform this action",
@@ -262,12 +262,12 @@ const TokenSelector = ({
         const operation: Operation = [
           "transfer",
           {
-            from: user.hiveUser?.name,
+            from: user?.name,
             to: element.author,
             amount: transferAmount,
             memo:
               customMessage ||
-              `you just got a skatehive airdrop triggered by ${user.hiveUser?.name}`,
+              `you just got a skatehive airdrop triggered by ${user?.name}`,
           },
         ];
         operations.push(operation);
@@ -289,7 +289,7 @@ const TokenSelector = ({
           const keychain = new KeychainSDK(window);
           const formParamsAsObject = {
             data: {
-              username: user.hiveUser?.name,
+              username: user?.name,
               operations: operations,
               method: KeychainKeyTypes.active,
             },
@@ -864,41 +864,15 @@ const TokenSelector = ({
                   <Text fontWeight="bold" fontSize="sm" color="red.800">Transaction Failed</Text>
                   <Text fontSize="xs" color="red.600">{transactionStatus.error || transactionStatus.message}</Text>
                   <Button 
-                    size="xs" 
-                    colorScheme="red" 
-                    variant="outline"
+                    size="xs"
                     onClick={() => setTransactionStatus({ state: 'idle', message: '' })}
                   >
-                    Try Again
+                    Dismiss
                   </Button>
                 </VStack>
               </Alert>
             )}
-
-            {transactionStatus.progress && (
-              <Progress 
-                value={transactionStatus.progress} 
-                colorScheme={
-                  transactionStatus.state === 'completed' ? 'green' :
-                  transactionStatus.state === 'failed' ? 'red' : 'blue'
-                }
-                borderRadius="md"
-                bg="gray.200"
-                size="sm"
-              />
-            )}
           </>
-        )}
-
-        {/* Simple status for legacy compatibility when no enhanced status */}
-        {transactionStatus.state === 'idle' && (
-          <Text color="white" fontSize="sm" textAlign="center">
-            {isConfirmed
-              ? "Airdrop sent!"
-              : isConfirming
-                ? "Sending airdrop..."
-                : ""}
-          </Text>
         )}
       </VStack>
     </>

@@ -1,7 +1,7 @@
 "use client"
 
 import EditInfoModal from "@/components/Profile/EditInfoModal"
-import { useHiveUser } from "@/contexts/UserContext"
+import { useUserData } from "@/contexts/UserContext"
 // import { updateProfile } from "@/lib/hive/client-functions"
 import useAuthHiveUser from "@/lib/useHiveAuth"
 import {
@@ -13,7 +13,7 @@ import { useState } from "react"
 import { FaRocket, FaHourglassHalf, FaBug } from "react-icons/fa" // added react icons
 
 function ConnectedUserModal({ onClose }: { onClose: () => void }) {
-    const { hiveUser, refreshUser } = useHiveUser()
+    const hiveUser = useUserData()
     const { logout } = useAuthHiveUser()
 
     const [isEditInfoModalOpen, setIsEditInfoModalOpen] = useState(false)
@@ -31,7 +31,7 @@ function ConnectedUserModal({ onClose }: { onClose: () => void }) {
                     user={hiveUser}
                     isOpen={isEditInfoModalOpen}
                     onClose={() => setIsEditInfoModalOpen(false)}
-                    onUpdate={refreshUser}
+                    onUpdate={() => window.location.reload()}
                 />
             )}
             <ModalHeader>

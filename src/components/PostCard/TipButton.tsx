@@ -1,4 +1,4 @@
-import { useHiveUser } from "@/contexts/UserContext";
+import { useUserData } from "@/contexts/UserContext";
 import HiveClient from "@/lib/hive/hiveclient";
 import {
   Button,
@@ -38,7 +38,7 @@ export const getPost = async (author: string, permlink: string) => {
 };
 
 export default function TipButton({ author, permlink }: TipButtonProps) {
-  const { hiveUser } = useHiveUser();
+  const hiveUser = useUserData();
   const [isHiveTipModalOpen, setIsHiveTipModalOpen] = useState(false);
   const [post, setPost] = useState<any>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
