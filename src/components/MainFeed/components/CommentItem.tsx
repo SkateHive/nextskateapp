@@ -49,7 +49,21 @@ const CommentItem = React.memo(
       return null; // Return null to avoid rendering
     }
 
-    const { addComment } = useComments(comment.author, comment.permlink); // Access addComment from useComments
+    // Memoize static values to prevent unnecessary re-calculations
+    const loginMethod = useMemo(() => localStorage.getItem("LoginMethod"), []);
+    const initialEarnings = useMemo(() => getTotalPayout(comment), [comment]);
+    const downvotes = useMemo(
+      () => getDownvoteCount(comment.active_votes),
+      [comment.active_votes]
+    );
+
+    // Single useComments call to avoid duplicate API calls
+    const { comments, addComment } = useComments(
+      comment.author,
+      comment.permlink
+    );
+
+    // State declarations
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isReplyModalOpen, setIsReplyModalOpen] = useState(false);
     const [isValueTooltipOpen, setIsValueTooltipOpen] = useState(false);
@@ -60,31 +74,21 @@ const CommentItem = React.memo(
     const [isEyeClicked, setIsEyeClicked] = useState(false);
     const [isCommentFormVisible, setIsCommentFormVisible] = useState(false);
     const [shouldShowAllComments, setShouldShowAllComments] = useState(false);
-    const { comments } = useComments(comment.author, comment.permlink);
+    const [isFollowing, setIsFollowing] = useState<boolean | null>(null);
+    const [commentEarnings, setCommentEarnings] = useState(initialEarnings);
+
+    // Context hooks
     const hiveUser = useUserData();
     const voteValue = useVoteValue();
-    const [isFollowing, setIsFollowing] = useState<boolean | null>(null);
-    const loginMethod = localStorage.getItem("LoginMethod");
-    const [commentEarnings, setCommentEarnings] = useState(
-      getTotalPayout(comment)
-    );
-    const downvotes = useMemo(() => {
-      return getDownvoteCount(comment.active_votes);
-    }, [comment.active_votes]);
 
+    // Consolidated useEffect for comments and follow status
     useEffect(() => {
+      // Update comments
       setCommentReplies(comments);
       setNumberOfComments(comments.length);
-    }, [comments]);
 
-    useEffect(() => {
-      if (isCommentFormVisible) {
-        setShouldShowAllComments(false);
-      }
-    }, [isCommentFormVisible]);
-
-    useEffect(() => {
-      if (username && comment.author !== username) {
+      // Check follow status only when necessary
+      if (username && comment.author !== username && isFollowing === null) {
         checkFollow(username, comment.author)
           .then((result) => setIsFollowing(result))
           .catch((error) => {
@@ -92,61 +96,75 @@ const CommentItem = React.memo(
             setIsFollowing(false);
           });
       }
-    }, [username, comment.author]);
+    }, [comments, username, comment.author, isFollowing]);
 
-    const handleNewComment = (newComment: any) => {
-      setCommentReplies((prevComments) => [newComment, ...prevComments]);
-      setNumberOfComments((prevCount: number) => prevCount + 1);
-
-      // Optimistically add the comment to the parent list
-      if (onNewComment) {
-        onNewComment(newComment);
+    useEffect(() => {
+      if (isCommentFormVisible) {
+        setShouldShowAllComments(false);
       }
+    }, [isCommentFormVisible]);
 
-      // Add the comment to the global comments state
-      addComment(newComment);
-    };
+    // Memoized callbacks to prevent recreating function references on every render
+    const handleNewComment = useCallback(
+      (newComment: any) => {
+        setCommentReplies((prevComments) => [newComment, ...prevComments]);
+        setNumberOfComments((prevCount: number) => prevCount + 1);
 
-    const handleEditSave = async (editedBody: string) => {
+        // Optimistically add the comment to the parent list
+        if (onNewComment) {
+          onNewComment(newComment);
+        }
+
+        // Add the comment to the global comments state
+        addComment(newComment);
+      },
+      [onNewComment, addComment]
+    );
+
+    const handleEditSave = useCallback(async (editedBody: string) => {
       try {
         setEditedCommentBody(editedBody);
         setIsEditModalOpen(false);
       } catch (error) {
         console.error("Error saving comment edit:", error);
       }
-    };
+    }, []);
 
-    const toggleCommentVisibility = () => {
+    const toggleCommentVisibility = useCallback(() => {
       setIsCommentFormVisible((prev) => !prev);
-    };
+    }, []);
 
-    const handleFollow = async (e: React.MouseEvent) => {
-      e.stopPropagation();
-      if (!username) return;
-      if (loginMethod === "keychain") {
-        try {
-          const result = await changeFollow(username, comment.author);
-          setIsFollowing(result === "blog");
-        } catch (error) {
-          console.error("Failed to change follow:", error);
-        }
-      } else if (loginMethod === "privateKey") {
-        try {
-          const encryptedKey = localStorage.getItem("EncPrivateKey");
-          if (!encryptedKey) {
-            throw new Error("Encrypted private key not found");
+    const handleFollow = useCallback(
+      async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (!username) return;
+
+        if (loginMethod === "keychain") {
+          try {
+            const result = await changeFollow(username, comment.author);
+            setIsFollowing(result === "blog");
+          } catch (error) {
+            console.error("Failed to change follow:", error);
           }
-          await changeFollowWithPassword(
-            encryptedKey,
-            username,
-            comment.author
-          );
-          setIsFollowing(true); // update state on successful follow
-        } catch (error) {
-          console.error("Failed to change follow with private key:", error);
+        } else if (loginMethod === "privateKey") {
+          try {
+            const encryptedKey = localStorage.getItem("EncPrivateKey");
+            if (!encryptedKey) {
+              throw new Error("Encrypted private key not found");
+            }
+            await changeFollowWithPassword(
+              encryptedKey,
+              username,
+              comment.author
+            );
+            setIsFollowing(true);
+          } catch (error) {
+            console.error("Failed to change follow with private key:", error);
+          }
         }
-      }
-    };
+      },
+      [username, comment.author, loginMethod]
+    );
 
     const mediaItems = useMemo(
       () => extractMediaItems(editedCommentBody),
@@ -161,50 +179,54 @@ const CommentItem = React.memo(
         .replace(/allowFullScreen={true}>/g, "");
     }, [editedCommentBody]);
 
-    const handleVoteSuccess = (voteType: string, actualVoteValue: number) => {
-      console.log("CommentItem: handleVoteSuccess triggered:", {
-        voteType,
-        actualVoteValue,
-      });
-
-      setCommentEarnings((prev) => {
-        const newEarnings =
-          voteType === "upvote"
-            ? Math.max(prev + actualVoteValue, 0)
-            : voteType === "cancel"
-              ? Math.max(prev - actualVoteValue, 0)
-              : prev;
-
-        console.log("CommentItem: Updating commentEarnings:", {
-          prev,
-          newEarnings,
+    const handleVoteSuccess = useCallback(
+      (voteType: string, actualVoteValue: number) => {
+        console.log("CommentItem: handleVoteSuccess triggered:", {
+          voteType,
+          actualVoteValue,
         });
-        return newEarnings;
-      });
-    };
 
-    // Create adapter function for ToggleComments
-    const handleVoteForToggleComments = async (
-      params: VoteParams | { author: string; permlink: string }
-    ) => {
-      if ("author" in params && "permlink" in params) {
-        // Handle legacy signature
-        return processVote({
-          username,
-          author: params.author,
-          permlink: params.permlink,
-          weight: 10000,
-          userAccount: hiveUser, // Pass the user account for value calculation
+        setCommentEarnings((prev) => {
+          const newEarnings =
+            voteType === "upvote"
+              ? Math.max(prev + actualVoteValue, 0)
+              : voteType === "cancel"
+                ? Math.max(prev - actualVoteValue, 0)
+                : prev;
+
+          console.log("CommentItem: Updating commentEarnings:", {
+            prev,
+            newEarnings,
+          });
+          return newEarnings;
         });
-      } else {
-        // Handle VoteParams - ensure userAccount is included
-        const voteParams: VoteParams = {
-          ...(params as VoteParams),
-          userAccount: hiveUser,
-        };
-        return processVote(voteParams);
-      }
-    };
+      },
+      []
+    );
+
+    // Memoized adapter function for ToggleComments
+    const handleVoteForToggleComments = useCallback(
+      async (params: VoteParams | { author: string; permlink: string }) => {
+        if ("author" in params && "permlink" in params) {
+          // Handle legacy signature
+          return processVote({
+            username,
+            author: params.author,
+            permlink: params.permlink,
+            weight: 10000,
+            userAccount: hiveUser,
+          });
+        } else {
+          // Handle VoteParams - ensure userAccount is included
+          const voteParams: VoteParams = {
+            ...(params as VoteParams),
+            userAccount: hiveUser,
+          };
+          return processVote(voteParams);
+        }
+      },
+      [username, hiveUser]
+    );
 
     // Memoize callbacks to prevent recreating function references on every render
     const handleReplyModalClose = useCallback(() => {
@@ -215,6 +237,44 @@ const CommentItem = React.memo(
       setCommentReplies((prevComments) => [newComment, ...prevComments]);
       setNumberOfComments((prevCount: number) => prevCount + 1);
     }, []);
+
+    // Memoized click handlers to prevent inline function creation
+    const handleEditClick = useCallback((e: React.MouseEvent) => {
+      e.stopPropagation();
+      setIsEditModalOpen(true);
+    }, []);
+
+    const handleReplyClick = useCallback(
+      (e: React.MouseEvent) => {
+        e.stopPropagation();
+        console.log("Opening ReplyModal with content:", editedCommentBody);
+        setIsReplyModalOpen(true);
+      },
+      [editedCommentBody]
+    );
+
+    const handleCommentToggleClick = useCallback(
+      (e: React.MouseEvent) => {
+        e.stopPropagation();
+        toggleCommentVisibility();
+      },
+      [toggleCommentVisibility]
+    );
+
+    const handleEditModalClose = useCallback(() => {
+      setIsEditModalOpen(false);
+    }, []);
+
+    const handleVoteSuccessCallback = useCallback(
+      (voteType: string, actualVoteValue: number) => {
+        console.log("CommentItem: VotingButton onVoteSuccess called:", {
+          voteType,
+          actualVoteValue,
+        });
+        handleVoteSuccess(voteType, actualVoteValue); // Only update earnings here
+      },
+      [handleVoteSuccess]
+    );
 
     return (
       <Box key={comment.id} bg="black" color="white">
@@ -288,10 +348,7 @@ const CommentItem = React.memo(
               color="#A5D6A7"
               variant="ghost"
               leftIcon={<FaPencil />}
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsEditModalOpen(true);
-              }}
+              onClick={handleEditClick}
               aria-label="Edit Comment"
             >
               Edit
@@ -302,14 +359,7 @@ const CommentItem = React.memo(
           <HStack spacing={4} cursor="pointer" color="#A5D6A7">
             <Box
               as="button"
-              onClick={(e: any) => {
-                e.stopPropagation();
-                console.log(
-                  "Opening ReplyModal with content:",
-                  editedCommentBody
-                );
-                setIsReplyModalOpen(true);
-              }}
+              onClick={handleReplyClick}
               _hover={{
                 background: "transparent",
                 color: "green.200",
@@ -323,10 +373,7 @@ const CommentItem = React.memo(
             </Box>
             <Box
               as="button"
-              onClick={(e: any) => {
-                e.stopPropagation();
-                toggleCommentVisibility();
-              }}
+              onClick={handleCommentToggleClick}
               _hover={{
                 background: "transparent",
                 color: "green.200",
@@ -345,13 +392,7 @@ const CommentItem = React.memo(
           <VotingButton
             comment={comment}
             username={username}
-            onVoteSuccess={(voteType, actualVoteValue) => {
-              console.log("CommentItem: VotingButton onVoteSuccess called:", {
-                voteType,
-                actualVoteValue,
-              });
-              handleVoteSuccess(voteType, actualVoteValue); // Only update earnings here
-            }}
+            onVoteSuccess={handleVoteSuccessCallback}
           />
 
           <Tooltip
@@ -368,7 +409,7 @@ const CommentItem = React.memo(
 
         <EditCommentModal
           isOpen={isEditModalOpen}
-          onClose={() => setIsEditModalOpen(false)}
+          onClose={handleEditModalClose}
           commentBody={editedCommentBody}
           onSave={handleEditSave}
           post={comment}
@@ -386,6 +427,18 @@ const CommentItem = React.memo(
           isCommentFormVisible={isCommentFormVisible}
         />
       </Box>
+    );
+  },
+  // Custom comparison function to prevent unnecessary re-renders
+  (prevProps, nextProps) => {
+    // Only re-render if comment content, username, or callback reference changes
+    return (
+      prevProps.comment?.id === nextProps.comment?.id &&
+      prevProps.comment?.body === nextProps.comment?.body &&
+      prevProps.comment?.active_votes?.length ===
+        nextProps.comment?.active_votes?.length &&
+      prevProps.username === nextProps.username &&
+      prevProps.onNewComment === nextProps.onNewComment
     );
   }
 );

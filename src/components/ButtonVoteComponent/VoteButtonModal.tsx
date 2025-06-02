@@ -16,7 +16,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo, useCallback, useMemo } from "react";
 import { FaHeart } from "react-icons/fa";
 import useHiveData from "./HiveDataFetcher";
 import { voteWithPrivateKey } from "@/lib/hive/server-functions";
@@ -33,383 +33,391 @@ interface VoteButtonProps {
   currentVoteType?: "upvote" | "downvote" | "none";
 }
 
-const VoteButtonModal = ({
-  author,
-  permlink,
-  comment,
-  isModal = true,
-  onClose = () => {},
-  onSuccess,
-  currentVoteType = "none",
-}: VoteButtonProps) => {
-  const user = useUserData();
-  const [voteWeight, setVoteWeight] = useState(5000);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [isUpvoted, setIsUpvoted] = useState<boolean>(false);
-  const [isDownvoted, setIsDownvoted] = useState<boolean>(false);
-  const [upvoteCount, setUpvoteCount] = useState<number>(0);
-  const [downvoteCount, setDownvoteCount] = useState<number>(0);
+const VoteButtonModal = memo(
+  ({
+    author,
+    permlink,
+    comment,
+    isModal = true,
+    onClose = () => {},
+    onSuccess,
+    currentVoteType = "none",
+  }: VoteButtonProps) => {
+    const user = useUserData();
+    const [voteWeight, setVoteWeight] = useState(5000);
+    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+    const [isUpvoted, setIsUpvoted] = useState<boolean>(false);
+    const [isDownvoted, setIsDownvoted] = useState<boolean>(false);
+    const [upvoteCount, setUpvoteCount] = useState<number>(0);
+    const [downvoteCount, setDownvoteCount] = useState<number>(0);
 
-  // Effect that adjusts the weight of the vote whenever the type of vote changes (upvote or downvote)
-  useEffect(() => {
-    if (currentVoteType === "upvote") {
-      setVoteWeight(10000);
-    } else if (currentVoteType === "downvote") {
-      setVoteWeight(-10000);
-    } else {
-      setVoteWeight(0);
-    }
-  }, [currentVoteType]);
-
-  // Function to fetch data from Hive
-  const { rshares, estimatedPayout, error } = useHiveData(
-    voteWeight,
-    user?.name ?? ""
-  );
-
-  if (!user) {
-    return (
-      <LoginModal
-        isOpen={isLoginModalOpen}
-        onClose={() => setIsLoginModalOpen(false)}
-      />
-    );
-  }
-
-  // Function that is called after the vote is successful
-  const handleVoteSuccess = async (voteType: "upvote" | "downvote") => {
-    const voteValue = voteType === "upvote" ? 10000 : -10000; // Define voteValue here
-    if (voteType === "upvote") {
-      setIsUpvoted(true);
-      setIsDownvoted(false);
-      setUpvoteCount(upvoteCount + 1);
-    } else {
-      setIsDownvoted(true);
-      setIsUpvoted(false);
-      setDownvoteCount(downvoteCount + 1);
-    }
-
-    if (onSuccess) {
-      onSuccess(voteType, voteValue); // Pass voteValue to onSuccess
-    }
-
-    setIsLoginModalOpen(false);
-  };
-
-  // Function that is called when the vote button is clicked
-  const handleVoteClick = async () => {
-    const loginMethod = localStorage.getItem("LoginMethod");
-
-    if (!user?.name) {
-      setIsLoginModalOpen(true);
-      return;
-    }
-
-    const weight = voteWeight;
-    const voteType = weight > 0 ? "upvote" : "downvote";
-    if (loginMethod === "keychain") {
-      if (window.hive_keychain) {
-        window.hive_keychain.requestBroadcast(
-          user.name,
-          [
-            [
-              "vote",
-              {
-                voter: user.name,
-                author: author,
-                permlink: permlink,
-                weight: weight,
-                __rshares: rshares,
-                __config: {
-                  title:
-                    voteType === "upvote"
-                      ? "Confirm Upvote"
-                      : "Confirm Downvote",
-                },
-              },
-            ],
-          ],
-          "Posting",
-          (response: KeychainRequestResponse) => {
-            if (response.success) {
-              handleVoteSuccess(voteType);
-              if (onClose) onClose();
-            } else {
-              console.error("Error when voting:", response);
-            }
-          }
-        );
+    // Effect that adjusts the weight of the vote whenever the type of vote changes (upvote or downvote)
+    useEffect(() => {
+      if (currentVoteType === "upvote") {
+        setVoteWeight(10000);
+      } else if (currentVoteType === "downvote") {
+        setVoteWeight(-10000);
+      } else {
+        setVoteWeight(0);
       }
-    } else if (loginMethod === "privateKey") {
-      const encryptedPrivateKey = localStorage.getItem("EncPrivateKey");
-      const vote: VoteOperation = [
-        "vote",
-        {
-          author,
-          permlink,
-          voter: user.name,
-          weight,
-        },
-      ];
-      if (!encryptedPrivateKey) {
-        console.error("Private key not found in localStorage");
+    }, [currentVoteType]);
+
+    // Function to fetch data from Hive
+    const { rshares, estimatedPayout, error } = useHiveData(
+      voteWeight,
+      user?.name ?? ""
+    );
+
+    if (!user) {
+      return (
+        <LoginModal
+          isOpen={isLoginModalOpen}
+          onClose={() => setIsLoginModalOpen(false)}
+        />
+      );
+    }
+
+    // Function that is called after the vote is successful
+    const handleVoteSuccess = async (voteType: "upvote" | "downvote") => {
+      const voteValue = voteType === "upvote" ? 10000 : -10000; // Define voteValue here
+      if (voteType === "upvote") {
+        setIsUpvoted(true);
+        setIsDownvoted(false);
+        setUpvoteCount(upvoteCount + 1);
+      } else {
+        setIsDownvoted(true);
+        setIsUpvoted(false);
+        setDownvoteCount(downvoteCount + 1);
+      }
+
+      if (onSuccess) {
+        onSuccess(voteType, voteValue); // Pass voteValue to onSuccess
+      }
+
+      setIsLoginModalOpen(false);
+    };
+
+    // Function that is called when the vote button is clicked
+    const handleVoteClick = async () => {
+      const loginMethod = localStorage.getItem("LoginMethod");
+
+      if (!user?.name) {
+        setIsLoginModalOpen(true);
         return;
       }
-      voteWithPrivateKey(encryptedPrivateKey, vote)
-        .then(() => {
-          handleVoteSuccess(voteType);
-        })
-        .catch((error) => {
-          console.error("Error when voting:", error);
-        });
-    } else {
-      console.error("Login method not recognized.");
-    }
-  };
 
-  // Function to handle the change in slider value (where the user adjusts the weight of the vote)
-  const handleSliderChange = (value: number) => {
-    setVoteWeight(value);
-  };
+      const weight = voteWeight;
+      const voteType = weight > 0 ? "upvote" : "downvote";
+      if (loginMethod === "keychain") {
+        if (window.hive_keychain) {
+          window.hive_keychain.requestBroadcast(
+            user.name,
+            [
+              [
+                "vote",
+                {
+                  voter: user.name,
+                  author: author,
+                  permlink: permlink,
+                  weight: weight,
+                  __rshares: rshares,
+                  __config: {
+                    title:
+                      voteType === "upvote"
+                        ? "Confirm Upvote"
+                        : "Confirm Downvote",
+                  },
+                },
+              ],
+            ],
+            "Posting",
+            (response: KeychainRequestResponse) => {
+              if (response.success) {
+                handleVoteSuccess(voteType);
+                if (onClose) onClose();
+              } else {
+                console.error("Error when voting:", response);
+              }
+            }
+          );
+        }
+      } else if (loginMethod === "privateKey") {
+        const encryptedPrivateKey = localStorage.getItem("EncPrivateKey");
+        const vote: VoteOperation = [
+          "vote",
+          {
+            author,
+            permlink,
+            voter: user.name,
+            weight,
+          },
+        ];
+        if (!encryptedPrivateKey) {
+          console.error("Private key not found in localStorage");
+          return;
+        }
+        voteWithPrivateKey(encryptedPrivateKey, vote)
+          .then(() => {
+            handleVoteSuccess(voteType);
+          })
+          .catch((error) => {
+            console.error("Error when voting:", error);
+          });
+      } else {
+        console.error("Login method not recognized.");
+      }
+    };
 
-  const calculateSliderPosition = (value: number) => {
-    return ((value + 10000) / 20000) * 100;
-  };
+    // Function to handle the change in slider value (where the user adjusts the weight of the vote)
+    const handleSliderChange = (value: number) => {
+      setVoteWeight(value);
+    };
 
-  const generateMarks = () => [
-    { value: -10000, label: "-100%" },
-    { value: -5000, label: "-50%" },
-    { value: 0, label: "0%" },
-    { value: 5000, label: "50%" },
-    { value: 10000, label: "100%" },
-  ];
+    const calculateSliderPosition = (value: number) => {
+      return ((value + 10000) / 20000) * 100;
+    };
 
-  const voteLabel =
-    voteWeight < 0
-      ? `Downvote (${((voteWeight / -10000) * 100).toFixed(0)}%)`
-      : `Upvote (${((voteWeight / 10000) * 100).toFixed(0)}%)`;
+    const generateMarks = () => [
+      { value: -10000, label: "-100%" },
+      { value: -5000, label: "-50%" },
+      { value: 0, label: "0%" },
+      { value: 5000, label: "50%" },
+      { value: 10000, label: "100%" },
+    ];
 
-  // Determine color scheme based on vote type (upvote is green, downvote is red)
-  const sliderColorScheme = voteWeight < 0 ? "red" : "green";
-  const buttonBgColor = voteWeight < 0 ? "red.500" : "green.500";
-  const buttonHoverColor = voteWeight < 0 ? "#e53e3e" : "#0caf35";
-  if (isModal) {
-    return (
-      <Modal
-        isOpen={isModal}
-        onClose={onClose}
-        isCentered
-        closeOnOverlayClick={false}
-      >
-        <ModalOverlay style={{ backdropFilter: "blur(5px)" }} />
-        <ModalContent
-          color="white"
-          w={{ base: "100%", md: "75%" }}
-          bg="black"
-          border="0.6px solid grey"
-          borderRadius="md"
-          mx={4}
-          sx={{ overflowY: "auto", maxHeight: "90vh" }}
+    const voteLabel =
+      voteWeight < 0
+        ? `Downvote (${((voteWeight / -10000) * 100).toFixed(0)}%)`
+        : `Upvote (${((voteWeight / 10000) * 100).toFixed(0)}%)`;
+
+    // Determine color scheme based on vote type (upvote is green, downvote is red)
+    const sliderColorScheme = voteWeight < 0 ? "red" : "green";
+    const buttonBgColor = voteWeight < 0 ? "red.500" : "green.500";
+    const buttonHoverColor = voteWeight < 0 ? "#e53e3e" : "#0caf35";
+    if (isModal) {
+      return (
+        <Modal
+          isOpen={isModal}
+          onClose={onClose}
+          isCentered
+          closeOnOverlayClick={false}
         >
-          <ModalBody>
-            <Center width="100%">
-              <VStack width="100%" spacing={6}>
-                <Box width="full" mb={4}>
-                  <Text fontSize="md" color="gray.300" textAlign="center">
-                    Adjust the slider to set your vote weight. Slide left for a
-                    downvote and right for an upvote.
-                  </Text>
-                </Box>
-                <Box width="full">
-                  <Box width="full" position="relative">
-                    <Slider
-                      aria-label="vote weight"
-                      min={-10000}
-                      max={10000}
-                      step={100}
-                      value={voteWeight}
-                      onChange={handleSliderChange}
-                      colorScheme={sliderColorScheme} // Set the color scheme dynamically based on vote type
-                      height="50px"
-                      borderRadius="md"
-                      boxShadow="sm"
-                    >
-                      <SliderTrack>
-                        <SliderFilledTrack
+          <ModalOverlay style={{ backdropFilter: "blur(5px)" }} />
+          <ModalContent
+            color="white"
+            w={{ base: "100%", md: "75%" }}
+            bg="black"
+            border="0.6px solid grey"
+            borderRadius="md"
+            mx={4}
+            sx={{ overflowY: "auto", maxHeight: "90vh" }}
+          >
+            <ModalBody>
+              <Center width="100%">
+                <VStack width="100%" spacing={6}>
+                  <Box width="full" mb={4}>
+                    <Text fontSize="md" color="gray.300" textAlign="center">
+                      Adjust the slider to set your vote weight. Slide left for
+                      a downvote and right for an upvote.
+                    </Text>
+                  </Box>
+                  <Box width="full">
+                    <Box width="full" position="relative">
+                      <Slider
+                        aria-label="vote weight"
+                        min={-10000}
+                        max={10000}
+                        step={100}
+                        value={voteWeight}
+                        onChange={handleSliderChange}
+                        colorScheme={sliderColorScheme} // Set the color scheme dynamically based on vote type
+                        height="50px"
+                        borderRadius="md"
+                        boxShadow="sm"
+                      >
+                        <SliderTrack>
+                          <SliderFilledTrack
+                            bg={
+                              sliderColorScheme === "green"
+                                ? "green.500"
+                                : "red.500"
+                            }
+                          />
+                        </SliderTrack>
+                        <SliderThumb
+                          boxSize={6}
                           bg={
                             sliderColorScheme === "green"
                               ? "green.500"
                               : "red.500"
                           }
+                          borderRadius="full"
                         />
-                      </SliderTrack>
-                      <SliderThumb
-                        boxSize={6}
-                        bg={
-                          sliderColorScheme === "green"
-                            ? "green.500"
-                            : "red.500"
-                        }
-                        borderRadius="full"
-                      />
-                    </Slider>
+                      </Slider>
 
-                    <Box
-                      position="absolute"
-                      top="-10%"
-                      left="0"
-                      right="0"
-                      display="flex"
-                      justifyContent="space-between"
-                      transform="translateY(-50%)"
-                      zIndex={1}
-                    >
-                      {generateMarks().map((mark) => (
-                        <Box
-                          key={mark.value}
-                          position="absolute"
-                          left={`${calculateSliderPosition(mark.value)}%`}
-                          transform="translateX(-50%)"
-                          fontSize="sm"
-                          color="white"
-                          display="flex"
-                          alignItems="center"
-                          justifyContent="center"
-                        >
-                          <Text>{mark.label}</Text>
-                        </Box>
-                      ))}
+                      <Box
+                        position="absolute"
+                        top="-10%"
+                        left="0"
+                        right="0"
+                        display="flex"
+                        justifyContent="space-between"
+                        transform="translateY(-50%)"
+                        zIndex={1}
+                      >
+                        {generateMarks().map((mark) => (
+                          <Box
+                            key={mark.value}
+                            position="absolute"
+                            left={`${calculateSliderPosition(mark.value)}%`}
+                            transform="translateX(-50%)"
+                            fontSize="sm"
+                            color="white"
+                            display="flex"
+                            alignItems="center"
+                            justifyContent="center"
+                          >
+                            <Text>{mark.label}</Text>
+                          </Box>
+                        ))}
+                      </Box>
                     </Box>
+                    <Flex justifyContent="space-between" alignItems="center">
+                      <Button
+                        leftIcon={<FaHeart />}
+                        width="initial"
+                        bg={buttonBgColor}
+                        color="white"
+                        onClick={handleVoteClick}
+                        mt={4}
+                        _hover={{ bg: buttonHoverColor }}
+                      >
+                        {voteLabel}
+                      </Button>
+                      <Button
+                        onClick={() => onClose && onClose()}
+                        variant="ghost"
+                        color="red.500"
+                        mt={4}
+                      >
+                        Cancel
+                      </Button>
+                      <Box mt={4}>
+                        <Text fontSize="lg" color="white">
+                          $
+                          {estimatedPayout !== null
+                            ? estimatedPayout.toFixed(3)
+                            : "0.000"}{" "}
+                          USD
+                        </Text>
+                      </Box>
+                    </Flex>
                   </Box>
-                  <Flex justifyContent="space-between" alignItems="center">
-                    <Button
-                      leftIcon={<FaHeart />}
-                      width="initial"
-                      bg={buttonBgColor}
-                      color="white"
-                      onClick={handleVoteClick}
-                      mt={4}
-                      _hover={{ bg: buttonHoverColor }}
-                    >
-                      {voteLabel}
-                    </Button>
-                    <Button
-                      onClick={() => onClose && onClose()}
-                      variant="ghost"
-                      color="red.500"
-                      mt={4}
-                    >
-                      Cancel
-                    </Button>
-                    <Box mt={4}>
-                      <Text fontSize="lg" color="white">
-                        $
-                        {estimatedPayout !== null
-                          ? estimatedPayout.toFixed(3)
-                          : "0.000"}{" "}
-                        USD
-                      </Text>
-                    </Box>
-                  </Flex>
-                </Box>
-              </VStack>
-            </Center>
-          </ModalBody>
-        </ModalContent>
-      </Modal>
-    );
-  }
+                </VStack>
+              </Center>
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+      );
+    }
 
-  return (
-    <Center width="100%">
-      <VStack width="100%" spacing={6}>
-        <Box width="full" mb={4}>
-          <Text fontSize="md" color="gray.300" textAlign="center">
-            Adjust the slider to set your vote weight. Slide left for a downvote
-            and right for an upvote.
-          </Text>
-        </Box>
-        <Box width="full">
-          <Flex justifyContent="space-between" alignItems="center" width="100%">
-            <Button
-              leftIcon={<FaHeart />}
-              width="initial"
-              bgGradient="linear(to-r, #1d6b2e, #07ca69)"
-              color="white"
-              onClick={handleVoteClick}
-              bg={buttonBgColor}
-              _hover={{ bg: buttonHoverColor }}
-            >
-              {voteLabel}
-            </Button>
-
-            <Box mt={4}>
-              <Text fontSize="lg" color="white">
-                $
-                {estimatedPayout !== null
-                  ? estimatedPayout.toFixed(3)
-                  : "0.000"}{" "}
-                USD
-              </Text>
-            </Box>
-          </Flex>
-
-          <Box width="full" position="relative" mt={4}>
-            <Slider
-              aria-label="vote weight"
-              min={-10000}
-              max={10000}
-              step={100}
-              value={voteWeight}
-              onChange={setVoteWeight}
-              colorScheme={sliderColorScheme}
-              height="50px"
-              borderRadius="md"
-              boxShadow="sm"
-            >
-              <SliderTrack>
-                <SliderFilledTrack
-                  bg={sliderColorScheme === "green" ? "green.500" : "red.500"}
-                />
-              </SliderTrack>
-              <SliderThumb
-                boxSize={6}
-                bg={sliderColorScheme === "green" ? "green.500" : "red.500"}
-                borderRadius="full"
-              />
-            </Slider>
-
-            <Box
-              position="absolute"
-              top="-10%"
-              left="0"
-              right="0"
-              display="flex"
+    return (
+      <Center width="100%">
+        <VStack width="100%" spacing={6}>
+          <Box width="full" mb={4}>
+            <Text fontSize="md" color="gray.300" textAlign="center">
+              Adjust the slider to set your vote weight. Slide left for a
+              downvote and right for an upvote.
+            </Text>
+          </Box>
+          <Box width="full">
+            <Flex
               justifyContent="space-between"
-              transform="translateY(-50%)"
-              zIndex={1}
+              alignItems="center"
+              width="100%"
             >
-              {generateMarks().map((mark) => (
-                <Box
-                  key={mark.value}
-                  position="absolute"
-                  left={`${calculateSliderPosition(mark.value)}%`}
-                  transform="translateX(-50%)"
-                  fontSize="sm"
-                  color="white"
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                >
-                  <Text>{mark.label}</Text>
-                </Box>
-              ))}
+              <Button
+                leftIcon={<FaHeart />}
+                width="initial"
+                bgGradient="linear(to-r, #1d6b2e, #07ca69)"
+                color="white"
+                onClick={handleVoteClick}
+                bg={buttonBgColor}
+                _hover={{ bg: buttonHoverColor }}
+              >
+                {voteLabel}
+              </Button>
+
+              <Box mt={4}>
+                <Text fontSize="lg" color="white">
+                  $
+                  {estimatedPayout !== null
+                    ? estimatedPayout.toFixed(3)
+                    : "0.000"}{" "}
+                  USD
+                </Text>
+              </Box>
+            </Flex>
+
+            <Box width="full" position="relative" mt={4}>
+              <Slider
+                aria-label="vote weight"
+                min={-10000}
+                max={10000}
+                step={100}
+                value={voteWeight}
+                onChange={setVoteWeight}
+                colorScheme={sliderColorScheme}
+                height="50px"
+                borderRadius="md"
+                boxShadow="sm"
+              >
+                <SliderTrack>
+                  <SliderFilledTrack
+                    bg={sliderColorScheme === "green" ? "green.500" : "red.500"}
+                  />
+                </SliderTrack>
+                <SliderThumb
+                  boxSize={6}
+                  bg={sliderColorScheme === "green" ? "green.500" : "red.500"}
+                  borderRadius="full"
+                />
+              </Slider>
+
+              <Box
+                position="absolute"
+                top="-10%"
+                left="0"
+                right="0"
+                display="flex"
+                justifyContent="space-between"
+                transform="translateY(-50%)"
+                zIndex={1}
+              >
+                {generateMarks().map((mark) => (
+                  <Box
+                    key={mark.value}
+                    position="absolute"
+                    left={`${calculateSliderPosition(mark.value)}%`}
+                    transform="translateX(-50%)"
+                    fontSize="sm"
+                    color="white"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                  >
+                    <Text>{mark.label}</Text>
+                  </Box>
+                ))}
+              </Box>
             </Box>
           </Box>
-        </Box>
-      </VStack>
-    </Center>
-  );
-};
+        </VStack>
+      </Center>
+    );
+  }
+);
+
+VoteButtonModal.displayName = "VoteButtonModal";
 
 export default VoteButtonModal;
