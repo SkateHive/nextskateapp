@@ -9,7 +9,6 @@ import { useEffect, useState } from "react";
 import { FaFire } from "react-icons/fa";
 import CommandPrompt from "../PostModal/commentPrompt";
 import MarkdownRenderer from "../ReactMarkdown/page";
-import UserAvatar from "../UserAvatar";
 import { voting_value } from "./calculateHiveVotingValue";
 import { Discussion } from "@hiveio/dhive";
 import AuthorAvatar from "../AuthorAvatar";
@@ -60,7 +59,6 @@ export default function PostComment({ comment }: { comment: Discussion }) {
 
       setIsVoting(true);
 
-      console.log(user.hiveUser?.name, comment.permlink, comment.author);
       await handleVote(
         comment.author,
         comment.permlink,
