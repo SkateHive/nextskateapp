@@ -1,8 +1,6 @@
 import HiveClient from "@/lib/hive/hiveclient"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useState, useMemo } from "react"
 import { Discussion } from "@hiveio/dhive"
-
-
 
 export interface ActiveVote {
   percent: number
@@ -13,7 +11,43 @@ export interface ActiveVote {
   weight: number
 }
 
-const commentsCache: { [key: string]: Discussion[] } = {};
+// Enhanced cache with TTL (Time To Live) for better memory management
+interface CacheEntry {
+  data: Discussion[];
+  timestamp: number;
+  ttl: number; // in milliseconds
+}
+
+const commentsCache: { [key: string]: CacheEntry } = {};
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const MAX_CACHE_SIZE = 100; // Maximum number of cached entries
+
+// Clean expired cache entries
+const cleanExpiredCache = () => {
+  const now = Date.now();
+  const keys = Object.keys(commentsCache);
+  
+  // If cache is getting too large, remove oldest entries
+  if (keys.length > MAX_CACHE_SIZE) {
+    const sortedEntries = keys
+      .map(key => ({ key, timestamp: commentsCache[key].timestamp }))
+      .sort((a, b) => a.timestamp - b.timestamp);
+    
+    // Remove oldest 25% of entries
+    const toRemove = Math.floor(keys.length * 0.25);
+    for (let i = 0; i < toRemove; i++) {
+      delete commentsCache[sortedEntries[i].key];
+    }
+  }
+  
+  // Remove expired entries
+  Object.keys(commentsCache).forEach(key => {
+    const entry = commentsCache[key];
+    if (now - entry.timestamp > entry.ttl) {
+      delete commentsCache[key];
+    }
+  });
+};
 
 export async function fetchComments(
   author: string,
@@ -22,8 +56,16 @@ export async function fetchComments(
   filteredCommenter?: string
 ): Promise<Discussion[]> {
   const cacheKey = `${author}-${permlink}-${recursive}-${filteredCommenter}`;
-  if (commentsCache[cacheKey]) {
-    return commentsCache[cacheKey];
+  
+  // Clean expired cache entries periodically
+  if (Math.random() < 0.1) { // 10% chance to clean cache
+    cleanExpiredCache();
+  }
+  
+  // Check cache with TTL
+  const cached = commentsCache[cacheKey];
+  if (cached && Date.now() - cached.timestamp < cached.ttl) {
+    return cached.data;
   }
 
   try {
@@ -58,6 +100,8 @@ export async function fetchComments(
       permlink,
     ])) as Discussion[];
 
+    let finalComments: Discussion[];
+
     if (recursive) {
       const fetchReplies = async (comment: Discussion): Promise<Discussion> => {
         if (comment.children && comment.children > 0) {
@@ -67,18 +111,23 @@ export async function fetchComments(
         return comment;
       };
       const commentsWithReplies = await Promise.all(comments.map(fetchReplies));
-      const filteredComments = filteredCommenter
+      finalComments = filteredCommenter
         ? commentsWithReplies.filter(comment => comment.author === filteredCommenter)
         : commentsWithReplies;
-      commentsCache[cacheKey] = filteredComments;
-      return filteredComments;
     } else {
-      const filteredComments = filteredCommenter
+      finalComments = filteredCommenter
         ? comments.filter(comment => comment.author === filteredCommenter)
         : comments;
-      commentsCache[cacheKey] = filteredComments;
-      return filteredComments;
     }
+
+    // Cache with TTL
+    commentsCache[cacheKey] = {
+      data: finalComments,
+      timestamp: Date.now(),
+      ttl: CACHE_TTL
+    };
+    
+    return finalComments;
   } catch (error) {
     console.error("Failed to fetch comments:", error);
     return [];
@@ -95,37 +144,65 @@ export function useComments(
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Memoize the parameters to prevent unnecessary re-fetches
+  const memoizedParams = useMemo(
+    () => ({ author, permlink, recursive, filteredCommenter }),
+    [author, permlink, recursive, filteredCommenter]
+  );
+
   const fetchAndUpdateComments = useCallback(async () => {
     setIsLoading(true);
+    setError(null);
     try {
-      const fetchedComments = await fetchComments(author, permlink, recursive, filteredCommenter);
+      const fetchedComments = await fetchComments(
+        memoizedParams.author, 
+        memoizedParams.permlink, 
+        memoizedParams.recursive, 
+        memoizedParams.filteredCommenter
+      );
       setComments(fetchedComments);
-      setIsLoading(false);
     } catch (err: any) {
       setError(err.message ? err.message : "Error loading comments");
       console.error(err);
+    } finally {
       setIsLoading(false);
     }
-  }, [author, permlink, recursive, filteredCommenter]);
+  }, [memoizedParams]);
 
   useEffect(() => {
     fetchAndUpdateComments();
   }, [fetchAndUpdateComments]);
 
+  // Memoize callbacks to prevent recreation on every render
   const addComment = useCallback((newComment: Discussion) => {
     // Optimistically add the new comment to the state
-    setComments((existingComments) => [newComment, ...existingComments]);
+    setComments((existingComments) => {
+      // Prevent duplicate comments
+      const isDuplicate = existingComments.some(
+        comment => comment.id === newComment.id || 
+        (comment.author === newComment.author && comment.permlink === newComment.permlink)
+      );
+      
+      if (isDuplicate) {
+        return existingComments;
+      }
+      
+      return [newComment, ...existingComments];
+    });
   }, []);
 
   const updateComments = useCallback(async () => {
     await fetchAndUpdateComments();
   }, [fetchAndUpdateComments]);
 
-  return {
+  // Memoize the returned object to prevent unnecessary re-renders
+  const returnValue = useMemo(() => ({
     comments,
     error,
     isLoading,
     addComment,
     updateComments,
-  };
+  }), [comments, error, isLoading, addComment, updateComments]);
+
+  return returnValue;
 }

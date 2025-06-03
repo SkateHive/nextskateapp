@@ -14,7 +14,7 @@ const WalletButton = ({ styles, onClick }: WalletButtonProps) => {
   return (
     <IconButton
       onClick={onClick}
-      aria-label="wallet"
+      aria-label={hiveUser ? "Open wallet" : "Login to access wallet"}
       icon={
         hiveUser ? (
           <FaGift color="black" size={35} />

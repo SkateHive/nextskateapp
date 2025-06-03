@@ -1,23 +1,42 @@
 import Favicon from "@/components/FaviconLinks";
-import MobileNavbar from "@/components/Navbar/MobileNavbar";
 import { Flex } from "@chakra-ui/react";
 import dynamic from "next/dynamic";
 import { Share_Tech_Mono } from "next/font/google";
 import type { ReactNode } from "react";
-import { Providers } from "./providers";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import SidebarDesktop from "@/components/Navbar/sidebarDesktop";
 import "@/app/layout.css"; // Import the CSS file
-import InitFrameSDK from "@/hooks/init-frame-sdk";
 import { Metadata } from "next";
 
 const share_tech_mono = Share_Tech_Mono({ subsets: ["latin"], weight: "400" });
 
+// Dynamic imports for heavy components
 const ColorModeScriptWrapper = dynamic(
   () => import("./ColorModeScriptWrapper"),
   { ssr: false }
 );
+
+const Providers = dynamic(
+  () => import("./providers").then((mod) => ({ default: mod.Providers })),
+  { ssr: false }
+);
+
+const MobileNavbar = dynamic(() => import("@/components/Navbar/MobileNavbar"), {
+  ssr: false,
+  loading: () => <div style={{ height: "60px" }} />, // Prevent layout shift
+});
+
+const SidebarDesktop = dynamic(
+  () => import("@/components/Navbar/sidebarDesktop"),
+  {
+    ssr: false,
+    loading: () => <div style={{ width: "250px" }} />, // Prevent layout shift
+  }
+);
+
+const InitFrameSDK = dynamic(() => import("@/hooks/init-frame-sdk"), {
+  ssr: false,
+});
 
 const frameObject = {
   version: "next",

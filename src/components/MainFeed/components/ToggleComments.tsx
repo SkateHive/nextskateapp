@@ -1,7 +1,7 @@
 "use client";
 
 import { Box } from "@chakra-ui/react";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, memo } from "react";
 import CommentList from "./CommentsList";
 import { VoteParams } from "@/lib/hive/vote-utils";
 
@@ -11,7 +11,11 @@ interface ToggleCommentsProps {
   visiblePosts: number;
   setVisiblePosts: React.Dispatch<React.SetStateAction<number>>;
   username: string;
-  handleVote: (params: VoteParams | { author: string, permlink: string, username?: string, weight?: number }) => Promise<any> | void;
+  handleVote: (
+    params:
+      | VoteParams
+      | { author: string; permlink: string; username?: string; weight?: number }
+  ) => Promise<any> | void;
   shouldShowAllComments?: boolean;
   isCommentFormVisible?: boolean;
 }
@@ -24,9 +28,10 @@ const ToggleComments = ({
   username,
   handleVote,
   shouldShowAllComments,
-  isCommentFormVisible
+  isCommentFormVisible,
 }: ToggleCommentsProps) => {
-  const shouldShowComments = isEyeClicked || shouldShowAllComments || isCommentFormVisible;
+  const shouldShowComments =
+    isEyeClicked || shouldShowAllComments || isCommentFormVisible;
 
   const observerRef = useRef<HTMLDivElement>(null);
 
@@ -82,4 +87,4 @@ const ToggleComments = ({
   );
 };
 
-export default ToggleComments;
+export default memo(ToggleComments);

@@ -8,9 +8,17 @@ import React, {
   RefObject,
   Dispatch,
   SetStateAction,
+  memo,
 } from "react";
-import { FiMaximize, FiMinimize, FiVolume2, FiVolumeX } from "react-icons/fi";
-import { LuPause, LuPlay, LuRotateCw } from "react-icons/lu";
+import {
+  LazyIconWrapper,
+  LuPlay,
+  LuPause,
+  FiMaximize,
+  FiMinimize,
+  FiVolume2,
+  FiVolumeX,
+} from "@/components/LazyIcon";
 import LoadingComponent from "@/components/MainFeed/components/loadingComponent";
 
 // Add useInView hook for detecting visibility
@@ -120,13 +128,9 @@ const VideoControls = React.memo(
             _hover={{ bg: "transparent", color: "limegreen" }}
             zIndex={3}
           >
-            {isVideoEnded ? (
-              <LuRotateCw />
-            ) : isPlaying ? (
-              <LuPause />
-            ) : (
-              <LuPlay />
-            )}
+            <LazyIconWrapper>
+              {isPlaying ? <LuPause /> : <LuPlay />}
+            </LazyIconWrapper>
           </Button>
           <Box display="flex" alignItems="center" position="relative">
             <IconButton
@@ -142,7 +146,9 @@ const VideoControls = React.memo(
               size="md"
               zIndex={3}
             >
-              {volume === 0 ? <FiVolumeX /> : <FiVolume2 />}
+              <LazyIconWrapper>
+                {volume === 0 ? <FiVolumeX /> : <FiVolume2 />}
+              </LazyIconWrapper>
             </IconButton>
             {showVolumeSlider && (
               <Box
@@ -184,7 +190,9 @@ const VideoControls = React.memo(
             size="md"
             zIndex={3}
           >
-            {isFullscreen ? <FiMinimize /> : <FiMaximize />}
+            <LazyIconWrapper>
+              {isFullscreen ? <FiMinimize /> : <FiMaximize />}
+            </LazyIconWrapper>
           </IconButton>
         </HStack>
 

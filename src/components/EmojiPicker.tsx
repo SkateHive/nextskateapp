@@ -1,41 +1,58 @@
-import EmojiPicker, { Theme } from 'emoji-picker-react';
-import React, { useEffect, useRef } from 'react';
+import EmojiPicker, { Theme } from "emoji-picker-react";
+import React, { useEffect, useRef, useCallback, useMemo, memo } from "react";
 
-export const EmojiPickerComponent = ({ isPickingEmoji, setIsPickingEmoji, setComment }: { isPickingEmoji: boolean, setIsPickingEmoji: (value: boolean) => void, setComment: (comment: string | ((prev: string) => string)) => void }) => {
-    const parentRef = useRef<HTMLDivElement>(null);
+interface EmojiPickerProps {
+  isPickingEmoji: boolean;
+  setIsPickingEmoji: (value: boolean) => void;
+  setComment: (comment: string | ((prev: string) => string)) => void;
+}
 
-    const handleOutsideClick = (e: MouseEvent) => {
-        if (parentRef.current && !parentRef.current.contains(e.target as Node)) {
-            setIsPickingEmoji(false);
-        }
+export const EmojiPickerComponent = memo(function EmojiPickerComponent({
+  isPickingEmoji,
+  setIsPickingEmoji,
+  setComment,
+}: EmojiPickerProps) {
+  const parentRef = useRef<HTMLDivElement>(null);
+
+  const handleOutsideClick = useCallback(
+    (e: MouseEvent) => {
+      if (parentRef.current && !parentRef.current.contains(e.target as Node)) {
+        setIsPickingEmoji(false);
+      }
+    },
+    [setIsPickingEmoji]
+  );
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
     };
+  }, [handleOutsideClick]);
 
-    useEffect(() => {
-        document.addEventListener('mousedown', handleOutsideClick);
-        return () => {
-            document.removeEventListener('mousedown', handleOutsideClick);
-        };
-    }, []);
+  const handleEmojiClick = useCallback(
+    (emoji: any) => {
+      setComment((prev: string) => prev + emoji.emoji);
+      setIsPickingEmoji(false);
+    },
+    [setComment, setIsPickingEmoji]
+  );
 
-    return (
-        <div
-            ref={parentRef}
-            style={{
-                opacity: isPickingEmoji ? 1 : 0,
-                pointerEvents: isPickingEmoji ? 'auto' : 'none',
-                marginTop: 50,
-                transition: 'opacity 1s ease',
-                zIndex: 10,
-                position: 'absolute',
-            }}
-        >
-            <EmojiPicker
-                theme={"dark" as Theme}
-                onEmojiClick={(emoji) => {
-                    setComment((prev: string) => prev + emoji.emoji);
-                    setIsPickingEmoji(false);
-                }}
-            />
-        </div>
-    );
-};
+  const containerStyle = useMemo(
+    () => ({
+      opacity: isPickingEmoji ? 1 : 0,
+      pointerEvents: isPickingEmoji ? ("auto" as const) : ("none" as const),
+      marginTop: 50,
+      transition: "opacity 1s ease",
+      zIndex: 10,
+      position: "absolute" as const,
+    }),
+    [isPickingEmoji]
+  );
+
+  return (
+    <div ref={parentRef} style={containerStyle}>
+      <EmojiPicker theme={"dark" as Theme} onEmojiClick={handleEmojiClick} />
+    </div>
+  );
+});

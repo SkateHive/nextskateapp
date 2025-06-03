@@ -49,15 +49,15 @@ interface AuthorEthAddress {
 }
 
 // Enhanced transaction state types
-type TransactionState = 
-  | 'idle' 
-  | 'preparing' 
-  | 'approval-pending' 
-  | 'approval-confirming'
-  | 'transfer-pending' 
-  | 'transfer-confirming' 
-  | 'completed' 
-  | 'failed';
+type TransactionState =
+  | "idle"
+  | "preparing"
+  | "approval-pending"
+  | "approval-confirming"
+  | "transfer-pending"
+  | "transfer-confirming"
+  | "completed"
+  | "failed";
 
 interface TransactionStatus {
   state: TransactionState;
@@ -80,13 +80,15 @@ const TokenSelector = ({
   const [customTokenContract, setCustomTokenContract] = useState("");
   const account = useAccount();
   const [amount, setAmount] = useState<string>("0");
-  
+
   // Enhanced transaction state management
-  const [transactionStatus, setTransactionStatus] = useState<TransactionStatus>({
-    state: 'idle',
-    message: '',
-  });
-  
+  const [transactionStatus, setTransactionStatus] = useState<TransactionStatus>(
+    {
+      state: "idle",
+      message: "",
+    }
+  );
+
   const ethAddressList = Object.values<AuthorEthAddress>(addressDict).map(
     (item: AuthorEthAddress) => item.ethAddress
   );
@@ -132,15 +134,16 @@ const TokenSelector = ({
   useEffect(() => {
     if (hash) {
       setTransactionStatus({
-        state: 'transfer-pending',
-        message: 'Transaction submitted, waiting for confirmation...',
+        state: "transfer-pending",
+        message: "Transaction submitted, waiting for confirmation...",
         hash: hash,
-        progress: 25
+        progress: 25,
       });
-      
+
       toast({
         title: "Transaction Submitted",
-        description: "Your airdrop transaction has been submitted to the blockchain",
+        description:
+          "Your airdrop transaction has been submitted to the blockchain",
         status: "info",
         duration: 5000,
         isClosable: true,
@@ -151,10 +154,10 @@ const TokenSelector = ({
   useEffect(() => {
     if (isConfirming) {
       setTransactionStatus({
-        state: 'transfer-confirming',
-        message: 'Transaction is being confirmed...',
+        state: "transfer-confirming",
+        message: "Transaction is being confirmed...",
         hash: hash,
-        progress: 75
+        progress: 75,
       });
     }
   }, [isConfirming, hash]);
@@ -162,14 +165,14 @@ const TokenSelector = ({
   useEffect(() => {
     if (isConfirmed) {
       setTransactionStatus({
-        state: 'completed',
-        message: 'Airdrop completed successfully!',
+        state: "completed",
+        message: "Airdrop completed successfully!",
         hash: hash,
-        progress: 100
+        progress: 100,
       });
-      
+
       setShowConfetti(true);
-      
+
       toast({
         title: "Airdrop Successful! 🎉",
         description: `Successfully sent ${amount} ${token} to ${ethAddressList.length} skaters!`,
@@ -177,26 +180,35 @@ const TokenSelector = ({
         duration: 8000,
         isClosable: true,
       });
-      
+
       // Reset status after celebration
       setTimeout(() => {
-        setTransactionStatus({ state: 'idle', message: '' });
+        setTransactionStatus({ state: "idle", message: "" });
       }, 10000);
     }
-  }, [isConfirmed, setShowConfetti, amount, token, ethAddressList.length, hash, toast]);
+  }, [
+    isConfirmed,
+    setShowConfetti,
+    amount,
+    token,
+    ethAddressList.length,
+    hash,
+    toast,
+  ]);
 
   // Error handling
   useEffect(() => {
     if (error) {
       setTransactionStatus({
-        state: 'failed',
-        message: 'Transaction failed',
-        error: error.message
+        state: "failed",
+        message: "Transaction failed",
+        error: error.message,
       });
-      
+
       toast({
         title: "Transaction Failed",
-        description: error.message || "An error occurred during the transaction",
+        description:
+          error.message || "An error occurred during the transaction",
         status: "error",
         duration: 8000,
         isClosable: true,
@@ -233,7 +245,7 @@ const TokenSelector = ({
       });
       return;
     }
-    
+
     // Validate amount before proceeding
     const numericAmount = parseFloat(amount);
     if (isNaN(numericAmount) || numericAmount <= 0) {
@@ -248,16 +260,16 @@ const TokenSelector = ({
     }
 
     setTransactionStatus({
-      state: 'preparing',
-      message: 'Preparing Hive transfer operations...',
-      progress: 10
+      state: "preparing",
+      message: "Preparing Hive transfer operations...",
+      progress: 10,
     });
-    
+
     try {
       const operations: Operation[] = [];
       const currency = token === "HBD" ? "HBD" : "HIVE";
       const transferAmount = String(dividedAmount.toFixed(3)) + ` ${currency}`;
-      
+
       addressDict.forEach((element: any) => {
         const operation: Operation = [
           "transfer",
@@ -274,16 +286,16 @@ const TokenSelector = ({
       });
 
       setTransactionStatus({
-        state: 'transfer-pending',
-        message: 'Awaiting signature...',
-        progress: 50
+        state: "transfer-pending",
+        message: "Awaiting signature...",
+        progress: 50,
       });
 
       const loginMethod = localStorage.getItem("LoginMethod");
       if (!user) {
         throw new Error("User authentication missing");
       }
-      
+
       if (loginMethod === "keychain") {
         try {
           const keychain = new KeychainSDK(window);
@@ -294,21 +306,21 @@ const TokenSelector = ({
               method: KeychainKeyTypes.active,
             },
           };
-          
+
           const broadcast = await keychain.broadcast(
             formParamsAsObject.data as Broadcast
           );
-          
+
           console.log({ broadcast });
-          
+
           setTransactionStatus({
-            state: 'completed',
-            message: 'Hive airdrop completed successfully!',
-            progress: 100
+            state: "completed",
+            message: "Hive airdrop completed successfully!",
+            progress: 100,
           });
-          
+
           setShowConfetti(true);
-          
+
           toast({
             title: "Hive Airdrop Successful! 🎉",
             description: `Successfully sent ${amount} ${token} to ${addressDict.length} skaters!`,
@@ -316,22 +328,21 @@ const TokenSelector = ({
             duration: 8000,
             isClosable: true,
           });
-          
         } catch (error: any) {
           throw new Error(`Keychain error: ${error.message || error}`);
         }
       } else if (loginMethod === "privateKey") {
         const encryptedPrivateKey = localStorage.getItem("EncPrivateKey");
         await sendHiveOperation(encryptedPrivateKey, operations);
-        
+
         setTransactionStatus({
-          state: 'completed',
-          message: 'Hive airdrop completed successfully!',
-          progress: 100
+          state: "completed",
+          message: "Hive airdrop completed successfully!",
+          progress: 100,
         });
-        
+
         setShowConfetti(true);
-        
+
         toast({
           title: "Hive Airdrop Successful! 🎉",
           description: `Successfully sent ${amount} ${token} to ${addressDict.length} skaters!`,
@@ -342,16 +353,17 @@ const TokenSelector = ({
       }
     } catch (error: any) {
       console.error("Error handling bulk transfer:", error);
-      
+
       setTransactionStatus({
-        state: 'failed',
-        message: 'Hive transfer failed',
-        error: error.message
+        state: "failed",
+        message: "Hive transfer failed",
+        error: error.message,
       });
-      
+
       toast({
         title: "Hive Transfer Failed",
-        description: error.message || "An error occurred during the Hive transfer",
+        description:
+          error.message || "An error occurred during the Hive transfer",
         status: "error",
         duration: 8000,
         isClosable: true,
@@ -402,9 +414,9 @@ const TokenSelector = ({
       }
 
       setTransactionStatus({
-        state: 'preparing',
-        message: 'Calculating amounts and checking allowances...',
-        progress: 10
+        state: "preparing",
+        message: "Calculating amounts and checking allowances...",
+        progress: 10,
       });
 
       const adjustedAmount =
@@ -419,9 +431,9 @@ const TokenSelector = ({
       // Check if approval is needed
       if (allowance?.data < adjustedAmount) {
         setTransactionStatus({
-          state: 'approval-pending',
-          message: 'Approval required. Please approve the token spending...',
-          progress: 25
+          state: "approval-pending",
+          message: "Approval required. Please approve the token spending...",
+          progress: 25,
         });
 
         toast({
@@ -440,9 +452,9 @@ const TokenSelector = ({
         });
 
         setTransactionStatus({
-          state: 'approval-confirming',
-          message: 'Waiting for approval confirmation...',
-          progress: 50
+          state: "approval-confirming",
+          message: "Waiting for approval confirmation...",
+          progress: 50,
         });
 
         // Wait for approval confirmation before proceeding
@@ -450,9 +462,9 @@ const TokenSelector = ({
       }
 
       setTransactionStatus({
-        state: 'transfer-pending',
-        message: 'Initiating bulk transfer...',
-        progress: 75
+        state: "transfer-pending",
+        message: "Initiating bulk transfer...",
+        progress: 75,
       });
 
       await writeContract({
@@ -465,27 +477,25 @@ const TokenSelector = ({
           dividedAmountList,
         ],
       });
-
     } catch (error: any) {
       console.error("Error during bulk transfer:", error);
-      
+
       setTransactionStatus({
-        state: 'failed',
-        message: 'Bulk transfer failed',
-        error: error.message
+        state: "failed",
+        message: "Bulk transfer failed",
+        error: error.message,
       });
-      
+
       toast({
         title: "Transfer Failed",
-        description: error.message || "An error occurred during the bulk transfer",
+        description:
+          error.message || "An error occurred during the bulk transfer",
         status: "error",
         duration: 8000,
         isClosable: true,
       });
     }
   };
-
-
 
   return (
     <>
@@ -516,6 +526,7 @@ const TokenSelector = ({
                 as={Button}
                 variant="ghost"
                 size="sm"
+                aria-label={`Select token type, currently ${token}`}
               >
                 <HStack ml={-5}>
                   <Image
@@ -740,24 +751,29 @@ const TokenSelector = ({
         colorScheme="green"
         variant={"outline"}
         isDisabled={
-          parseFloat(amount) <= 0 || 
-          !amount.trim() || 
-          transactionStatus.state === 'preparing' ||
-          transactionStatus.state === 'approval-pending' ||
-          transactionStatus.state === 'transfer-pending' ||
+          parseFloat(amount) <= 0 ||
+          !amount.trim() ||
+          transactionStatus.state === "preparing" ||
+          transactionStatus.state === "approval-pending" ||
+          transactionStatus.state === "transfer-pending" ||
           isConfirming
         }
         isLoading={
-          transactionStatus.state === 'preparing' ||
-          transactionStatus.state === 'approval-pending' ||
-          transactionStatus.state === 'transfer-pending' ||
+          transactionStatus.state === "preparing" ||
+          transactionStatus.state === "approval-pending" ||
+          transactionStatus.state === "transfer-pending" ||
           isConfirming
         }
         loadingText={
-          transactionStatus.state === 'preparing' ? "Preparing..." :
-          transactionStatus.state === 'approval-pending' ? "Approving..." :
-          transactionStatus.state === 'transfer-pending' ? "Transferring..." :
-          isConfirming ? "Confirming..." : "Processing..."
+          transactionStatus.state === "preparing"
+            ? "Preparing..."
+            : transactionStatus.state === "approval-pending"
+              ? "Approving..."
+              : transactionStatus.state === "transfer-pending"
+                ? "Transferring..."
+                : isConfirming
+                  ? "Confirming..."
+                  : "Processing..."
         }
         onClick={() => {
           const numericAmount = parseFloat(amount);
@@ -771,7 +787,7 @@ const TokenSelector = ({
             });
             return;
           }
-          
+
           if (token === "HIVE" || token === "HBD") {
             handleHiveBulkTransfer();
           } else {
@@ -780,7 +796,8 @@ const TokenSelector = ({
             } else {
               toast({
                 title: "Wallet Not Connected",
-                description: "Please connect your wallet to perform this action",
+                description:
+                  "Please connect your wallet to perform this action",
                 status: "error",
                 duration: 5000,
                 isClosable: true,
@@ -794,34 +811,48 @@ const TokenSelector = ({
 
       {/* Enhanced Transaction Status Display */}
       <VStack spacing={3} align="stretch" mt={4} w="100%">
-        {transactionStatus.state !== 'idle' && (
+        {transactionStatus.state !== "idle" && (
           <>
-            {transactionStatus.state === 'preparing' && (
+            {transactionStatus.state === "preparing" && (
               <Alert status="info" borderRadius="md">
                 <Spinner size="sm" mr={3} />
                 <VStack align="start" spacing={1}>
-                  <Text fontWeight="bold" fontSize="sm" color="blue.800">Preparing Transaction</Text>
-                  <Text fontSize="xs" color="blue.600">{transactionStatus.message}</Text>
+                  <Text fontWeight="bold" fontSize="sm" color="blue.800">
+                    Preparing Transaction
+                  </Text>
+                  <Text fontSize="xs" color="blue.600">
+                    {transactionStatus.message}
+                  </Text>
                 </VStack>
               </Alert>
             )}
 
-            {(transactionStatus.state === 'approval-pending' || transactionStatus.state === 'approval-confirming') && (
+            {(transactionStatus.state === "approval-pending" ||
+              transactionStatus.state === "approval-confirming") && (
               <Alert status="warning" borderRadius="md">
                 <Spinner size="sm" mr={3} />
                 <VStack align="start" spacing={1}>
-                  <Text fontWeight="bold" fontSize="sm" color="orange.800">Token Approval Required</Text>
-                  <Text fontSize="xs" color="orange.600">{transactionStatus.message}</Text>
+                  <Text fontWeight="bold" fontSize="sm" color="orange.800">
+                    Token Approval Required
+                  </Text>
+                  <Text fontSize="xs" color="orange.600">
+                    {transactionStatus.message}
+                  </Text>
                 </VStack>
               </Alert>
             )}
 
-            {(transactionStatus.state === 'transfer-pending' || transactionStatus.state === 'transfer-confirming') && (
+            {(transactionStatus.state === "transfer-pending" ||
+              transactionStatus.state === "transfer-confirming") && (
               <Alert status="warning" borderRadius="md">
                 <Spinner size="sm" mr={3} />
                 <VStack align="start" spacing={1}>
-                  <Text fontWeight="bold" fontSize="sm" color="orange.800">Transfer in Progress</Text>
-                  <Text fontSize="xs" color="orange.600">{transactionStatus.message}</Text>
+                  <Text fontWeight="bold" fontSize="sm" color="orange.800">
+                    Transfer in Progress
+                  </Text>
+                  <Text fontSize="xs" color="orange.600">
+                    {transactionStatus.message}
+                  </Text>
                   {transactionStatus.hash && (
                     <Link
                       href={`https://bscscan.com/tx/${transactionStatus.hash}`}
@@ -836,12 +867,16 @@ const TokenSelector = ({
               </Alert>
             )}
 
-            {transactionStatus.state === 'completed' && (
+            {transactionStatus.state === "completed" && (
               <Alert status="success" borderRadius="md">
                 <AlertIcon />
                 <VStack align="start" spacing={1}>
-                  <Text fontWeight="bold" fontSize="sm" color="green.800">Airdrop Completed! 🎉</Text>
-                  <Text fontSize="xs" color="green.600">Your tokens have been distributed successfully!</Text>
+                  <Text fontWeight="bold" fontSize="sm" color="green.800">
+                    Airdrop Completed! 🎉
+                  </Text>
+                  <Text fontSize="xs" color="green.600">
+                    Your tokens have been distributed successfully!
+                  </Text>
                   {transactionStatus.hash && (
                     <Link
                       href={`https://bscscan.com/tx/${transactionStatus.hash}`}
@@ -857,15 +892,21 @@ const TokenSelector = ({
               </Alert>
             )}
 
-            {transactionStatus.state === 'failed' && (
+            {transactionStatus.state === "failed" && (
               <Alert status="error" borderRadius="md">
                 <AlertIcon />
                 <VStack align="start" spacing={2}>
-                  <Text fontWeight="bold" fontSize="sm" color="red.800">Transaction Failed</Text>
-                  <Text fontSize="xs" color="red.600">{transactionStatus.error || transactionStatus.message}</Text>
-                  <Button 
+                  <Text fontWeight="bold" fontSize="sm" color="red.800">
+                    Transaction Failed
+                  </Text>
+                  <Text fontSize="xs" color="red.600">
+                    {transactionStatus.error || transactionStatus.message}
+                  </Text>
+                  <Button
                     size="xs"
-                    onClick={() => setTransactionStatus({ state: 'idle', message: '' })}
+                    onClick={() =>
+                      setTransactionStatus({ state: "idle", message: "" })
+                    }
                   >
                     Dismiss
                   </Button>

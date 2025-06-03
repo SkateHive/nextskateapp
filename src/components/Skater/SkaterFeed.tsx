@@ -12,13 +12,16 @@ import Image from "next/image";
 import { useState, useMemo, useCallback } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useOptimizedComments } from "@/hooks/useOptimizedComments";
-import { extractMediaItemsCached, extractSubtitle, MediaItem } from "@/lib/utils";
+import {
+  extractMediaItemsCached,
+  extractSubtitle,
+  MediaItem,
+} from "@/lib/utils";
 import { HiveAccount } from "@/lib/useHiveAuth";
 import { memo } from "react";
 import MediaModal from "./MediaModal"; // direct import
 import { LazyMediaItem } from "./LazyMediaItem";
 import { Discussion } from "@hiveio/dhive";
-import { PerformanceMonitor } from "./PerformanceMonitor";
 
 // Define extended media type with comment attached.
 type ExtendedMediaItem = MediaItem & { comment: Discussion };
@@ -48,28 +51,36 @@ function SkaterFeed({ user }: SkaterFeedProps) {
     if (!comments.length) return [];
 
     return comments
-      .reduce<ExtendedMediaItem[]>((acc: ExtendedMediaItem[], comment: Discussion) => {
-        try {
-          const extractedItems = extractMediaItemsCached(comment.body);
-          const filteredItems = extractedItems
-            .filter(
-              (item: MediaItem) =>
-                (item.type === "image" || (item.type === "video" && item.url)) &&
-                !item.url.includes("zora.co") &&
-                !item.url.includes("spotify.com")
-            )
-            .map((item: MediaItem) => ({
-              ...item,
-              comment,
-              subtitle: extractSubtitle(comment.body),
-            }));
-          
-          return [...acc, ...filteredItems];
-        } catch (error) {
-          console.warn("Error extracting media from comment:", comment.permlink, error);
-          return acc;
-        }
-      }, [])
+      .reduce<ExtendedMediaItem[]>(
+        (acc: ExtendedMediaItem[], comment: Discussion) => {
+          try {
+            const extractedItems = extractMediaItemsCached(comment.body);
+            const filteredItems = extractedItems
+              .filter(
+                (item: MediaItem) =>
+                  (item.type === "image" ||
+                    (item.type === "video" && item.url)) &&
+                  !item.url.includes("zora.co") &&
+                  !item.url.includes("spotify.com")
+              )
+              .map((item: MediaItem) => ({
+                ...item,
+                comment,
+                subtitle: extractSubtitle(comment.body),
+              }));
+
+            return [...acc, ...filteredItems];
+          } catch (error) {
+            console.warn(
+              "Error extracting media from comment:",
+              comment.permlink,
+              error
+            );
+            return acc;
+          }
+        },
+        []
+      )
       .sort(
         (a: ExtendedMediaItem, b: ExtendedMediaItem) =>
           new Date(b.comment.created).getTime() -
@@ -85,7 +96,7 @@ function SkaterFeed({ user }: SkaterFeedProps) {
 
   const forceLoadMore = useCallback(() => {
     // Use requestIdleCallback for better performance
-    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+    if (typeof window !== "undefined" && "requestIdleCallback" in window) {
       window.requestIdleCallback(() => {
         setVisibleCount(mediaItems.length);
       });
@@ -102,10 +113,13 @@ function SkaterFeed({ user }: SkaterFeedProps) {
     null
   );
 
-  const handleOpenModal = useCallback((item: ExtendedMediaItem) => {
-    setSelectedItem(item);
-    onOpen();
-  }, [onOpen]);
+  const handleOpenModal = useCallback(
+    (item: ExtendedMediaItem) => {
+      setSelectedItem(item);
+      onOpen();
+    },
+    [onOpen]
+  );
 
   const handleNewComment = useCallback((newComment: any) => {
     console.log("New comment added:", newComment);
@@ -132,7 +146,6 @@ function SkaterFeed({ user }: SkaterFeedProps) {
 
   return (
     <Box>
-      <PerformanceMonitor itemCount={visibleCount} />
       <InfiniteScroll
         dataLength={visibleCount}
         next={loadMore}
@@ -140,21 +153,24 @@ function SkaterFeed({ user }: SkaterFeedProps) {
         scrollThreshold={0.8}
         loader={
           <Grid templateColumns="repeat(3, 1fr)" gap={1} mt={1}>
-            {Array.from({ length: Math.min(6, defaultItemsPerPage) }).map((_, i) => (
-              <GridItem key={`inf-skel-${i}`}>
-                <AspectRatio ratio={1}>
-                  <Skeleton
-                    w="100%"
-                    h="100%"
-                    startColor="gray.700"
-                    endColor="gray.900"
-                    speed={1.5}
-                  />
-                </AspectRatio>
-              </GridItem>
-            ))}
+            {Array.from({ length: Math.min(6, defaultItemsPerPage) }).map(
+              (_, i) => (
+                <GridItem key={`inf-skel-${i}`}>
+                  <AspectRatio ratio={1}>
+                    <Skeleton
+                      w="100%"
+                      h="100%"
+                      startColor="gray.700"
+                      endColor="gray.900"
+                      speed={1.5}
+                    />
+                  </AspectRatio>
+                </GridItem>
+              )
+            )}
           </Grid>
-        }        >
+        }
+      >
         <Grid templateColumns="repeat(3, 1fr)" gap={1}>
           {mediaItems.slice(0, visibleCount).map((item, idx) => (
             <LazyMediaItem

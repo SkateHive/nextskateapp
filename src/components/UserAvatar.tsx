@@ -1,7 +1,7 @@
 "use client";
 import { HiveAccount } from "@/lib/useHiveAuth";
 import { Avatar } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, memo } from "react";
 import { useUserData } from "@/contexts/UserContext";
 
 type UserAvatarProps = {
@@ -11,7 +11,10 @@ type UserAvatarProps = {
   size?: string | undefined;
 };
 
-export default function UserAvatar({
+// Avatar cache to prevent duplicate API calls
+const avatarCache = new Map<string, string>();
+
+const UserAvatar = memo(function UserAvatar({
   hiveAccount,
   borderRadius,
   boxSize,
@@ -24,44 +27,50 @@ export default function UserAvatar({
     account.posting_json_metadata || account.json_metadata || "{}"
   );
 
-  useEffect(() => {
-    const defaultAvatarUrl = `https://images.ecency.com/webp/u/${account.name}/avatar/${size}`;
-
-    // Function to check if the Ecency avatar exists
-    const checkAvatarExists = async (url: string) => {
+  // Memoized avatar check function
+  const checkAvatarExists = useCallback(
+    async (url: string): Promise<string | null> => {
       try {
         const response = await fetch(url, { method: "HEAD" });
-        if (response.ok) {
-          return url;
-        } else {
-          return null; // Return null if the small avatar doesn't exist
-        }
+        return response.ok ? url : null;
       } catch (error) {
-        return null; // If an error occurs, return null
+        return null;
       }
-    };
+    },
+    []
+  );
 
-    // Function to handle avatar selection logic
-    const getUserAvatar = async () => {
-      // First, check if Ecency avatar exists
-      const ecencyAvatar = await checkAvatarExists(defaultAvatarUrl);
+  // Memoized avatar selection function
+  const getUserAvatar = useCallback(async () => {
+    const cacheKey = `${account.name}-${size}`;
 
-      if (metadata.profile && metadata.profile.profile_image) {
-        // First, check if profile image from metadata is available
-        setUserAvatar(metadata.profile.profile_image);
-      } else if (ecencyAvatar) {
-        // Otherwise, use the Ecency avatar if it exists
-        setUserAvatar(ecencyAvatar);
-      } else {
-        // Fallback to default larger avatar
-        setUserAvatar(
-          `https://images.ecency.com/webp/u/${account.name}/avatar`
-        );
-      }
-    };
+    // Check cache first
+    if (avatarCache.has(cacheKey)) {
+      setUserAvatar(avatarCache.get(cacheKey)!);
+      return;
+    }
 
-    getUserAvatar(); // Call the function to set the avatar
-  }, [account.name, metadata, size]);
+    const defaultAvatarUrl = `https://images.ecency.com/webp/u/${account.name}/avatar/${size}`;
+    const ecencyAvatar = await checkAvatarExists(defaultAvatarUrl);
+
+    let finalAvatarUrl: string;
+
+    if (metadata.profile && metadata.profile.profile_image) {
+      finalAvatarUrl = metadata.profile.profile_image;
+    } else if (ecencyAvatar) {
+      finalAvatarUrl = ecencyAvatar;
+    } else {
+      finalAvatarUrl = `https://images.ecency.com/webp/u/${account.name}/avatar`;
+    }
+
+    // Cache the result
+    avatarCache.set(cacheKey, finalAvatarUrl);
+    setUserAvatar(finalAvatarUrl);
+  }, [account.name, metadata, size, checkAvatarExists]);
+
+  useEffect(() => {
+    getUserAvatar();
+  }, [getUserAvatar]);
 
   return (
     <Avatar
@@ -73,4 +82,6 @@ export default function UserAvatar({
       borderRadius={borderRadius || 5}
     />
   );
-}
+});
+
+export default UserAvatar;
