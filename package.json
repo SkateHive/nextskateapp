@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "NODE_ENV=production next build",
-    "start": "NODE_ENV=production next start"
+    "start": "NODE_ENV=production next start",
+    "analyze": "ANALYZE=true npm run build"
   },
   "dependencies": {
     "@apollo/client": "^3.11.10",
@@ -65,6 +66,7 @@
     "react-countdown": "^2.3.6",
     "react-dom": "18.2.0",
     "react-dropzone": "^14.3.5",
+    "react-error-boundary": "^6.0.0",
     "react-icons": "^5.4.0",
     "react-infinite-scroll-component": "^6.1.0",
     "react-intersection-observer": "^9.15.1",
@@ -86,6 +88,7 @@
     "wagmi": "^2.14.11"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^15.3.3",
     "@types/crypto-js": "^4.2.2",
     "@types/html-to-text": "^9.0.4",
     "@types/lodash": "^4.17.15",

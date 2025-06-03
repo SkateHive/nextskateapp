@@ -7,15 +7,16 @@ import {
   Image,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo, useCallback } from "react";
 import {
+  LazyIconWrapper,
   FaBell,
   FaUserPlus,
   FaBook,
   FaGift,
   FaDiscord,
   FaMap,
-} from "react-icons/fa";
+} from "@/components/LazyIcon";
 import AirdropModal from "./airdropModal";
 import { useRouter } from "next/navigation";
 import { useMediaQuery } from "@chakra-ui/react";
@@ -25,7 +26,7 @@ interface TopMenuProps {
   sortedComments: any[];
 }
 
-const TopMenu = ({ sortedComments }: TopMenuProps) => {
+const TopMenu = memo(function TopMenu({ sortedComments }: TopMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [loginMethod, setLoginMethod] = useState<string | null>(null);
   const router = useRouter();
@@ -38,17 +39,17 @@ const TopMenu = ({ sortedComments }: TopMenuProps) => {
     }
   }, []);
 
-  const handleCloseModal = () => {
+  const handleCloseModal = useCallback(() => {
     setIsOpen(false);
-  };
+  }, []);
 
-  const handleCreateClick = () => {
+  const handleCreateClick = useCallback(() => {
     if (loginMethod === null) {
       setIsOpen(true);
     } else {
       router.push("/upload");
     }
-  };
+  }, [loginMethod, router]);
 
   return (
     <>
@@ -79,7 +80,11 @@ const TopMenu = ({ sortedComments }: TopMenuProps) => {
           {loginMethod ? (
             <>
               <Button
-                leftIcon={<FaGift />}
+                leftIcon={
+                  <LazyIconWrapper>
+                    <FaGift />
+                  </LazyIconWrapper>
+                }
                 colorScheme="red"
                 variant="outline"
                 size={{ base: "sm", md: "md" }}
@@ -88,7 +93,11 @@ const TopMenu = ({ sortedComments }: TopMenuProps) => {
                 AIRDROP
               </Button>
               <Button
-                leftIcon={<FaUserPlus />}
+                leftIcon={
+                  <LazyIconWrapper>
+                    <FaUserPlus />
+                  </LazyIconWrapper>
+                }
                 colorScheme="blue"
                 variant="outline"
                 size={{ base: "sm", md: "md" }}
@@ -171,6 +180,6 @@ const TopMenu = ({ sortedComments }: TopMenuProps) => {
       <Divider />
     </>
   );
-};
+});
 
 export default TopMenu;

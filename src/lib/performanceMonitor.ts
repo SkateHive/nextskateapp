@@ -130,7 +130,7 @@ export function useMemoryTracker(componentName: string) {
       }
       
       const currentMemory = memory.usedJSHeapSize;
-      const memoryDiff = currentMemory - initialMemory.current;
+      const memoryDiff = initialMemory.current ? currentMemory - initialMemory.current : 0;
       
       console.log(`[Memory] ${componentName}:`, {
         current: `${(currentMemory / 1024 / 1024).toFixed(2)}MB`,
