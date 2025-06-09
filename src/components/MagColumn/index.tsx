@@ -3,7 +3,17 @@ import { useHiveUser } from "@/contexts/UserContext";
 import usePosts from "@/hooks/usePosts";
 import { blockedUsers } from "@/lib/constants";
 import PostModel from "@/lib/models/post";
-import { Box, Button, ButtonGroup, Flex, Grid, Image, Text, useMediaQuery, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Flex,
+  Grid,
+  Image,
+  Text,
+  useMediaQuery,
+  VStack,
+} from "@chakra-ui/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FaBook, FaBookOpen } from "react-icons/fa";
 import { BeatLoader } from "react-spinners";
@@ -21,7 +31,13 @@ interface PostFeedProps {
   loading: boolean;
 }
 
-const PostFeed: React.FC<PostFeedProps> = ({ posts, visiblePosts, setVisiblePosts, query, loading }) => {
+const PostFeed: React.FC<PostFeedProps> = ({
+  posts,
+  visiblePosts,
+  setVisiblePosts,
+  query,
+  loading,
+}) => {
   const observerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -60,18 +76,25 @@ const PostFeed: React.FC<PostFeedProps> = ({ posts, visiblePosts, setVisiblePost
 
   const filteredPosts = posts
     ? posts.filter(
-      (post) =>
-        !blockedUsers.includes(post.author) && post.body && post.body.length >= 240
-    )
+        (post) =>
+          !blockedUsers.includes(post.author) &&
+          post.body &&
+          post.body.length >= 240
+      )
     : [];
 
   return (
     <Box overflow={"auto"}>
       <Grid templateColumns="repeat(1, 1fr)" gap={0}>
         {filteredPosts.length > 0 &&
-          filteredPosts.slice(0, visiblePosts).map((post, i) => (
-            <Post key={`${query}-${post.url}`} postData={PostModel.newFromDiscussion(post)} />
-          ))}
+          filteredPosts
+            .slice(0, visiblePosts)
+            .map((post, i) => (
+              <Post
+                key={`${query}-${post.url}`}
+                postData={PostModel.newFromDiscussion(post)}
+              />
+            ))}
 
         {visiblePosts < filteredPosts.length && (
           <Flex justify="center" ref={observerRef} style={{ height: "50px" }}>
@@ -90,7 +113,10 @@ const PostFeed: React.FC<PostFeedProps> = ({ posts, visiblePosts, setVisiblePost
 };
 
 interface NavigationButtonsProps {
-  updateFeed: (query: string, tagParams: { tag: string; limit: number }[]) => void;
+  updateFeed: (
+    query: string,
+    tagParams: { tag: string; limit: number }[]
+  ) => void;
   feedConfig: { query: string; tag: any[] };
   hiveUser: any;
 }
@@ -102,7 +128,6 @@ const NavigationButtons: React.FC<NavigationButtonsProps> = ({
 }) => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
-
   const buttonStyle = {
     "&:hover": {
       boxShadow: "4px 4px 6px rgba(167, 255, 0, 0.8)",
@@ -113,12 +138,8 @@ const NavigationButtons: React.FC<NavigationButtonsProps> = ({
     },
   };
 
-
-
   const [openBook, setOpenBook] = useState(false);
   const isMobile = useMediaQuery("(max-width: 768px)")[0];
-
-
 
   return (
     <>
@@ -130,11 +151,23 @@ const NavigationButtons: React.FC<NavigationButtonsProps> = ({
             sx={buttonStyle}
           >
             <Box marginRight={3}>
-              <Image src="/flyingMoney11.png" alt="Flying Money Icon" width={18} height={18} />
+              <Image
+                src="/flyingMoney11.png"
+                alt="Flying Money Icon"
+                width={36}
+                height={36}
+                style={{ width: "auto", height: "auto" }}
+              />
             </Box>
             Hot
             <Box marginLeft={3}>
-              <Image src="/flyingMoney22.png" alt="Flying Money Icon" width={18} height={18} />
+              <Image
+                src="/flyingMoney22.png"
+                alt="Flying Money Icon"
+                width={36}
+                height={36}
+                style={{ width: "auto", height: "auto" }}
+              />
             </Box>
           </Button>
           <Button
@@ -146,7 +179,11 @@ const NavigationButtons: React.FC<NavigationButtonsProps> = ({
           </Button>
           {hiveUser.hiveUser && (
             <Button
-              onClick={() => updateFeed("feed", [{ tag: hiveUser.hiveUser.name, limit: 100 }])}
+              onClick={() =>
+                updateFeed("feed", [
+                  { tag: hiveUser.hiveUser.name, limit: 100 },
+                ])
+              }
               isActive={feedConfig.query === "feed"}
               sx={buttonStyle}
             >
@@ -174,11 +211,12 @@ const NavigationButtons: React.FC<NavigationButtonsProps> = ({
 
 export default function MagColumn() {
   const SKATEHIVE_TAG = useMemo(() => [{ tag: "hive-173115", limit: 30 }], []);
-  const [feedConfig, setFeedConfig] = useState({ tag: SKATEHIVE_TAG, query: "created" });
-  const { posts, error, isLoading, setQueryCategory, setDiscussionQuery } = usePosts(
-    feedConfig.query,
-    feedConfig.tag
-  );
+  const [feedConfig, setFeedConfig] = useState({
+    tag: SKATEHIVE_TAG,
+    query: "created",
+  });
+  const { posts, error, isLoading, setQueryCategory, setDiscussionQuery } =
+    usePosts(feedConfig.query, feedConfig.tag);
   const [visiblePosts, setVisiblePosts] = useState<number>(5);
   const hiveUser = useHiveUser();
 
@@ -195,11 +233,17 @@ export default function MagColumn() {
   if (isLoading || !posts) {
     return (
       <Box overflow="auto" sx={{ "&::-webkit-scrollbar": { display: "none" } }}>
-        <NavigationButtons updateFeed={updateFeed} feedConfig={feedConfig} hiveUser={hiveUser} />
+        <NavigationButtons
+          updateFeed={updateFeed}
+          feedConfig={feedConfig}
+          hiveUser={hiveUser}
+        />
         <Box display="flex" justifyContent="center">
           <Box width="100%">
             <AuthorSearchBar
-              onSearch={(author) => updateFeed("blog", [{ tag: author, limit: 10 }])}
+              onSearch={(author) =>
+                updateFeed("blog", [{ tag: author, limit: 10 }])
+              }
             />
           </Box>
         </Box>
@@ -214,11 +258,17 @@ export default function MagColumn() {
 
   return (
     <Box overflow="auto" sx={{ "&::-webkit-scrollbar": { display: "none" } }}>
-      <NavigationButtons updateFeed={updateFeed} feedConfig={feedConfig} hiveUser={hiveUser} />
+      <NavigationButtons
+        updateFeed={updateFeed}
+        feedConfig={feedConfig}
+        hiveUser={hiveUser}
+      />
       <Box display="flex" justifyContent="center">
         <Box width="100%" m={1}>
           <AuthorSearchBar
-            onSearch={(author) => updateFeed("blog", [{ tag: author, limit: 10 }])}
+            onSearch={(author) =>
+              updateFeed("blog", [{ tag: author, limit: 10 }])
+            }
           />
         </Box>
       </Box>

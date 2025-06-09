@@ -114,6 +114,7 @@ export default function TipButton({ author, permlink }: TipButtonProps) {
           variant={"ghost"}
           _hover={{ background: "none" }}
           size="sm"
+          aria-label="Tip post author"
         >
           ⌐◨-◨
         </MenuButton>
