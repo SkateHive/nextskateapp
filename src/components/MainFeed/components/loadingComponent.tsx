@@ -17,6 +17,7 @@ const randomSentences = [
   "Never lose your bros clips",
   "support your local skateshops!",
   "The Peoples Thrasher",
+  "Get $HIGHER",
   "Stack HP, buy with HBD",
   "Drop hills not bombs!",
   "Nobody owns Skatehive",

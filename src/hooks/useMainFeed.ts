@@ -37,15 +37,6 @@ export const useMainFeed = ({ comments, isLoading, addComment }: UseMainFeedProp
       'handleCommentSubmit'
     );
 
-    if (!result) {
-      toast({
-        title: "Error",
-        description: "Failed to submit comment. Please try again.",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
   });
 
   const handleSortChange = useCallback((method: SortMethod) => {
