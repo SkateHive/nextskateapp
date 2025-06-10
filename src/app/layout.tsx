@@ -53,7 +53,7 @@ export const metadata: Metadata = {
   other: {
     // Use compliant image URL
     "fc:frame": JSON.stringify(frameObject),
-    "fc:frame:image": "https://www.skatehive.app/Sogimage.png",
+    "fc:frame:image": "https://www.skatehive.app/ogimage.png",
     "fc:frame:post_url": "https://www.skatehive.app",
   },
 };
