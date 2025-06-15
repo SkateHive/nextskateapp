@@ -1,9 +1,13 @@
 "use client";
 import { Box, Flex } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { FaHome, FaWallet } from "react-icons/fa";
-import { ImMenu } from "react-icons/im";
-import { MdOutlineMenuBook } from "react-icons/md";
+import {
+  LazyIconWrapper,
+  FaHome,
+  FaWallet,
+  ImMenu,
+  MdOutlineMenuBook,
+} from "@/components/LazyIcon";
 import UploadImageButton from "./UploadImageButton";
 import WalletButton from "./WalletButton";
 import MagButton from "./magButton";
@@ -85,12 +89,20 @@ const MobileNavbar = () => {
 
   const dockItems = [
     {
-      icon: <ImMenu size={22} />,
+      icon: (
+        <LazyIconWrapper>
+          <ImMenu size={22} />
+        </LazyIconWrapper>
+      ),
       label: "Menu",
       onClick: toggleMenu,
     },
     {
-      icon: <FaHome size={22} />,
+      icon: (
+        <LazyIconWrapper>
+          <FaHome size={22} />
+        </LazyIconWrapper>
+      ),
       label: "Home",
       onClick: () => router.push("/"),
     },
@@ -100,12 +112,20 @@ const MobileNavbar = () => {
       onClick: () => router.push("/upload"),
     },
     {
-      icon: <FaWallet size={22} />,
+      icon: (
+        <LazyIconWrapper>
+          <FaWallet size={22} />
+        </LazyIconWrapper>
+      ),
       label: "Wallet",
       onClick: () => router.push("/wallet"),
     },
     {
-      icon: <MdOutlineMenuBook size={22} />,
+      icon: (
+        <LazyIconWrapper>
+          <MdOutlineMenuBook size={22} />
+        </LazyIconWrapper>
+      ),
       label: "Magazine",
       onClick: () => router.push("/mag"),
     },

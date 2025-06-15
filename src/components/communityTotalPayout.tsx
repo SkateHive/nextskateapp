@@ -1,5 +1,5 @@
-'use client'
-import { SKATEHIVE_TAG } from "@/lib/constants";
+"use client";
+import { SKATEHIVE_TAG, IMAGE_SIZES } from "@/lib/constants";
 import { Box, Flex, Image, Text, VStack } from "@chakra-ui/react";
 import { useEffect, useMemo, useState } from "react";
 
@@ -28,7 +28,9 @@ function CommunityTotalPayout() {
           `https://stats.hivehub.dev/communities?c=${SKATEHIVE_TAG}`
         );
         const data = await response.json();
-        const payout = parseFloat(data[SKATEHIVE_TAG]?.total_payouts_hbd?.replace("$", "") || "90000");
+        const payout = parseFloat(
+          data[SKATEHIVE_TAG]?.total_payouts_hbd?.replace("$", "") || "90000"
+        );
         setTotalHBDPayout(payout);
       } catch (error: any) {
         console.error("Error fetching data: ", error);
@@ -46,7 +48,10 @@ function CommunityTotalPayout() {
     if (!loading && !error) {
       const intervalId = setInterval(() => {
         setDisplayedNumber(
-          formattedNumber.split("").map(() => Math.floor(Math.random() * 10)).join("")
+          formattedNumber
+            .split("")
+            .map(() => Math.floor(Math.random() * 10))
+            .join("")
         );
       }, 100);
 
@@ -97,7 +102,7 @@ function CommunityTotalPayout() {
             <Image
               alt="Loading..."
               boxSize={"24px"}
-              src="/spinning-joint-sm.gif"
+              src={`/spinning-joint-sm.gif?w=${IMAGE_SIZES.LOADING_SMALL.width}&h=${IMAGE_SIZES.LOADING_SMALL.height}`}
               zIndex={2}
             />
             <Text fontSize={"12px"} color={"chartreuse"} zIndex={2}>

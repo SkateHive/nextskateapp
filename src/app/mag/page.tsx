@@ -1,25 +1,33 @@
-"use client"
-import LoginModal from "@/components/Hive/Login/LoginModal"
-import Post from "@/components/PostCard"
-import PostSkeleton from "@/components/PostCard/Skeleton"
-import { useHiveUser } from "@/contexts/UserContext"
-import usePosts from "@/hooks/usePosts"
-import { blockedUsers } from "@/lib/constants"
-import PostModel from "@/lib/models/post"
-import { Box, Button, ButtonGroup, Center, Grid, Image, useMediaQuery } from "@chakra-ui/react"
-import { useEffect, useRef, useState } from "react"
-import { FaBook, FaBookOpen } from "react-icons/fa"
-import AuthorSearchBar from "../upload/components/searchBar"
+"use client";
+import LoginModal from "@/components/Hive/Login/LoginModal";
+import Post from "@/components/PostCard";
+import PostSkeleton from "@/components/PostCard/Skeleton";
+import { useHiveUser } from "@/contexts/UserContext";
+import usePosts from "@/hooks/usePosts";
+import { blockedUsers } from "@/lib/constants";
+import PostModel from "@/lib/models/post";
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Center,
+  Grid,
+  Image,
+  useMediaQuery,
+} from "@chakra-ui/react";
+import { useEffect, useRef, useState } from "react";
+import { FaBook, FaBookOpen } from "react-icons/fa";
+import AuthorSearchBar from "../upload/components/searchBar";
 
 export default function Mag() {
-  const SKATEHIVE_TAG = [{ tag: "hive-173115", limit: 60 }]
-  const [tag, setTag] = useState(SKATEHIVE_TAG)
-  const [query, setQuery] = useState("trending")
+  const SKATEHIVE_TAG = [{ tag: "hive-173115", limit: 60 }];
+  const [tag, setTag] = useState(SKATEHIVE_TAG);
+  const [query, setQuery] = useState("trending");
   const { posts, error, isLoading, setQueryCategory, setDiscussionQuery } =
-    usePosts(query, tag)
-  const [visiblePosts, setVisiblePosts] = useState(20)
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
-  const hiveUser = useHiveUser()
+    usePosts(query, tag);
+  const [visiblePosts, setVisiblePosts] = useState(20);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const hiveUser = useHiveUser();
 
   const isMobile = useMediaQuery("(max-width: 768px)")[0];
   const [openBook, setOpenBook] = useState(false);
@@ -27,9 +35,9 @@ export default function Mag() {
   const observerRef = useRef<HTMLDivElement>(null);
 
   function updateFeed(query: string, tagParams: any[]) {
-    setQuery(query)
-    setQueryCategory(query)
-    setDiscussionQuery(tagParams)
+    setQuery(query);
+    setQueryCategory(query);
+    setDiscussionQuery(tagParams);
   }
 
   useEffect(() => {
@@ -58,7 +66,7 @@ export default function Mag() {
   }, [posts, visiblePosts]);
 
   if (error) {
-    return "Error"
+    return "Error";
   }
 
   if (isLoading || !posts) {
@@ -90,18 +98,20 @@ export default function Mag() {
           ))}
         </Grid>
       </Box>
-    )
+    );
   }
 
-  const filteredPosts = posts.filter(post => !blockedUsers.includes(post.author));
+  const filteredPosts = posts.filter(
+    (post) => !blockedUsers.includes(post.author)
+  );
 
   const handleCreateClick = () => {
     if (!hiveUser.hiveUser) {
-      setIsLoginModalOpen(true)
+      setIsLoginModalOpen(true);
     } else {
-      window.location.href = "/upload"
+      window.location.href = "/upload";
     }
-  }
+  };
 
   const buttonStyle = {
     "&:hover": {
@@ -117,7 +127,7 @@ export default function Mag() {
     "&:hover": {
       boxShadow: "5px 5px 10px rgba(167, 255, 0, 0.8)",
       backgroundColor: "limegreen",
-      color: "black"
+      color: "black",
     },
     "&:active": {
       transform: "translate(2px, 2px)",
@@ -145,8 +155,14 @@ export default function Mag() {
           fontFamily="Joystix"
           sx={createButtonStyle}
         >
-          <Box marginRight={3} >
-            <Image src="/treboard.gif" alt="tre flip Skateboard icon" width={42} height={42} style={{ width: "auto", height: "auto" }} />
+          <Box marginRight={3}>
+            <Image
+              src="/treboard.gif"
+              alt="tre flip Skateboard icon"
+              width={42}
+              height={42}
+              style={{ width: "auto", height: "auto" }}
+            />
           </Box>
           + Create
         </Button>
@@ -160,11 +176,23 @@ export default function Mag() {
             sx={buttonStyle}
           >
             <Box marginRight={3}>
-              <Image src="/flyingMoney11.png" alt="Flying Money Icon" width={18} height={18} />
+              <Image
+                src="/flyingMoney11.png"
+                alt="Flying Money Icon"
+                width={36}
+                height={36}
+                style={{ width: "auto", height: "auto" }}
+              />
             </Box>
             Hot
             <Box marginLeft={3}>
-              <Image src="/flyingMoney22.png" alt="Flying Money Icon" width={18} height={18} />
+              <Image
+                src="/flyingMoney22.png"
+                alt="Flying Money Icon"
+                width={36}
+                height={36}
+                style={{ width: "auto", height: "auto" }}
+              />
             </Box>
           </Button>
           <Button
@@ -205,9 +233,13 @@ export default function Mag() {
       </Center>
 
       <Center mt={2} mb={1}>
-        <Box width={{ base: "62%", sm: "70%", md: "60%", lg: "40%", xl: "19%" }}>
+        <Box
+          width={{ base: "62%", sm: "70%", md: "60%", lg: "40%", xl: "19%" }}
+        >
           <AuthorSearchBar
-            onSearch={(author) => updateFeed("blog", [{ tag: author, limit: 10 }])}
+            onSearch={(author) =>
+              updateFeed("blog", [{ tag: author, limit: 10 }])
+            }
           />
         </Box>
       </Center>
@@ -241,5 +273,5 @@ export default function Mag() {
 
       <div ref={observerRef} style={{ height: "50px", width: "100%" }} />
     </Box>
-  )
+  );
 }

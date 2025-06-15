@@ -6,6 +6,7 @@ import {
   MenuItem,
   MenuList,
   Text,
+  Button,
 } from "@chakra-ui/react";
 import { IoFilter } from "react-icons/io5";
 import { SORT_OPTIONS } from "@/utils/feedConstants";
@@ -19,7 +20,7 @@ const SortMenu: React.FC<SortMenuProps> = ({ onSortChange }) => {
   return (
     <HStack width="full" justifyContent="flex-end" m={-2} mr={4}>
       <Menu>
-        <MenuButton>
+        <MenuButton as={Button} variant="ghost" aria-label="Sort options">
           <IoFilter color="#9AE6B4" />
         </MenuButton>
         <MenuList color="white" bg="black" border="1px solid #A5D6A7">
