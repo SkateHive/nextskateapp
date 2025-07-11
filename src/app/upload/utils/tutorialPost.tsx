@@ -24,7 +24,7 @@ Write your article here, you can use markdown and html for it. If you never done
 - (un)ordered lists
 
 
-**Be creative**, if you dont feel like it, go post in [/plaza](https://skatehive.app/plaza)
+**Be creative**, if you dont feel like it, go post in [/plaza](https://legacy.skatehive.app/plaza)
 
 
 | ![](https://www.skatehive.app/assets/skatehive.jpeg) | ![](https://www.skatehive.app/assets/skatehive.jpeg)

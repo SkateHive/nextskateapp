@@ -108,7 +108,7 @@ const TransactionHistory = () => {
                         <AuthorAvatar username={details.author} boxSize={10} />
                         <Text fontSize="lg">
                             Vote on {details.author} s
-                            <a href={`https://skatehive.app/post/@${details.author}/${details.permlink}`} target="_blank" rel="noopener noreferrer">
+                            <a href={`https://legacy.skatehive.app/post/@${details.author}/${details.permlink}`} target="_blank" rel="noopener noreferrer">
                                 comment
                             </a>
                             : Payout: {details.pending_payout}
@@ -141,7 +141,7 @@ const TransactionHistory = () => {
                         <Text fontSize="lg">
                             Vote by {details.voter} on {details.author}s
 
-                            <a href={`https://skatehive.app/post/@${details.author}/${details.permlink}`} target="_blank" rel="noopener noreferrer" >
+                            <a href={`https://legacy.skatehive.app/post/@${details.author}/${details.permlink}`} target="_blank" rel="noopener noreferrer" >
                                 post
                             </a>
 
@@ -155,7 +155,7 @@ const TransactionHistory = () => {
                         <AuthorAvatar username={details.benefactor} boxSize={10} />
                         <Text fontSize="lg">
                             Benefactor Reward for {details.benefactor} on
-                            <a href={`https://skatehive.app/post/@${details.author}/${details.permlink}`} target="_blank" rel="noopener noreferrer">
+                            <a href={`https://legacy.skatehive.app/post/@${details.author}/${details.permlink}`} target="_blank" rel="noopener noreferrer">
                                 {details.author}&apos;s comment
                             </a>
                             : {details.hbd_payout} HBD, {details.hive_payout} HIVE, {details.vesting_payout} VESTS

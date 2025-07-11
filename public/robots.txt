@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://skatehive.app/sitemap.xml
+Sitemap: https://legacy.skatehive.app/sitemap.xml

@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://skatehive.app';
+  const baseUrl = 'https://legacy.skatehive.app';
 
   // Static routes
   const staticRoutes = [

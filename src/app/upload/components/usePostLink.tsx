@@ -11,7 +11,7 @@ const usePostLink = (title: string, user: HiveAccount) => {
             const username = user?.name;
             if (username) {
                 const permlink = generatePermlink(title);
-                const link = `https://skatehive.app/post/hive-173115/@${username}/${permlink}`;
+                const link = `https://legacy.skatehive.app/post/hive-173115/@${username}/${permlink}`;
                 setPostLink(link);
             }
         };

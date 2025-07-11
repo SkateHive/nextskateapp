@@ -7,7 +7,7 @@ export const size = {
   width: 973,
   height: 649,
 };
-const appUrl = "https://skatehive.app";
+const appUrl = "https://legacy.skatehive.app";
 
 export const revalidate = 0;
 export const dynamic = 'force-dynamic';

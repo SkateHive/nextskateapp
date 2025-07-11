@@ -20,16 +20,16 @@ export async function generateMetadata(
   const images = post.body ? post.body.match(/!\[.*?\]\((.*?)\)/g) : [];
   const imageUrls = images
     ? images.map((img: string) => {
-        const match = img.match(/\((.*?)\)/);
-        return match ? match[1] : "";
-      })
+      const match = img.match(/\((.*?)\)/);
+      return match ? match[1] : "";
+    })
     : [];
 
   // Get banner image
   let originalBanner = post.json_metadata?.image || imageUrls[0] || [];
 
   // Hard-code the domain to skatehive.app to match account association payload
-  const domainUrl = "https://skatehive.app";
+  const domainUrl = "https://legacy.skatehive.app";
 
   // Decode the user to remove URL encoding (e.g., %40 -> @)
   const decodedUser = decodeURIComponent(user);
@@ -71,10 +71,10 @@ export async function generateMetadata(
       url: postUrl,
       images: Array.isArray(originalBanner)
         ? originalBanner.map((img: string) => ({
-            url: new URL(img, domainUrl).toString(),
-            width: 1200,
-            height: 630,
-          }))
+          url: new URL(img, domainUrl).toString(),
+          width: 1200,
+          height: 630,
+        }))
         : [],
     },
     twitter: {

@@ -1,6 +1,6 @@
 export async function GET() {
   // Hard-code the app URL to match the domain in the account association payload
-  const appUrl = 'https://skatehive.app';
+  const appUrl = 'https://legacy.skatehive.app';
 
   const config = {
     accountAssociation: {

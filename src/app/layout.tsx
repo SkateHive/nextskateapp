@@ -34,7 +34,7 @@ const frameObject = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://skatehive.app"),
+  metadataBase: new URL("https://legacy.skatehive.app"),
   title: "Skatehive App",
   description: "The infinity skateboard maganize",
   manifest: "/manifest.json",
@@ -72,7 +72,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           href={
             typeof window !== "undefined"
               ? `${process.env.NEXT_PUBLIC_WEBSITE_URL}${window.location.pathname}`
-              : process.env.NEXT_PUBLIC_WEBSITE_URL || "https://skatehive.app"
+              : process.env.NEXT_PUBLIC_WEBSITE_URL || "https://legacy.skatehive.app"
           }
         />
         {/* DNS Prefetch for domains */}

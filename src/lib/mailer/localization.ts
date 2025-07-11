@@ -83,7 +83,7 @@ export function getLocalizedStrings(language: string) {
       installKeychainStep: "<strong>Install Hive Keychain:</strong><br> 👉 <a href=\"https://hive-keychain.com/\" target=\"_blank\" style=\"color: #4caf50;\">https://hive-keychain.com/</a>",
       openKeychainStep: "<strong>Open the extension or app</strong> and click on \"Import Account\".",
       enterDetailsStep: "<strong>Enter your username</strong> (<code style=\"color:#ccc;\">{desiredUsername}</code>) and paste your Master Password.", // Placeholder added
-      readyStep: "<strong>You're ready to go!</strong> You can now log in to <a href=\"https://skatehive.app/\" style=\"color: #4caf50;\">Skatehive.app</a> and other Hive apps securely.",
+      readyStep: "<strong>You're ready to go!</strong> You can now log in to <a href=\"https://legacy.skatehive.app/\" style=\"color: #4caf50;\">Skatehive.app</a> and other Hive apps securely.",
       ctaAltText: "Watch Tutorial",
       ctaHelpText: "Need help? Watch the tutorial above ☝️",
       ctaLink: "https://docs.skatehive.app/docs/create-account", // Correct English link
@@ -129,7 +129,7 @@ export function getLocalizedStrings(language: string) {
       installKeychainStep: "<strong>Instale o Hive Keychain:</strong><br> 👉 <a href=\"https://hive-keychain.com/\" target=\"_blank\" style=\"color: #4caf50;\">https://hive-keychain.com/</a>",
       openKeychainStep: "<strong>Abra a extensão ou app</strong> e clique em \"Importar Conta\".",
       enterDetailsStep: "<strong>Digite seu nome de usuário</strong> (<code style=\"color:#ccc;\">{desiredUsername}</code>) e cole sua Senha Mestra.",
-      readyStep: "<strong>Pronto!</strong> Agora você pode fazer login no <a href=\"https://skatehive.app/\" style=\"color: #4caf50;\">Skatehive.app</a> e outros apps Hive com segurança.",
+      readyStep: "<strong>Pronto!</strong> Agora você pode fazer login no <a href=\"https://legacy.skatehive.app/\" style=\"color: #4caf50;\">Skatehive.app</a> e outros apps Hive com segurança.",
       ctaAltText: "Assistir Tutorial",
       ctaHelpText: "Precisa de ajuda? Assista ao tutorial acima ☝️",
       ctaLink: "https://docs.skatehive.app/pt-br/docs/create-account", // Correct Portuguese link
@@ -175,7 +175,7 @@ export function getLocalizedStrings(language: string) {
       installKeychainStep: "<strong>Instala Hive Keychain:</strong><br> 👉 <a href=\"https://hive-keychain.com/\" target=\"_blank\" style=\"color: #4caf50;\">https://hive-keychain.com/</a>",
       openKeychainStep: "<strong>Abre la extensión o app</strong> y haz clic en \"Importar Cuenta\".",
       enterDetailsStep: "<strong>Ingresa tu nombre de usuario</strong> (<code style=\"color:#ccc;\">{desiredUsername}</code>) y pega tu Contraseña Maestra.",
-      readyStep: "<strong>¡Listo!</strong> Ahora puedes iniciar sesión en <a href=\"https://skatehive.app/\" style=\"color: #4caf50;\">Skatehive.app</a> y otras apps de Hive de forma segura.",
+      readyStep: "<strong>¡Listo!</strong> Ahora puedes iniciar sesión en <a href=\"https://legacy.skatehive.app/\" style=\"color: #4caf50;\">Skatehive.app</a> y otras apps de Hive de forma segura.",
       ctaAltText: "Ver Tutorial",
       ctaHelpText: "¿Necesitas ayuda? Mira el tutorial de arriba ☝️",
       ctaLink: "https://docs.skatehive.app/es/docs/create-account", // Correct Spanish link

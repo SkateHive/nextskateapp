@@ -73,7 +73,7 @@ export default function getMailTemplate_Invite(
 
     <!-- Footer -->
     <div style="background-color: ${localizedStrings.colors.background2}; color: ${localizedStrings.colors.helpText}; text-align: center; padding: 20px; font-size: 14px;">
-      <p style="margin: 20px 0 0;"><a href="https://skatehive.app/" style="color: ${localizedStrings.colors.link};">${localizedStrings.footerLinkText}</a></p>
+      <p style="margin: 20px 0 0;"><a href="https://legacy.skatehive.app/" style="color: ${localizedStrings.colors.link};">${localizedStrings.footerLinkText}</a></p>
     </div>
   </div>
 </div>

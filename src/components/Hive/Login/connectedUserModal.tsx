@@ -52,7 +52,7 @@ function ConnectedUserModal({ onClose }: { onClose: () => void }) {
                         </HStack>
                     </Heading>
                     <UnorderedList>
-                        <ListItem>Skatehive <Link color={"yellow"} href="https://skatehive.app/leaderboard" isExternal>Leaderboard</Link></ListItem>
+                        <ListItem>Skatehive <Link color={"yellow"} href="https://legacy.skatehive.app/leaderboard" isExternal>Leaderboard</Link></ListItem>
                         <ListItem>Finally a Follow Button in MainFeed</ListItem>
                         <ListItem>We have a newsletter, make sure to put your email <Link color={"yellow"} href="https://paragraph.xyz/@skatehive" isExternal>in that shit</Link> </ListItem>
                         <ListItem>Support for Luganda Language in the docs</ListItem>
