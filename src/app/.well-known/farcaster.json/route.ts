@@ -5,10 +5,10 @@ export async function GET() {
   const config = {
     accountAssociation: {
       header:
-        'eyJmaWQiOjIwNzIxLCJ0eXBlIjoiY3VzdG9keSIsImtleSI6IjB4MzVmNzA2QjY5NGFjZjllNjYxMGM3NjhiMjFDRjdiNWI4QWZhMzQ3RSJ9',
-      payload: 'eyJkb21haW4iOiJza2F0ZWhpdmUuYXBwIn0',
+        'eyJmaWQiOjIwNzIxLCJ0eXBlIjoiYXV0aCIsImtleSI6IjB4MmQxODgyMzA0YzlBNkZhN0Y5ODdDMUI0MWM5ZkQ1RThDRjA1MTZlMiJ9',
+      payload: 'eyJkb21haW4iOiJteS5za2F0ZWhpdmUuYXBwIn0',
       signature:
-        'MHhhNDdlYjdmNDU0NWNlYzJmOGNhY2YyOGI0MDc2NjRjMDU1NWViMDBkMWZjZjQ3YTc0ODhlOTg4NWZiMmJjZDczMjA5Mjk0NDcyZTkxOTMyNTMyMzFlYjU1NzBkNzM1YTk2ZTEzZGEzNWQyZjM5MDU5YTY4MDliZTg5MTc4YTc2OTFi',
+        'EpaOFcz8nqtvquUxvbncLXVjTtg5+q0Cww2qlPDQ0e5tqX5BTV1l5glt6N/ENOAjFBS0hRZib29XwgvJqPqGFhw=',
     },
     frame: {
       version: '1',
