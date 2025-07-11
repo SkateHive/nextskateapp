@@ -23,16 +23,24 @@ These rules supplement the information in `AGENTS.md` and apply to all contribut
 - Store helper functions in `utils/` and shared types in `types/`.
 ## Styling
 
-- **Use Tailwind inline classes** for all styling. Apply utilities directly to JSX elements for consistency and maintainability.
-- **Avoid custom CSS files** whenever possible. Tailwind's utility classes should cover the vast majority of styling needs.
+- **Use Chakra UI components and styling system** for all UI elements. Chakra UI is the primary styling framework for this project.
+- Apply styling via Chakra UI props (e.g., `bg`, `color`, `p`, `m`, `w`, `h`) directly to components for consistency.
+- Leverage Chakra UI's theme system for colors, fonts, and spacing defined in `themes/` directory.
+- **Avoid custom CSS files** whenever possible. Chakra UI's styling props should cover the vast majority of styling needs.
+
+### Chakra UI vs Tailwind CSS
+
+- **Chakra UI is the primary styling system** - use Chakra components (`Box`, `Text`, `Button`, etc.) and their styling props
+- **Tailwind CSS provides basic utilities** - only use for simple utilities that Chakra doesn't provide or for third-party component integration
+- **When in doubt, use Chakra UI** - it integrates with the theme system and provides consistent component behavior
 
 ## Global CSS usage
 
-- `app/globals.css` should **only** import Tailwind layers (`@tailwind base; @tailwind components; @tailwind utilities;`) and contain minimal global overrides.
+- `app/globals.css` should primarily contain Tailwind imports for basic utilities and minimal global overrides.
 - Use `globals.css` only for extreme cases like:
-  - Third-party component styling that cannot be controlled via props
-  - Global resets that cannot be achieved with Tailwind utilities
-  - CSS animations or keyframes that require global scope
+  - Third-party component styling that cannot be controlled via props (e.g., Aioha modal customization)
+  - Global resets or animations that require global scope
+  - Scrollbar hiding and other browser-specific styles
 
 ## Conventions
 
