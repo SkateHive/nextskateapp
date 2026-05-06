@@ -5,6 +5,7 @@ import crypto from 'crypto';
 import { Broadcast, Custom, KeychainKeyTypes, KeychainRequestResponse, KeychainSDK, Login, Post, Transfer, Vote, WitnessVote } from "keychain-sdk";
 import HiveClient from "./hiveclient";
 import { signImageHash } from "./server-functions";
+import { claimRewards as _claimRewards } from "@/components/Navbar/utils/claimRewards";
 
 export interface VideoPart {
   videoUrl: string;
@@ -16,59 +17,15 @@ const communityTag = process.env.NEXT_PUBLIC_HIVE_COMMUNITY_TAG;
 export async function claimRewards(
   hiveUser: HiveAccount
 ): Promise<{ success: boolean; error?: string }> {
-  console.log('claimRewards', hiveUser)
-  const rewardHiveBalance = hiveUser.reward_hive_balance
-  const rewardHBDBalance = hiveUser.reward_hbd_balance
-  const rewardVests = hiveUser.reward_vesting_balance
-  console.log({ rewardHiveBalance, rewardHBDBalance, rewardVests });
-
-  const noRewards =
-    rewardHiveBalance === "0.000 HIVE" &&
-    rewardHBDBalance === "0.000 HBD" &&
-    rewardVests === "0.000000 VESTS";
-
-  if (noRewards) {
-    return { success: false, error: "No pending rewards to claim" };
-  }
-
-  const operation: Operation = [
-    "claim_reward_balance",
-    {
-      account: hiveUser.name,
-      reward_hive: rewardHiveBalance,
-      reward_hbd: rewardHBDBalance,
-      reward_vests: rewardVests
-    }
-  ]
-
-  const keychain = new KeychainSDK(window)
-  const formParamsAsObject = {
-    "data": {
-      "username": hiveUser.name,
-      "operations": [operation],
-      "method": KeychainKeyTypes.posting
-    }
-  }
-
   try {
-    const broadcast = await keychain.broadcast(
-      formParamsAsObject.data as Broadcast
-    );
-    if (broadcast.success) {
-      return { success: true };
-    } else {
-      return {
-        success: false,
-        error: broadcast.error || "Broadcast failed"
-      };
-    }
-  } catch (error: any) {
+    await _claimRewards(hiveUser);
+    return { success: true };
+  } catch (err) {
     return {
       success: false,
-      error: error?.message || "Unknown error during claim"
+      error: err instanceof Error ? err.message : "Unknown error",
     };
   }
-
 }
 
 export async function vote(props: Vote): Promise<KeychainRequestResponse> {

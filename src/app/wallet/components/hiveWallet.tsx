@@ -89,28 +89,27 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
     const handleClaimRewards = async () => {
         if (!hiveUser) return;
         setIsClaiming(true);
-        const result = await claimRewards(hiveUser as HiveAccount);
-        setIsClaiming(false);
-        if (result.success) {
-            toast({
-                title: "Rewards claimed! 🛹",
-                status: "success",
-                duration: 4000,
-                isClosable: true,
-            });
-            // We can optionally window.location.reload() or let the user refresh manually since there isn't a fetch function exported.
-            // Using window.location.reload() for now as it's a common pattern here if no specific context refetch is available.
-            // A more robust approach might be to just update the UI state, but wait, useHiveUser doesn't expose a refetch out of the box in this snippet. 
-            // We'll leave it as requested in the instructions (Trigger a refresh). We'll reload the page if no other option exists. Let's look if there's a refetch in UserContext. Wait, there is likely a reload or just nothing for now. Let's just avoid reloading blindly. We'll leave the comment.
-            // Actually, `window.location.reload()` might be the safest. Let's check if the context exposes refetch.
-        } else {
-            toast({
-                title: "Claim failed",
-                description: result.error,
-                status: "error",
-                duration: 6000,
-                isClosable: true,
-            });
+        try {
+            const result = await claimRewards(hiveUser as HiveAccount);
+            if (result.success) {
+                toast({
+                    title: "Rewards claimed! 🛹",
+                    status: "success",
+                    duration: 4000,
+                    isClosable: true,
+                });
+                // TODO: refetch account data to update displayed balances
+            } else {
+                toast({
+                    title: "Claim failed",
+                    description: result.error,
+                    status: "error",
+                    duration: 6000,
+                    isClosable: true,
+                });
+            }
+        } finally {
+            setIsClaiming(false);
         }
     };
 
