@@ -13,7 +13,8 @@ import {
     MenuList,
     Text,
     Tooltip,
-    VStack
+    VStack,
+    useToast
 } from "@chakra-ui/react";
 import { Asset } from "@hiveio/dhive";
 import { SendIcon } from "lucide-react";
@@ -21,6 +22,7 @@ import { useEffect, useState } from "react";
 import { BsArrowDownCircle, BsArrowUpCircle } from "react-icons/bs";
 
 import { HiveAccount } from "@/lib/useHiveAuth";
+import { claimRewards } from "@/lib/hive/client-functions";
 import { GiPiggyBank, GiReceiveMoney } from "react-icons/gi";
 import CollapsibleBox from "./CollapsibleBox";
 import HiveModals from "./HiveModals";
@@ -51,6 +53,8 @@ function formatToOneDecimal(value: string | number | Asset | undefined): string 
 const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
     const { hiveUser } = useHiveUser();
     const [isLoading, setIsLoading] = useState(true);
+    const [isClaiming, setIsClaiming] = useState(false);
+    const toast = useToast();
 
     const [isHiveModalOpened, setIsHiveModalOpened] = useState(false);
     const [isHbdModalOpened, setIsHbdModalOpened] = useState(false);
@@ -73,6 +77,41 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
         savingsUSDvalue,
         totalValue,
     } = useHiveBalance(hiveUser as HiveAccount);
+
+    const hasPendingRewards =
+        hiveUser &&
+        (
+            hiveUser.reward_hive_balance !== "0.000 HIVE" ||
+            hiveUser.reward_hbd_balance !== "0.000 HBD" ||
+            hiveUser.reward_vesting_balance !== "0.000000 VESTS"
+        );
+
+    const handleClaimRewards = async () => {
+        if (!hiveUser) return;
+        setIsClaiming(true);
+        try {
+            const result = await claimRewards(hiveUser as HiveAccount);
+            if (result.success) {
+                toast({
+                    title: "Rewards claimed! 🛹",
+                    status: "success",
+                    duration: 4000,
+                    isClosable: true,
+                });
+                // TODO: refetch account data to update displayed balances
+            } else {
+                toast({
+                    title: "Claim failed",
+                    description: result.error,
+                    status: "error",
+                    duration: 6000,
+                    isClosable: true,
+                });
+            }
+        } finally {
+            setIsClaiming(false);
+        }
+    };
 
     useEffect(() => {
         onNetWorthChange(totalValue);
@@ -297,6 +336,21 @@ const HiveBox: React.FC<HiveBoxProps> = ({ onNetWorthChange }) => {
                         </MenuItem>
                     </MenuList>
                 </Menu>
+
+                {hasPendingRewards && (
+                    <Button
+                        onClick={handleClaimRewards}
+                        isLoading={isClaiming}
+                        loadingText="Claiming..."
+                        colorScheme="green"
+                        size="sm"
+                        w="full"
+                        mt={2}
+                    >
+                        Claim Rewards
+                    </Button>
+                )}
+
                 <Button
                     leftIcon={<BsArrowUpCircle size="24px" />}
                     w="full"
