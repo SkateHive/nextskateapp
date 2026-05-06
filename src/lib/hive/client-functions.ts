@@ -1,5 +1,6 @@
 'use client';
 import { Operation, PrivateKey } from "@hiveio/dhive";
+import { HiveAccount } from "../useHiveAuth";
 import crypto from 'crypto';
 import { Broadcast, Custom, KeychainKeyTypes, KeychainRequestResponse, KeychainSDK, Login, Post, Transfer, Vote, WitnessVote } from "keychain-sdk";
 import HiveClient from "./hiveclient";
@@ -12,13 +13,24 @@ export interface VideoPart {
 }
 const communityTag = process.env.NEXT_PUBLIC_HIVE_COMMUNITY_TAG;
 
-/*
-export async function claimRewards(hiveUser: HiveAccount) {
+export async function claimRewards(
+  hiveUser: HiveAccount
+): Promise<{ success: boolean; error?: string }> {
   console.log('claimRewards', hiveUser)
   const rewardHiveBalance = hiveUser.reward_hive_balance
   const rewardHBDBalance = hiveUser.reward_hbd_balance
   const rewardVests = hiveUser.reward_vesting_balance
   console.log({ rewardHiveBalance, rewardHBDBalance, rewardVests });
+
+  const noRewards =
+    rewardHiveBalance === "0.000 HIVE" &&
+    rewardHBDBalance === "0.000 HBD" &&
+    rewardVests === "0.000000 VESTS";
+
+  if (noRewards) {
+    return { success: false, error: "No pending rewards to claim" };
+  }
+
   const operation: Operation = [
     "claim_reward_balance",
     {
@@ -39,16 +51,25 @@ export async function claimRewards(hiveUser: HiveAccount) {
   }
 
   try {
-    const broadcast = await keychain
-      .broadcast(
-        formParamsAsObject.data as Broadcast);
-    console.log({ broadcast });
-  } catch (error) {
-    console.log({ error });
+    const broadcast = await keychain.broadcast(
+      formParamsAsObject.data as Broadcast
+    );
+    if (broadcast.success) {
+      return { success: true };
+    } else {
+      return {
+        success: false,
+        error: broadcast.error || "Broadcast failed"
+      };
+    }
+  } catch (error: any) {
+    return {
+      success: false,
+      error: error?.message || "Unknown error during claim"
+    };
   }
 
 }
-*/
 
 export async function vote(props: Vote): Promise<KeychainRequestResponse> {
   const keychain = new KeychainSDK(window)
